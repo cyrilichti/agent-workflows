@@ -6,6 +6,6 @@ alwaysApply: true
 
 This project uses `.agents/` as its structured AI context directory.
 
-Before making changes, read:
+Before non-trivial project work, read:
 
 - `AGENTS.md`
