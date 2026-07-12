@@ -1,0 +1,11 @@
+---
+alwaysApply: true
+---
+
+# Project AI Context
+
+This project uses `.agents/` as its structured AI context directory.
+
+Before making changes, read:
+
+- `AGENTS.md`

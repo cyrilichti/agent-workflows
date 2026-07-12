@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "markdown-doc-writer": {
+      "source": "yennanliu/cs_basics",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/markdown-doc-writer/SKILL.md",
+      "computedHash": "f38dcdac45b15879f7018025a8ca30bf65758d79e31e3746ac69dcd6202b6acf"
+    }
+  }
+}
