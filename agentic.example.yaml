@@ -1,0 +1,18 @@
+# Copy this file to `agentic.yaml` in a consuming project when workflows need
+# project-specific MCP providers.
+#
+# MCP server endpoints are configured by each AI tool, not in this file.
+# This file only tells Agentic Engineering which MCP provider to use for each
+# workflow context.
+
+mcp:
+  backlog-item:
+    provider: clickup
+
+  # Examples:
+  #
+  # backlog-item:
+  #   provider: linear
+  #
+  # review:
+  #   provider: gitlab

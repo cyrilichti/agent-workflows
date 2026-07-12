@@ -24,14 +24,14 @@ Run this workflow at the beginning of a new IDE conversation, or when the develo
 
    Available playbooks:
 
-   * Develop a feature
+   * Work on a backlog item
    * Other
 
 2. Wait for the developer to select one task type.
 
 3. Delegate execution to the corresponding workflow:
 
-   * Develop a feature → `.agents/workflows/feature.md`
+   * Work on a backlog item → `.agents/workflows/backlog-item.md`
 
 4. Stop this workflow after delegating to the selected playbook.
 
