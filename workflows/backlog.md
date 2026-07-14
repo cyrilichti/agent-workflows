@@ -6,10 +6,11 @@ Prepare a work session from a configured backlog provider.
 
 This workflow resolves the backlog context source, selects the item to start,
 retrieves and summarizes its context, activates the appropriate specialist
-agent, and optionally moves the item to an in-progress state.
+agent, and creates a temporary work plan.
 
 It stops before implementation. Its outcome is a ready-to-start work session
-with a clear backlog item, source context, and activated specialist.
+with a clear backlog item, source context, activated specialist, and temporary
+plan.
 
 ---
 
@@ -74,6 +75,12 @@ Present a brief summary using `.agents/templates/ticket-summary.md`.
 
 Select and activate the sub-agent profile by following
 `.agents/workflows/sub-agent.md`.
+
+### 6. Create Plan
+
+Create a plan by following `.agents/workflows/plan.md`.
+
+Provide the selected backlog item summary and activated sub-agent as context.
 
 ## Safety
 

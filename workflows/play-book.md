@@ -25,6 +25,7 @@ Run this workflow at the beginning of a new IDE conversation, or when the develo
    Available playbooks:
 
    * Work on a backlog
+   * Create a plan
    * Other
 
 2. Wait for the developer to select one task type.
@@ -32,6 +33,7 @@ Run this workflow at the beginning of a new IDE conversation, or when the develo
 3. Delegate execution to the corresponding workflow:
 
    * Work on a backlog → `.agents/workflows/backlog.md`
+   * Create a plan → `.agents/workflows/plan.md`
 
 4. Stop this workflow after delegating to the selected playbook.
 

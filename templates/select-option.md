@@ -5,12 +5,11 @@ list.
 
 ## Contract
 
-- Present the options as choices.
+- Use the AI tool's native single-selection UI when available.
+- Use a compact text question only when native selection is unavailable.
 - Allow exactly one selected option.
 - Keep option labels exactly as written by the workflow.
-- Do not add descriptions unless the workflow explicitly requires them.
-- If no native selection UI is available, ask the same choice as a compact text
-  question.
+- Do not add descriptions unless required by the workflow or native UI.
 
 ## Labels
 
