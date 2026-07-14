@@ -1,4 +1,4 @@
-# Backlog Item
+# Backlog
 
 ## Purpose
 
@@ -15,7 +15,7 @@ with a clear backlog item, source context, and activated specialist.
 
 ## Entry Condition
 
-Run this workflow after `workflows/play-book.md` selects `backlog-item`.
+Run this workflow after `workflows/play-book.md` selects `backlog`.
 
 If the developer provides a work item ID or URL, retrieve it from the configured
 context provider and validate that it can be used for this workflow.
@@ -29,18 +29,18 @@ select one available work item.
 
 ### 1. Resolve Context Provider
 
-Run `commands/resolve-context-provider.md` with:
+Run `commands/resolve-backlog-provider.md` with:
 
 ```text
-workflow: backlog-item
+workflow: backlog
 ```
 
 ### 2. Retrieve Work Items
 
-Run `commands/retrieve-work-items.md` with:
+Run `commands/retrieve-backlog-items.md` with:
 
 ```text
-provider: resolved context provider
+provider: resolved backlog provider
 criteria:
   assigned_to: current developer
   status: open or ready to start
@@ -52,17 +52,17 @@ criteria:
   scope: do not list the full backlog
 ```
 
-### 3. Select Work Item
+### 3. Select Backlog Item
 
-Prepare the retrieved work items with the title as the visible label and the
+Prepare the retrieved backlog items with the title as the visible label and the
 provider ID as the internal value. Do not require raw ID selection.
 
-Ask the developer which work item they want to start using
+Ask the developer which backlog item they want to start using
 `.agents/templates/select-option.md`.
 
-### 4. Summarize Work Item
+### 4. Summarize Backlog Item
 
-Read only the selected work item from the provider.
+Read only the selected backlog item from the provider.
 
 Retrieve the provider fields needed to understand the requested work, such as
 title, description, comments, acceptance criteria, labels, linked resources, or

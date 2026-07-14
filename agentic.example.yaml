@@ -6,7 +6,7 @@
 # workflow context.
 
 mcp:
-  backlog-item:
+  backlog:
     provider: clickup
 
   # Examples:
