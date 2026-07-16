@@ -14,9 +14,9 @@ developer, into a plan file saved under `.agents/plans/`.
 Run this workflow in one of these modes:
 
 * **Workflow mode**: another workflow calls this workflow and provides the task
-  context and active sub-agent.
+  context.
 * **Standalone mode**: `workflows/play-book.md` selects `plan`, with no prior
-  task context.
+  task context or specialized sub-agent.
 
 ---
 
@@ -24,14 +24,13 @@ Run this workflow in one of these modes:
 
 A plan needs:
 
-- objective: what must be achieved;
-- problem: what must be solved and why it matters;
-- expected outcome: how success will be recognized.
+* objective: what must be achieved;
+* problem: what must be solved and why it matters;
+* expected outcome: how success will be recognized.
 
 Optional context (use when available):
 
-- backlog provider ID (for file naming);
-- active sub-agent profile.
+* backlog provider ID (for file naming).
 
 ---
 
@@ -41,40 +40,27 @@ Optional context (use when available):
 
 Check whether the current conversation already provides the required context.
 
-If objective, problem, and expected outcome are available, continue with the
-active sub-agent when one is already active.
-
 If any required context is missing, activate `.agents/agents/interviewer.md` and
 ask the developer only for the missing information.
 
-### 2. Draft Plan File
+The interviewer is only used to collect missing planning context. It does not
+become the sub-agent responsible for drafting the plan.
+
+### 2. Resolve Planning Sub-agent
+
+Once objective, problem, and expected outcome are available, ensure a specialized
+sub-agent is active before drafting the plan.
+
+Select and activate the most appropriate specialized sub-agent by following
+`.agents/workflows/sub-agent.md`.
+
+### 3. Draft Plan File
 
 Create a plan file following `.agents/templates/work-plan.md`.
 
-Requirements:
+### 4. Confirm Plan
 
-- Follow the template format: YAML frontmatter with `name`, `overview`, `todos`,
-  and `isProject`, plus a markdown body.
-- Use the native plan file extension of the AI tool creating the file when one
-  exists (for example `.plan.md` in Cursor Plan mode); otherwise use `.md`.
-- Map each implementation step to exactly one todo (`id`, `content`, `status:
-  pending`). The `## Steps` section must contain the same number of items, in the
-  same order.
-- Write the file to `.agents/plans/` using the naming rules from the template.
-- Keep the plan concise and practical. Do not create a full implementation
-  specification.
-
-### 3. Confirm Plan
-
-Present a short summary in the conversation:
-
-- plan file link (prefer `.cursor/plans/<filename>` — it
-  is a symlink to `plans/` and enables Cursor Plan UI formatting);
-- objective and expected outcome;
-- todo list (titles only).
-
-Verify before presenting: the number of todos equals the number of items under
-`## Steps`.
+Present the drafted plan using `.agents/templates/plan-summary.md`.
 
 Ask the developer to approve or adjust the plan using
 `.agents/templates/select-option.md` with:
@@ -95,9 +81,9 @@ Do not start implementation before the plan has been approved.
 
 * Do not invent missing objective, problem, or expected outcome.
 * Do not start implementation.
-* Do not overwrite an existing plan file without explicit developer approval;
-  use a numeric suffix instead.
-* Do not present a plan when the todo count differs from the `## Steps` count.
+* Do not draft the plan with `interviewer` as the active planning sub-agent.
+* Do not select a planning sub-agent before objective, problem, and expected
+  outcome are available.
 
 ---
 
@@ -106,5 +92,6 @@ Do not start implementation before the plan has been approved.
 This workflow is complete when:
 
 * the required context is known;
+* a specialized planning sub-agent is active;
 * a plan file exists under `.agents/plans/`;
 * the developer has approved the plan.

@@ -55,7 +55,7 @@ requires it.
 
 ### 4. Confirm Activation
 
-Confirm activation using `.agents/templates/selection-summary.md`.
+Confirm activation using `.agents/templates/sub-agent-activation.md`.
 
 Emit one user-facing report only, after the profile and required resources have
 been loaded.

@@ -2,9 +2,8 @@
 
 Use this template when creating a plan before implementation.
 
-The output is a markdown file with YAML frontmatter and a structured body. When
-the active AI tool supports a native plan format, use it so metadata and todos
-integrate with that tool's Plan UI.
+The output is a `.plan.md` markdown file with YAML frontmatter and a structured
+body so metadata and todos can integrate with compatible Plan UIs.
 
 ---
 
@@ -13,15 +12,15 @@ integrate with that tool's Plan UI.
 Write the plan to:
 
 ```text
-.agents/plans/<basename><extension>
+.agents/plans/<basename>.plan.md
 ```
 
-See **Naming** below for `<basename>` and **Extension** for `<extension>`.
+See **Naming** below for `<basename>`.
 
 When presenting or linking to the plan in conversation, prefer:
 
 ```text
-.cursor/plans/<basename><extension>
+.cursor/plans/<basename>.plan.md
 ```
 
 when `.cursor/plans/` exists. It is a symlink to `.agents/plans/` and enables
@@ -46,26 +45,19 @@ Rules:
   `{YYYY-MM-DD}-{provider-id}-{slug}`
 - If the target file already exists, append a numeric suffix: `-2`, `-3`, etc.
 
-Examples (with `.md` extension):
+Examples:
 
 ```text
-2026-07-14-auth-refactor.md
-2026-07-14-cu-abc123-auth-refactor.md
-2026-07-14-auth-refactor-2.md
+2026-07-14-auth-refactor.plan.md
+2026-07-14-cu-abc123-auth-refactor.plan.md
+2026-07-14-auth-refactor-2.plan.md
 ```
 
 ---
 
 ## Extension
 
-Use the native plan file extension of the AI tool creating the file:
-
-| Tool | Extension |
-| --- | --- |
-| Cursor Plan mode | `.plan.md` |
-| Other / unknown | `.md` |
-
-The basename rules are the same regardless of extension.
+Generated plan files must use the `.plan.md` extension.
 
 ---
 

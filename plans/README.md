@@ -3,8 +3,7 @@
 This directory stores plan files produced by `.agents/workflows/plan.md`.
 
 Each file uses YAML frontmatter (`name`, `overview`, `todos`, `isProject`) and a
-markdown body. The file extension depends on the AI tool that creates the plan
-(for example `.plan.md` in Cursor Plan mode, `.md` otherwise).
+markdown body. Generated plan files must use the `.plan.md` extension.
 
 ## Naming
 
@@ -15,7 +14,7 @@ Base name:
 {YYYY-MM-DD}-{provider-id}-{slug}   # when a backlog item ID is available
 ```
 
-See `.agents/templates/work-plan.md` for full naming and extension rules.
+See `.agents/templates/work-plan.md` for full naming rules.
 
 ## Lifecycle
 
