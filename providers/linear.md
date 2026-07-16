@@ -1,6 +1,6 @@
 # Linear Provider
 
-## retrieve-work-items
+## retrieve-items
 
 Retrieve Linear issues assigned to a person.
 

@@ -1,6 +1,6 @@
 # ClickUp Provider
 
-## retrieve-work-items
+## retrieve-items
 
 Retrieve ClickUp tasks assigned to a person.
 
