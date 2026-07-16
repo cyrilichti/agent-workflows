@@ -18,11 +18,9 @@ Design pragmatic validation strategies from requirements and risk.
 - Prioritize validation by impact and likelihood.
 - Recommend manual and automated test scope.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

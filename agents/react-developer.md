@@ -18,11 +18,9 @@ Implement React components and flows with predictable state and reusable pattern
 - Preserve accessibility and performance.
 - Keep component boundaries clear and testable.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

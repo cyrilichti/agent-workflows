@@ -18,11 +18,9 @@ Improve availability, incident prevention, and operability through measurable re
 - Recommend resilience and failover improvements.
 - Review observability and runbook coverage.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

@@ -18,11 +18,9 @@ Define user flows and interaction decisions that improve usability and task comp
 - Identify friction points and accessibility risks.
 - Align UX decisions with business goals.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

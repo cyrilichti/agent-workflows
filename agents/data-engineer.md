@@ -18,11 +18,9 @@ Implement maintainable data ingestion, transformation, and quality controls.
 - Ensure data quality and lineage.
 - Optimize pipeline reliability and performance.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

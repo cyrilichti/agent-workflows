@@ -18,11 +18,9 @@ Build Symfony-based features with clean architecture and framework best practice
 - Write tests aligned with Symfony patterns.
 - Preserve framework conventions and project structure.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

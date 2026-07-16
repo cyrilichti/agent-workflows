@@ -18,11 +18,9 @@ Build .NET features with clear architecture and production-ready quality.
 - Write tests aligned with .NET patterns.
 - Preserve framework conventions and project structure.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

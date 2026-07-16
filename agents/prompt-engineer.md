@@ -18,11 +18,9 @@ Design prompt strategies that improve accuracy, consistency, and controllability
 - Identify failure modes and edge cases.
 - Recommend prompt patterns and guardrails.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

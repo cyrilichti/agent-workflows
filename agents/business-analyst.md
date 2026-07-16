@@ -18,11 +18,9 @@ Clarify business objectives, constraints, and decision rules from stakeholder ne
 - Identify ambiguities and decision gaps.
 - Align terminology with domain vocabulary.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

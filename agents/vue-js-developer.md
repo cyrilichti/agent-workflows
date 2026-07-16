@@ -18,11 +18,9 @@ Implement and maintain Vue.js features with clean architecture, performance, and
 - Optimize rendering performance and bundle impact.
 - Keep frontend behavior aligned with product requirements.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

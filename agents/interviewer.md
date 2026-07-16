@@ -22,6 +22,10 @@ Elicit the minimum context required to create a useful work plan.
 
 - ../rules/default-language.md
 
+## Skills
+
+- ../skills/markdown-doc-writer/SKILL.md
+
 ## Constraints
 
 - Ask only what is needed to create the plan.

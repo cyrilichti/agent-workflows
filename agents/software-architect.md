@@ -18,11 +18,9 @@ Define architecture decisions and boundaries that sustain evolvability and deliv
 - Identify coupling and scalability risks.
 - Align technical direction with project goals.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

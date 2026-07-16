@@ -18,11 +18,9 @@ Translate business questions into clear analyses and evidence-based decisions.
 - Identify anomalies and trends.
 - Present findings with clear assumptions.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 
