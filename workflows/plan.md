@@ -44,23 +44,23 @@ If any required context is missing, activate `.agents/agents/interviewer.md` and
 ask the developer only for the missing information.
 
 The interviewer is only used to collect missing planning context. It does not
-become the sub-agent responsible for drafting the plan.
+become the sub-agent responsible for creating the plan.
 
 ### 2. Resolve Planning Sub-agent
 
 Once objective, problem, and expected outcome are available, ensure a specialized
-sub-agent is active before drafting the plan.
+sub-agent is active before creating the plan.
 
 Select and activate the most appropriate specialized sub-agent by following
 `.agents/workflows/sub-agent.md`.
 
-### 3. Draft Plan File
+### 3. Create Plan File
 
-Create a plan file following `.agents/templates/work-plan.md`.
+Create a plan file following `.agents/templates/plan.md`.
 
 ### 4. Confirm Plan
 
-Present the drafted plan using `.agents/templates/plan-summary.md`.
+Present the created plan using `.agents/templates/plan-summary.md`.
 
 Ask the developer to approve or adjust the plan using
 `.agents/templates/select-option.md` with:
@@ -79,7 +79,7 @@ update the plan file, and present it for confirmation again.
 
 * Do not invent missing objective, problem, or expected outcome.
 * Do not start implementation.
-* Do not draft the plan with `interviewer` as the active planning sub-agent.
+* Do not create the plan with `interviewer` as the active planning sub-agent.
 * Do not select a planning sub-agent before objective, problem, and expected
   outcome are available.
 

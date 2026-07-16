@@ -14,13 +14,13 @@ Base name:
 {YYYY-MM-DD}-{provider-id}-{slug}   # when a backlog item ID is available
 ```
 
-See `.agents/templates/work-plan.md` for full naming rules.
+See `.agents/templates/plan.md` for full naming rules.
 
 ## Lifecycle
 
 - Created during the plan workflow, before implementation starts.
 - Updated when the developer requests plan adjustments.
 - Todo statuses evolve during implementation (`pending` → `in-progress` →
-  `completed`).
+  `completed` or `error`).
 
 Generated plan files are gitignored. This directory README is tracked.

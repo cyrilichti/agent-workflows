@@ -1,6 +1,6 @@
 # Plan Summary
 
-Use when presenting a drafted plan to the developer before approval.
+Use when presenting a created plan to the developer before approval.
 
 ## Format (Markdown)
 

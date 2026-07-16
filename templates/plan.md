@@ -1,4 +1,4 @@
-# Work Plan
+# Plan
 
 Use this template when creating a plan before implementation.
 
@@ -16,15 +16,6 @@ Write the plan to:
 ```
 
 See **Naming** below for `<basename>`.
-
-When presenting or linking to the plan in conversation, prefer:
-
-```text
-.cursor/plans/<basename>.plan.md
-```
-
-when `.cursor/plans/` exists. It is a symlink to `.agents/plans/` and enables
-Cursor Plan UI formatting for `.plan.md` files.
 
 ---
 
@@ -52,14 +43,6 @@ Examples:
 2026-07-14-cu-abc123-auth-refactor.plan.md
 2026-07-14-auth-refactor-2.plan.md
 ```
-
----
-
-## Extension
-
-Generated plan files must use the `.plan.md` extension.
-
----
 
 ## Format
 
@@ -120,15 +103,10 @@ isProject: false
 | `todos[].status` | yes | Use `pending` for new plans |
 | `isProject` | yes | `false` for single-task plans; `true` when the plan spans multiple work streams |
 
-Todo status values: `pending`, `in-progress`, `completed`, `error`.
-
 ---
 
 ## Body Rules
 
-- Write source content in English unless explicitly requested otherwise.
-- Render section headings in the current communication language when presenting
-  the plan in conversation.
 - Keep the plan practical enough to guide implementation.
 - **Todos and Steps must match exactly**: same count, same order, same wording
   (`todos[].content` = corresponding numbered item under `## Steps`). Do not add
@@ -136,4 +114,3 @@ Todo status values: `pending`, `in-progress`, `completed`, `error`.
 - Use only the provided context and developer answers.
 - Do not include implementation details that require codebase analysis unless
   that analysis has already happened.
-- Do not start implementation in the plan body.
