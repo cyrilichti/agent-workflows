@@ -18,15 +18,16 @@ Run this workflow at the beginning of a new IDE conversation, or when the develo
 
 ## Steps
 
-1. Ask the developer which type of task they want to start for this session.
+1. Ask the developer which type of task they want to start for this session
+   using `.agents/templates/select-option.md` with:
 
-   Use `.agents/templates/select-option.md` for this selection.
-
-   Available playbooks:
-
-   * Work on a backlog
-   * Create a plan
-   * Other
+   ```text
+   question: Which type of task do you want to start?
+   options:
+   - Work on a backlog
+   - Create a plan
+   - Other
+   ```
 
 2. Wait for the developer to select one task type.
 

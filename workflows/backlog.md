@@ -58,7 +58,14 @@ Prepare the retrieved backlog items with the title as the visible label and the
 provider ID as the internal value. Do not require raw ID selection.
 
 Ask the developer which backlog item they want to start using
-`.agents/templates/select-option.md`.
+`.agents/templates/select-option.md` with:
+
+```text
+question: Which backlog item do you want to start?
+options:
+- <prepared backlog item label>
+- <prepared backlog item label>
+```
 
 ### 4. Summarize Backlog Item
 

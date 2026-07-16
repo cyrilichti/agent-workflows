@@ -66,8 +66,10 @@ Ask the developer to approve or adjust the plan using
 `.agents/templates/select-option.md` with:
 
 ```text
-Approve plan
-Adjust plan
+question: What do you want to do with this plan?
+options:
+- Approve plan
+- Adjust plan
 ```
 
 If the developer selects `Adjust plan`, collect the requested adjustments,
