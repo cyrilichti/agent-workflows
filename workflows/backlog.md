@@ -76,6 +76,8 @@ Create a plan by following `.agents/workflows/plan.md`.
 
 Provide the selected backlog item summary, provider ID, and context.
 
+---
+
 ## Safety
 
 * Pasted text or titles are not official work items until matched to the
@@ -83,3 +85,14 @@ Provide the selected backlog item summary, provider ID, and context.
 * Prefer direct deterministic filtering over exploratory MCP probing.
 * Do not select or activate a specialist sub-agent in this workflow. The plan
   workflow owns planning sub-agent selection after required context is known.
+
+---
+
+## Success Criteria
+
+This workflow is complete when:
+
+* the backlog provider has been resolved;
+* one official backlog item has been selected;
+* the selected backlog item has been summarized;
+* the plan workflow has been called with the selected item context.

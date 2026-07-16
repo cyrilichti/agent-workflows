@@ -73,8 +73,6 @@ Adjust plan
 If the developer selects `Adjust plan`, collect the requested adjustments,
 update the plan file, and present it for confirmation again.
 
-Do not start implementation before the plan has been approved.
-
 ---
 
 ## Safety
