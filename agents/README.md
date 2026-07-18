@@ -30,7 +30,7 @@ Agents should focus on **how to perform a role**, while project knowledge remain
 Each agent is defined in its own Markdown file.
 
 ```text
-agents/
+./
 ├── README.md
 ├── business-analyst.md
 ├── backend-developer.md
@@ -42,7 +42,8 @@ agents/
 Each file typically contains:
 
 * metadata (name, description, model, tools... depending on the platform);
-* the agent instructions.
+* the agent instructions;
+* skills the agent may use for shared capabilities.
 
 Example:
 
@@ -64,12 +65,6 @@ Design cloud-ready solutions with cost, security, scalability, and operational s
 - Review infrastructure decisions.
 - Optimize operational costs.
 - Improve reliability and security.
-
-## Consult First
-
-- ../rules/
-- ../domain/
-- ../workflows/
 
 ## Constraints
 

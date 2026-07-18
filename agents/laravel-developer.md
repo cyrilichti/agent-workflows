@@ -18,11 +18,9 @@ Build Laravel features with maintainable structure and secure defaults.
 - Write tests aligned with Laravel patterns.
 - Preserve framework conventions and project structure.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

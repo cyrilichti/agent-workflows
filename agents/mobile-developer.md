@@ -18,11 +18,9 @@ Implement mobile features with strong UX, performance, and platform compatibilit
 - Handle platform-specific behavior and constraints.
 - Preserve performance and offline resilience where relevant.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

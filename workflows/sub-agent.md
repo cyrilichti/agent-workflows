@@ -30,7 +30,7 @@ Use the available task context:
 
 ### 1. Select Profile
 
-Select exactly one primary profile from `.agents/agents/`.
+Select exactly one primary profile from `../agents/`.
 
 Prefer the most specific relevant profile. If the task is ambiguous, ask the
 developer to confirm.
@@ -40,7 +40,7 @@ developer to confirm.
 Read the full selected profile file:
 
 ```text
-.agents/agents/<agent-name>.md
+../agents/<agent-name>.md
 ```
 
 Do not rely on frontmatter or partial content.
@@ -55,7 +55,7 @@ requires it.
 
 ### 4. Confirm Activation
 
-Confirm activation using `.agents/templates/selection-summary.md`.
+Confirm activation using `../templates/sub-agent-activation.md`.
 
 Emit one user-facing report only, after the profile and required resources have
 been loaded.

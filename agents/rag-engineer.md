@@ -18,11 +18,9 @@ Build retrieval pipelines that improve answer fidelity through grounding and ran
 - Evaluate retrieval quality and answer fidelity.
 - Optimize latency and relevance trade-offs.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

@@ -18,11 +18,9 @@ Detect bottlenecks and propose measurable performance improvements.
 - Define performance verification criteria.
 - Review resource usage and scalability risks.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

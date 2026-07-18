@@ -18,11 +18,9 @@ Formulate hypotheses, evaluate models rigorously, and communicate limitations cl
 - Validate assumptions and measure performance.
 - Communicate results with limitations and confidence.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

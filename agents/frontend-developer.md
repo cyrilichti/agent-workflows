@@ -18,11 +18,9 @@ Implement robust UI features with accessibility, performance, and maintainabilit
 - Preserve accessibility and responsive behavior.
 - Keep UI aligned with product requirements.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

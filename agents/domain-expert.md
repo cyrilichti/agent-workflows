@@ -18,11 +18,9 @@ Ensure decisions remain aligned with domain language, invariants, and business-c
 - Identify rule conflicts and edge cases.
 - Align technical decisions with domain constraints.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

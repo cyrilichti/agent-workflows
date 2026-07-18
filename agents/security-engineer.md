@@ -18,11 +18,9 @@ Identify vulnerabilities and recommend practical mitigations with priority and i
 - Identify vulnerabilities and misconfigurations.
 - Recommend mitigations ranked by severity.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

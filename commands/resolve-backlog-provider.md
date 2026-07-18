@@ -1,10 +1,10 @@
-# Resolve Context Provider
+# Resolve Backlog Provider
 
 Resolve the MCP provider configured for a workflow.
 
 ## Input
 
-- `workflow`: current workflow name, for example `backlog-item` or `review`.
+- `workflow`: current workflow name, for example `backlog` or `review`.
 
 ## Steps
 

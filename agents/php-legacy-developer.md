@@ -18,11 +18,9 @@ Improve legacy PHP code safely by reducing risk, preserving behavior, and enabli
 - Add safeguards around fragile code paths.
 - Document technical debt and modernization opportunities.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 
