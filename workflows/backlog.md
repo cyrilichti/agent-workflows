@@ -5,11 +5,12 @@
 Prepare a work session from a configured backlog provider.
 
 This workflow resolves the backlog context source, selects the item to start,
-retrieves and summarizes its context, then delegates to the plan
-workflow.
+retrieves and summarizes its context, delegates to the plan workflow, then marks
+the selected item as in progress.
 
 It stops before implementation. Its outcome is a ready-to-start work session
-with a clear backlog item, source context, and delegated plan.
+with a clear backlog item, source context, approved plan, and active backlog
+status.
 
 ---
 
@@ -91,6 +92,20 @@ Create a plan by following `./plan.md`.
 
 Provide the selected backlog item summary, provider ID, and context.
 
+Continue only after the plan workflow has completed successfully.
+
+### 6. Start Backlog Item
+
+Run `../commands/start-backlog-item.md` with:
+
+```text
+provider: resolved backlog provider
+item_id: selected provider ID
+target_status: in progress
+```
+
+Report the updated backlog item status to the developer.
+
 ---
 
 ## Safety
@@ -100,6 +115,7 @@ Provide the selected backlog item summary, provider ID, and context.
 * Prefer direct deterministic filtering over exploratory MCP probing.
 * Do not proceed from backlog retrieval to summarization without rendering the
   backlog item selection.
+* Do not update the backlog item status before the plan has been approved.
 * Do not select or activate a specialist sub-agent in this workflow. The plan
   workflow owns planning sub-agent selection after required context is known.
 
@@ -114,4 +130,5 @@ This workflow is complete when:
   matches have been explicitly reported;
 * one official backlog item has been selected;
 * the selected backlog item has been summarized;
-* the plan workflow has been called with the selected item context.
+* the plan workflow has completed successfully with developer approval;
+* the selected backlog item has been moved to the active-work status.
