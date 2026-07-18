@@ -12,7 +12,7 @@ body so metadata and todos can integrate with compatible Plan UIs.
 Write the plan to:
 
 ```text
-.agents/plans/<basename>.plan.md
+../plans/<basename>.plan.md
 ```
 
 See **Naming** below for `<basename>`.

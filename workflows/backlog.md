@@ -15,7 +15,7 @@ with a clear backlog item, source context, and delegated plan.
 
 ## Entry Condition
 
-Run this workflow after `workflows/play-book.md` selects `backlog`.
+Run this workflow after `./play-book.md` selects `backlog`.
 
 If the developer provides a work item ID or URL, retrieve it from the configured
 context provider and validate that it can be used for this workflow.
@@ -29,7 +29,7 @@ select one available work item.
 
 ### 1. Resolve Context Provider
 
-Run `commands/resolve-backlog-provider.md` with:
+Run `../commands/resolve-backlog-provider.md` with:
 
 ```text
 workflow: backlog
@@ -37,7 +37,7 @@ workflow: backlog
 
 ### 2. Retrieve Work Items
 
-Run `commands/retrieve-backlog-items.md` with:
+Run `../commands/retrieve-backlog-items.md` with:
 
 ```text
 provider: resolved backlog provider
@@ -61,7 +61,7 @@ Each option must use a readable label containing at least the title and status.
 Attach the provider ID as the internal value. Do not require raw ID selection.
 
 Ask the developer which backlog item they want to start using
-`.agents/templates/select-option.md` with:
+`../templates/select-option.md` with:
 
 ```text
 question: Which backlog item do you want to start?
@@ -83,11 +83,11 @@ Retrieve the provider fields needed to understand the requested work, such as
 title, description, comments, acceptance criteria, labels, linked resources, or
 attachments when available.
 
-Present a brief summary using `.agents/templates/ticket-summary.md`.
+Present a brief summary using `../templates/ticket-summary.md`.
 
 ### 5. Create Plan
 
-Create a plan by following `.agents/workflows/plan.md`.
+Create a plan by following `./plan.md`.
 
 Provide the selected backlog item summary, provider ID, and context.
 

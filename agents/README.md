@@ -30,7 +30,7 @@ Agents should focus on **how to perform a role**, while project knowledge remain
 Each agent is defined in its own Markdown file.
 
 ```text
-agents/
+./
 ├── README.md
 ├── business-analyst.md
 ├── backend-developer.md

@@ -19,7 +19,7 @@ Run this workflow at the beginning of a new IDE conversation, or when the develo
 ## Steps
 
 1. Ask the developer which type of task they want to start for this session
-   using `.agents/templates/select-option.md` with:
+   using `../templates/select-option.md` with:
 
    ```text
    question: Which type of task do you want to start?
@@ -33,8 +33,8 @@ Run this workflow at the beginning of a new IDE conversation, or when the develo
 
 3. Delegate execution to the corresponding workflow:
 
-   * Work on a backlog → `.agents/workflows/backlog.md`
-   * Create a plan → `.agents/workflows/plan.md`
+   * Work on a backlog → `./backlog.md`
+   * Create a plan → `./plan.md`
 
 4. Stop this workflow after delegating to the selected playbook.
 

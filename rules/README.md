@@ -8,11 +8,11 @@ Unlike workflows, rules describe **what must be respected**, not how to execute 
 
 ## What does NOT belong here
 
-* business rules → `domain/`
-* procedures → `workflows/`
-* capabilities → `skills/`
-* history → `memory/`
-* output formats → `templates/`
+* business rules → `../domain/`
+* procedures → `../workflows/`
+* capabilities → `../skills/`
+* history → `../memory/`
+* output formats → `../templates/`
 
 ---
 
@@ -21,7 +21,7 @@ Unlike workflows, rules describe **what must be respected**, not how to execute 
 One topic per file. Concise bullet lists. Frontmatter for scope when projected to an IDE.
 
 ```text
-rules/
+./
 ├── README.md
 ├── api.md
 └── frontend.md
@@ -33,7 +33,7 @@ IDE projections: `.cursor/rules/*.mdc`, `.claude/rules/*.md`
 
 ## Rule Loading
 
-`.agents/rules/` is a library of contextual constraints. Rule files are **not**
+`./` is a library of contextual constraints. Rule files are **not**
 loaded by default and should not be treated as global background text.
 
 Load a rule only when the current task explicitly needs its constraint.
@@ -47,7 +47,7 @@ Accepted loading paths:
 Avoid `alwaysApply` by default. It is only for rare invariants that must apply to
 every task, including non-development tasks.
 
-Reference specific rule files. Do not load the whole `rules/` directory unless
+Reference specific rule files. Do not load the whole `./` directory unless
 the task is to audit the rules themselves.
 
 ---

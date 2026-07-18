@@ -5,7 +5,7 @@
 Create a plan before implementation starts.
 
 This workflow turns existing task context, or context collected from the
-developer, into a plan file saved under `.agents/plans/`.
+developer, into a plan file saved under `../plans/`.
 
 ---
 
@@ -15,7 +15,7 @@ Run this workflow in one of these modes:
 
 * **Workflow mode**: another workflow calls this workflow and provides the task
   context.
-* **Standalone mode**: `workflows/play-book.md` selects `plan`, with no prior
+* **Standalone mode**: `./play-book.md` selects `plan`, with no prior
   task context or specialized sub-agent.
 
 ---
@@ -40,7 +40,7 @@ Optional context (use when available):
 
 Check whether the current conversation already provides the required context.
 
-If any required context is missing, activate `.agents/agents/interviewer.md` and
+If any required context is missing, activate `../agents/interviewer.md` and
 ask the developer only for the missing information.
 
 The interviewer is only used to collect missing planning context. It does not
@@ -52,18 +52,18 @@ Once objective, problem, and expected outcome are available, ensure a specialize
 sub-agent is active before creating the plan.
 
 Select and activate the most appropriate specialized sub-agent by following
-`.agents/workflows/sub-agent.md`.
+`./sub-agent.md`.
 
 ### 3. Create Plan File
 
-Create a plan file following `.agents/templates/plan.md`.
+Create a plan file following `../templates/plan.md`.
 
 ### 4. Confirm Plan
 
-Present the created plan using `.agents/templates/plan-summary.md`.
+Present the created plan using `../templates/plan-summary.md`.
 
 Ask the developer to approve or adjust the plan using
-`.agents/templates/select-option.md` with:
+`../templates/select-option.md` with:
 
 ```text
 question: What do you want to do with this plan?
@@ -93,5 +93,5 @@ This workflow is complete when:
 
 * the required context is known;
 * a specialized planning sub-agent is active;
-* a plan file exists under `.agents/plans/`;
+* a plan file exists under `../plans/`;
 * the developer has approved the plan.

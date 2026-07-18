@@ -1,6 +1,6 @@
 # Plans
 
-This directory stores plan files produced by `.agents/workflows/plan.md`.
+This directory stores plan files produced by `../workflows/plan.md`.
 
 Each file uses YAML frontmatter (`name`, `overview`, `todos`, `isProject`) and a
 markdown body. Generated plan files must use the `.plan.md` extension.
@@ -14,7 +14,7 @@ Base name:
 {YYYY-MM-DD}-{provider-id}-{slug}   # when a backlog item ID is available
 ```
 
-See `.agents/templates/plan.md` for full naming rules.
+See `../templates/plan.md` for full naming rules.
 
 ## Lifecycle
 

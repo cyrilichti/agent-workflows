@@ -9,7 +9,7 @@ Retrieve backlog items from a resolved provider.
 
 ## Steps
 
-1. Load `.agents/providers/<provider>.md`.
+1. Load `../providers/<provider>.md`.
 2. Use the provider operation named `retrieve-items`.
 3. Retrieve only backlog items matching `criteria`.
 4. Prefer provider-native filtering, then post-filter when needed.
