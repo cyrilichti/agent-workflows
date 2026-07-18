@@ -83,10 +83,6 @@ isProject: false
 ## Validation
 
 - <how the work will be checked>
-
-## Open Questions
-
-- <question, or "None">
 ```
 
 ---
@@ -114,3 +110,5 @@ isProject: false
 - Use only the provided context and developer answers.
 - Do not include implementation details that require codebase analysis unless
   that analysis has already happened.
+- Include an `## Open Questions` section only when unresolved questions remain.
+  Omit the section instead of writing "None".
