@@ -7,6 +7,3 @@ disable-model-invocation: true
 # Backlog
 
 Read `../../workflows/backlog.md` completely, then follow it exactly.
-
-Treat that workflow and the files it references as the source of truth. Do not
-duplicate or replace its instructions in this skill.

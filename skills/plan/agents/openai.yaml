@@ -1,4 +1,4 @@
 interface:
   display_name: "Plan"
   short_description: "Activate the repository planning workflow"
-  default_prompt: "Use $plan to create and approve a plan for this task."
+  default_prompt: "Use $plan to create a plan for this task."
