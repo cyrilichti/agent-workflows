@@ -15,8 +15,8 @@ Run this workflow in one of these modes:
 
 * **Workflow mode**: another workflow calls this workflow and provides the task
   context.
-* **Standalone mode**: `./play-book.md` selects `plan`, with no prior
-  task context or specialized sub-agent.
+* **Standalone mode**: `./play-book.md` selects `plan`, or the `plan` skill is
+  explicitly invoked, with no prior task context or specialized sub-agent.
 
 ---
 
