@@ -79,11 +79,20 @@ been rendered and the developer has selected exactly one backlog item.
 
 ### 4. Summarize Backlog Item
 
-Read only the selected backlog item from the provider.
+Run `../commands/read-backlog-item.md` with:
 
-Retrieve the provider fields needed to understand the requested work, such as
-title, description, comments, acceptance criteria, labels, linked resources, or
-attachments when available.
+```text
+provider: resolved backlog provider
+item_id: selected provider ID
+fields:
+  - title
+  - description
+  - comments
+  - acceptance criteria
+  - labels
+  - linked resources
+  - attachments
+```
 
 Present a brief summary using `../templates/ticket-summary.md`.
 

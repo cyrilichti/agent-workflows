@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write"
+  short_description: "Create, update, and assign a backlog ticket"
+  default_prompt: "Use $write to create or update a backlog ticket and assign it."

@@ -24,6 +24,7 @@ Run this workflow at the beginning of a new IDE conversation, or when the develo
    ```text
    question: Which type of task do you want to start?
    options:
+   - Write a backlog item
    - Work on a backlog
    - Create a plan
    - Other
@@ -33,6 +34,7 @@ Run this workflow at the beginning of a new IDE conversation, or when the develo
 
 3. Delegate execution to the corresponding workflow:
 
+   * Write a backlog item → `./write.md`
    * Work on a backlog → `./backlog.md`
    * Create a plan → `./plan.md`
 
