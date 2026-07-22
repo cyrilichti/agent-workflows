@@ -1,35 +1,59 @@
-# Agentic Engineering
+# my-agentic
 
-Shared agentic engineering frame for AI-assisted software work.
+Using top external skills without adopting their authors' workflows.
 
-This repository is designed to be installed in projects as their `.agents/`
-directory. It provides a reusable operating model for AI agents: workflows,
-sub-agents, rules, skills, templates, hooks, and tool configuration.
+I own the steps, their transitions, and their input/output templates.
 
-## Purpose
+Each step activates one or more adapted sub-agents, and each sub-agent points to the installed skills I have selected.
 
-The goal is to make AI usage more predictable across projects and teams.
+## Skills
 
-Instead of letting each assistant answer as a generic chat bot, this frame
-pushes agents to:
+The router selects a step automatically when intent is clear and asks for a supported entry point when it is ambiguous. 
 
-- route the work before acting;
-- follow an explicit workflow;
-- activate a specialized technical posture;
-- load only the context required for the current task;
-- produce focused outputs aligned with the selected workflow.
+### `/write`
 
-It is a coordination layer for agentic work, not a knowledge dump.
+Creates or improves a backlog item. It resolves the provider, collects only missing information, renders the item with template, asks for confirmation, then saves and optionnaly assigns it.
+
+### `/pick`
+
+Selects an official, startable backlog item from the configured provider. It loads and summarizes the source context with ticket template, then triggers `plan`. The item becomes active only after planning succeeds.
+
+### `/plan`
+
+Completes missing task context through the interviewer, activates the adapted technical sub-agent, and creates a plan with template cursor rendering compatible. Once the plan is approved, it triggers `work`.
+
+### `/work`
+
+Activates the implementation sub-agent and its selected skills, then executes
+the approved plan. A blocker stops the flow; successful implementation triggers
+`ready`.
+
+### `/ready`
+
+Runs the required completion gates, including relevant tests, static checks,
+and acceptance criteria. A failure returns findings to `work`; success triggers
+`review`.
+
+### `/review`
+
+Activates an independent reviewer that does not modify the implementation.
+Requested changes return to `work`; approval triggers `done`.
+
+### `/done`
+
+Depending on the configuration, it can merge the source pull request, create a tag or release, notify the right people, update the backlog item, or open a downstream pull request for client-facing changes such as push notifications.
+
+Required actions are idempotent and their resulting links and identifiers are reported. An operational failure stays in `blocked/retry`;
 
 ## Installation
 
-Keep this repository synchronized as the project's `.agents/` directory:
+Install this repository as the project's `.agents/` directory:
 
 ```bash
-git submodule add https://github.com/seeren/agentic-engineering.git .agents
+git submodule add https://github.com/seeren/my-agentic.git .agents
 ```
 
-Then expose thin tool adapters at the project root:
+Expose thin adapters at the project root:
 
 ```bash
 ln -s .agents/AGENTS.md AGENTS.md
@@ -37,23 +61,28 @@ ln -s .agents/CLAUDE.md CLAUDE.md
 ln -s .agents/.cursor .cursor
 ```
 
-This keeps the shared agentic frame updatable while preserving a small local
-surface for each AI tool.
+Project-specific knowledge stays in the consuming project, typically under  
+`docs/`.
 
-## Project Knowledge
+## MVP Roadmap
 
-Business, product, architecture, and operational knowledge should usually stay
-inside the consuming project:
+### Steps
 
-```text
-docs/
-```
+- [x] `/write`: create or improve an item, confirm it, save it, and stop.
+- [ ] `/pick`: expose the existing backlog selection and trigger `/plan`.
+- [ ] `/plan`: trigger `/work` after the plan is approved.
+- [ ] `/work`: execute the plan and trigger `/ready` on success.
+- [ ] `/ready`: run completion gates, then return to `/work` or trigger
+  `/review`.
+- [ ] `/review`: run an independent review, then return to `/work` or trigger
+  `/done`.
+- [ ] `/done`: execute configured delivery actions and support
+  `blocked/retry` recovery.
 
-## Design Principle
+### Catalog and Contracts
 
-Load less, but load better.
-
-Rules, skills, and workflows should be selected for the current task. They
-should not become broad background text that weakens more specific instructions.
-
-The system favors small routed context over large global prompts.
+- [x] Provide shared sub-agent selection and activation.
+- [ ] Select, install, and pin the external skills in `skills-lock.json`.
+- [ ] Connect each sub-agent to the relevant installed skills.
+- [ ] Add the input/output templates required by each step.
+- [ ] Route requests automatically and prevent fallback outside the catalog.
