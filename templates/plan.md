@@ -82,7 +82,7 @@ isProject: false
 
 ## Validation
 
-- <how the work will be checked>
+- [ ] <how the work will be checked>
 ```
 
 ---
