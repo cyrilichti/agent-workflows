@@ -1,12 +1,12 @@
-# Save Backlog Item
+# Save Work Item
 
-Create a new backlog item or update the authored fields of an existing item.
+Create a new work item or update the authored fields of an existing item.
 
 ## Input
 
-- `provider`: resolved backlog provider.
+- `provider`: resolved work item provider.
 - `mode`: `create` or `update`.
-- `content`: confirmed title and structured item content.
+- `content`: confirmed title and free-form Markdown body.
 - `destination`: provider-specific creation destination, required for `create`.
 - `item_id`: existing provider item ID, required for `update`.
 
@@ -20,4 +20,5 @@ Create a new backlog item or update the authored fields of an existing item.
 4. Return the saved item ID, title, link, and destination when available.
 
 Do not change status, assignment, or provider fields outside the confirmed
-content.
+content. Do not persist workflow metadata supplied alongside the authored
+title and body.

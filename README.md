@@ -14,7 +14,7 @@ supported entry point when it is ambiguous.
 
 ### `/write`
 
-Creates or improves a backlog item. It resolves the provider, collects only
+Creates or reformulates a work item. It resolves the provider, collects only
 missing information, renders the item with template, asks for confirmation,
 then saves and optionnaly assigns it.
 

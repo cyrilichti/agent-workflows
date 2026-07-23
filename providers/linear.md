@@ -100,7 +100,7 @@ arguments:
   team: selected destination team
   project: selected destination project, when provided
   title: confirmed title
-  description: confirmed structured content
+  description: confirmed free-form Markdown body
 ```
 
 Omit assignment and state so the caller can handle them separately.
@@ -112,7 +112,7 @@ tool: save_issue
 arguments:
   id: item ID or identifier
   title: confirmed title, when changed
-  description: confirmed structured content, when changed
+  description: confirmed free-form Markdown body, when changed
 ```
 
 Omit every field that the developer did not confirm changing.

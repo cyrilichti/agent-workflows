@@ -107,7 +107,7 @@ tool: clickup_create_task
 arguments:
   list_id: selected destination ID
   name: confirmed title
-  markdown_description: confirmed structured content
+  markdown_description: confirmed free-form Markdown body
 ```
 
 Omit assignment and status so the caller can handle them separately.
@@ -119,7 +119,7 @@ tool: clickup_update_task
 arguments:
   task_id: item ID
   name: confirmed title, when changed
-  markdown_description: confirmed structured content, when changed
+  markdown_description: confirmed free-form Markdown body, when changed
 ```
 
 Omit every field that the developer did not confirm changing.

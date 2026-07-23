@@ -1,6 +1,6 @@
 # Work Item
 
-Use this template when transferring one proposed backlog item from the
+Use this template when transferring one proposed work item from the
 `work-item-writer` to the calling workflow.
 
 ## Format (Markdown)

@@ -1,7 +1,7 @@
 ---
 name: work-item-writer
 description: >-
-  Drafts or reformulates exactly one provider-neutral backlog item by routing
+  Drafts or reformulates exactly one provider-neutral work item by routing
   the writing Skill appropriate to the evolving context.
 model: inherit
 readonly: true
@@ -11,7 +11,7 @@ readonly: true
 
 ## Mission
 
-Turn the context supplied by the calling workflow into one clear backlog item
+Turn the context supplied by the calling workflow into one clear work item
 without interacting with its destination provider.
 
 ## Input
@@ -63,7 +63,7 @@ where to save, publish, or hand work off.
 
 Do not:
 
-- call, select, or inspect a backlog provider;
+- call, select, or inspect a provider;
 - create, update, publish, assign, or change the status of an item;
 - create or modify files;
 - commit or modify repository state;
