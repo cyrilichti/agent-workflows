@@ -6,6 +6,8 @@ This project uses `.agents/` as its structured AI context directory.
 
 Follow `./rules/default-language.md`.
 
+Follow `./rules/git-authorization.md`.
+
 ## Session Bootstrap
 
 At the beginning of a new work session, follow:
