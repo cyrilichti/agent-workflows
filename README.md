@@ -4,23 +4,31 @@ Using top external skills without adopting their authors' workflows.
 
 I own the steps, their transitions, and their input/output templates.
 
-Each step activates one or more adapted sub-agents, and each sub-agent points to the installed skills I have selected.
+Each step activates one or more adapted sub-agents, and each sub-agent points
+to the installed skills I have selected.
 
 ## Skills
 
-The router selects a step automatically when intent is clear and asks for a supported entry point when it is ambiguous. 
+The router selects a step automatically when intent is clear and asks for a
+supported entry point when it is ambiguous.
 
 ### `/write`
 
-Creates or improves a backlog item. It resolves the provider, collects only missing information, renders the item with template, asks for confirmation, then saves and optionnaly assigns it.
+Creates or improves a backlog item. It resolves the provider, collects only
+missing information, renders the item with template, asks for confirmation,
+then saves and optionnaly assigns it.
 
 ### `/pick`
 
-Selects an official, startable backlog item from the configured provider. It loads and summarizes the source context with ticket template, then triggers `plan`. The item becomes active only after planning succeeds.
+Selects an official, startable backlog item from the configured provider. It
+loads and summarizes the source context with ticket template, then triggers
+`plan`. The item becomes active only after planning succeeds.
 
 ### `/plan`
 
-Completes missing task context through the interviewer, activates the adapted technical sub-agent, and creates a plan with template cursor rendering compatible. Once the plan is approved, it triggers `work`.
+Completes missing task context through the interviewer, activates the adapted
+technical sub-agent, and creates a plan with template cursor rendering
+compatible. Once the plan is approved, it triggers `work`.
 
 ### `/work`
 
@@ -41,9 +49,12 @@ Requested changes return to `work`; approval triggers `done`.
 
 ### `/done`
 
-Depending on the configuration, it can merge the source pull request, create a tag or release, notify the right people, update the backlog item, or open a downstream pull request for client-facing changes such as push notifications.
+Depending on the configuration, it can merge the source pull request, create a
+tag or release, notify the right people, update the backlog item, or open a
+downstream pull request for client-facing changes such as push notifications.
 
-Required actions are idempotent and their resulting links and identifiers are reported. An operational failure stays in `blocked/retry`;
+Required actions are idempotent and their resulting links and identifiers are
+reported. An operational failure stays in `blocked/retry`;
 
 ## Installation
 

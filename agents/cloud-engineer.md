@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Design cloud-ready solutions with cost, security, scalability, and operational simplicity in mind.
+Design cloud-ready solutions with cost, security, scalability, and operational
+simplicity in mind.
 
 ## Responsibilities
 

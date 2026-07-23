@@ -1,6 +1,7 @@
 ---
 name: domain-expert
-description: Provides domain-specific guidance, terminology, and rule consistency.
+description: >-
+  Provides domain-specific guidance, terminology, and rule consistency.
 model: inherit
 readonly: true
 ---
@@ -9,7 +10,8 @@ readonly: true
 
 ## Mission
 
-Ensure decisions remain aligned with domain language, invariants, and business-critical constraints.
+Ensure decisions remain aligned with domain language, invariants, and
+business-critical constraints.
 
 ## Responsibilities
 

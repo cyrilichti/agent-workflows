@@ -2,9 +2,11 @@
 
 This directory contains the project-level Skills used by AI agents.
 
-A Skill is a reusable capability that can be installed into compatible agents to give them procedural knowledge for a specific task.
+A Skill is a reusable capability that can be installed into compatible agents to
+give them procedural knowledge for a specific task.
 
-Skills are not general documentation. They should describe repeatable capabilities that an agent can invoke when needed.
+Skills are not general documentation. They should describe repeatable
+capabilities that an agent can invoke when needed.
 
 ---
 
@@ -48,7 +50,11 @@ Supporting folders are optional:
 ```markdown
 ---
 name: ticket-writing
-description: use this skill when creating or improving project tickets from meeting notes, user requests, bug reports, feature ideas, or implementation discussions. The skill produces clear, actionable tickets using the project's reusable templates.
+description: >-
+  use this skill when creating or improving project tickets from meeting
+  notes, user requests, bug reports, feature ideas, or implementation
+  discussions. The skill produces clear, actionable tickets using the
+  project's reusable templates.
 ---
 
 # Ticket Writing
@@ -73,21 +79,25 @@ description: use this skill when creating or improving project tickets from meet
 
 ## External Skills
 
-External Skills should be installed from the public Skill directory when possible.
+External Skills should be installed from the public Skill directory when
+possible.
 
 Reference:
 
 * [https://www.skills.sh/](https://www.skills.sh/)
 
-The Skills directory describes Skills as reusable capabilities for AI agents and shows installation with:
+The Skills directory describes Skills as reusable capabilities for AI agents and
+shows installation with:
 
 ```bash
 npx skills add <owner/repo>
 ```
 
-Use external Skills when they provide a generic capability that should not be maintained inside this project.
+Use external Skills when they provide a generic capability that should not be
+maintained inside this project.
 
-Use local Skills when the capability depends on this project, its domain, its templates, or its internal workflows.
+Use local Skills when the capability depends on this project, its domain, its
+templates, or its internal workflows.
 
 ---
 
@@ -96,10 +106,12 @@ Use local Skills when the capability depends on this project, its domain, its te
 * One Skill should cover one reusable capability.
 * Keep `SKILL.md` short and action-oriented.
 * Do not duplicate project knowledge inside Skills.
-* Reference `../domain/`, `../rules/`, `../workflows/` and `../templates/` when needed.
+* Reference `../domain/`, `../rules/`, `../workflows/` and `../templates/` when
+  needed.
 * Prefer external Skills for generic capabilities.
 * Prefer local Skills for project-specific behavior.
-* Package and install complete Skills rather than copying partial files between projects.
+* Package and install complete Skills rather than copying partial files between
+  projects.
 
 ---
 
@@ -115,4 +127,7 @@ Use local Skills when the capability depends on this project, its domain, its te
   [https://agents.md/](https://agents.md/)
 
 * .agents Protocol
-  [https://github.com/aj47/dotagentsprotocol-website](https://github.com/aj47/dotagentsprotocol-website)
+  [dotagents-protocol]
+
+[dotagents-protocol]:
+  https://github.com/aj47/dotagentsprotocol-website

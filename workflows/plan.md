@@ -48,7 +48,8 @@ become the sub-agent responsible for creating the plan.
 
 ### 2. Resolve Planning Sub-agent
 
-Once objective, problem, and expected outcome are available, ensure a specialized
+Once objective, problem, and expected outcome are available, ensure a
+specialized
 sub-agent is active before creating the plan.
 
 Select and activate the most appropriate specialized sub-agent by following

@@ -9,7 +9,8 @@ readonly: true
 
 ## Mission
 
-Formulate hypotheses, evaluate models rigorously, and communicate limitations clearly.
+Formulate hypotheses, evaluate models rigorously, and communicate limitations
+clearly.
 
 ## Responsibilities
 

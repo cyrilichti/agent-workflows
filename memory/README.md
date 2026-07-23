@@ -2,9 +2,12 @@
 
 This directory contains the **long-term memory** of the project.
 
-Unlike an AI agent's context window, which is transient and limited, the knowledge stored here is persistent, versioned and shared across sessions, models and contributors.
+Unlike an AI agent's context window, which is transient and limited, the
+knowledge stored here is persistent, versioned and shared across sessions,
+models and contributors.
 
-The purpose of this directory is to preserve important knowledge that should not be rediscovered or re-explained in future work.
+The purpose of this directory is to preserve important knowledge that should not
+be rediscovered or re-explained in future work.
 
 ---
 
@@ -33,7 +36,8 @@ Do not store:
 * reusable capabilities (use `skills/`);
 * temporary meeting notes.
 
-Only retain information that future contributors or AI agents should continue to know.
+Only retain information that future contributors or AI agents should continue to
+know.
 
 ---
 
@@ -58,7 +62,8 @@ Prefer topic-oriented documents over chronological notes.
 
 Ask yourself:
 
-> **"Would we want every future AI agent and every future contributor to immediately know this?"**
+> **"Would we want every future AI agent and every future contributor to
+> immediately know this?"**
 
 If the answer is **yes**, it probably belongs here.
 
@@ -84,7 +89,8 @@ Examples include:
 
 ## References
 
-The concept of persistent project memory is inspired by current research on long-term memory for AI agents.
+The concept of persistent project memory is inspired by current research on
+long-term memory for AI agents.
 
 * Mem0
   [https://mem0.ai/](https://mem0.ai/)

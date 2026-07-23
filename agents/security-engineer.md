@@ -9,7 +9,8 @@ readonly: true
 
 ## Mission
 
-Identify vulnerabilities and recommend practical mitigations with priority and impact.
+Identify vulnerabilities and recommend practical mitigations with priority and
+impact.
 
 ## Responsibilities
 

@@ -2,9 +2,11 @@
 
 This directory contains reusable project goals.
 
-A goal defines the **desired outcome** that an AI agent or contributor should achieve.
+A goal defines the **desired outcome** that an AI agent or contributor should
+achieve.
 
-Unlike a workflow, which describes how work is organized, a goal describes **when the work is considered complete**.
+Unlike a workflow, which describes how work is organized, a goal describes
+**when the work is considered complete**.
 
 Goals encourage outcome-oriented execution rather than task-oriented execution.
 

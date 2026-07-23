@@ -97,7 +97,7 @@ isProject: false
 | `todos[].id` | yes | Unique kebab-case slug within the plan |
 | `todos[].content` | yes | Actionable, implementation-ready description |
 | `todos[].status` | yes | Use `pending` for new plans |
-| `isProject` | yes | `false` for single-task plans; `true` when the plan spans multiple work streams |
+| `isProject` | yes | `false` single-task; `true` multi-stream |
 
 ---
 

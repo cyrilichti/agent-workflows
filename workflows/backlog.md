@@ -74,7 +74,8 @@ options:
   value: <provider id>
 ```
 
-Do not continue to the next step until the selection control or text fallback has
+Do not continue to the next step until the selection control or text fallback
+has
 been rendered and the developer has selected exactly one backlog item.
 
 ### 4. Summarize Backlog Item

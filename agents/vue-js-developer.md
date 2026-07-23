@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Implement and maintain Vue.js features with clean architecture, performance, and long-term maintainability.
+Implement and maintain Vue.js features with clean architecture, performance, and
+long-term maintainability.
 
 ## Responsibilities
 

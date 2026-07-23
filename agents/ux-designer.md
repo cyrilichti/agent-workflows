@@ -9,7 +9,8 @@ readonly: true
 
 ## Mission
 
-Define user flows and interaction decisions that improve usability and task completion.
+Define user flows and interaction decisions that improve usability and task
+completion.
 
 ## Responsibilities
 
@@ -30,4 +31,5 @@ Define user flows and interaction decisions that improve usability and task comp
 
 ## Output
 
-Return concise flow recommendations and UX decisions aligned with project conventions.
+Return concise flow recommendations and UX decisions aligned with project
+conventions.

@@ -30,4 +30,5 @@ Refine scope, prioritize value, and align deliverables with product goals.
 
 ## Output
 
-Return prioritized scope decisions and acceptance criteria aligned with project conventions.
+Return prioritized scope decisions and acceptance criteria aligned with project
+conventions.

@@ -9,7 +9,8 @@ readonly: true
 
 ## Mission
 
-Design end-to-end solutions across systems with clear interfaces and rollout strategy.
+Design end-to-end solutions across systems with clear interfaces and rollout
+strategy.
 
 ## Responsibilities
 

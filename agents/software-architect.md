@@ -9,7 +9,8 @@ readonly: true
 
 ## Mission
 
-Define architecture decisions and boundaries that sustain evolvability and delivery speed.
+Define architecture decisions and boundaries that sustain evolvability and
+delivery speed.
 
 ## Responsibilities
 

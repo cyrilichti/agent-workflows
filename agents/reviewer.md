@@ -30,4 +30,5 @@ Identify defects, regressions, and convention drift in proposed changes.
 
 ## Output
 
-Return a structured review with findings by severity and actionable recommendations.
+Return a structured review with findings by severity and actionable
+recommendations.

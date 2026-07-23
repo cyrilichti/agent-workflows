@@ -4,7 +4,8 @@ This directory contains reusable execution loops.
 
 A loop defines **how an AI agent should iteratively work toward a goal**.
 
-Unlike a workflow, which orchestrates a business process, a loop describes the agent's reasoning cycle while performing a task.
+Unlike a workflow, which orchestrates a business process, a loop describes the
+agent's reasoning cycle while performing a task.
 
 Loops help agents remain autonomous while providing clear stopping conditions.
 
