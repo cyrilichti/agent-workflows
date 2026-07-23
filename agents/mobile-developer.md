@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Implement mobile features with strong UX, performance, and platform compatibility.
+Implement mobile features with strong UX, performance, and platform
+compatibility.
 
 ## Responsibilities
 

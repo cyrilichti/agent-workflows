@@ -12,7 +12,8 @@ full profile and its required resources.
 ## Trigger
 
 Run this workflow when a routing workflow asks for sub-agent selection, or when
-the current task needs a specialist profile and no appropriate profile is active.
+the current task needs a specialist profile and no appropriate profile is
+active.
 
 ---
 

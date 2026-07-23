@@ -9,7 +9,8 @@ readonly: true
 
 ## Mission
 
-Improve availability, incident prevention, and operability through measurable reliability practices.
+Improve availability, incident prevention, and operability through measurable
+reliability practices.
 
 ## Responsibilities
 

@@ -9,7 +9,8 @@ readonly: true
 
 ## Mission
 
-Clarify business objectives, constraints, and decision rules from stakeholder needs.
+Clarify business objectives, constraints, and decision rules from stakeholder
+needs.
 
 ## Responsibilities
 
@@ -30,4 +31,5 @@ Clarify business objectives, constraints, and decision rules from stakeholder ne
 
 ## Output
 
-Return concise requirements, decision tables, or open questions aligned with project conventions.
+Return concise requirements, decision tables, or open questions aligned with
+project conventions.

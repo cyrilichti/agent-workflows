@@ -2,7 +2,9 @@
 
 This directory contains the project's **AI agents**.
 
-An agent is a specialized AI worker responsible for a specific role within the project. Agents encapsulate expertise, responsibilities, and instructions for a well-defined task.
+An agent is a specialized AI worker responsible for a specific role within the
+project. Agents encapsulate expertise, responsibilities, and instructions for a
+well-defined task.
 
 Depending on the AI platform, agents may be:
 
@@ -21,7 +23,8 @@ Agents help the AI:
 * reduce prompt complexity;
 * delegate complex tasks to specialized workers.
 
-Agents should focus on **how to perform a role**, while project knowledge remains in the other `.agents` directories.
+Agents should focus on **how to perform a role**, while project knowledge
+remains in the other `.agents` directories.
 
 ---
 
@@ -57,7 +60,8 @@ readonly: false
 
 # Cloud Engineer
 
-Design cloud-ready solutions with cost, security, scalability, and operational simplicity in mind.
+Design cloud-ready solutions with cost, security, scalability, and
+operational simplicity in mind.
 
 ## Responsibilities
 
@@ -92,11 +96,14 @@ Agents should not redefine business rules, workflows, or project conventions.
 
 ## Delegation
 
-When supported by the AI platform, agents may be delegated as independent workers.
+When supported by the AI platform, agents may be delegated as independent
+workers.
 
-A delegated agent receives a focused mission, performs its work independently, then returns a structured result to the calling agent.
+A delegated agent receives a focused mission, performs its work independently,
+then returns a structured result to the calling agent.
 
-Before any non-trivial work, follow `../workflows/sub-agent.md`. Selection and activation are a single mandatory step.
+Before any non-trivial work, follow `../workflows/sub-agent.md`. Selection and
+activation are a single mandatory step.
 
 Delegation is particularly useful for:
 
@@ -120,8 +127,15 @@ Delegation is particularly useful for:
 
 ## References
 
-* Claude Code – Sub Agents: [https://code.claude.com/docs/en/sub-agents](https://code.claude.com/docs/en/sub-agents)
-* Cursor – Sub Agents: [https://cursor.com/docs/subagents](https://cursor.com/docs/subagents)
-* OpenAI Codex – Subagents: [https://developers.openai.com/codex/concepts/subagents](https://developers.openai.com/codex/concepts/subagents)
+* Claude Code – Sub Agents: [claude-sub-agents]
+* Cursor – Sub Agents: [cursor-subagents]
+* OpenAI Codex – Subagents: [openai-codex-subagents]
 * AGENTS.md: [https://agents.md/](https://agents.md/)
-* .agents Protocol: [https://github.com/aj47/dotagentsprotocol-website](https://github.com/aj47/dotagentsprotocol-website)
+* .agents Protocol: [dotagents-protocol]
+
+[claude-sub-agents]: https://code.claude.com/docs/en/sub-agents
+[cursor-subagents]: https://cursor.com/docs/subagents
+[openai-codex-subagents]:
+  https://developers.openai.com/codex/concepts/subagents
+[dotagents-protocol]:
+  https://github.com/aj47/dotagentsprotocol-website

@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Create focused test coverage for critical behaviors, edge cases, and regressions.
+Create focused test coverage for critical behaviors, edge cases, and
+regressions.
 
 ## Responsibilities
 

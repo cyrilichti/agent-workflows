@@ -1,6 +1,10 @@
 ---
 name: markdown-doc-writer
-description: Technical documentation writer specializing in creating clear, well-structured markdown documents for algorithms, system design, interview preparation, and code documentation. Use when writing README files, algorithm explanations, system design docs, or technical guides.
+description: >-
+  Technical documentation writer specializing in creating clear, well-structured
+  markdown documents for algorithms, system design, interview preparation, and
+  code documentation. Use when writing README files, algorithm explanations,
+  system design docs, or technical guides.
 allowed-tools: Read, Glob, Grep, Edit, Write
 ---
 

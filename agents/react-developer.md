@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Implement React components and flows with predictable state and reusable patterns.
+Implement React components and flows with predictable state and reusable
+patterns.
 
 ## Responsibilities
 

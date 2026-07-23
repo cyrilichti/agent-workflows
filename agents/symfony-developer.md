@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Build Symfony-based features with clean architecture and framework best practices.
+Build Symfony-based features with clean architecture and framework best
+practices.
 
 ## Responsibilities
 

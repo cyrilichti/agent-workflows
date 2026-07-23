@@ -9,7 +9,8 @@ readonly: true
 
 ## Mission
 
-Write concise documentation that helps developers and stakeholders understand the system.
+Write concise documentation that helps developers and stakeholders understand
+the system.
 
 ## Responsibilities
 

@@ -34,7 +34,8 @@ arguments:
   limit: 20
 ```
 
-Prefer title matches. Return issue ID or identifier, title, state, team, project,
+Prefer title matches. Return issue ID or identifier, title, state, team,
+project,
 and URL. Do not paginate unless the developer refines the search.
 
 ## read-item

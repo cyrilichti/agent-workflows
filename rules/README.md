@@ -2,7 +2,8 @@
 
 Permanent project constraints and engineering conventions.
 
-Unlike workflows, rules describe **what must be respected**, not how to execute a process.
+Unlike workflows, rules describe **what must be respected**, not how to execute
+a process.
 
 ---
 
@@ -18,7 +19,8 @@ Unlike workflows, rules describe **what must be respected**, not how to execute 
 
 ## Organization
 
-One topic per file. Concise bullet lists. Frontmatter for scope when projected to an IDE.
+One topic per file. Concise bullet lists. Frontmatter for scope when projected
+to an IDE.
 
 ```text
 ./
@@ -44,7 +46,8 @@ Accepted loading paths:
 * matching file scope such as Cursor `globs` or Claude `paths`;
 * explicit developer request.
 
-Avoid `alwaysApply` by default. It is only for rare invariants that must apply to
+Avoid `alwaysApply` by default. It is only for rare invariants that must apply
+to
 every task, including non-development tasks.
 
 Reference specific rule files. Do not load the whole `./` directory unless
