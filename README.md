@@ -64,6 +64,13 @@ Install this repository as the project's `.agents/` directory:
 git submodule add https://github.com/seeren/my-agentic.git .agents
 ```
 
+Install the pinned external Skill dependencies:
+
+```bash
+cd .agents
+npx skills experimental_install
+```
+
 Expose thin adapters at the project root:
 
 ```bash

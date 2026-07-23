@@ -1,10 +1,6 @@
 ---
 name: markdown-doc-writer
-description: >-
-  Technical documentation writer specializing in creating clear, well-structured
-  markdown documents for algorithms, system design, interview preparation, and
-  code documentation. Use when writing README files, algorithm explanations,
-  system design docs, or technical guides.
+description: Technical documentation writer specializing in creating clear, well-structured markdown documents for algorithms, system design, interview preparation, and code documentation. Use when writing README files, algorithm explanations, system design docs, or technical guides.
 allowed-tools: Read, Glob, Grep, Edit, Write
 ---
 
@@ -14,12 +10,12 @@ allowed-tools: Read, Glob, Grep, Edit, Write
 
 Use this Skill when:
 
-- Writing README files
-- Creating algorithm explanations
-- Documenting system design solutions
-- Writing interview preparation guides
-- Creating cheat sheets and reference materials
-- Adding code documentation
+* Writing README files
+* Creating algorithm explanations
+* Documenting system design solutions
+* Writing interview preparation guides
+* Creating cheat sheets and reference materials
+* Adding code documentation
 
 ## Documentation Standards
 
@@ -62,7 +58,7 @@ Content...
 
 **Use this structure for algorithm problems:**
 
-````markdown
+```markdown
 # Problem Number: Problem Title
 
 **Difficulty**: Easy/Medium/Hard
@@ -83,7 +79,7 @@ Explanation: [why this is the output]
 
 **Constraints:**
 
-- [List constraints]
+* [List constraints]
 
 ## Approach
 
@@ -99,8 +95,8 @@ Explanation: [why this is the output]
 
 ### Complexity Analysis
 
-- **Time Complexity**: O(n) - [Explain why]
-- **Space Complexity**: O(1) - [Explain why]
+* **Time Complexity**: O(n) - [Explain why]
+* **Space Complexity**: O(1) - [Explain why]
 
 ## Solution
 
@@ -132,38 +128,37 @@ class Solution:
 
 ### Comparison
 
-| Approach   | Time  | Space | Notes        |
-| ---------- | ----- | ----- | ------------ |
-| Approach 1 | O(n)  | O(1)  | Optimal      |
-| Approach 2 | O(n²) | O(1)  | Simpler code |
+| Approach | Time | Space | Notes |
+|----------|------|-------|-------|
+| Approach 1 | O(n) | O(1) | Optimal |
+| Approach 2 | O(n²) | O(1) | Simpler code |
 
 ## Key Takeaways
 
-- [Learning point 1]
-- [Learning point 2]
+* [Learning point 1]
+* [Learning point 2]
 
 ## Related Problems
 
-- [Problem A](link)
-- [Problem B](link)
-````
+* [Problem A](link)
+* [Problem B](link)
+
+```text
 
 ### 3. System Design Documentation Format
 
 **Follow the template structure:**
 
-````markdown
+```markdown
 # System Name: Brief Description
 
 ## 1. Requirements
 
 ### Functional Requirements
-
 - Feature 1: [Description]
 - Feature 2: [Description]
 
 ### Non-Functional Requirements
-
 - **Scale**: X million DAU, Y QPS
 - **Performance**: p99 latency < Z ms
 - **Availability**: 99.9% uptime
@@ -171,18 +166,15 @@ class Solution:
 ## 2. Capacity Estimation
 
 ### Traffic
-
 - Daily Active Users: 100M
 - Requests per user: 10/day
 - QPS: 100M * 10 / 86400 ≈ 11,574
 
 ### Storage
-
 - Per user data: 1KB
 - Total: 100M * 1KB = 100GB
 
 ### Bandwidth
-
 - Average request size: 10KB
 - Bandwidth: 11,574 QPS * 10KB ≈ 115MB/s
 
@@ -217,8 +209,8 @@ CREATE TABLE users (
 
 ### Indexing Strategy
 
-- Index on `username` for fast lookup
-- Index on `created_at` for sorting
+* Index on `username` for fast lookup
+* Index on `created_at` for sorting
 
 ## 6. Detailed Component Design
 
@@ -234,37 +226,38 @@ CREATE TABLE users (
 
 ### Caching Strategy
 
-- [Cache what, where, why]
+* [Cache what, where, why]
 
 ### Sharding Strategy
 
-- [How to partition data]
+* [How to partition data]
 
 ### Replication
 
-- [Master-slave setup]
+* [Master-slave setup]
 
 ## 8. Trade-offs & Alternatives
 
-| Decision | Chosen     | Alternative | Rationale   |
-| -------- | ---------- | ----------- | ----------- |
-| Database | PostgreSQL | MongoDB     | Need ACID   |
+| Decision | Chosen | Alternative | Rationale |
+|----------|--------|-------------|-----------|
+| Database | PostgreSQL | MongoDB | Need ACID |
 
 ## 9. Monitoring & Alerting
 
-- Metrics to track: [List]
-- Alerts: [When to trigger]
+* Metrics to track: [List]
+* Alerts: [When to trigger]
 
 ## 10. Security Considerations
 
-- Authentication: [Method]
-- Authorization: [Method]
-- Data encryption: [At rest, in transit]
+* Authentication: [Method]
+* Authorization: [Method]
+* Data encryption: [At rest, in transit]
 
 ## References
 
-- [External resources]
-````
+* [External resources]
+
+```text
 
 ### 4. Code Formatting
 
@@ -272,16 +265,16 @@ CREATE TABLE users (
 
 **Code blocks**: Use fenced code blocks with language
 
-````markdown
+```markdown
 ```java
 public class Example {
     // Code here
 }
 ```
-````
+
+```text
 
 **Supported languages:**
-
 - `java`, `python`, `javascript`, `sql`, `bash`
 - `json`, `yaml`, `xml`, `markdown`
 - `c`, `cpp`, `scala`, `go`
@@ -289,10 +282,9 @@ public class Example {
 ### 5. Visual Elements
 
 **Tables:**
-
 ```markdown
 | Column 1 | Column 2 | Column 3 |
-| -------- | -------- | -------- |
+|----------|----------|----------|
 | Data 1   | Data 2   | Data 3   |
 ```
 
@@ -362,39 +354,37 @@ Ordered:
 **Complexity cheat sheet to reference:**
 
 ```markdown
-| Notation   | Name          | Example              |
-| ---------- | ------------- | -------------------- |
-| O(1)       | Constant      | Array access         |
-| O(log n)   | Logarithmic   | Binary search        |
-| O(n)       | Linear        | Array scan           |
-| O(n log n) | Linearithmic  | Merge sort           |
-| O(n²)      | Quadratic     | Nested loops         |
-| O(2ⁿ)      | Exponential   | Recursive Fibonacci  |
-| O(n!)      | Factorial     | Permutations         |
+| Notation | Name | Example |
+|----------|------|---------|
+| O(1) | Constant | Array access |
+| O(log n) | Logarithmic | Binary search |
+| O(n) | Linear | Array scan |
+| O(n log n) | Linearithmic | Merge sort |
+| O(n²) | Quadratic | Nested loops |
+| O(2ⁿ) | Exponential | Recursive Fibonacci |
+| O(n!) | Factorial | Permutations |
 ```
 
 ### 7. Writing Style Guidelines
 
 **Be Clear:**
 
-- Use simple language
+* Use simple language
 - Avoid jargon unless necessary
-- Define technical terms on first use
-- Use active voice
+* Define technical terms on first use
+* Use active voice
 
 **Be Concise:**
-
-- Remove unnecessary words
-- Use bullet points for lists
-- Break long paragraphs
-- One idea per paragraph
+* Remove unnecessary words
+* Use bullet points for lists
+* Break long paragraphs
+* One idea per paragraph
 
 **Be Consistent:**
-
-- Use same terminology throughout
-- Follow naming conventions
-- Maintain consistent formatting
-- Use templates for similar documents
+* Use same terminology throughout
+* Follow naming conventions
+* Maintain consistent formatting
+* Use templates for similar documents
 
 **Examples:**
 
@@ -415,11 +405,10 @@ The algorithm iterates through the array to find the target element.
 
 **Pattern template:**
 
-````markdown
+```markdown
 # Pattern Name
 
 ## When to Use
-
 - [Characteristic 1]
 - [Characteristic 2]
 
@@ -442,29 +431,30 @@ def pattern_template(arr):
 
 ## Key Points
 
-- [Tip 1]
-- [Tip 2]
-````
+* [Tip 1]
+* [Tip 2]
+
+```markdown
+
 
 ### 9. Cheat Sheet Format
 
 **Keep it scannable:**
-
-````markdown
+```markdown
 # Topic Cheat Sheet
 
 ## Quick Reference
 
-| Operation | Syntax         | Complexity |
-| --------- | -------------- | ---------- |
-| Access    | arr[i]         | O(1)       |
-| Search    | arr.indexOf(x) | O(n)       |
+| Operation | Syntax | Complexity |
+|-----------|--------|------------|
+| Access | arr[i] | O(1) |
+| Search | arr.indexOf(x) | O(n) |
 
 ## Common Patterns
 
 ### Pattern 1
 
-```text
+```code
 // Code snippet
 ```
 
@@ -472,7 +462,7 @@ def pattern_template(arr):
 
 ### Pattern 2
 
-```text
+```code
 // Code snippet
 ```
 
@@ -480,26 +470,24 @@ def pattern_template(arr):
 
 ## Gotchas
 
-- ⚠️ [Common mistake 1]
-- ⚠️ [Common mistake 2]
-````
+* ⚠️ [Common mistake 1]
+* ⚠️ [Common mistake 2]
+
+```markdown
 
 ### 10. Document Maintenance
 
 **Version control:**
-
 - Use git to track changes
 - Write meaningful commit messages
 - Keep documents up to date with code
 
 **Cross-references:**
-
 - Link related documents
 - Reference source code files
 - Point to external resources
 
 **Validation:**
-
 - Check all links work
 - Verify code examples compile
 - Test complexity analysis accuracy
@@ -531,28 +519,28 @@ doc/
 
 Before finalizing documentation:
 
-- [ ] Clear title and description
-- [ ] Proper heading hierarchy
-- [ ] Code examples tested and working
-- [ ] Complexity analysis included
-- [ ] Consistent formatting
-- [ ] No broken links
-- [ ] Spell-checked
-- [ ] Follows project conventions
-- [ ] Related content linked
+* [ ] Clear title and description
+* [ ] Proper heading hierarchy
+* [ ] Code examples tested and working
+* [ ] Complexity analysis included
+* [ ] Consistent formatting
+* [ ] No broken links
+* [ ] Spell-checked
+* [ ] Follows project conventions
+* [ ] Related content linked
 
 ## Tools & References
 
 **Markdown validation:**
 
-- Check syntax with markdown linters
-- Preview before committing
-- Use consistent line breaks
+* Check syntax with markdown linters
+* Preview before committing
+* Use consistent line breaks
 
 **Useful symbols:**
 
-- ✅ Checkmark for correct approach
-- ❌ X for incorrect approach
-- ⚠️ Warning for gotchas
-- 💡 Bulb for tips
-- 📝 Note for important points
+* ✅ Checkmark for correct approach
+* ❌ X for incorrect approach
+* ⚠️ Warning for gotchas
+* 💡 Bulb for tips
+* 📝 Note for important points
