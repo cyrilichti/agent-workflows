@@ -27,6 +27,17 @@ Markdown body using `../templates/work-item.md`.
 The item may be based on the current conversation, an existing item, or code,
 specifications, files, and URLs explicitly identified by the developer.
 
+Keep successful orchestration internal. User-facing interaction is limited to
+questions that require a choice or missing information, the proposed item,
+confirmation, assignment, blockers or failures, and the final saved result.
+Do not narrate provider resolution, configuration sources, agent activation,
+or tool calls unless the user explicitly asks.
+
+Announce the initial selection of a dynamic writing Skill and each subsequent
+change when it happens. Use one concise line naming the Skill and why it now
+fits. Do not announce `markdown-doc-writer`, repeat an unchanged Skill, or
+include Skill names in the proposed or saved item.
+
 ---
 
 ## Steps
@@ -41,6 +52,9 @@ workflow: backlog
 
 Keep the resolved provider in this workflow. Do not pass provider operations or
 mutation responsibility to the writing sub-agent.
+
+Do not announce a successful resolution or its configuration source. Report
+only a missing, invalid, or unavailable provider.
 
 ### 2. Select Authoring Mode
 
@@ -90,8 +104,7 @@ Skip this step when reformulating an existing item.
 ### 5. Draft One Item
 
 Activate `../agents/work-item-writer.md` by loading its full profile and the
-resources it requires for the current context. Confirm activation using
-`../templates/sub-agent-activation.md`.
+resources it requires for the current context. Keep its activation internal.
 
 Give the sub-agent:
 
@@ -113,8 +126,7 @@ useful result as returned content and suppress the side effect.
 ### 6. Confirm Item
 
 Validate that the proposal follows `../templates/work-item.md` and contains
-exactly one title and one free-form Markdown body. Keep `Workflow Metadata`
-separate from the item content.
+exactly one title and one free-form Markdown body.
 
 Present the proposal and ask using `../templates/select-option.md` with:
 
@@ -173,8 +185,6 @@ with:
 - the existing item ID when reformulating;
 - the destination when creating.
 
-Never send `Workflow Metadata` to the provider.
-
 If an assignee was selected, run `../commands/assign-backlog-item.md` with the
 saved item ID and selected assignee. Otherwise, leave assignment untouched.
 
@@ -188,7 +198,6 @@ state when available.
 - Create or reformulate exactly one item.
 - Do not create or update an item before the developer confirms its final title
   and body.
-- Do not persist `Workflow Metadata`.
 - Do not let the writing sub-agent call provider operations or perform side
   effects.
 - Do not treat search results as official item content before reading the

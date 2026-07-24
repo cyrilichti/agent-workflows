@@ -1,33 +1,30 @@
 # `/write`
 
-`/write` creates or reformulates one provider work item. It guides the
-developer from the initial request to a confirmed title and body, then
-saves the item and applies the chosen assignment.
+It guides the user from the initial request to a confirmed item then saves it and applies the chosen assignment.
 
 ## Writing and Dynamic Routing
 
-`/write` selects the most relevant external Skill for the current context:
+`/write` re-evaluates the conversation as it becomes clearer and selects the
+Skill that matches its current state:
 
-| Context | External Skill |
-| --- | --- |
-| Important information is missing | [`interview-me`](https://github.com/addyosmani/agent-skills) — Addy Osmani |
-| The idea is open and needs refinement | [`idea-refine`](https://github.com/addyosmani/agent-skills) — Addy Osmani |
-| Decisions and assumptions need deeper challenge | [`grilling`](https://github.com/mattpocock/skills) — Matt Pocock |
-| The work has become a genuine specification | [`to-spec`](https://github.com/mattpocock/skills) — Matt Pocock |
 
-Routing is dynamic rather than sequential. After a meaningful answer or a new
-source, `/write` re-evaluates what the item needs. It may keep the current
-approach, switch to another Skill, or stop questioning when the item is
-sufficiently defined.
+| Current state                                                       | Example                                                       | External Skill                                                             |
+| ------------------------------------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| The request vague                                                   | “I need to work on Elasticsearch.”                            | `[interview-me](https://github.com/addyosmani/agent-skills)` — Addy Osmani |
+| The context is understood, but the expected behavior remains open   | “I am not sure how it should behave.”                         | `[idea-refine](https://github.com/addyosmani/agent-skills)` — Addy Osmani  |
+| A direction exists and the user wants its decisions challenged      | “Can you challenge this approach?”                            | `[grilling](https://github.com/mattpocock/skills)` — Matt Pocock           |
+| The user wants them converted into a full, structured specification | “Turn everything we agreed on into a complete specification.” | `[to-spec](https://github.com/mattpocock/skills)` — Matt Pocock            |
 
-The result remains proportional to the request. A simple maintenance task
-should produce a concise work item, not a specification with unnecessary
-sections or detail.
+
+After each meaningful answer, `/write` re-evaluates the route until the work
+item is sufficiently defined. The selected Skill is shown when the route starts
+or changes, but its name is never included in the work item. `to-spec` is
+selected only when the user explicitly wants a specification-oriented ticket.
 
 ## Confirmation
 
 Each adjustment returns to confirmation. No item is created or updated until
-the developer explicitly approves its content.
+the user explicitly approves its content.
 
 ## Assignment
 
@@ -35,4 +32,4 @@ After content confirmation, `/write` asks how to handle assignment:
 
 - a new item can remain unassigned or be assigned;
 - a reformulated item can keep its current assignment or be assigned or
-  reassigned.
+reassigned.

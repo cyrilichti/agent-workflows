@@ -13,10 +13,6 @@ Use this template when transferring one proposed work item from the
 ## Body
 
 <free-form Markdown adapted to the nature of the item>
-
-## Workflow Metadata
-
-Skills used: <comma-separated Skill names>
 ```
 
 ## Persisted Content
@@ -30,14 +26,6 @@ The body has no mandatory internal sections. Structure it according to the
 actual item rather than forcing a bug, improvement, debt item, epic, idea, or
 specification into a shared schema.
 
-## Workflow Metadata
-
-`Skills used` records the Skills that contributed to the proposal. Keep it
-concise and separate from the title and body.
-
-This metadata is internal to the workflow. Do not display it as item content or
-send it to the provider.
-
 ## Rules
 
 - Return exactly one item.
@@ -48,4 +36,3 @@ send it to the provider.
   generic section.
 - Do not include provider-specific fields such as ID, destination, type, status,
   labels, or assignee.
-- Do not persist `Workflow Metadata`.

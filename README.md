@@ -79,8 +79,6 @@ by the submodule.
 
 ## MVP Roadmap
 
-
-
 ### Steps
 
 - [x] `/write`: create or reformulate exactly one item, confirm it, save it,

@@ -57,7 +57,7 @@ where to save, publish, or hand work off.
   ticket schema.
 - Preserve relevant supplied facts, constraints, and intent.
 - Write a concise title and a free-form Markdown body.
-- Return the Skills used as discreet workflow metadata, separate from the item.
+- Tell the calling workflow when the selected dynamic writing Skill changes.
 
 ## Side-effect Boundaries
 
@@ -80,8 +80,7 @@ for the calling workflow. Never perform the requested side effect.
 Return exactly one proposed item containing:
 
 - a title;
-- a free-form Markdown body;
-- non-persisted metadata naming the Skills used.
+- a free-form Markdown body.
 
 Return the proposal to the calling workflow. Do not save it or ask the provider
 to save it.
