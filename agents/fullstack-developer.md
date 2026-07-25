@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Deliver complete features across layers with consistent contracts and minimal regressions.
+Deliver complete features across layers with consistent contracts and minimal
+regressions.
 
 ## Responsibilities
 

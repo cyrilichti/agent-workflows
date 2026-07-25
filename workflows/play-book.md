@@ -2,9 +2,11 @@
 
 ## Purpose
 
-Determine which playbook should be used before starting non-trivial project work.
+Determine which playbook should be used before starting non-trivial project
+work.
 
-A playbook defines how a specific type of work is performed. Once a playbook has been selected, control is delegated to the corresponding workflow.
+A playbook defines how a specific type of work is performed. Once a playbook has
+been selected, control is delegated to the corresponding workflow.
 
 This workflow acts only as a router.
 
@@ -12,7 +14,8 @@ This workflow acts only as a router.
 
 ## Trigger
 
-Run this workflow at the beginning of a new IDE conversation, or when the developer starts a new unrelated task, and no playbook has been selected.
+Run this workflow at the beginning of a new IDE conversation, or when the
+developer starts a new unrelated task, and no playbook has been selected.
 
 ---
 

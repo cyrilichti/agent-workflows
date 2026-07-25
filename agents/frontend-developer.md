@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Implement robust UI features with accessibility, performance, and maintainability.
+Implement robust UI features with accessibility, performance, and
+maintainability.
 
 ## Responsibilities
 

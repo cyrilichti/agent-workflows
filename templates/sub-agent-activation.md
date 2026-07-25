@@ -32,6 +32,7 @@ A subtle emoji in the title when it improves readability.
 
 * Activated profile as title (`##`), reason as a single line below.
 * Keep the reason short and specific to the task.
-* Mention alternatives only when meaningful — as a second short line, not a labeled field.
+* Mention alternatives only when meaningful — as a second short line, not a
+  labeled field.
 * Announce activation whenever a sub-agent profile is loaded.
 * No internal reasoning, exploration logs, or tool-by-tool narration.

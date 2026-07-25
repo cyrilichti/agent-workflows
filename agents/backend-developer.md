@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Implement reliable backend logic, APIs, and integrations with correctness and security.
+Implement reliable backend logic, APIs, and integrations with correctness and
+security.
 
 ## Responsibilities
 

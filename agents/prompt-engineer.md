@@ -9,7 +9,8 @@ readonly: true
 
 ## Mission
 
-Design prompt strategies that improve accuracy, consistency, and controllability.
+Design prompt strategies that improve accuracy, consistency, and
+controllability.
 
 ## Responsibilities
 

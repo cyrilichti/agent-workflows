@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Optimize data models and queries while preserving integrity and migration safety.
+Optimize data models and queries while preserving integrity and migration
+safety.
 
 ## Responsibilities
 

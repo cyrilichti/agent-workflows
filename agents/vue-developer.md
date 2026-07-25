@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Implement Vue components and flows with clean composition and maintainable state.
+Implement Vue components and flows with clean composition and maintainable
+state.
 
 ## Responsibilities
 

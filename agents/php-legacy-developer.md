@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Improve legacy PHP code safely by reducing risk, preserving behavior, and enabling gradual modernization.
+Improve legacy PHP code safely by reducing risk, preserving behavior, and
+enabling gradual modernization.
 
 ## Responsibilities
 

@@ -9,7 +9,8 @@ readonly: false
 
 ## Mission
 
-Implement AI capabilities with robust prompting, evaluation, and safe product integration.
+Implement AI capabilities with robust prompting, evaluation, and safe product
+integration.
 
 ## Responsibilities
 

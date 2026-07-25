@@ -1,16 +1,24 @@
 ---
 name: business-rules
-description: Framework for eliciting, documenting, and validating business rules during requirements discovery. Use when identifying business policies and constraints, documenting calculation and derivation rules, creating decision tables, analyzing rule interactions, or producing domain knowledge files in `../../../docs/`.
+description: >-
+  Framework for eliciting, documenting, and validating business rules during
+  requirements discovery. Use when identifying business policies and
+  constraints, documenting calculation and derivation rules, creating decision
+  tables, analyzing rule interactions, or producing domain knowledge files in
+  `../../../docs/`.
 allowed-tools: Read, Glob, Grep, Edit, Write
 ---
 
 # Business Rules Analysis
 
-Comprehensive framework for eliciting, documenting, and validating business rules during requirements discovery.
+Comprehensive framework for eliciting, documenting, and validating business
+rules during requirements discovery.
 
 ## When to Use This Skill
 
-**Keywords:** business rules, policies, constraints, calculations, derivations, inferences, decision tables, decision logic, rule templates, validation rules, authorization rules, computation rules, condition-action, if-then rules
+**Keywords:** business rules, policies, constraints, calculations, derivations,
+inferences, decision tables, decision logic, rule templates, validation rules,
+authorization rules, computation rules, condition-action, if-then rules
 
 **Use this skill when:**
 
@@ -35,7 +43,9 @@ structural_rules:
   types:
     terms:
       description: "Definitions of business concepts"
-      example: "A 'Premium Customer' is a customer who has spent more than $10,000 in the last 12 months"
+      example: >-
+        A 'Premium Customer' is a customer who has spent more than
+        $10,000 in the last 12 months
 
     facts:
       description: "Assertions about the business domain"
@@ -127,10 +137,13 @@ action_rules:
 
     workflows:
       description: "Sequences of actions"
-      example: "After order is placed, send confirmation email, then notify warehouse"
+      example: >-
+        After order is placed, send confirmation email, then notify
+        warehouse
 
   documentation_template:
-    authorization: "{Role} may/must/must not {action} {object} [when {condition}]"
+    authorization: >-
+      {Role} may/must/must not {action} {object} [when {condition}]
     trigger: "WHEN {event} THEN {action}"
     workflow: "AFTER {event}, {action1}, THEN {action2}"
 ```
@@ -427,7 +440,9 @@ rules_catalog:
       name: "VIP Discount Calculation"
       category: "derivation"
       statement: "VIP customers receive 20% discount on orders over $100"
-      formula: "Discount = OrderTotal × 0.20 IF CustomerType = 'VIP' AND OrderTotal > 100"
+      formula: >-
+        Discount = OrderTotal × 0.20 IF CustomerType = 'VIP' AND
+        OrderTotal > 100
 
   decision_tables:
     - name: "Shipping Method Selection"
@@ -467,13 +482,17 @@ rules_catalog:
 transformation:
   constraint_to_requirement:
     rule: "Order quantity must be between 1 and 999"
-    requirement: "System shall validate that order quantity is within range 1-999"
+    requirement: >-
+      System shall validate that order quantity is within range 1-999
 
   derivation_to_requirement:
     rule: "Order Total = Sum of (Quantity × Unit Price)"
-    requirement: "System shall calculate order total as sum of line item amounts"
+    requirement: >-
+      System shall calculate order total as sum of line item amounts
 
   authorization_to_requirement:
     rule: "Only Managers can approve orders over $5,000"
-    requirement: "System shall require Manager role for approval of orders exceeding $5,000"
+    requirement: >-
+      System shall require Manager role for approval of orders exceeding
+      $5,000
 ```

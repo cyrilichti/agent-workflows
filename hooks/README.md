@@ -2,9 +2,11 @@
 
 This directory contains project hooks for AI agents.
 
-Hooks are event-driven automations executed when a specific event occurs during an agent's execution.
+Hooks are event-driven automations executed when a specific event occurs during
+an agent's execution.
 
-Unlike workflows, which describe business processes, hooks react to lifecycle events and automate repetitive actions.
+Unlike workflows, which describe business processes, hooks react to lifecycle
+events and automate repetitive actions.
 
 ---
 
@@ -111,7 +113,7 @@ Project hooks should remain implementation-agnostic whenever possible.
 ## References
 
 * Claude Code – Hooks
-  [https://docs.anthropic.com/en/docs/claude-code/hooks](https://docs.anthropic.com/en/docs/claude-code/hooks)
+  [claude-code-hooks]
 
 * Cursor – Create Hook
   [https://docs.cursor.com/](https://docs.cursor.com/)
@@ -120,4 +122,9 @@ Project hooks should remain implementation-agnostic whenever possible.
   [https://agents.md/](https://agents.md/)
 
 * .agents Protocol
-  [https://github.com/aj47/dotagentsprotocol-website](https://github.com/aj47/dotagentsprotocol-website)
+  [dotagents-protocol]
+
+[claude-code-hooks]:
+  https://docs.anthropic.com/en/docs/claude-code/hooks
+[dotagents-protocol]:
+  https://github.com/aj47/dotagentsprotocol-website
