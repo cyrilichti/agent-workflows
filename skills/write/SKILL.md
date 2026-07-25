@@ -1,9 +1,9 @@
 ---
 name: write
 description: >-
-  Activate and execute the repository work item authoring workflow. Use when the
-  developer invokes `/write` or `$write`, wants to create a work item, or wants
-  to reformulate and optionally assign an existing work item.
+  Write or reformulate one item using the right writing Skills for the
+  context, then confirm, save, and optionally assign it. Use when
+  explicitly invoked with `/write` or `$write`.
 disable-model-invocation: true
 ---
 
