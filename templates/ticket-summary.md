@@ -1,6 +1,7 @@
 # Ticket Summary
 
-Use this template when presenting a selected work item to the developer.
+Use this template when presenting a backlog item for confirmation or planning
+context.
 
 Read the work item content internally to synthesize the sections below. Do not
 dump the raw content unless the developer asks for it.
