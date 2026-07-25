@@ -16,7 +16,8 @@ status.
 
 ## Entry Condition
 
-Run this workflow after `./play-book.md` selects `backlog`.
+Run this workflow after `./play-book.md` selects `backlog`, or when the
+`backlog` skill is explicitly invoked.
 
 If the developer provides a work item ID or URL, retrieve it from the configured
 context provider and validate that it can be used for this workflow.

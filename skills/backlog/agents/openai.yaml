@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backlog"
+  short_description: "Start work from the assigned backlog"
+  default_prompt: "Use $backlog to select a backlog item and create a plan for it."
