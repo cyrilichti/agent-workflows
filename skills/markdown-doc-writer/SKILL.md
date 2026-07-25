@@ -58,7 +58,7 @@ Content...
 
 **Use this structure for algorithm problems:**
 
-```markdown
+````markdown
 # Problem Number: Problem Title
 
 **Difficulty**: Easy/Medium/Hard
@@ -143,13 +143,13 @@ class Solution:
 * [Problem A](link)
 * [Problem B](link)
 
-```text
+````
 
 ### 3. System Design Documentation Format
 
 **Follow the template structure:**
 
-```markdown
+````markdown
 # System Name: Brief Description
 
 ## 1. Requirements
@@ -257,7 +257,7 @@ CREATE TABLE users (
 
 * [External resources]
 
-```text
+````
 
 ### 4. Code Formatting
 
@@ -265,14 +265,14 @@ CREATE TABLE users (
 
 **Code blocks**: Use fenced code blocks with language
 
-```markdown
+````markdown
 ```java
 public class Example {
     // Code here
 }
 ```
 
-```text
+````
 
 **Supported languages:**
 - `java`, `python`, `javascript`, `sql`, `bash`
@@ -405,7 +405,7 @@ The algorithm iterates through the array to find the target element.
 
 **Pattern template:**
 
-```markdown
+````markdown
 # Pattern Name
 
 ## When to Use
@@ -434,13 +434,13 @@ def pattern_template(arr):
 * [Tip 1]
 * [Tip 2]
 
-```markdown
+````
 
 
 ### 9. Cheat Sheet Format
 
 **Keep it scannable:**
-```markdown
+````markdown
 # Topic Cheat Sheet
 
 ## Quick Reference
@@ -473,7 +473,7 @@ def pattern_template(arr):
 * ⚠️ [Common mistake 1]
 * ⚠️ [Common mistake 2]
 
-```markdown
+````
 
 ### 10. Document Maintenance
 
