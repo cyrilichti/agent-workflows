@@ -19,7 +19,7 @@ See `../templates/plan.md` for full naming rules.
 ## Lifecycle
 
 - Created during the plan workflow, before implementation starts.
-- Updated when the developer requests plan adjustments.
+- Updated when the user requests plan adjustments.
 - Todo statuses evolve during implementation (`pending` → `in-progress` →
   `completed` or `error`).
 

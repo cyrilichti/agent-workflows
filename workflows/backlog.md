@@ -19,11 +19,11 @@ status.
 Run this workflow after `./play-book.md` selects `backlog`, or when the
 `backlog` skill is explicitly invoked.
 
-If the developer provides a work item ID or URL, retrieve it from the configured
+If the user provides a item ID or URL, retrieve it from the configured
 context provider and validate that it can be used for this workflow.
 
-Otherwise, resolve the configured context provider and ask the developer to
-select one available work item.
+Otherwise, resolve the configured context provider and ask the user to
+select one available item.
 
 ---
 
@@ -37,14 +37,14 @@ Run `../commands/resolve-backlog-provider.md` with:
 workflow: backlog
 ```
 
-### 2. Retrieve Work Items
+### 2. Retrieve Items
 
 Run `../commands/retrieve-backlog-items.md` with:
 
 ```text
 provider: resolved backlog provider
 criteria:
-  assigned_to: current developer
+  assigned_to: current user
   status: open or ready to start
   exclude:
     - assigned to other people
@@ -62,7 +62,7 @@ the options with a count, status summary, or vague question.
 Each option must use a readable label containing at least the title and status.
 Attach the provider ID as the internal value. Do not require raw ID selection.
 
-Ask the developer which backlog item they want to start using
+Ask the user which backlog item they want to start using
 `../templates/select-option.md` with:
 
 ```text
@@ -76,7 +76,7 @@ options:
 
 Do not continue to the next step until the selection control or text fallback
 has
-been rendered and the developer has selected exactly one backlog item.
+been rendered and the user has selected exactly one backlog item.
 
 ### 4. Summarize Backlog Item
 
@@ -115,13 +115,13 @@ item_id: selected provider ID
 target_status: in progress
 ```
 
-Report the updated backlog item status to the developer.
+Report the updated backlog item status to the user.
 
 ---
 
 ## Safety
 
-* Pasted text or titles are not official work items until matched to the
+* Pasted text or titles are not official items until matched to the
   provider.
 * Prefer direct deterministic filtering over exploratory MCP probing.
 * Do not proceed from backlog retrieval to summarization without rendering the
@@ -141,5 +141,5 @@ This workflow is complete when:
   matches have been explicitly reported;
 * one official backlog item has been selected;
 * the selected backlog item has been summarized;
-* the plan workflow has completed successfully with developer approval;
+* the plan workflow has completed successfully with user approval;
 * the selected backlog item has been moved to the active-work status.

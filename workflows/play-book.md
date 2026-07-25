@@ -15,13 +15,13 @@ This workflow acts only as a router.
 ## Trigger
 
 Run this workflow at the beginning of a new IDE conversation, or when the
-developer starts a new unrelated task, and no playbook has been selected.
+user starts a new unrelated task, and no playbook has been selected.
 
 ---
 
 ## Steps
 
-1. Ask the developer which type of task they want to start for this session
+1. Ask the user which type of task they want to start for this session
    using `../templates/select-option.md` with:
 
    ```text
@@ -33,7 +33,7 @@ developer starts a new unrelated task, and no playbook has been selected.
    - Other
    ```
 
-2. Wait for the developer to select one task type.
+2. Wait for the user to select one task type.
 
 3. Delegate execution to the corresponding workflow:
 

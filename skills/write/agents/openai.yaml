@@ -1,4 +1,4 @@
 interface:
   display_name: "Write"
-  short_description: "Create, update, and assign a backlog ticket"
-  default_prompt: "Use $write to create or update a backlog ticket and assign it."
+  short_description: "Write better items with the right Skills for your context"
+  default_prompt: "Use $write to turn my context into a clear item."

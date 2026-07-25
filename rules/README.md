@@ -44,7 +44,7 @@ Accepted loading paths:
 
 * direct reference from an agent, skill, workflow, or IDE rule projection;
 * matching file scope such as Cursor `globs` or Claude `paths`;
-* explicit developer request.
+* explicit user request.
 
 Avoid `alwaysApply` by default. It is only for rare invariants that must apply
 to

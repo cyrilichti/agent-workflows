@@ -4,8 +4,8 @@ Using top external skills without adopting their authors' workflows.
 
 I own the steps, their transitions, and their input/output templates.
 
-Each step activates one or more adapted sub-agents, and each sub-agent points
-to the installed skills I have selected.
+Each step activates one or more specialized sub-agents, which route the managed
+or adopted Skills selected for their responsibility.
 
 ## Skills
 
@@ -14,9 +14,8 @@ supported entry point when it is ambiguous.
 
 ### `/write`
 
-Creates or improves a backlog item. It resolves the provider, collects only
-missing information, renders the item with template, asks for confirmation,
-then saves and optionnaly assigns it.
+Creates or reformulates one item. A writer dynamically routes the relevant Skills and returns a title and Markdown body. `/write` confirms the proposal, saves it through the resolved
+provider, then always offers an optional assignment choice.
 
 ### `/pick`
 
@@ -58,28 +57,32 @@ reported. An operational failure stays in `blocked/retry`;
 
 ## Installation
 
-Install this repository as the project's `.agents/` directory:
+Install this repository and expose its project entry points:
 
 ```bash
 git submodule add https://github.com/seeren/my-agentic.git .agents
-```
-
-Expose thin adapters at the project root:
-
-```bash
 ln -s .agents/AGENTS.md AGENTS.md
 ln -s .agents/CLAUDE.md CLAUDE.md
 ln -s .agents/.cursor .cursor
+ln -s .agents/skills-lock.json skills-lock.json
 ```
 
-Project-specific knowledge stays in the consuming project, typically under  
-`docs/`.
+Restore the managed external Skill dependencies:
+
+```bash
+npx skills experimental_install
+```
+
+Dependencies are therefore  
+restored directly into `.agents/skills/`, and their directories remain ignored  
+by the submodule.
 
 ## MVP Roadmap
 
 ### Steps
 
-- [x] `/write`: create or improve an item, confirm it, save it, and stop.
+- [x] `/write`: create or reformulate exactly one item, confirm it, save it,
+  optionally assign it, and stop.
 - [ ] `/pick`: expose the existing backlog selection and trigger `/plan`.
 - [ ] `/plan`: trigger `/work` after the plan is approved.
 - [ ] `/work`: execute the plan and trigger `/ready` on success.
@@ -90,10 +93,12 @@ Project-specific knowledge stays in the consuming project, typically under
 - [ ] `/done`: execute configured delivery actions and support
   `blocked/retry` recovery.
 
+
+
 ### Catalog and Contracts
 
 - [x] Provide shared sub-agent selection and activation.
-- [ ] Select, install, and pin the external skills in `skills-lock.json`.
+- [x] Select and record the managed external Skills in `skills-lock.json`.
 - [ ] Connect each sub-agent to the relevant installed skills.
 - [ ] Add the input/output templates required by each step.
 - [ ] Route requests automatically and prevent fallback outside the catalog.

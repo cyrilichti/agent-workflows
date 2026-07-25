@@ -1,6 +1,6 @@
 # Select Option
 
-Use this template when the developer must choose exactly one option from a short
+Use this template when the user must choose exactly one option from a short
 list.
 
 ## Format
@@ -50,7 +50,7 @@ Text fallback:
   their wording exactly.
 * Return the selected option value to the caller when values are provided.
 * Do not add descriptions unless required by the workflow or native UI.
-* Use readable labels for the developer.
+* Use readable labels for the user.
 * Keep text originating from external systems, such as backlog item titles,
   unchanged unless the system provides a localized form.
 * Keep technical identifiers and internal option values unchanged and do not

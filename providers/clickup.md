@@ -4,9 +4,9 @@
 
 Retrieve ClickUp tasks assigned to a person.
 
-### Current Developer
+### Current User
 
-1. Resolve the current developer to ClickUp user IDs:
+1. Resolve the current user to ClickUp user IDs:
 
    ```text
    tool: clickup_resolve_assignees
@@ -38,7 +38,7 @@ retrieve the requested tasks.
 
 ## search-items
 
-Search tasks by developer-provided title text:
+Search tasks by user-provided title text:
 
 ```text
 tool: clickup_search
@@ -51,7 +51,7 @@ arguments:
 ```
 
 Prefer results whose names match the query. Return task ID, name, status, URL,
-and hierarchy. Do not paginate unless the developer refines the search.
+and hierarchy. Do not paginate unless the user refines the search.
 
 ## read-item
 
@@ -80,7 +80,7 @@ arguments:
 
 Only Lists are valid creation destinations. Return each List with a readable
 `Space / Folder / List` path and its List ID. Continue pagination only when
-needed to resolve the developer's requested destination.
+needed to resolve the user's requested destination.
 
 ## resolve-assignees
 
@@ -96,7 +96,7 @@ arguments:
 When a readable member record or disambiguation is needed, use
 `clickup_find_member_by_name`. If the name is ambiguous, use
 `clickup_get_workspace_members` and post-filter by the query rather than asking
-the developer for a numeric ID.
+the user for a numeric ID.
 
 ## create-item
 
@@ -107,7 +107,7 @@ tool: clickup_create_task
 arguments:
   list_id: selected destination ID
   name: confirmed title
-  markdown_description: confirmed structured content
+  markdown_description: confirmed free-form Markdown body
 ```
 
 Omit assignment and status so the caller can handle them separately.
@@ -119,10 +119,10 @@ tool: clickup_update_task
 arguments:
   task_id: item ID
   name: confirmed title, when changed
-  markdown_description: confirmed structured content, when changed
+  markdown_description: confirmed free-form Markdown body, when changed
 ```
 
-Omit every field that the developer did not confirm changing.
+Omit every field that the user did not confirm changing.
 
 ## assign-item
 

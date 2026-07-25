@@ -28,11 +28,12 @@ Each local Skill lives in its own directory.
 ```text
 ./
 ├── README.md
-└── ticket-writing/
-    ├── SKILL.md
-    ├── references/
-    ├── scripts/
-    └── assets/
+├── write/                  # Local workflow bridge
+│   └── SKILL.md
+├── markdown-doc-writer/    # Adopted and committed
+│   └── SKILL.md
+└── <managed-external>/     # Restored and ignored
+    └── SKILL.md
 ```
 
 `SKILL.md` is the Skill entrypoint.
@@ -47,40 +48,30 @@ Supporting folders are optional:
 
 ## Example
 
+A local bridge keeps Skill discovery thin and delegates orchestration to the
+workflow that owns it:
+
 ```markdown
 ---
-name: ticket-writing
+name: write
 description: >-
-  use this skill when creating or improving project tickets from meeting
-  notes, user requests, bug reports, feature ideas, or implementation
-  discussions. The skill produces clear, actionable tickets using the
-  project's reusable templates.
+  Activate and execute the repository item authoring workflow. Use when
+  the user wants to create or reformulate one item.
+disable-model-invocation: true
 ---
 
-# Ticket Writing
+# Write
 
-## Instructions
-
-1. Identify the goal of the ticket.
-2. Extract the business context.
-3. Separate requirements from implementation suggestions.
-4. Write acceptance criteria that can be verified.
-5. Follow the output templates defined in `../../templates/`.
-
-## References
-
-- `../../templates/summary.md`
-- `../../templates/checklist.md`
-- `../../domain/`
-- `../../rules/`
+Read `../../workflows/write.md` completely, then follow it exactly.
 ```
 
 ---
 
 ## External Skills
 
-External Skills should be installed from the public Skill directory when
-possible.
+External Skills are dependencies by default. Record them in `skills-lock.json`,
+ignore their installed directories, and restore them with the installation
+workflow documented in the root `README.md`.
 
 Reference:
 
@@ -93,8 +84,21 @@ shows installation with:
 npx skills add <owner/repo>
 ```
 
-Use external Skills when they provide a generic capability that should not be
-maintained inside this project.
+Use managed external Skills when they provide a generic capability that should
+remain owned and updated by their upstream project.
+
+### Adopted Skills
+
+An external Skill may instead be adopted and committed here when consuming its
+upstream dependency is disproportionate, unreliable, or incompatible with this
+project's installation workflow.
+
+Adopting a Skill means this project takes ownership of its reviewed source,
+future maintenance, and any deliberate adaptations. Add each adopted Skill to
+the explicit allowlist in `.gitignore`; do not add it to `skills-lock.json`.
+
+`markdown-doc-writer` is adopted because cloning its upstream repository to
+install this single Skill is prohibitively expensive.
 
 Use local Skills when the capability depends on this project, its domain, its
 templates, or its internal workflows.
@@ -106,12 +110,13 @@ templates, or its internal workflows.
 * One Skill should cover one reusable capability.
 * Keep `SKILL.md` short and action-oriented.
 * Do not duplicate project knowledge inside Skills.
-* Reference `../domain/`, `../rules/`, `../workflows/` and `../templates/` when
-  needed.
-* Prefer external Skills for generic capabilities.
+* Reference existing resources under `../rules/`, `../workflows/`, and
+  `../templates/` when needed.
+* Manage external Skills as ignored dependencies by default.
+* Commit an external Skill only when the project explicitly adopts its
+  maintenance.
 * Prefer local Skills for project-specific behavior.
-* Package and install complete Skills rather than copying partial files between
-  projects.
+* Keep adopted Skills explicit in the `.gitignore` allowlist.
 
 ---
 

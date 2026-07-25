@@ -22,7 +22,7 @@ active.
 Use the available task context:
 
 * backlog item summary;
-* developer request;
+* user request;
 * current conversation objective.
 
 ---
@@ -34,7 +34,7 @@ Use the available task context:
 Select exactly one primary profile from `../agents/`.
 
 Prefer the most specific relevant profile. If the task is ambiguous, ask the
-developer to confirm.
+user to confirm.
 
 ### 2. Load Profile
 

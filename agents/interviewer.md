@@ -1,6 +1,6 @@
 ---
 name: interviewer
-description: Collects missing structured context from the developer.
+description: Collects missing structured context from the user.
 model: inherit
 readonly: true
 ---

@@ -2,3 +2,13 @@
 plans/*
 !plans/README.md
 agentic.yaml
+skills/*
+!skills/README.md
+!skills/backlog/
+!skills/backlog/**
+!skills/markdown-doc-writer/
+!skills/markdown-doc-writer/**
+!skills/plan/
+!skills/plan/**
+!skills/write/
+!skills/write/**

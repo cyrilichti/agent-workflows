@@ -1,7 +1,7 @@
 ---
 name: backlog
 description: >-
-  Activate and execute the repository backlog workflow. Use when the developer
+  Activate and execute the repository backlog workflow. Use when the user
   invokes `/backlog` or `$backlog`, wants to select an assigned backlog item, or
   asks to prepare a work session from the configured backlog provider.
 disable-model-invocation: true
