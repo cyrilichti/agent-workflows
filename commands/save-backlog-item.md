@@ -1,10 +1,10 @@
-# Save Work Item
+# Save Item
 
-Create a new work item or update the authored fields of an existing item.
+Create a new item or update the authored fields of an existing item.
 
 ## Input
 
-- `provider`: resolved work item provider.
+- `provider`: resolved item provider.
 - `mode`: `create` or `update`.
 - `content`: confirmed title and free-form Markdown body.
 - `destination`: provider-specific creation destination, required for `create`.

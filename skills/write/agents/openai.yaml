@@ -1,4 +1,4 @@
 interface:
   display_name: "Write"
   short_description: "Write better items with the right Skills for your context"
-  default_prompt: "Use $write to turn my context into a clear work item."
+  default_prompt: "Use $write to turn my context into a clear item."

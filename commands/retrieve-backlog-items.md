@@ -13,7 +13,7 @@ Retrieve backlog items from a resolved provider.
 2. Use the provider operation named `retrieve-items`.
 3. Retrieve only backlog items matching `criteria`.
 4. Prefer provider-native filtering, then post-filter when needed.
-5. If no backlog item matches, tell the developer and stop without broadening
+5. If no backlog item matches, tell the user and stop without broadening
    the
    search.
 6. Return the matching backlog items to the caller.

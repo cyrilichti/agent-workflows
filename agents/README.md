@@ -8,7 +8,7 @@ well-defined task.
 
 Depending on the AI platform, agents may be:
 
-* selected explicitly by the developer;
+* selected explicitly by the user;
 * selected automatically by the AI based on the current task;
 * delegated as independent sub-agents working in parallel.
 

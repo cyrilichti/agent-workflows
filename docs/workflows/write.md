@@ -18,7 +18,7 @@ Skill that matches its current state:
 
 After each meaningful answer, `/write` re-evaluates the route until the work
 item is sufficiently defined. The selected Skill is shown when the route starts
-or changes, but its name is never included in the work item. `to-spec` is
+or changes, but its name is never included in the item. `to-spec` is
 selected only when the user explicitly wants a specification-oriented ticket.
 
 ## Confirmation

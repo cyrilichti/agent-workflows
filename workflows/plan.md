@@ -5,7 +5,7 @@
 Create a plan before implementation starts.
 
 This workflow turns existing task context, or context collected from the
-developer, into a plan file saved under `../plans/`.
+user, into a plan file saved under `../plans/`.
 
 ---
 
@@ -41,7 +41,7 @@ Optional context (use when available):
 Check whether the current conversation already provides the required context.
 
 If any required context is missing, activate `../agents/interviewer.md` and
-ask the developer only for the missing information.
+ask the user only for the missing information.
 
 The interviewer is only used to collect missing planning context. It does not
 become the sub-agent responsible for creating the plan.
@@ -63,7 +63,7 @@ Create a plan file following `../templates/plan.md`.
 
 Present the created plan using `../templates/plan-summary.md`.
 
-Ask the developer to approve or adjust the plan using
+Ask the user to approve or adjust the plan using
 `../templates/select-option.md` with:
 
 ```text
@@ -73,7 +73,7 @@ options:
 - Adjust plan
 ```
 
-If the developer selects `Adjust plan`, collect the requested adjustments,
+If the user selects `Adjust plan`, collect the requested adjustments,
 update the plan file, and present it for confirmation again.
 
 ---
@@ -95,4 +95,4 @@ This workflow is complete when:
 * the required context is known;
 * a specialized planning sub-agent is active;
 * a plan file exists under `../plans/`;
-* the developer has approved the plan.
+* the user has approved the plan.

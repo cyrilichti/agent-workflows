@@ -1,7 +1,7 @@
 ---
 name: plan
 description: >-
-  Activate and execute the repository planning workflow. Use when the developer
+  Activate and execute the repository planning workflow. Use when the user
   invokes `/plan` or `$plan`, or explicitly asks to create a plan before
   implementation.
 disable-model-invocation: true

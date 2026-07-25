@@ -5,7 +5,7 @@ Resolve a person who can be assigned to a backlog item.
 ## Input
 
 - `provider`: resolved backlog provider.
-- `query`: `me` or a developer-provided person name.
+- `query`: `me` or a user-provided person name.
 
 ## Steps
 

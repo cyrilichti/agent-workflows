@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Create or reformulate exactly one provider-backed work item, then optionally
+Create or reformulate exactly one provider-backed item, then optionally
 assign it.
 
 This workflow owns every provider interaction and stops after the confirmed
@@ -13,7 +13,7 @@ item has been saved and the explicit assignment choice has been honored.
 ## Entry Condition
 
 Run this workflow after `./play-book.md` selects `write`, when the `write` Skill
-is explicitly invoked, or when another workflow delegates work item
+is explicitly invoked, or when another workflow delegates item
 authoring to it.
 
 ---
@@ -21,11 +21,11 @@ authoring to it.
 ## Required Context
 
 Do not impose a shared ticket schema. An item is ready to confirm when the
-`work-item-writer` returns exactly one meaningful title and one free-form
-Markdown body using `../templates/work-item.md`.
+`item-writer` returns exactly one meaningful title and one free-form
+Markdown body using `../templates/item.md`.
 
 The item may be based on the current conversation, an existing item, or code,
-specifications, files, and URLs explicitly identified by the developer.
+specifications, files, and URLs explicitly identified by the user.
 
 Keep successful orchestration internal. User-facing interaction is limited to
 questions that require a choice or missing information, the proposed item,
@@ -58,14 +58,14 @@ only a missing, invalid, or unavailable provider.
 
 ### 2. Select Authoring Mode
 
-Ask the developer using `../templates/select-option.md` with:
+Ask the user using `../templates/select-option.md` with:
 
 ```text
 question: What do you want to write?
 options:
-- label: Create a new work item
+- label: Create a new item
   value: create
-- label: Reformulate an existing work item
+- label: Reformulate an existing item
   value: update
 ```
 
@@ -73,21 +73,21 @@ options:
 
 Skip this step when creating a new item.
 
-If the developer provides an item ID or URL, run
+If the user provides an item ID or URL, run
 `../commands/read-backlog-item.md` and validate the item.
 
 Otherwise, ask for the item title or a short title search phrase, then run
 `../commands/search-backlog-items.md`. Do not list every item available from the
 provider.
 
-- If no item matches, ask the developer to refine the search or stop.
+- If no item matches, ask the user to refine the search or stop.
 - If exactly one item matches, select it.
-- If multiple items match, ask the developer to select one using
+- If multiple items match, ask the user to select one using
   `../templates/select-option.md`. Use readable labels with title, status, and
   destination when available, and attach the provider ID as the internal value.
 
 Read the selected item with `../commands/read-backlog-item.md`. Identify the
-selected item to the developer using its title, status, and link when available.
+selected item to the user using its title, status, and link when available.
 Pass its official title and description to the writing sub-agent. Keep its
 provider fields in this workflow so unrequested fields remain unchanged.
 
@@ -95,24 +95,24 @@ provider fields in this workflow so unrequested fields remain unchanged.
 
 When creating an item, run `../commands/resolve-backlog-destination.md`.
 
-If no destination matches, ask the developer to refine the destination. If
+If no destination matches, ask the user to refine the destination. If
 exactly one destination matches, select it. If multiple destinations match, ask
-the developer to select one using `../templates/select-option.md`.
+the user to select one using `../templates/select-option.md`.
 
 Skip this step when reformulating an existing item.
 
 ### 5. Draft One Item
 
-Activate `../agents/work-item-writer.md` by loading its full profile and the
+Activate `../agents/item-writer.md` by loading its full profile and the
 resources it requires for the current context. Keep its activation internal.
 
 Give the sub-agent:
 
-- the developer's request and relevant conversation context;
+- the user's request and relevant conversation context;
 - the existing item title and description when reformulating;
 - only the code, specifications, files, or URLs explicitly identified by the
-  developer;
-- `../templates/work-item.md` as its output contract.
+  user;
+- `../templates/item.md` as its output contract.
 
 Let the sub-agent route and reroute its writing Skills as the context evolves.
 Continue focused exchanges until it returns exactly one sufficiently defined
@@ -125,25 +125,25 @@ useful result as returned content and suppress the side effect.
 
 ### 6. Confirm Item
 
-Validate that the proposal follows `../templates/work-item.md` and contains
+Validate that the proposal follows `../templates/item.md` and contains
 exactly one title and one free-form Markdown body.
 
-Present the proposal using `../templates/work-item-preview.md`, then ask using
+Present the proposal using `../templates/item-preview.md`, then ask using
 `../templates/select-option.md` with:
 
 ```text
-question: What do you want to do with this work item?
+question: What do you want to do with this item?
 options:
 - Save item
 - Adjust item
 ```
 
-If the developer selects `Adjust item`, give the requested changes to the
-active `work-item-writer`, let it reroute Skills when necessary, and present the
-revised proposal using `../templates/work-item-preview.md` for confirmation
+If the user selects `Adjust item`, give the requested changes to the
+active `item-writer`, let it reroute Skills when necessary, and present the
+revised proposal using `../templates/item-preview.md` for confirmation
 again.
 
-Do not continue until the developer explicitly selects `Save item`.
+Do not continue until the user explicitly selects `Save item`.
 
 ### 7. Resolve Optional Assignment
 
@@ -171,14 +171,14 @@ options:
   value: assign
 ```
 
-If the developer leaves the item unassigned or selects `keep`, do not run an
+If the user leaves the item unassigned or selects `keep`, do not run an
 assignment command.
 
 Otherwise, ask for `me` or a person name, then run
 `../commands/resolve-backlog-assignee.md`.
 
 If exactly one person matches, select that person. If multiple people match,
-ask the developer to select one using `../templates/select-option.md`. If no
+ask the user to select one using `../templates/select-option.md`. If no
 person matches, ask for a refined name. Do not choose implicitly.
 
 ### 8. Save Item and Apply Assignment Choice
@@ -202,14 +202,14 @@ state when available.
 ## Safety
 
 - Create or reformulate exactly one item.
-- Do not create or update an item before the developer confirms its final title
+- Do not create or update an item before the user confirms its final title
   and body.
 - Do not let the writing sub-agent call provider operations or perform side
   effects.
 - Do not treat search results as official item content before reading the
   selected item.
 - Do not update an item that has not been identified by provider ID.
-- Preserve existing provider fields that the developer did not ask to change.
+- Preserve existing provider fields that the user did not ask to change.
 - Do not expose provider IDs in selection labels.
 - Always ask for an assignment choice, including an option that performs no
   assignment.
@@ -226,5 +226,5 @@ This workflow is complete when:
 - exactly one item with a confirmed title and free-form Markdown body has been
   created or reformulated;
 - only the workflow has performed provider mutations;
-- the developer's explicit assignment choice has been honored;
+- the user's explicit assignment choice has been honored;
 - the saved item link and assignment state have been reported when available.

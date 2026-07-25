@@ -4,9 +4,9 @@
 
 Retrieve Linear issues assigned to a person.
 
-### Current Developer
+### Current User
 
-1. Retrieve issues assigned to the current developer:
+1. Retrieve issues assigned to the current user:
 
    ```text
    tool: list_issues
@@ -36,7 +36,7 @@ arguments:
 
 Prefer title matches. Return issue ID or identifier, title, state, team,
 project,
-and URL. Do not paginate unless the developer refines the search.
+and URL. Do not paginate unless the user refines the search.
 
 ## read-item
 
@@ -63,7 +63,7 @@ arguments:
 ```
 
 A team is required to create an issue. After the team is selected, list its
-projects when the developer wants to attach the issue to a project:
+projects when the user wants to attach the issue to a project:
 
 ```text
 tool: list_projects
@@ -115,7 +115,7 @@ arguments:
   description: confirmed free-form Markdown body, when changed
 ```
 
-Omit every field that the developer did not confirm changing.
+Omit every field that the user did not confirm changing.
 
 ## assign-item
 
@@ -138,4 +138,4 @@ Update a Linear issue status.
 2. Use the available Linear MCP operation for updating an issue's state.
 3. Pass the selected item ID and resolved state.
 
-Ask the developer only when multiple active-work states could match.
+Ask the user only when multiple active-work states could match.

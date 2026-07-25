@@ -14,7 +14,7 @@ supported entry point when it is ambiguous.
 
 ### `/write`
 
-Creates or reformulates one work item. A writer dynamically routes the relevant Skills and returns a title and Markdown body. `/write` confirms the proposal, saves it through the resolved
+Creates or reformulates one item. A writer dynamically routes the relevant Skills and returns a title and Markdown body. `/write` confirms the proposal, saves it through the resolved
 provider, then always offers an optional assignment choice.
 
 ### `/pick`

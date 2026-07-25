@@ -107,7 +107,7 @@ isProject: false
 - **Todos and Steps must match exactly**: same count, same order, same wording
   (`todos[].content` = corresponding numbered item under `## Steps`). Do not add
   todos without a matching step, or steps without a matching todo.
-- Use only the provided context and developer answers.
+- Use only the provided context and user answers.
 - Do not include implementation details that require codebase analysis unless
   that analysis has already happened.
 - Include an `## Open Questions` section only when unresolved questions remain.

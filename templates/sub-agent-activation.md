@@ -1,7 +1,7 @@
 # Sub-agent Activation
 
 Use when a sub-agent profile has been activated and the activation must be
-reported to the developer.
+reported to the user.
 
 ## Format (Markdown)
 

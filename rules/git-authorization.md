@@ -4,7 +4,7 @@ Do not run Git merely because the current directory is a repository.
 
 Use Git only when:
 
-- the developer explicitly requests a Git-related operation; or
+- the user explicitly requests a Git-related operation; or
 - an applicable project instruction explicitly requires Git for the current
   task.
 

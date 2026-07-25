@@ -1,11 +1,11 @@
-# Work Item Preview
+# Item Preview
 
-Use this template when presenting one proposed work item for confirmation.
+Use this template when presenting one proposed item for confirmation.
 
 ## Format (Markdown)
 
 ```markdown
-## <work item title>
+## <item title>
 
 <free-form Markdown body>
 ```

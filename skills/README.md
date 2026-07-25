@@ -55,8 +55,8 @@ workflow that owns it:
 ---
 name: write
 description: >-
-  Activate and execute the repository work item authoring workflow. Use when
-  the developer wants to create or reformulate one work item.
+  Activate and execute the repository item authoring workflow. Use when
+  the user wants to create or reformulate one item.
 disable-model-invocation: true
 ---
 
