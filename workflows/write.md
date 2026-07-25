@@ -156,17 +156,21 @@ options:
 - Assign item
 ```
 
-When reformulating an existing item, ask with:
+When reformulating an existing item, include the current assignee names in the
+`keep` option label. Use `Unassigned` when empty and `Unavailable` when the
+provider did not return assignment information.
 
 ```text
 question: What should happen to assignment?
 options:
-- Keep current assignment
-- Assign or reassign item
+- label: Keep current assignment: <assignee names, Unassigned, or Unavailable>
+  value: keep
+- label: Assign or reassign item
+  value: assign
 ```
 
-If the developer leaves the item unassigned or keeps its current assignment,
-do not run an assignment command.
+If the developer leaves the item unassigned or selects `keep`, do not run an
+assignment command.
 
 Otherwise, ask for `me` or a person name, then run
 `../commands/resolve-backlog-assignee.md`.
