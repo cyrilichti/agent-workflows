@@ -5,12 +5,11 @@
 Prepare a work session from a configured backlog provider.
 
 This workflow resolves the backlog context source, selects the item to start,
-retrieves and summarizes its context, delegates to the plan workflow, then marks
-the selected item as in progress.
+retrieves and summarizes its context, delegates to `/plan`, then resumes after
+plan approval to mark the selected item as in progress and trigger `/work`.
 
-It stops before implementation. Its outcome is a ready-to-start work session
-with a clear backlog item, source context, approved plan, and active backlog
-status.
+Its outcome is an active backlog item, an approved plan, and a handoff to
+implementation.
 
 ---
 
@@ -107,7 +106,8 @@ Create a plan by following `./plan.md`.
 
 Provide the selected backlog item summary, provider ID, and context.
 
-Continue only after the plan workflow has completed successfully.
+Continue only after the plan workflow has completed successfully and returned
+control to this workflow.
 
 ### 6. Start Backlog Item
 
@@ -121,6 +121,12 @@ target_status: in progress
 
 Report the updated backlog item status to the user.
 
+### 7. Start Work
+
+Start implementation by following `./work.md`.
+
+Provide the approved plan and the active backlog item context.
+
 ---
 
 ## Safety
@@ -133,6 +139,8 @@ Report the updated backlog item status to the user.
 * Do not proceed from summarization to planning without presenting the ticket
   summary to the user first.
 * Do not update the backlog item status before the plan has been approved.
+* Do not trigger `/work` before the selected backlog item has been moved to
+  the active-work status.
 * Do not select or activate a specialist sub-agent in this workflow. The plan
   workflow owns planning sub-agent selection after required context is known.
 
@@ -147,5 +155,7 @@ This workflow is complete when:
   matches have been explicitly reported;
 * one official backlog item has been selected;
 * the selected backlog item has been summarized;
-* the plan workflow has completed successfully with user approval;
-* the selected backlog item has been moved to the active-work status.
+* the plan workflow has completed successfully with user approval and returned
+  control to this workflow;
+* the selected item has been moved to the in progress status;
+* `/work` has been triggered with the approved plan.

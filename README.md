@@ -14,20 +14,20 @@ supported entry point when it is ambiguous.
 
 ### `/write`
 
-Creates or reformulates one item. A writer dynamically routes the relevant Skills and returns a title and Markdown body. `/write` confirms the proposal, saves it through the resolved
+Creates or reformulates one item. A writer dynamically routes the relevant Skills. `/write` confirms the proposal, saves it through the resolved
 provider, then always offers an optional assignment choice.
 
 ### `/pick`
 
-Selects an official, startable backlog item from the configured provider. It
-loads and summarizes the source context with ticket template, then triggers
-`plan`. The item becomes active only after planning succeeds.
+Selects item from the configured provider. It loads and summarizes it, triggers `/plan`, moves the item to in progress and triggers `/work`.
 
 ### `/plan`
 
-Completes missing task context through the interviewer, activates the adapted
-technical sub-agent, and creates a plan with template cursor rendering
-compatible. Once the plan is approved, it triggers `work`.
+Creates an approved plan before implementation. Completes missing task context
+through the interviewer, activates the adapted technical sub-agent, and writes
+a Cursor-compatible plan file.
+
+`/plan` stays autonomous: it can run alone without item.
 
 ### `/work`
 
@@ -83,8 +83,10 @@ by the submodule.
 
 - [x] `/write`: create or reformulate exactly one item, confirm it, save it,
   optionally assign it, and stop.
-- [ ] `/pick`: expose the existing backlog selection and trigger `/plan`.
-- [ ] `/plan`: trigger `/work` after the plan is approved.
+- [ ] `/pick`: select and summarize a backlog item, trigger `/plan`, activate
+  the item after approval, then trigger `/work`.
+- [ ] `/plan`: create and approve a plan standalone or when called by another
+  workflow; return to the caller without triggering `/work`.
 - [ ] `/work`: execute the plan and trigger `/ready` on success.
 - [ ] `/ready`: run completion gates, then return to `/work` or trigger
   `/review`.

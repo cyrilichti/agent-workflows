@@ -14,9 +14,10 @@ user, into a plan file saved under `../plans/`.
 Run this workflow in one of these modes:
 
 * **Workflow mode**: another workflow calls this workflow and provides the task
-  context.
+  context. After approval, return control to the caller.
 * **Standalone mode**: `./play-book.md` selects `plan`, or the `plan` skill is
   explicitly invoked, with no prior task context or specialized sub-agent.
+  After approval, stop.
 
 ---
 
@@ -76,6 +77,13 @@ options:
 If the user selects `Adjust plan`, collect the requested adjustments,
 update the plan file, and present it for confirmation again.
 
+### 5. Return or Stop
+
+After the plan is approved:
+
+* in workflow mode, return control to the calling workflow;
+* in standalone mode, stop.
+
 ---
 
 ## Safety
@@ -95,4 +103,6 @@ This workflow is complete when:
 * the required context is known;
 * a specialized planning sub-agent is active;
 * a plan file exists under `../plans/`;
-* the user has approved the plan.
+* the user has approved the plan;
+* control has been returned to the caller in workflow mode, or the workflow has
+  stopped in standalone mode.
