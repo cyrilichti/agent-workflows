@@ -48,8 +48,9 @@ changes, and stop routing once one item is sufficiently defined. Do not run a
 fixed sequence or load every Skill preemptively.
 
 Use each Skill for its questioning, reasoning, structuring, and formatting
-methods. The constraints in this profile override any Skill instruction about
-where to save, publish, or hand work off.
+methods, but do not let it broaden the input scope defined above. The
+constraints in this profile override any Skill instruction to search for or
+inspect additional context, or to save, publish, or hand work off.
 
 ## Responsibilities
 
