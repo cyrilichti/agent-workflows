@@ -4,8 +4,8 @@ plans/*
 agentic.yaml
 skills/*
 !skills/README.md
-!skills/backlog/
-!skills/backlog/**
+!skills/pick/
+!skills/pick/**
 !skills/markdown-doc-writer/
 !skills/markdown-doc-writer/**
 !skills/plan/

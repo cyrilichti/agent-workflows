@@ -1,4 +1,4 @@
-# Backlog
+# Pick
 
 ## Purpose
 
@@ -16,8 +16,8 @@ status.
 
 ## Entry Condition
 
-Run this workflow after `./play-book.md` selects `backlog`, or when the
-`backlog` skill is explicitly invoked.
+Run this workflow after `./play-book.md` selects `pick`, or when the
+`pick` skill is explicitly invoked.
 
 If the user provides a item ID or URL, retrieve it from the configured
 context provider and validate that it can be used for this workflow.
