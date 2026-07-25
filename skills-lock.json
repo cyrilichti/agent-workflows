@@ -3,28 +3,24 @@
   "skills": {
     "grilling": {
       "source": "mattpocock/skills",
-      "ref": "main",
       "sourceType": "github",
       "skillPath": "skills/productivity/grilling/SKILL.md",
       "computedHash": "368d3dd7251247c69f3656d93dc83c8f1577792eacac2111f1e7981db2ece49b"
     },
     "idea-refine": {
       "source": "addyosmani/agent-skills",
-      "ref": "main",
       "sourceType": "github",
       "skillPath": "skills/idea-refine/SKILL.md",
       "computedHash": "9fc0ae5d8a074872a636d22f9c6fe71e041b86cddc9fe5af90ef654f5032ec5d"
     },
     "interview-me": {
       "source": "addyosmani/agent-skills",
-      "ref": "main",
       "sourceType": "github",
       "skillPath": "skills/interview-me/SKILL.md",
       "computedHash": "efded91ac7f7626239b338ce8622afeb557151b86532b632f3c9eb5b2ff9048f"
     },
     "to-spec": {
       "source": "mattpocock/skills",
-      "ref": "main",
       "sourceType": "github",
       "skillPath": "skills/engineering/to-spec/SKILL.md",
       "computedHash": "0f544cd0c099c06f0dd0b7b9ee98b4237218e7e95fd3d3c02e791efbaf74bacb"
