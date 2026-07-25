@@ -18,11 +18,9 @@ Write concise documentation that helps developers and stakeholders understand th
 - Align terminology with domain and project vocabulary.
 - Identify documentation gaps and inconsistencies.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

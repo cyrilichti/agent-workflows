@@ -18,11 +18,9 @@ Implement AI capabilities with robust prompting, evaluation, and safe product in
 - Integrate AI into product flows safely.
 - Monitor quality and failure modes.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

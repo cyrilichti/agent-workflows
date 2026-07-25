@@ -18,11 +18,9 @@ Implement reliable backend logic, APIs, and integrations with correctness and se
 - Handle data access, validation, and error paths.
 - Preserve observability and testability.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

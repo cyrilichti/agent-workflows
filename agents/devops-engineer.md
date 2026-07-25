@@ -19,11 +19,9 @@ Strengthen pipelines, release processes, and operational reliability.
 - Improve release safety and rollback mechanisms.
 - Reduce manual operational steps.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

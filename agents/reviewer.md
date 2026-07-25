@@ -18,11 +18,9 @@ Identify defects, regressions, and convention drift in proposed changes.
 - Identify security and performance risks.
 - Report findings by severity with actionable recommendations.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

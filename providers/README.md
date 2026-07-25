@@ -22,10 +22,10 @@ provides criteria; the provider explains how to execute them.
 
 Each provider file should define reusable operations such as:
 
-- `retrieve-work-items`
-- `read-work-item`
-- `update-work-item-status`
+- `retrieve-items`
+- `read-item`
+- `update-item-status`
 
-When a command needs a provider, load `.agents/providers/<provider>.md` and use
+When a command needs a provider, load `./<provider>.md` and use
 the documented operation. Do not inspect provider documentation unless the
 adapter is missing or incomplete.

@@ -18,11 +18,9 @@ Create focused test coverage for critical behaviors, edge cases, and regressions
 - Cover edge cases and error paths.
 - Keep tests reliable, fast, and maintainable.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

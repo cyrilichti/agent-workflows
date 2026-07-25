@@ -24,7 +24,7 @@ Use this directory to:
 Each local Skill lives in its own directory.
 
 ```text
-skills/
+./
 ├── README.md
 └── ticket-writing/
     ├── SKILL.md
@@ -96,7 +96,7 @@ Use local Skills when the capability depends on this project, its domain, its te
 * One Skill should cover one reusable capability.
 * Keep `SKILL.md` short and action-oriented.
 * Do not duplicate project knowledge inside Skills.
-* Reference `domain/`, `rules/`, `workflows/` and `templates/` when needed.
+* Reference `../domain/`, `../rules/`, `../workflows/` and `../templates/` when needed.
 * Prefer external Skills for generic capabilities.
 * Prefer local Skills for project-specific behavior.
 * Package and install complete Skills rather than copying partial files between projects.

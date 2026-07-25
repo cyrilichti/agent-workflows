@@ -1,6 +1,6 @@
 ---
 name: business-rules
-description: Framework for eliciting, documenting, and validating business rules during requirements discovery. Use when identifying business policies and constraints, documenting calculation and derivation rules, creating decision tables, analyzing rule interactions, or producing domain knowledge files in `.agents/domain/`.
+description: Framework for eliciting, documenting, and validating business rules during requirements discovery. Use when identifying business policies and constraints, documenting calculation and derivation rules, creating decision tables, analyzing rule interactions, or producing domain knowledge files in `../../../docs/`.
 allowed-tools: Read, Glob, Grep, Edit, Write
 ---
 

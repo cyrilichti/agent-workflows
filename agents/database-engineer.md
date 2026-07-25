@@ -18,11 +18,9 @@ Optimize data models and queries while preserving integrity and migration safety
 - Plan safe migrations and rollbacks.
 - Ensure data integrity and consistency.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

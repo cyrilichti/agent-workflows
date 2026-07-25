@@ -18,11 +18,9 @@ Refine scope, prioritize value, and align deliverables with product goals.
 - Define acceptance criteria for deliverables.
 - Surface trade-offs between scope, time, and quality.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

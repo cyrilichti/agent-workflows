@@ -18,11 +18,9 @@ Deliver complete features across layers with consistent contracts and minimal re
 - Coordinate data flow and error handling end to end.
 - Validate critical paths across layers.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

@@ -1,3 +1,5 @@
 .cursor/mcp.json
 .cursor/plans
+plans/*
+!plans/README.md
 agentic.yaml

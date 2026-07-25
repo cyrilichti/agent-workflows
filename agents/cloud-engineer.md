@@ -18,11 +18,9 @@ Design cloud-ready solutions with cost, security, scalability, and operational s
 - Optimize operational costs.
 - Improve reliability and security.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 

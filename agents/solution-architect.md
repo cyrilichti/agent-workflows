@@ -18,11 +18,9 @@ Design end-to-end solutions across systems with clear interfaces and rollout str
 - Plan rollout and migration strategy.
 - Align solutions with business constraints.
 
-## Consult First
+## Skills
 
-- ../rules/
-- ../domain/
-- ../workflows/
+- ../skills/markdown-doc-writer/SKILL.md
 
 ## Constraints
 
