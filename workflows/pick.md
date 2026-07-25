@@ -95,7 +95,11 @@ fields:
   - attachments
 ```
 
-Present a brief summary using `../templates/ticket-summary.md`.
+Present the summary to the user using `../templates/ticket-summary.md`.
+
+Do not continue to the next step until that summary has been shown in the
+conversation. Do not fold the summary into the plan workflow, interviewer
+questions, or any other later step.
 
 ### 5. Create Plan
 
@@ -126,6 +130,8 @@ Report the updated backlog item status to the user.
 * Prefer direct deterministic filtering over exploratory MCP probing.
 * Do not proceed from backlog retrieval to summarization without rendering the
   backlog item selection.
+* Do not proceed from summarization to planning without presenting the ticket
+  summary to the user first.
 * Do not update the backlog item status before the plan has been approved.
 * Do not select or activate a specialist sub-agent in this workflow. The plan
   workflow owns planning sub-agent selection after required context is known.
