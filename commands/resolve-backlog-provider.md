@@ -4,7 +4,8 @@ Resolve the MCP provider configured for a workflow.
 
 ## Input
 
-- `workflow`: current workflow name, for example `backlog` or `review`.
+- `workflow`: backlog provider context key under `mcp.<workflow>` in
+  `agentic.yaml`, for example `backlog` or `review`.
 
 ## Steps
 
