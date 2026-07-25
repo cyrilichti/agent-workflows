@@ -39,7 +39,8 @@ Load only the additional Skill needed for the current context:
 - ../skills/interview-me/SKILL.md when the request is insufficiently defined;
 - ../skills/idea-refine/SKILL.md while the idea remains open;
 - ../skills/grilling/SKILL.md when decisions need deep challenge;
-- ../skills/to-spec/SKILL.md when the item has become a genuine specification.
+- ../skills/to-spec/SKILL.md only when the developer explicitly asks to turn
+  the item into a full, structured specification.
 
 Re-evaluate the route after each meaningful answer or new source. Keep the
 current Skill while it remains appropriate, replace it when the context
