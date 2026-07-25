@@ -20,5 +20,5 @@ Create a new item or update the authored fields of an existing item.
 4. Return the saved item ID, title, link, and destination when available.
 
 Do not change status, assignment, or provider fields outside the confirmed
-content. Do not persist workflow metadata supplied alongside the authored
-title and body.
+content. Persist only the confirmed title and Markdown body as authored
+content.
