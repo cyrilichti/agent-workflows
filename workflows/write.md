@@ -128,7 +128,8 @@ useful result as returned content and suppress the side effect.
 Validate that the proposal follows `../templates/work-item.md` and contains
 exactly one title and one free-form Markdown body.
 
-Present the proposal and ask using `../templates/select-option.md` with:
+Present the proposal using `../templates/work-item-preview.md`, then ask using
+`../templates/select-option.md` with:
 
 ```text
 question: What do you want to do with this work item?
@@ -139,7 +140,8 @@ options:
 
 If the developer selects `Adjust item`, give the requested changes to the
 active `work-item-writer`, let it reroute Skills when necessary, and present the
-revised proposal for confirmation again.
+revised proposal using `../templates/work-item-preview.md` for confirmation
+again.
 
 Do not continue until the developer explicitly selects `Save item`.
 
