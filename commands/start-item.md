@@ -1,6 +1,6 @@
-# Start Backlog Item
+# Start Item
 
-Move the selected backlog item to the provider status used for active work.
+Move the selected item to the provider status used for active work.
 
 ## Input
 

@@ -1,7 +1,6 @@
 # Ticket Summary
 
-Use this template when presenting a backlog item for confirmation or planning
-context.
+Use this template when presenting an item for confirmation or planning context.
 
 Read the item content internally to synthesize the sections below. Do not
 dump the raw content unless the user asks for it.

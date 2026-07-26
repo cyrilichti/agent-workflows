@@ -32,7 +32,7 @@ Rules:
 - `{YYYY-MM-DD}` — plan creation date (ISO 8601).
 - `{slug}` — kebab-case summary of the objective (lowercase, `[a-z0-9-]`, max 40
   characters).
-- When a backlog provider ID is available, insert it before the slug:
+- When an item provider ID is available, insert it before the slug:
   `{YYYY-MM-DD}-{provider-id}-{slug}`
 - If the target file already exists, append a numeric suffix: `-2`, `-3`, etc.
 

@@ -11,7 +11,7 @@ Base name:
 
 ```text
 {YYYY-MM-DD}-{slug}
-{YYYY-MM-DD}-{provider-id}-{slug}   # when a backlog item ID is available
+{YYYY-MM-DD}-{provider-id}-{slug}   # when an item ID is available
 ```
 
 See `../templates/plan.md` for full naming rules.

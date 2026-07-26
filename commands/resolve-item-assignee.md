@@ -1,10 +1,10 @@
-# Resolve Backlog Assignee
+# Resolve Item Assignee
 
-Resolve a person who can be assigned to a backlog item.
+Resolve a person who can be assigned to an item.
 
 ## Input
 
-- `provider`: resolved backlog provider.
+- `provider`: resolved item provider.
 - `query`: `me` or a user-provided person name.
 
 ## Steps

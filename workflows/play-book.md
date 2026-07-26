@@ -27,8 +27,8 @@ user starts a new unrelated task, and no playbook has been selected.
    ```text
    question: Which type of task do you want to start?
    options:
-   - Write a backlog item
-   - Pick a backlog item
+   - Write an item
+   - Pick an item
    - Create a plan
    - Other
    ```
@@ -37,8 +37,8 @@ user starts a new unrelated task, and no playbook has been selected.
 
 3. Delegate execution to the corresponding workflow:
 
-   * Write a backlog item → `./write.md`
-   * Pick a backlog item → `./pick.md`
+   * Write an item → `./write.md`
+   * Pick an item → `./pick.md`
    * Create a plan → `./plan.md`
 
 4. Stop this workflow after delegating to the selected playbook.

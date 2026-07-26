@@ -1,7 +1,7 @@
 ---
 name: pick
 description: >-
-  Select a backlog item and create a
+  Select an item and create a
   plan for it. Use when explicitly invoked with `/pick` or `$pick`.
 disable-model-invocation: true
 ---

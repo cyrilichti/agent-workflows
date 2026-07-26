@@ -3,16 +3,13 @@
 #
 # MCP server endpoints are configured by each AI tool, not in this file.
 # This file only tells Agentic Engineering which MCP provider to use for each
-# workflow context.
+# provider context.
 
 mcp:
-  backlog:
+  item:
     provider: clickup
 
   # Examples:
-  #
-  # backlog-item:
-  #   provider: linear
   #
   # review:
   #   provider: gitlab

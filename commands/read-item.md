@@ -1,10 +1,10 @@
-# Read Backlog Item
+# Read Item
 
-Read one official backlog item from a configured provider.
+Read one official item from a configured provider.
 
 ## Input
 
-- `provider`: resolved backlog provider.
+- `provider`: resolved item provider.
 - `item_id`: provider item ID or an ID resolved from a provider URL.
 - `fields`: optional caller-requested fields in addition to the core item.
 

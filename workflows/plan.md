@@ -31,7 +31,7 @@ A plan needs:
 
 Optional context (use when available):
 
-* backlog provider ID (for file naming).
+* item provider ID (for file naming).
 
 ---
 

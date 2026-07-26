@@ -1,4 +1,4 @@
 interface:
   display_name: "Pick"
-  short_description: "Start work from the assigned backlog"
-  default_prompt: "Use $pick to select a backlog item and create a plan for it."
+  short_description: "Start work from assigned items"
+  default_prompt: "Use $pick to select an item and create a plan for it."

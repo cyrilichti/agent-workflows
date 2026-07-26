@@ -13,7 +13,7 @@ import { Badge } from '@astrojs/starlight/components'
 A provider connects a workflow concept to the external system that owns its
 data.
 
-| Workflow concept | ClickUp | Linear |
+| Provider concept | ClickUp | Linear |
 | --- | --- | --- |
 | Item | Task | Issue |
 | Destination | List | Team and optional project |
@@ -25,13 +25,13 @@ Workflows define **what** happens. Providers define **how**.
 ## Select a provider
 
 With `agentic.yaml` already created, select the item provider through
-`mcp.backlog.provider`.
+`mcp.item.provider`.
 
 Use ClickUp:
 
 ```yaml
 mcp:
-  backlog:
+  item:
     provider: clickup
 ```
 
@@ -39,7 +39,7 @@ Or use Linear:
 
 ```yaml
 mcp:
-  backlog:
+  item:
     provider: linear
 ```
 
