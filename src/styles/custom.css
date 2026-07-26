@@ -52,7 +52,7 @@
   border: 1px solid #292d32;
   border-radius: 1.1rem;
   background:
-    radial-gradient(circle at 70% 15%, rgba(167, 243, 196, 0.11), transparent 35%),
+    radial-gradient(circle at 70% 15%, rgba(96, 165, 250, 0.07), transparent 38%),
     linear-gradient(145deg, #111316, #090a0c 72%);
   box-shadow: 0 2rem 5rem rgba(0, 0, 0, 0.36);
   color: var(--sl-color-white);
@@ -131,8 +131,8 @@
 }
 
 .workflow-hero-step--active {
-  border-color: rgba(167, 243, 196, 0.42);
-  background: rgba(34, 197, 94, 0.07);
+  border-color: rgba(96, 165, 250, 0.5);
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .workflow-hero-step__index {
@@ -167,7 +167,7 @@
 }
 
 .workflow-hero-step--active strong {
-  color: #a7f3c4;
+  color: #93c5fd;
   font-family: var(--sl-font-mono);
 }
 
@@ -237,9 +237,9 @@
 }
 
 .workflow-hero-skills .workflow-hero-skill--active {
-  border-color: rgba(167, 243, 196, 0.5);
-  background: rgba(34, 197, 94, 0.1);
-  color: #a7f3c4;
+  border-color: rgba(96, 165, 250, 0.5);
+  background: rgba(59, 130, 246, 0.1);
+  color: #93c5fd;
 }
 
 .workflow-hero-provider {
@@ -258,9 +258,92 @@
 }
 
 .workflow-hero-provider .workflow-hero-provider--active {
-  border-color: rgba(167, 243, 196, 0.5);
-  background: rgba(34, 197, 94, 0.1);
-  color: #a7f3c4;
+  border-color: rgba(96, 165, 250, 0.5);
+  background: rgba(59, 130, 246, 0.1);
+  color: #93c5fd;
+}
+
+:root[data-theme="light"] .workflow-hero-media {
+  border-color: #d7ded9;
+  background:
+    radial-gradient(circle at 70% 15%, rgba(59, 130, 246, 0.065), transparent 38%),
+    linear-gradient(145deg, #fcfdfc, #f2f5f3 72%);
+  box-shadow: 0 2rem 5rem rgba(22, 36, 28, 0.16);
+  color: #17201b;
+}
+
+:root[data-theme="light"] .workflow-hero-media::before {
+  background-image:
+    linear-gradient(rgba(22, 36, 28, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(22, 36, 28, 0.045) 1px, transparent 1px);
+}
+
+:root[data-theme="light"] .workflow-hero-media__bar {
+  border-bottom-color: #dce2de;
+}
+
+:root[data-theme="light"] .workflow-hero-media__bar code,
+:root[data-theme="light"] .workflow-hero-step em,
+:root[data-theme="light"] .workflow-hero-skills li,
+:root[data-theme="light"] .workflow-hero-provider span {
+  color: #59655e;
+}
+
+:root[data-theme="light"] .workflow-hero-media__lights i {
+  background: #c6cec9;
+}
+
+:root[data-theme="light"] .workflow-hero-media__lights i:nth-child(2) {
+  background: #93a299;
+}
+
+:root[data-theme="light"] .workflow-hero-media__lights i:nth-child(3) {
+  background: #4f9d6d;
+}
+
+:root[data-theme="light"] .workflow-hero-media__status,
+:root[data-theme="light"] .workflow-hero-skills > div span {
+  color: #15803d;
+}
+
+:root[data-theme="light"] .workflow-hero-step,
+:root[data-theme="light"] .workflow-hero-skills {
+  border-color: #d7ded9;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+:root[data-theme="light"] .workflow-hero-step--active {
+  border-color: rgba(37, 99, 235, 0.4);
+  background: rgba(59, 130, 246, 0.09);
+}
+
+:root[data-theme="light"] .workflow-hero-step__index,
+:root[data-theme="light"] .workflow-hero-step small,
+:root[data-theme="light"] .workflow-hero-skills small,
+:root[data-theme="light"] .workflow-hero-provider small,
+:root[data-theme="light"] .workflow-hero-connector small {
+  color: #6c7871;
+}
+
+:root[data-theme="light"] .workflow-hero-step--active strong {
+  color: #1d4ed8;
+}
+
+:root[data-theme="light"] .workflow-hero-connector span {
+  background: #c9d1cc;
+}
+
+:root[data-theme="light"] .workflow-hero-skills li,
+:root[data-theme="light"] .workflow-hero-provider span {
+  border-color: #d1d9d4;
+  background: rgba(255, 255, 255, 0.38);
+}
+
+:root[data-theme="light"] .workflow-hero-skills .workflow-hero-skill--active,
+:root[data-theme="light"] .workflow-hero-provider .workflow-hero-provider--active {
+  border-color: rgba(37, 99, 235, 0.4);
+  background: rgba(59, 130, 246, 0.09);
+  color: #1d4ed8;
 }
 
 @media (min-width: 64rem) {
