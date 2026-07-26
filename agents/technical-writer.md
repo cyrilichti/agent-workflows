@@ -19,10 +19,6 @@ the system.
 - Align terminology with domain and project vocabulary.
 - Identify documentation gaps and inconsistencies.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

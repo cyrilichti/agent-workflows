@@ -19,10 +19,6 @@ controllability.
 - Identify failure modes and edge cases.
 - Recommend prompt patterns and guardrails.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

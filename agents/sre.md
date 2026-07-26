@@ -19,10 +19,6 @@ reliability practices.
 - Recommend resilience and failover improvements.
 - Review observability and runbook coverage.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

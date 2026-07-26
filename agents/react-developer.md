@@ -19,10 +19,6 @@ patterns.
 - Preserve accessibility and performance.
 - Keep component boundaries clear and testable.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

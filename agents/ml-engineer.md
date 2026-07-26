@@ -18,10 +18,6 @@ Operationalize ML systems with reproducible training and monitored serving.
 - Monitor model performance in production.
 - Manage feature stores and model artifacts.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

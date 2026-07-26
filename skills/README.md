@@ -14,23 +14,18 @@ capabilities that an agent can invoke when needed.
 
 Use this directory to:
 
-* store project-specific Skills;
-* document which external Skills are recommended for this project;
-* reference Skills installed from the public registry;
-* keep project Skills close to the code when they depend on project conventions.
-
+* expose thin local bridges to repository workflows;
+* document the external Skills used by the project;
 ---
 
 ## Organization
 
-Each local Skill lives in its own directory.
+Each Skill lives in its own directory and belongs to one of two categories:
 
 ```text
 ./
 ├── README.md
-├── write/                  # Local workflow bridge
-│   └── SKILL.md
-├── markdown-doc-writer/    # Adopted and committed
+├── <workflow>/             # Local workflow bridge, committed
 │   └── SKILL.md
 └── <managed-external>/     # Restored and ignored
     └── SKILL.md
@@ -46,10 +41,13 @@ Supporting folders are optional:
 
 ---
 
-## Example
+## Local Workflow Bridges
 
-A local bridge keeps Skill discovery thin and delegates orchestration to the
-workflow that owns it:
+The only Skills maintained and committed by this project are thin discovery
+bridges. They delegate orchestration to the repository workflow that owns it
+instead of duplicating workflow instructions.
+
+Example:
 
 ```markdown
 ---
@@ -70,8 +68,15 @@ Read `../../workflows/write.md` completely, then follow it exactly.
 ## External Skills
 
 External Skills are dependencies by default. Record them in `skills-lock.json`,
-ignore their installed directories, and restore them with the installation
-workflow documented in the root `README.md`.
+ignore their installed directories, and restore them from the lock file:
+
+```bash
+npx skills experimental_install
+```
+
+No third-party Skill is adopted or committed by this project. Its reviewed
+source, updates, and maintenance remain the responsibility of its upstream
+owner.
 
 Reference:
 
@@ -87,22 +92,6 @@ npx skills add <owner/repo>
 Use managed external Skills when they provide a generic capability that should
 remain owned and updated by their upstream project.
 
-### Adopted Skills
-
-An external Skill may instead be adopted and committed here when consuming its
-upstream dependency is disproportionate, unreliable, or incompatible with this
-project's installation workflow.
-
-Adopting a Skill means this project takes ownership of its reviewed source,
-future maintenance, and any deliberate adaptations. Add each adopted Skill to
-the explicit allowlist in `.gitignore`; do not add it to `skills-lock.json`.
-
-`markdown-doc-writer` is adopted because cloning its upstream repository to
-install this single Skill is prohibitively expensive.
-
-Use local Skills when the capability depends on this project, its domain, its
-templates, or its internal workflows.
-
 ---
 
 ## Best Practices
@@ -112,11 +101,9 @@ templates, or its internal workflows.
 * Do not duplicate project knowledge inside Skills.
 * Reference existing resources under `../rules/`, `../workflows/`, and
   `../templates/` when needed.
-* Manage external Skills as ignored dependencies by default.
-* Commit an external Skill only when the project explicitly adopts its
-  maintenance.
-* Prefer local Skills for project-specific behavior.
-* Keep adopted Skills explicit in the `.gitignore` allowlist.
+* Keep local bridges limited to discovery and workflow delegation.
+* Manage external Skills as restored, ignored dependencies.
+* Keep external Skill ownership and maintenance upstream.
 
 ---
 

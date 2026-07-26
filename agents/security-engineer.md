@@ -19,10 +19,6 @@ impact.
 - Identify vulnerabilities and misconfigurations.
 - Recommend mitigations ranked by severity.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

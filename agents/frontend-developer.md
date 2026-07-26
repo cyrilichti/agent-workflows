@@ -19,10 +19,6 @@ maintainability.
 - Preserve accessibility and responsive behavior.
 - Keep UI aligned with product requirements.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

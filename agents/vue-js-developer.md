@@ -19,10 +19,6 @@ long-term maintainability.
 - Optimize rendering performance and bundle impact.
 - Keep frontend behavior aligned with product requirements.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

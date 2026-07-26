@@ -19,10 +19,6 @@ integration.
 - Integrate AI into product flows safely.
 - Monitor quality and failure modes.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

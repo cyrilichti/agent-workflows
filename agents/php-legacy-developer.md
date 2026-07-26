@@ -19,10 +19,6 @@ enabling gradual modernization.
 - Add safeguards around fragile code paths.
 - Document technical debt and modernization opportunities.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

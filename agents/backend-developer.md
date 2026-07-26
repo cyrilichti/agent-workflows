@@ -19,10 +19,6 @@ security.
 - Handle data access, validation, and error paths.
 - Preserve observability and testability.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

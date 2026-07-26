@@ -19,10 +19,6 @@ needs.
 - Identify ambiguities and decision gaps.
 - Align terminology with domain vocabulary.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

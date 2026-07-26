@@ -19,10 +19,6 @@ clearly.
 - Validate assumptions and measure performance.
 - Communicate results with limitations and confidence.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

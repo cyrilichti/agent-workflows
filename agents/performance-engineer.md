@@ -18,10 +18,6 @@ Detect bottlenecks and propose measurable performance improvements.
 - Define performance verification criteria.
 - Review resource usage and scalability risks.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

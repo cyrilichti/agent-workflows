@@ -22,10 +22,6 @@ Elicit the minimum context required by the calling workflow.
 
 - ../rules/default-language.md
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Ask only for context required by the calling workflow.

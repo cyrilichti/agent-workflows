@@ -30,11 +30,7 @@ identified by the caller or user.
 
 ## Skill Routing
 
-Always load:
-
-- ../skills/markdown-doc-writer/SKILL.md
-
-Load only the additional Skill needed for the current context:
+Load only the Skill needed for the current context:
 
 - ../skills/interview-me/SKILL.md when the request is insufficiently defined;
 - ../skills/idea-refine/SKILL.md while the idea remains open;

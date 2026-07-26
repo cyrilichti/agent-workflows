@@ -19,10 +19,6 @@ simplicity in mind.
 - Optimize operational costs.
 - Improve reliability and security.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

@@ -19,10 +19,6 @@ safety.
 - Plan safe migrations and rollbacks.
 - Ensure data integrity and consistency.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

@@ -19,10 +19,6 @@ strategy.
 - Plan rollout and migration strategy.
 - Align solutions with business constraints.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

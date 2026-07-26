@@ -19,10 +19,6 @@ regressions.
 - Coordinate data flow and error handling end to end.
 - Validate critical paths across layers.
 
-## Skills
-
-- ../skills/markdown-doc-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.
