@@ -1,36 +1,50 @@
-# `/pick`
+---
+title: /pick
+description: Prepare one ready item for implementation with an approved plan.
+---
 
-It guides the user from selecting a backlog item to starting its implementation
-with an approved plan.
+`/pick` prepares one item for implementation. It keeps the provider as
+the source of truth, requires an approved plan, and only then marks the item as
+in progress.
 
-```text
-Select → Summary → Plan → In progress → Work
-```
+## How this workflow is structured
 
-## Selection
-
-`/pick` lists the items assigned to the user that are ready to start. The user
-selects one of them, or provides an item ID or URL directly.
-
-The selected item is then loaded from the configured provider so its official
-content remains the source of truth.
-
-## Summary
-
-Before planning starts, `/pick` presents the item's objective, business context,
-and acceptance criteria. Missing information is called out instead of being
-invented.
-
-## Planning
-
-`/pick` passes the item context to `/plan`. The user can adjust the resulting
-plan until explicitly approving it.
-
-The item remains unchanged while the plan is being prepared.
-
-## Start
-
-After plan approval, control returns to `/pick`. It moves the selected item to
-in progress, then hands the approved plan to `/work`.
-
-If selection, item loading, or planning fails, the item is not started.
+<table class="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Provider</th>
+      <td>Load the configured item provider.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Retrieve</th>
+      <td>List items that are ready to start.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Select</th>
+      <td>Choose one official item.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Summarize</th>
+      <td>Present the item's complete context.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Plan</th>
+      <td>Create and approve an implementation plan.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Activate</th>
+      <td>Move the item to in progress.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <th scope="row">Work</th>
+      <td>Start implementation with the approved plan.</td>
+    </tr>
+  </tbody>
+</table>

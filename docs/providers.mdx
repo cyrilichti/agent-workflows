@@ -1,0 +1,55 @@
+---
+title: Providers
+description: Connect workflow item operations to ClickUp or Linear through one normalized interface.
+---
+
+import { Badge } from '@astrojs/starlight/components'
+
+<div class="provider-badges" aria-label="Supported providers">
+  <Badge text="ClickUp" variant="note" size="large" />
+  <Badge text="Linear" variant="tip" size="large" />
+</div>
+
+A provider connects a workflow concept to the external system that owns its
+data.
+
+| Workflow concept | ClickUp | Linear |
+| --- | --- | --- |
+| Item | Task | Issue |
+| Destination | List | Team and optional project |
+| Assignee | Workspace member | Workspace user |
+| Status | Workspace-specific status | Workspace-specific state |
+
+Workflows define **what** happens. Providers define **how**.
+
+## Select a provider
+
+With `agentic.yaml` already created, select the item provider through
+`mcp.backlog.provider`.
+
+Use ClickUp:
+
+```yaml
+mcp:
+  backlog:
+    provider: clickup
+```
+
+Or use Linear:
+
+```yaml
+mcp:
+  backlog:
+    provider: linear
+```
+
+This only selects the adapter. MCP access and authentication remain configured
+in the AI coding tool.
+
+## Connect the MCP server
+
+Enable the matching MCP server in the AI tool running the workflows. Setup
+depends on the client you use:
+
+- [Connect ClickUp's MCP server](https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server)
+- [Connect Linear's MCP server](https://linear.app/docs/mcp)

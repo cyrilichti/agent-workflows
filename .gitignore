@@ -1,4 +1,7 @@
 .cursor/mcp.json
+node_modules/
+dist/
+.astro/
 plans/*
 !plans/README.md
 agentic.yaml
