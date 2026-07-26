@@ -30,7 +30,7 @@ Each local Skill lives in its own directory.
 ├── README.md
 ├── write/                  # Local workflow bridge
 │   └── SKILL.md
-├── markdown-doc-writer/    # Adopted and committed
+├── documentation-writer/    # Adopted and committed
 │   └── SKILL.md
 └── <managed-external>/     # Restored and ignored
     └── SKILL.md
@@ -97,7 +97,7 @@ Adopting a Skill means this project takes ownership of its reviewed source,
 future maintenance, and any deliberate adaptations. Add each adopted Skill to
 the explicit allowlist in `.gitignore`; do not add it to `skills-lock.json`.
 
-`markdown-doc-writer` is adopted because cloning its upstream repository to
+`documentation-writer` is adopted because cloning its upstream repository to
 install this single Skill is prohibitively expensive.
 
 Use local Skills when the capability depends on this project, its domain, its

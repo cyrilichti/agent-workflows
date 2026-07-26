@@ -32,7 +32,7 @@ identified by the caller or user.
 
 Always load:
 
-- ../skills/markdown-doc-writer/SKILL.md
+- ../skills/documentation-writer/SKILL.md
 
 Load only the additional Skill needed for the current context:
 

@@ -20,7 +20,7 @@ Identify defects, regressions, and convention drift in proposed changes.
 
 ## Skills
 
-- ../skills/markdown-doc-writer/SKILL.md
+- ../skills/documentation-writer/SKILL.md
 
 ## Constraints
 

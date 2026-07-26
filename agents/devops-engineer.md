@@ -21,7 +21,7 @@ Strengthen pipelines, release processes, and operational reliability.
 
 ## Skills
 
-- ../skills/markdown-doc-writer/SKILL.md
+- ../skills/documentation-writer/SKILL.md
 
 ## Constraints
 

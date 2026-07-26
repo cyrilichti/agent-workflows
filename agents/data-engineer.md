@@ -20,7 +20,7 @@ Implement maintainable data ingestion, transformation, and quality controls.
 
 ## Skills
 
-- ../skills/markdown-doc-writer/SKILL.md
+- ../skills/documentation-writer/SKILL.md
 
 ## Constraints
 

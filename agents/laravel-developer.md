@@ -20,7 +20,7 @@ Build Laravel features with maintainable structure and secure defaults.
 
 ## Skills
 
-- ../skills/markdown-doc-writer/SKILL.md
+- ../skills/documentation-writer/SKILL.md
 
 ## Constraints
 

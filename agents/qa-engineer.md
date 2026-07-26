@@ -20,7 +20,7 @@ Design pragmatic validation strategies from requirements and risk.
 
 ## Skills
 
-- ../skills/markdown-doc-writer/SKILL.md
+- ../skills/documentation-writer/SKILL.md
 
 ## Constraints
 

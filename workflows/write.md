@@ -35,7 +35,7 @@ or tool calls unless the user explicitly asks.
 
 Announce the initial selection of a dynamic writing Skill and each subsequent
 change when it happens. Use one concise line naming the Skill and why it now
-fits. Do not announce `markdown-doc-writer`, repeat an unchanged Skill, or
+fits. Do not announce `documentation-writer`, repeat an unchanged Skill, or
 include Skill names in the proposed or saved item.
 
 ---

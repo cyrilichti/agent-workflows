@@ -24,7 +24,7 @@ Elicit the minimum context required by the calling workflow.
 
 ## Skills
 
-- ../skills/markdown-doc-writer/SKILL.md
+- ../skills/documentation-writer/SKILL.md
 
 ## Constraints
 

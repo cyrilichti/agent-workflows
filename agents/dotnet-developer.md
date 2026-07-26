@@ -20,7 +20,7 @@ Build .NET features with clear architecture and production-ready quality.
 
 ## Skills
 
-- ../skills/markdown-doc-writer/SKILL.md
+- ../skills/documentation-writer/SKILL.md
 
 ## Constraints
 

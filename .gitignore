@@ -11,8 +11,6 @@ skills/*
 !skills/agent-workflows/**
 !skills/pick/
 !skills/pick/**
-!skills/markdown-doc-writer/
-!skills/markdown-doc-writer/**
 !skills/plan/
 !skills/plan/**
 !skills/write/

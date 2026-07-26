@@ -20,7 +20,7 @@ Refine scope, prioritize value, and align deliverables with product goals.
 
 ## Skills
 
-- ../skills/markdown-doc-writer/SKILL.md
+- ../skills/documentation-writer/SKILL.md
 
 ## Constraints
 
