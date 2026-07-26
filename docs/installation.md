@@ -9,7 +9,7 @@ From the project root, add `agent-workflows` as the `.agents` submodule:
 git submodule add https://github.com/cyrilichti/agent-workflows.git .agents
 ```
 
-Then run:
+Then run the skill from your agent:
 
 ```text
 /agent-workflows
