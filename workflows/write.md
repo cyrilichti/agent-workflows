@@ -44,10 +44,10 @@ include Skill names in the proposed or saved item.
 
 ### 1. Resolve Provider
 
-Run `../commands/resolve-backlog-provider.md` with:
+Run `../commands/resolve-item-provider.md` with:
 
 ```text
-workflow: backlog
+context: item
 ```
 
 Keep the resolved provider in this workflow. Do not pass provider operations or
@@ -74,10 +74,10 @@ options:
 Skip this step when creating a new item.
 
 If the user provides an item ID or URL, run
-`../commands/read-backlog-item.md` and validate the item.
+`../commands/read-item.md` and validate the item.
 
 Otherwise, ask for the item title or a short title search phrase, then run
-`../commands/search-backlog-items.md`. Do not list every item available from the
+`../commands/search-items.md`. Do not list every item available from the
 provider.
 
 - If no item matches, ask the user to refine the search or stop.
@@ -86,14 +86,14 @@ provider.
   `../templates/select-option.md`. Use readable labels with title, status, and
   destination when available, and attach the provider ID as the internal value.
 
-Read the selected item with `../commands/read-backlog-item.md`. Identify the
+Read the selected item with `../commands/read-item.md`. Identify the
 selected item to the user using its title, status, and link when available.
 Pass its official title and description to the writing sub-agent. Keep its
 provider fields in this workflow so unrequested fields remain unchanged.
 
 ### 4. Resolve Destination
 
-When creating an item, run `../commands/resolve-backlog-destination.md`.
+When creating an item, run `../commands/resolve-item-destination.md`.
 
 If no destination matches, ask the user to refine the destination. If
 exactly one destination matches, select it. If multiple destinations match, ask
@@ -175,7 +175,7 @@ If the user leaves the item unassigned or selects `keep`, do not run an
 assignment command.
 
 Otherwise, ask for `me` or a person name, then run
-`../commands/resolve-backlog-assignee.md`.
+`../commands/resolve-item-assignee.md`.
 
 If exactly one person matches, select that person. If multiple people match,
 ask the user to select one using `../templates/select-option.md`. If no
@@ -183,7 +183,7 @@ person matches, ask for a refined name. Do not choose implicitly.
 
 ### 8. Save Item and Apply Assignment Choice
 
-After explicit content confirmation, run `../commands/save-backlog-item.md`
+After explicit content confirmation, run `../commands/save-item.md`
 with:
 
 - the selected mode and provider;
@@ -191,7 +191,7 @@ with:
 - the existing item ID when reformulating;
 - the destination when creating.
 
-If an assignee was selected, run `../commands/assign-backlog-item.md` with the
+If an assignee was selected, run `../commands/assign-item.md` with the
 saved item ID and selected assignee. Otherwise, leave assignment untouched.
 
 Report the item title, provider ID, link, destination, and resulting assignment

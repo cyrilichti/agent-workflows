@@ -1,10 +1,10 @@
-# Assign Backlog Item
+# Assign Item
 
-Assign one saved backlog item to the selected person.
+Assign one saved item to the selected person.
 
 ## Input
 
-- `provider`: resolved backlog provider.
+- `provider`: resolved item provider.
 - `item_id`: saved provider item ID.
 - `assignee`: selected provider assignee value.
 

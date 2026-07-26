@@ -51,7 +51,7 @@ Text fallback:
 * Return the selected option value to the caller when values are provided.
 * Do not add descriptions unless required by the workflow or native UI.
 * Use readable labels for the user.
-* Keep text originating from external systems, such as backlog item titles,
+* Keep text originating from external systems, such as item titles,
   unchanged unless the system provides a localized form.
 * Keep technical identifiers and internal option values unchanged and do not
   expose them in labels.

@@ -21,7 +21,7 @@ active.
 
 Use the available task context:
 
-* backlog item summary;
+* item summary;
 * user request;
 * current conversation objective.
 

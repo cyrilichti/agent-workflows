@@ -1,6 +1,6 @@
 ---
 name: product-owner
-description: Shapes scope, priorities, and outcome-focused backlog decisions.
+description: Shapes scope, priorities, and outcome-focused product decisions.
 model: inherit
 readonly: true
 ---

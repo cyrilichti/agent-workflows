@@ -1,10 +1,10 @@
-# Resolve Backlog Destination
+# Resolve Item Destination
 
-Resolve the provider-specific destination for a new backlog item.
+Resolve the provider-specific destination for a new item.
 
 ## Input
 
-- `provider`: resolved backlog provider.
+- `provider`: resolved item provider.
 
 ## Steps
 
