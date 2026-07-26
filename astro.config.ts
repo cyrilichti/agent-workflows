@@ -3,12 +3,13 @@ import { defineConfig } from 'astro/config'
 import starlightThemeBlack from 'starlight-theme-black'
 
 export default defineConfig({
+  srcDir: './docs',
   integrations: [
     starlight({
       title: 'agent-workflows',
       description:
         'Coordinate specialized skills through clear, repeatable workflows so your coding agent knows what to use, when to use it, and how to move forward.',
-      customCss: ['./src/styles/custom.css'],
+      customCss: ['./docs/styles/custom.css'],
       editLink: {
         baseUrl:
           'https://github.com/cyrilichti/agent-workflows/edit/main/',

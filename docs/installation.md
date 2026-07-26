@@ -3,17 +3,17 @@ title: Installation
 description: Add agent-workflows to a project.
 ---
 
-From the project root, add `agent-workflows` as the `.agents` submodule:
+From the project root, install the `agent-workflows` Skill:
 
 ```bash
-git submodule add https://github.com/cyrilichti/agent-workflows.git .agents
+npx skills add https://github.com/cyrilichti/agent-workflows \
+  --skill agent-workflows
 ```
 
-Then run the skill from your agent:
+Then invoke it explicitly from your agent:
 
 ```text
 /agent-workflows
 ```
 
-The skill automatically initializes a new installation or updates an existing
-one.
+The same command installs a new project or updates an existing installation.
