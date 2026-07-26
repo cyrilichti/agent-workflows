@@ -1,4 +1,4 @@
-# Copy this file to `agentic.yaml` in a consuming project when workflows need
+# Copy this file to `agent-workflows.yaml` in a consuming project when workflows need
 # project-specific MCP providers.
 #
 # MCP server endpoints are configured by each AI tool, not in this file.

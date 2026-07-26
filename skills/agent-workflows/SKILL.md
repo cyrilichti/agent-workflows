@@ -86,16 +86,16 @@ options:
   value: linear
 ```
 
-When `agentic.yaml` is absent, create it from the example:
+When `agent-workflows.yaml` is absent, create it from the example:
 
 ```bash
-cp .agents/agentic.example.yaml agentic.yaml
+cp .agents/agent-workflows.example.yaml agent-workflows.yaml
 ```
 
 Set only `mcp.item.provider` to the selected option value.
 
-When `agentic.yaml` already exists, preserve every other setting and update only
-`mcp.item.provider`.
+When `agent-workflows.yaml` already exists, preserve every other setting and
+update only `mcp.item.provider`.
 
 ## Update
 
@@ -108,9 +108,9 @@ Then:
 1. Run `git submodule update --remote .agents`.
 2. Apply the entry-point synchronization rules from initialization.
 3. Run `npx skills experimental_install`.
-4. Preserve a valid `agentic.yaml`.
-5. When `agentic.yaml` is missing or has no supported `mcp.item.provider`, run
-   the provider selection step from initialization.
+4. Preserve a valid `agent-workflows.yaml`.
+5. When `agent-workflows.yaml` is missing or has no supported
+   `mcp.item.provider`, run the provider selection step from initialization.
 6. Report the previous and current `.agents` commits without committing the
    parent repository.
 
@@ -123,7 +123,7 @@ Before reporting success, verify:
 - `.cursor` resolves to `.agents/.cursor`;
 - every Skill declared in `.agents/skills-lock.json` exists under
   `.agents/skills/`;
-- `agentic.yaml` contains either `clickup` or `linear` at
+- `agent-workflows.yaml` contains either `clickup` or `linear` at
   `mcp.item.provider`.
 
 Report which operation completed, the `.agents` commit, the configured
