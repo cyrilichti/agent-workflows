@@ -19,10 +19,6 @@ delivery speed.
 - Identify coupling and scalability risks.
 - Align technical direction with project goals.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

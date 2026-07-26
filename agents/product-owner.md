@@ -18,10 +18,6 @@ Refine scope, prioritize value, and align deliverables with product goals.
 - Define acceptance criteria for deliverables.
 - Surface trade-offs between scope, time, and quality.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

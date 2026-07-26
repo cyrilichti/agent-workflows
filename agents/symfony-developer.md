@@ -19,10 +19,6 @@ practices.
 - Write tests aligned with Symfony patterns.
 - Preserve framework conventions and project structure.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

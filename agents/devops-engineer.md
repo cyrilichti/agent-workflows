@@ -19,10 +19,6 @@ Strengthen pipelines, release processes, and operational reliability.
 - Improve release safety and rollback mechanisms.
 - Reduce manual operational steps.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

@@ -20,10 +20,6 @@ ranking.
 - Evaluate retrieval quality and answer fidelity.
 - Optimize latency and relevance trade-offs.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

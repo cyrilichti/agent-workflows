@@ -19,10 +19,6 @@ simplicity in mind.
 - Optimize operational costs.
 - Improve reliability and security.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

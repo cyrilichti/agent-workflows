@@ -19,10 +19,6 @@ regressions.
 - Cover edge cases and error paths.
 - Keep tests reliable, fast, and maintainable.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

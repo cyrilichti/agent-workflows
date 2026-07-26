@@ -20,10 +20,6 @@ business-critical constraints.
 - Identify rule conflicts and edge cases.
 - Align technical decisions with domain constraints.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

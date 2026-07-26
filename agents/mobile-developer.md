@@ -19,10 +19,6 @@ compatibility.
 - Handle platform-specific behavior and constraints.
 - Preserve performance and offline resilience where relevant.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

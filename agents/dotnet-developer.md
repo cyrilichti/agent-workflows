@@ -18,10 +18,6 @@ Build .NET features with clear architecture and production-ready quality.
 - Write tests aligned with .NET patterns.
 - Preserve framework conventions and project structure.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

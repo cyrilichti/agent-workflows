@@ -18,10 +18,6 @@ Implement maintainable data ingestion, transformation, and quality controls.
 - Ensure data quality and lineage.
 - Optimize pipeline reliability and performance.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

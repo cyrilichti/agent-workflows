@@ -19,10 +19,6 @@ state.
 - Preserve accessibility and performance.
 - Keep component boundaries clear and testable.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

@@ -19,10 +19,6 @@ reliability practices.
 - Recommend resilience and failover improvements.
 - Review observability and runbook coverage.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.

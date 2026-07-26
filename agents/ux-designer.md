@@ -19,10 +19,6 @@ completion.
 - Identify friction points and accessibility risks.
 - Align UX decisions with business goals.
 
-## Skills
-
-- ../skills/documentation-writer/SKILL.md
-
 ## Constraints
 
 - Follow project conventions.
