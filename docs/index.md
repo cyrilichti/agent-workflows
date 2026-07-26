@@ -37,10 +37,10 @@ hero:
       </div>
   actions:
     - text: Get started
-      link: /installation/
+      link: /agent-workflows/installation/
       icon: right-arrow
     - text: Explore workflows
-      link: /workflows/
+      link: /agent-workflows/workflows/
       icon: open-book
       variant: secondary
 ---
