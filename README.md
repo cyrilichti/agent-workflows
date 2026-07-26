@@ -7,7 +7,7 @@ provider operations and approval boundaries.
 
 ## Documentation
 
-Start with the [documentation](./docs/index.md)
+Start with the [documentation](https://cyrilichti.github.io/agent-workflows/)
 
 ## MVP Roadmap
 

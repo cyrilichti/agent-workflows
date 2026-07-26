@@ -3,6 +3,8 @@ import { defineConfig } from 'astro/config'
 import starlightThemeBlack from 'starlight-theme-black'
 
 export default defineConfig({
+  site: 'https://cyrilichti.github.io',
+  base: '/agent-workflows',
   srcDir: './docs',
   integrations: [
     starlight({
