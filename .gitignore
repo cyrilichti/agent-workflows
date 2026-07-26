@@ -7,6 +7,8 @@ plans/*
 agentic.yaml
 skills/*
 !skills/README.md
+!skills/agent-workflows/
+!skills/agent-workflows/**
 !skills/pick/
 !skills/pick/**
 !skills/markdown-doc-writer/
