@@ -4,7 +4,7 @@ dist/
 .astro/
 plans/*
 !plans/README.md
-agentic.yaml
+agent-workflows.yaml
 skills/*
 !skills/README.md
 !skills/agent-workflows/
