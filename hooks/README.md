@@ -101,7 +101,6 @@ Many AI development environments support lifecycle hooks or similar mechanisms.
 
 Examples include:
 
-* Claude Code
 * Cursor
 * OpenCode
 * Custom agent orchestrators
@@ -112,9 +111,6 @@ Project hooks should remain implementation-agnostic whenever possible.
 
 ## References
 
-* Claude Code – Hooks
-  [claude-code-hooks]
-
 * Cursor – Create Hook
   [https://docs.cursor.com/](https://docs.cursor.com/)
 
@@ -124,7 +120,5 @@ Project hooks should remain implementation-agnostic whenever possible.
 * .agents Protocol
   [dotagents-protocol]
 
-[claude-code-hooks]:
-  https://docs.anthropic.com/en/docs/claude-code/hooks
 [dotagents-protocol]:
   https://github.com/aj47/dotagentsprotocol-website

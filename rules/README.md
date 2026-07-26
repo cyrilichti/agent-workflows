@@ -19,8 +19,7 @@ a process.
 
 ## Organization
 
-One topic per file. Concise bullet lists. Frontmatter for scope when projected
-to an IDE.
+One topic per file. Concise bullet lists.
 
 ```text
 ./
@@ -28,8 +27,6 @@ to an IDE.
 ├── api.md
 └── frontend.md
 ```
-
-IDE projections: `.cursor/rules/*.mdc`, `.claude/rules/*.md`
 
 ---
 
@@ -43,7 +40,7 @@ Load a rule only when the current task explicitly needs its constraint.
 Accepted loading paths:
 
 * direct reference from an agent, skill, workflow, or IDE rule projection;
-* matching file scope such as Cursor `globs` or Claude `paths`;
+* matching file scope such as Cursor `globs`;
 * explicit user request.
 
 Avoid `alwaysApply` by default. It is only for rare invariants that must apply
@@ -56,18 +53,6 @@ the task is to audit the rules themselves.
 ---
 
 ## Examples
-
-### Claude (`.claude/rules/`)
-
-```markdown
----
-paths:
-  - "src/api/**/*.ts"
----
-
-- All API endpoints must include input validation
-- Use the standard error response format
-```
 
 ### Cursor (`.cursor/rules/`)
 
@@ -94,6 +79,5 @@ alwaysApply: false
 ## References
 
 * [Cursor – Rules](https://cursor.com/docs/rules)
-* [Claude Code – Memory](https://code.claude.com/docs/en/memory)
 * [dotcursorrules](https://dotcursorrules.com/rules) — community templates
 * [cursorrules.org](https://cursorrules.org/) — community templates

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Agent Workflows"
+  short_description: "Initialize or update agent-workflows"
+  default_prompt: "Use $agent-workflows to initialize or update agent-workflows."
+
+policy:
+  allow_implicit_invocation: false

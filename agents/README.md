@@ -127,13 +127,11 @@ Delegation is particularly useful for:
 
 ## References
 
-* Claude Code – Sub Agents: [claude-sub-agents]
 * Cursor – Sub Agents: [cursor-subagents]
 * OpenAI Codex – Subagents: [openai-codex-subagents]
 * AGENTS.md: [https://agents.md/](https://agents.md/)
 * .agents Protocol: [dotagents-protocol]
 
-[claude-sub-agents]: https://code.claude.com/docs/en/sub-agents
 [cursor-subagents]: https://cursor.com/docs/subagents
 [openai-codex-subagents]:
   https://developers.openai.com/codex/concepts/subagents
