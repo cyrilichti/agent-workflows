@@ -1,71 +1,104 @@
 ---
 name: agent-workflows
 description: >-
-  Initialize or update the agent-workflows module in a consuming Git
-  repository. Use only when explicitly invoked with `/agent-workflows` or
-  `$agent-workflows` to create the agent entry points, restore managed Skill
-  dependencies, configure ClickUp or Linear, or update the `.agents`
-  submodule.
+  Install or update agent-workflows in the current project. Use only when
+  explicitly invoked with `/agent-workflows` or `$agent-workflows`.
 disable-model-invocation: true
 ---
 
 # Agent Workflows
 
-Manage an existing agent-workflows submodule from the consuming repository
-root.
+Install or update agent-workflows in the current project.
 
-## Resolve Operation
+## Rules
 
-Resolve the operation from the consuming project:
-
-- When `AGENTS.md`, `.cursor`, and `skills-lock.json` are all absent, initialize
-  the newly added `.agents` submodule.
-- When at least one of these entry points is an expected symlink and every
-  existing entry point has the expected type and target, update the existing
-  installation and restore any missing entry point.
-- When any entry point exists with another type or target, stop and report the
-  conflict without replacing it.
-
-Do not ask the user to choose between initialization and update.
+- Overwrite files when the downloaded repository contains the same relative
+  path.
+- Preserve additional files that do not collide.
+- Do not create, modify, or remove `.cursor`.
+- Do not create commits.
 
 ## Preflight
 
-Before any mutation:
+Before mutation:
 
-1. Work from the consuming repository root.
-2. Verify that Git, Node.js are available.
-3. Verify that `.agents` exists and is registered as the `agent-workflows`
-   Git submodule.
-4. Stop with an actionable error when a required prerequisite is missing.
-5. Do not create commits.
+1. Work from the consuming project root.
+2. Verify that Git, Node.js, and `npx` are available.
+3. Create `.agents` when absent. Otherwise use the existing path as-is,
+   including when it is a directory, symlink, or Git submodule.
+4. Create a temporary working directory outside `.agents`.
 
-## Initialize
+## Download
 
-Tell the user that initialization will:
+Clone the latest public repository into the temporary directory:
 
-- expose the shared agent instructions through `AGENTS.md`;
-- expose the Cursor configuration through `.cursor`;
-- expose the managed dependency map through `skills-lock.json`;
-- restore the managed Skill dependencies;
-- create the provider configuration.
-
-Then perform the following steps in order.
-
-### 1. Sync Entry Points
-
-For each entry point, accept an existing symlink only when it already resolves
-to the expected target. Create it when absent. Stop without replacing it when
-the path exists with any other type or target.
-
-```bash
-ln -s .agents/AGENTS.md AGENTS.md
-ln -s .agents/skills-lock.json skills-lock.json
-ln -s .agents/.cursor .cursor
+```text
+https://github.com/cyrilichti/agent-workflows.git
 ```
 
-### 2. Install Dependencies
+Stop before deployment unless the downloaded repository contains:
 
-Run:
+- `AGENTS.md`;
+- `agent-workflows.example.yaml`;
+- `skills-lock.json`;
+- every directory listed below.
+
+## Deploy
+
+Copy the contents of these downloaded directories into the matching directories
+under `.agents`:
+
+```text
+agents
+commands
+plans
+providers
+rules
+skills
+templates
+workflows
+```
+
+For every directory:
+
+- create the destination directory when absent;
+- recursively copy its contents;
+- overwrite files with the same relative path;
+- preserve destination files that do not exist in the downloaded source.
+
+Merge the downloaded `AGENTS.md` into the consuming project's root `AGENTS.md`:
+
+- when the root file is absent, create it with the downloaded instructions in a
+  dedicated agent-workflows block;
+- when the block already exists, replace only that block;
+- when the root file exists without the block, preserve its content and append
+  the block;
+- never append the same instructions more than once.
+
+Use stable markers so later updates remain idempotent:
+
+```markdown
+<!-- agent-workflows:start -->
+<downloaded AGENTS.md content>
+<!-- agent-workflows:end -->
+```
+
+Do not copy the repository metadata, documentation site, build output,
+dependencies, or unrelated root files.
+
+## Merge Skill Dependencies
+
+Read the downloaded `skills-lock.json` and the consuming project's
+`skills-lock.json`.
+
+- When the project lock file is absent, initialize it with the downloaded lock.
+- Require compatible lock-file versions.
+- Preserve project Skill entries not declared by agent-workflows.
+- Add every downloaded Skill entry to the project lock.
+- Replace a project entry when agent-workflows declares the same Skill name.
+- Write the merged JSON atomically.
+
+Then restore all declared dependencies:
 
 ```bash
 npx skills experimental_install
@@ -73,58 +106,41 @@ npx skills experimental_install
 
 Stop and report the command output when dependency installation fails.
 
-### 3. Configure Item Provider
+## Configure Item Provider
 
-Ask the user using `.agents/templates/select-option.md` with:
+When `agent-workflows.yaml` already exists, preserve it unchanged.
 
-```text
-question: Which ticket provider does this project use?
-options:
-- label: ClickUp
-  value: clickup
-- label: Linear
-  value: linear
-```
+When it is absent:
 
-When `agent-workflows.yaml` is absent, create it from the example:
+1. Ask the user which item provider the project uses:
 
-```bash
-cp .agents/agent-workflows.example.yaml agent-workflows.yaml
-```
+   ```text
+   question: Which ticket provider does this project use?
+   options:
+   - label: ClickUp
+     value: clickup
+   - label: Linear
+     value: linear
+   ```
 
-Set only `mcp.item.provider` to the selected option value.
-
-When `agent-workflows.yaml` already exists, preserve every other setting and
-update only `mcp.item.provider`.
-
-## Update
-
-Tell the user that the update will advance the `.agents` submodule, verify the
-entry points, restore the managed Skill dependencies, and preserve the current
-provider configuration.
-
-Then:
-
-1. Run `git submodule update --remote .agents`.
-2. Apply the entry-point synchronization rules from initialization.
-3. Run `npx skills experimental_install`.
-4. Preserve a valid `agent-workflows.yaml`.
-5. When `agent-workflows.yaml` is missing or has no supported
-   `mcp.item.provider`, run the provider selection step from initialization.
-6. Report the previous and current `.agents` commits without committing the
-   parent repository.
+2. Copy the downloaded `agent-workflows.example.yaml` to
+   `agent-workflows.yaml`.
+3. Set only `mcp.item.provider` to the selected value.
 
 ## Validate
 
 Before reporting success, verify:
 
-- `AGENTS.md` resolves to `.agents/AGENTS.md`;
-- `skills-lock.json` resolves to `.agents/skills-lock.json`;
-- `.cursor` resolves to `.agents/.cursor`;
-- every Skill declared in `.agents/skills-lock.json` exists under
-  `.agents/skills/`;
-- `agent-workflows.yaml` contains either `clickup` or `linear` at
-  `mcp.item.provider`.
+- every downloaded file exists at the expected destination;
+- the root `AGENTS.md` contains exactly one up-to-date agent-workflows block;
+- `.cursor` was not created or modified;
+- the project lock contains every downloaded Skill entry;
+- every declared Skill is installed;
+- `agent-workflows.yaml` exists;
+- `mcp.item.provider` is either `clickup` or `linear`.
 
-Report which operation completed, the `.agents` commit, the configured
-provider, and any files the user may want to stage.
+Always remove the temporary download after success or failure.
+
+Report whether agent-workflows was installed or updated, which directories were
+deployed, which lock entries were added or replaced, and the configured item
+provider.

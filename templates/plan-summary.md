@@ -25,6 +25,6 @@ Plan: <plan file link>
 
 ## Rules
 
-* Use `.cursor/plans/<filename>` for the plan link.
+* Use `.agents/plans/<filename>` for the plan link.
 * Show todo titles only.
 * Do not include the full plan body.
