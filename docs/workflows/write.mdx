@@ -1,0 +1,102 @@
+---
+title: /write
+description: Create or reformulate an item using context-aware skill routing.
+---
+
+`/write` brings together proven external writing skills and selects the best
+fit for the current context. As the request becomes clearer, it can switch
+skills to support clarification, ideation, challenge, or specification.
+
+## Dispatching external skills
+
+<div class="dispatch-map">
+  <div class="dispatch-node dispatch-node--workflow">
+    <span class="dispatch-node__label">Workflow</span>
+    <strong>/write</strong>
+    <span>Owns the execution flow</span>
+  </div>
+
+  <span class="dispatch-arrow" aria-hidden="true">→</span>
+
+  <div class="dispatch-skills">
+    <a
+      class="dispatch-skill dispatch-skill--interview"
+      href="https://github.com/addyosmani/agent-skills/tree/main/skills/interview-me"
+    >
+      <span>Missing context</span>
+      <strong>interview-me ↗</strong>
+      <small>Addy Osmani</small>
+    </a>
+    <a
+      class="dispatch-skill dispatch-skill--idea"
+      href="https://github.com/addyosmani/agent-skills/tree/main/skills/idea-refine"
+    >
+      <span>Open product decisions</span>
+      <strong>idea-refine ↗</strong>
+      <small>Addy Osmani</small>
+    </a>
+    <a
+      class="dispatch-skill dispatch-skill--grilling"
+      href="https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling"
+    >
+      <span>Direction needs challenging</span>
+      <strong>grilling ↗</strong>
+      <small>Matt Pocock</small>
+    </a>
+    <a
+      class="dispatch-skill dispatch-skill--to-spec"
+      href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec"
+    >
+      <span>Direction is ready to formalize</span>
+      <strong>to-spec ↗</strong>
+      <small>Matt Pocock</small>
+    </a>
+  </div>
+</div>
+
+## How this workflow is structured
+
+<table class="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Provider</th>
+      <td>Load the configured item provider.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Mode</th>
+      <td>Choose create or reformulate.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Item</th>
+      <td>Find and read the existing item.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Destination</th>
+      <td>Select where to create the item.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Draft</th>
+      <td>Route the request and draft one item.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Confirm</th>
+      <td>Review and approve the content.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <th scope="row">Assignment</th>
+      <td>Choose the assignment behavior.</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <th scope="row">Save</th>
+      <td>Save the item and apply assignment.</td>
+    </tr>
+  </tbody>
+</table>
