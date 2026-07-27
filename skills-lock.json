@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "doubt-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/doubt-driven-development/SKILL.md",
+      "computedHash": "f6094460ebc9512285c85790e49f612081b9dd6a2b77d874fe2d960ef50a9ef1"
+    },
     "grilling": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -18,6 +24,18 @@
       "sourceType": "github",
       "skillPath": "skills/interview-me/SKILL.md",
       "computedHash": "efded91ac7f7626239b338ce8622afeb557151b86532b632f3c9eb5b2ff9048f"
+    },
+    "planning-and-task-breakdown": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/planning-and-task-breakdown/SKILL.md",
+      "computedHash": "ecc29e854ff27b26a2e6b3e4f15ec5b9bd74f65c7e434515eb0e4ac23cc6cdee"
+    },
+    "source-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/source-driven-development/SKILL.md",
+      "computedHash": "235fb43569e9b21ec5d209818ff1ad3da9682be33c4e464ffa89ed348e7094a0"
     },
     "to-spec": {
       "source": "mattpocock/skills",
