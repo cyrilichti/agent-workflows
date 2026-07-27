@@ -16,8 +16,9 @@ Run this workflow in one of these modes:
 * **Workflow mode**: another workflow calls this workflow and provides the task
   context. After approval, return control to the caller.
 * **Standalone mode**: `./play-book.md` selects `plan`, or the `plan` skill is
-  explicitly invoked, with no prior task context or specialized sub-agent.
-  After approval, stop.
+  explicitly invoked, with no calling workflow or specialized sub-agent.
+  Resolve task context from the current request before planning. After
+  approval, stop.
 
 ---
 
@@ -33,19 +34,42 @@ Optional context (use when available):
 
 * item provider ID (for file naming).
 
+In workflow mode, use the official item context supplied by the caller.
+
+In standalone mode, use the current request when it already provides the
+required context. Otherwise, derive one lightweight transient item with
+`item-writer` and use it as planning context.
+
 ---
 
 ## Steps
 
 ### 1. Resolve Context
 
-Check whether the current conversation already provides the required context.
+In workflow mode, check the item context supplied by the caller and the current
+conversation. Preserve the official item as provided. If required planning
+context is still missing, ask the user only for the missing information. Do not
+rewrite the official item or activate `item-writer`.
 
-If any required context is missing, activate `../agents/interviewer.md` and
-ask the user only for the missing information.
+In standalone mode, check whether the current request and conversation already
+provide the required context. If they do, continue without activating an
+authoring sub-agent.
 
-The interviewer is only used to collect missing planning context. It does not
-become the sub-agent responsible for creating the plan.
+If standalone context is insufficient, activate `../agents/item-writer.md` by
+loading its full profile and the resources required for the current context.
+Give it:
+
+* the user's request and relevant conversation context;
+* only the code, specifications, files, or URLs explicitly identified by the
+  user;
+* `../templates/item.md` as its output contract;
+* the instruction to return one lightweight item that contains only the
+  context needed to begin specialized planning.
+
+Let `item-writer` route and reroute its writing Skills until it returns exactly
+one meaningful title and one free-form Markdown body from which the objective,
+problem, and expected outcome are known. Keep the returned item as transient
+task context.
 
 ### 2. Resolve Planning Sub-agent
 
@@ -90,7 +114,8 @@ After the plan is approved:
 
 * Do not invent missing objective, problem, or expected outcome.
 * Do not start implementation.
-* Do not create the plan with `interviewer` as the active planning sub-agent.
+* Do not treat a transient item as an official provider item.
+* Do not create the plan with `item-writer` as the active planning sub-agent.
 * Do not select a planning sub-agent before objective, problem, and expected
   outcome are available.
 
@@ -101,6 +126,8 @@ After the plan is approved:
 This workflow is complete when:
 
 * the required context is known;
+* standalone context has remained conversational or has been represented by
+  exactly one non-persisted transient item;
 * a specialized planning sub-agent is active;
 * a plan file exists under `../plans/`;
 * the user has approved the plan;

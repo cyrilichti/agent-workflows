@@ -96,8 +96,7 @@ fields:
 Present the summary to the user using `../templates/ticket-summary.md`.
 
 Do not continue to the next step until that summary has been shown in the
-conversation. Do not fold the summary into the plan workflow, interviewer
-questions, or any other later step.
+conversation.
 
 ### 5. Create Plan
 
