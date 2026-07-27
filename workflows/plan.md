@@ -122,8 +122,9 @@ The specialist remains the sole plan author and writes the plan following
 `../templates/plan.md`.
 
 When adversarial review produces actionable findings, the workflow reconciles
-them and asks the specialist to revise the plan. Any cross-model review requires
-explicit user authorization.
+them and asks the specialist to revise the plan. During this workflow, use the
+bounded single-model fresh-context review. Do not offer or invoke cross-model
+review unless the user explicitly requests an additional cross-model opinion.
 
 ### 5. Confirm Plan
 
