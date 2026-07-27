@@ -517,6 +517,14 @@
   line-height: 1.35;
 }
 
+.dispatch-skill .dispatch-skill__label {
+  color: var(--dispatch-skill-color);
+  font-family: var(--sl-font-mono);
+  font-size: var(--sl-text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .dispatch-skill strong {
   color: var(--sl-color-white);
   font-family: var(--sl-font-mono);
