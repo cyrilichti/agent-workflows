@@ -8,6 +8,8 @@ Follow `.agents/rules/default-language.md`.
 
 Follow `.agents/rules/git-authorization.md`.
 
+Follow `.agents/rules/skill-activation.md`.
+
 ## Session Bootstrap
 
 At the beginning of a new work session, follow:

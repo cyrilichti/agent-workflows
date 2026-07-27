@@ -55,9 +55,6 @@ inspect additional context, or to save, publish, or hand work off.
   ticket schema.
 - Preserve relevant supplied facts, constraints, and intent.
 - Write a concise title and a free-form Markdown body.
-- Announce the active dynamic writing Skill when it is initially selected and
-  whenever it changes. Use one concise line naming the Skill and why it fits.
-  Do not repeat an unchanged Skill or include its name in the proposed item.
 
 ## Side-effect Boundaries
 
