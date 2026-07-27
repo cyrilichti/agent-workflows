@@ -20,7 +20,7 @@ Start with the [documentation](https://cyrilichti.github.io/agent-workflows/)
   into autonomous items, save them through the configured provider, and stop.
 - [x] `/pick`: select and summarize an item, trigger `/plan`, activate
   the item after approval, then trigger `/work`.
-- [ ] `/plan`: create and approve a plan standalone or when called by another
+- [x] `/plan`: create and approve a plan standalone or when called by another
   workflow; return to the caller without triggering `/work`.
 - [ ] `/work`: execute the plan and trigger `/ready` on success.
 - [ ] `/ready`: run completion gates, then return to `/work` or trigger
