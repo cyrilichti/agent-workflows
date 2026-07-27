@@ -98,9 +98,30 @@ the relevant local technical context but must not modify it.
 If this analysis changes the planifiability assessment, apply the outcome
 defined in Step 2.
 
-### 4. Create Plan File
+### 4. Route Planning Skills and Draft the Plan
 
-Create a plan file following `../templates/plan.md`.
+Use external Skills as methods within this workflow. The local authorship,
+template, file location, and no-implementation boundaries remain authoritative.
+
+Route Skills according to the planning phase:
+
+* `planning-and-task-breakdown`: always. The specialist loads it before
+  drafting to map dependencies, prefer vertical slices, and create small,
+  verifiable todos.
+* `source-driven-development`: when technical analysis or drafting reveals that
+  a plan decision depends on an external versioned fact not established
+  locally. The specialist loads it, verifies only the required facts against
+  official sources, and includes the findings and citations in the plan.
+* `doubt-driven-development`: after the draft, when it contains high-risk or
+  unfamiliar non-trivial decisions. The workflow loads it and runs the bounded
+  fresh-context adversarial review.
+
+The specialist remains the sole plan author and writes the plan following
+`../templates/plan.md`.
+
+When adversarial review produces actionable findings, the workflow reconciles
+them and asks the specialist to revise the plan. Any cross-model review requires
+explicit user authorization.
 
 ### 5. Confirm Plan
 
