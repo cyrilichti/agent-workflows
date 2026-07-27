@@ -2,14 +2,9 @@
 
 ## Purpose
 
-Prepare a work session from a configured item provider.
-
-This workflow resolves the item context source, selects the item to start,
-retrieves and summarizes its context, delegates to `/plan`, then resumes after
-plan approval to mark the selected item as in progress and trigger `/work`.
-
-Its outcome is an active item, an approved plan, and a handoff to
-implementation.
+This workflow resolves and summarizes one item, delegates to `/plan`, stops on
+`needs-refinement`, or resumes after plan approval to start the item and
+trigger `/work`.
 
 ---
 
@@ -104,8 +99,11 @@ Create a plan by following `./plan.md`.
 
 Provide the selected item summary, provider ID, and context.
 
-Continue only after the plan workflow has completed successfully and returned
-control to this workflow.
+Continue only when the plan workflow returns an approved plan.
+
+If it returns `needs-refinement`, report its concise findings, state that the
+item must be refined before an implementation plan can be created, leave the
+item unchanged, and stop this workflow.
 
 ### 6. Start Item
 
@@ -153,7 +151,8 @@ This workflow is complete when:
   matches have been explicitly reported;
 * one official item has been selected;
 * the selected item has been summarized;
-* the plan workflow has completed successfully with user approval and returned
-  control to this workflow;
-* the selected item has been moved to the in progress status;
-* `/work` has been triggered with the approved plan.
+* one of these outcomes has been reached:
+  * `/plan` returned `needs-refinement`, its findings were reported, the item
+    remained unchanged, and `/work` was not triggered;
+  * `/plan` returned an approved plan, the item was moved to the in progress
+    status, and `/work` was triggered with the approved plan.
