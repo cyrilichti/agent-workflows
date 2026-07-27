@@ -6,8 +6,7 @@ description: Add agent-workflows to a project.
 From the project root, install the `agent-workflows` Skill:
 
 ```bash
-npx skills add https://github.com/cyrilichti/agent-workflows \
-  --skill agent-workflows
+npx skills add cyrilichti/agent-workflows --skill agent-workflows
 ```
 
 Then invoke it explicitly from your agent:

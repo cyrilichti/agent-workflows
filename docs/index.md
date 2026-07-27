@@ -1,6 +1,9 @@
 ---
 title: Workflows that make agent skills work together.
 description: Coordinate specialized skills through clear, repeatable workflows so your coding agent knows what to use, when to use it, and how to move forward.
+head:
+  - tag: title
+    content: agent-workflows - make agent skills work together
 template: splash
 editUrl: false
 hero:
