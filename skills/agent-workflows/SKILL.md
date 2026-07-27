@@ -123,7 +123,7 @@ When it is absent:
 
 Before reporting success, verify:
 
-- every downloaded file exists at the expected destination;
+- every file selected for deployment exists at the expected destination;
 - the root `AGENTS.md` contains exactly one copy of the up-to-date
   agent-workflows instructions, without ownership comments or a duplicated
   `# AGENTS.md` heading;
