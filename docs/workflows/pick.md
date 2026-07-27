@@ -3,9 +3,9 @@ title: /pick
 description: Prepare one ready item for implementation with an approved plan.
 ---
 
-`/pick` prepares one item for implementation. It keeps the provider as
-the source of truth, requires an approved plan, and only then marks the item as
-in progress.
+`/pick` prepares one item for implementation. It keeps the provider as the
+source of truth and only marks the item as in progress after plan approval. If
+the item needs refinement, it stops without changing it.
 
 ## How this workflow is structured
 
@@ -34,7 +34,7 @@ in progress.
     <tr>
       <td>5</td>
       <th scope="row">Plan</th>
-      <td>Create and approve an implementation plan.</td>
+      <td>Approve an implementation plan or stop for refinement.</td>
     </tr>
     <tr>
       <td>6</td>
