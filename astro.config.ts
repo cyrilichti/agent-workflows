@@ -50,6 +50,7 @@ export default defineConfig({
             { label: 'Overview', slug: 'workflows' },
             { label: '/write', slug: 'workflows/write' },
             { label: '/pick', slug: 'workflows/pick' },
+            { label: '/plan', slug: 'workflows/plan' },
           ],
         },
       ],

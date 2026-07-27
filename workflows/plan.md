@@ -2,10 +2,13 @@
 
 ## Purpose
 
-Create a plan before implementation starts.
+Confirm that the task can be planned as one delivery unit, then create a plan
+before implementation starts.
 
 This workflow turns existing task context, or context collected from the
-user, into a plan file saved under `../plans/`.
+user, into a plan file saved under `../plans/`. It returns
+`needs-refinement` instead when the context contains multiple autonomous
+delivery units.
 
 ---
 
@@ -14,10 +17,11 @@ user, into a plan file saved under `../plans/`.
 Run this workflow in one of these modes:
 
 * **Workflow mode**: another workflow calls this workflow and provides the task
-  context. After approval, return control to the caller.
+  context. Return either an approved plan or `needs-refinement` to the caller.
 * **Standalone mode**: `./play-book.md` selects `plan`, or the `plan` skill is
-  explicitly invoked, with no prior task context or specialized sub-agent.
-  After approval, stop.
+  explicitly invoked, with no calling workflow or specialized sub-agent.
+  Resolve task context from the current request before planning. Stop after
+  plan approval or after reporting `needs-refinement`.
 
 ---
 
@@ -33,34 +37,96 @@ Optional context (use when available):
 
 * item provider ID (for file naming).
 
+In workflow mode, use the official item context supplied by the caller.
+
+In standalone mode, use the current request when it already provides the
+required context. Otherwise, derive one lightweight transient item with
+`item-writer` and use it as planning context.
+
 ---
 
 ## Steps
 
 ### 1. Resolve Context
 
-Check whether the current conversation already provides the required context.
+In workflow mode, check the item context supplied by the caller and the current
+conversation. Preserve the official item as provided. If required planning
+context is still missing, ask the user only for the missing information. Do not
+rewrite the official item or activate `item-writer`.
 
-If any required context is missing, activate `../agents/interviewer.md` and
-ask the user only for the missing information.
+In standalone mode, check whether the current request and conversation already
+provide the required context. If they do, continue without activating an
+authoring sub-agent.
 
-The interviewer is only used to collect missing planning context. It does not
-become the sub-agent responsible for creating the plan.
+If standalone context is insufficient, activate `../agents/item-writer.md` by
+loading its full profile and the resources required for the current context.
+Give it:
 
-### 2. Resolve Planning Sub-agent
+* the user's request and relevant conversation context;
+* only the code, specifications, files, or URLs explicitly identified by the
+  user;
+* `../templates/item.md` as its output contract;
+* the instruction to return one lightweight item that contains only the
+  context needed to begin specialized planning.
 
-Once objective, problem, and expected outcome are available, ensure a
-specialized
-sub-agent is active before creating the plan.
+Let `item-writer` route and reroute its writing Skills until it returns exactly
+one meaningful title and one free-form Markdown body from which the objective,
+problem, and expected outcome are known. Keep the returned item as transient
+task context.
+
+### 2. Check Planifiability
+
+Load `../skills/planning-and-task-breakdown/SKILL.md` completely and use it only
+to assess whether the task context represents one coherent delivery unit.
+
+If it reveals multiple independently deliverable or schedulable units, return
+`needs-refinement` with concise findings and no proposed decomposition. Treat
+blocking relationships as evidence only when they connect those autonomous
+units, not when they merely order implementation inside one coherent delivery
+unit. Re-evaluate this outcome if later technical analysis reveals hidden
+autonomous units.
+
+In workflow mode, return `needs-refinement` to the caller. In standalone mode,
+report it to the user and stop.
+
+### 3. Resolve Planning Author
 
 Select and activate the most appropriate specialized sub-agent by following
 `./sub-agent.md`.
 
-### 3. Create Plan File
+The specialist is the sole plan author. During this workflow, it may inspect
+the relevant local technical context but must not modify it.
 
-Create a plan file following `../templates/plan.md`.
+If this analysis changes the planifiability assessment, apply the outcome
+defined in Step 2.
 
-### 4. Confirm Plan
+### 4. Route Planning Skills and Draft the Plan
+
+Use external Skills as methods within this workflow. The local authorship,
+template, file location, and no-implementation boundaries remain authoritative.
+
+Route Skills according to the planning phase:
+
+* `planning-and-task-breakdown`: always. The specialist loads it before
+  drafting to map dependencies, prefer vertical slices, and create small,
+  verifiable todos.
+* `source-driven-development`: when technical analysis or drafting reveals that
+  a plan decision depends on an external versioned fact not established
+  locally. The specialist loads it, verifies only the required facts against
+  official sources, and includes the findings and citations in the plan.
+* `doubt-driven-development`: after the draft, when it contains high-risk or
+  unfamiliar non-trivial decisions. The workflow loads it and runs the bounded
+  fresh-context adversarial review.
+
+The specialist remains the sole plan author and writes the plan following
+`../templates/plan.md`.
+
+When adversarial review produces actionable findings, the workflow reconciles
+them and asks the specialist to revise the plan. During this workflow, use the
+bounded single-model fresh-context review. Do not offer or invoke cross-model
+review unless the user explicitly requests an additional cross-model opinion.
+
+### 5. Confirm Plan
 
 Present the created plan using `../templates/plan-summary.md`.
 
@@ -77,7 +143,7 @@ options:
 If the user selects `Adjust plan`, collect the requested adjustments,
 update the plan file, and present it for confirmation again.
 
-### 5. Return or Stop
+### 6. Return or Stop
 
 After the plan is approved:
 
@@ -90,7 +156,8 @@ After the plan is approved:
 
 * Do not invent missing objective, problem, or expected outcome.
 * Do not start implementation.
-* Do not create the plan with `interviewer` as the active planning sub-agent.
+* Do not treat a transient item as an official provider item.
+* Do not create the plan with `item-writer` as the active planning sub-agent.
 * Do not select a planning sub-agent before objective, problem, and expected
   outcome are available.
 
@@ -101,8 +168,13 @@ After the plan is approved:
 This workflow is complete when:
 
 * the required context is known;
-* a specialized planning sub-agent is active;
-* a plan file exists under `../plans/`;
-* the user has approved the plan;
-* control has been returned to the caller in workflow mode, or the workflow has
-  stopped in standalone mode.
+* standalone context has remained conversational or has been represented by
+  exactly one non-persisted transient item;
+* one of these outcomes has been reached:
+  * `needs-refinement` has been returned or reported with concise findings,
+    without a plan file;
+  * one specialized plan author is active, the relevant local technical context
+    has been inspected, a plan file exists under `../plans/`, and the user has
+    approved it;
+* control has been returned to the caller in workflow mode, or the workflow
+  has stopped in standalone mode.

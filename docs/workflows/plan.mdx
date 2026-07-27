@@ -1,0 +1,94 @@
+---
+title: /plan
+description: Create and approve one implementation plan without starting work.
+---
+
+`/plan` creates and approves one implementation plan. It can run standalone from the
+current request, deriving one transient item only when context is missing, or
+inside another workflow from the item supplied by the caller.
+
+Before drafting, it checks that the context represents one coherent delivery
+unit. Otherwise, it returns `needs-refinement` and stops without creating a
+plan.
+
+## Dispatching external skills
+
+<div class="dispatch-map dispatch-map--vertical dispatch-map--plan">
+  <div class="dispatch-node dispatch-node--workflow">
+    <span class="dispatch-node__label">Workflow</span>
+    <strong>/plan</strong>
+    <span>Owns the planning flow</span>
+  </div>
+
+  <span class="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <a
+    class="dispatch-skill dispatch-skill--planning"
+    href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown"
+  >
+    <span class="dispatch-skill__label">Skill</span>
+    <span>Always: scope and draft</span>
+    <strong>planning-and-task-breakdown ↗</strong>
+    <small>Addy Osmani</small>
+  </a>
+
+  <span class="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <div class="dispatch-skills dispatch-skills--conditional">
+    <a
+      class="dispatch-skill dispatch-skill--source"
+      href="https://github.com/addyosmani/agent-skills/tree/main/skills/source-driven-development"
+    >
+      <span class="dispatch-skill__label">Skill</span>
+      <span>External facts required</span>
+      <strong>source-driven-development ↗</strong>
+      <small>Addy Osmani</small>
+    </a>
+    <a
+      class="dispatch-skill dispatch-skill--doubt"
+      href="https://github.com/addyosmani/agent-skills/tree/main/skills/doubt-driven-development"
+    >
+      <span class="dispatch-skill__label">Skill</span>
+      <span>High-risk draft decisions</span>
+      <strong>doubt-driven-development ↗</strong>
+      <small>Addy Osmani</small>
+    </a>
+  </div>
+</div>
+
+## How this workflow is structured
+
+<table class="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Context</th>
+      <td>Use the caller's item or resolve standalone context.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Scope</th>
+      <td>Confirm the work is one coherent delivery unit.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Specialist</th>
+      <td>Select one plan author and inspect the local technical context.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Draft</th>
+      <td>Route planning skills and write one implementation plan.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Confirm</th>
+      <td>Review, adjust, and approve the plan.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Return</th>
+      <td>Return the approved plan to the caller or stop standalone.</td>
+    </tr>
+  </tbody>
+</table>

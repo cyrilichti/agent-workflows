@@ -33,11 +33,6 @@ confirmation, assignment, blockers or failures, and the final saved result.
 Do not narrate provider resolution, configuration sources, agent activation,
 or tool calls unless the user explicitly asks.
 
-Announce the initial selection of a dynamic writing Skill and each subsequent
-change when it happens. Use one concise line naming the Skill and why it now
-fits. Do not repeat an unchanged Skill or include Skill names in the proposed
-or saved item.
-
 ---
 
 ## Steps

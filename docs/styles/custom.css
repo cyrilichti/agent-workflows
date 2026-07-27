@@ -436,6 +436,21 @@
   margin-block: 2rem;
 }
 
+.dispatch-map--vertical {
+  max-width: 38rem;
+  margin-inline: auto;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.dispatch-map--vertical .dispatch-arrow {
+  justify-self: center;
+  transform: none;
+}
+
+.dispatch-map--plan > .dispatch-skill {
+  width: 100%;
+}
+
 .dispatch-node {
   display: flex;
   min-height: 8.5rem;
@@ -502,6 +517,14 @@
   line-height: 1.35;
 }
 
+.dispatch-skill .dispatch-skill__label {
+  color: var(--dispatch-skill-color);
+  font-family: var(--sl-font-mono);
+  font-size: var(--sl-text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .dispatch-skill strong {
   color: var(--sl-color-white);
   font-family: var(--sl-font-mono);
@@ -536,6 +559,21 @@
 .dispatch-skill--to-spec {
   --dispatch-skill-color: #c4b5fd;
   --dispatch-skill-bg: rgba(139, 92, 246, 0.12);
+}
+
+.dispatch-skill--planning {
+  --dispatch-skill-color: #c4b5fd;
+  --dispatch-skill-bg: rgba(139, 92, 246, 0.12);
+}
+
+.dispatch-skill--source {
+  --dispatch-skill-color: #67e8f9;
+  --dispatch-skill-bg: rgba(6, 182, 212, 0.12);
+}
+
+.dispatch-skill--doubt {
+  --dispatch-skill-color: #fbbf24;
+  --dispatch-skill-bg: rgba(245, 158, 11, 0.12);
 }
 
 .sl-markdown-content table.workflow-steps {
