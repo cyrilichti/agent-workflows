@@ -68,20 +68,12 @@ For every directory:
 
 Merge the downloaded `AGENTS.md` into the consuming project's root `AGENTS.md`:
 
-- when the root file is absent, create it with the downloaded instructions in a
-  dedicated agent-workflows block;
-- when the block already exists, replace only that block;
-- when the root file exists without the block, preserve its content and append
-  the block;
-- never append the same instructions more than once.
-
-Use stable markers so later updates remain idempotent:
-
-```markdown
-<!-- agent-workflows:start -->
-<downloaded AGENTS.md content>
-<!-- agent-workflows:end -->
-```
+- when the root file is absent, create it from the downloaded file;
+- when the root file exists, preserve its content, remove the downloaded
+  top-level `# AGENTS.md` heading, and append the remaining instructions;
+- when the instructions are already present, do not append them again;
+- never add ownership markers, HTML comments, metadata, or another generated
+  heading.
 
 Do not copy the repository metadata, documentation site, build output,
 dependencies, or unrelated root files.
@@ -131,8 +123,10 @@ When it is absent:
 
 Before reporting success, verify:
 
-- every downloaded file exists at the expected destination;
-- the root `AGENTS.md` contains exactly one up-to-date agent-workflows block;
+- every file selected for deployment exists at the expected destination;
+- the root `AGENTS.md` contains exactly one copy of the up-to-date
+  agent-workflows instructions, without ownership comments or a duplicated
+  `# AGENTS.md` heading;
 - `.cursor` was not created or modified;
 - the project lock contains every downloaded Skill entry;
 - every declared Skill is installed;

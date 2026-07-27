@@ -2,7 +2,7 @@
 # project-specific MCP providers.
 #
 # MCP server endpoints are configured by each AI tool, not in this file.
-# This file only tells Agentic Engineering which MCP provider to use for each
+# This file only tells agent-workflows which MCP provider to use for each
 # provider context.
 
 mcp:
