@@ -436,6 +436,21 @@
   margin-block: 2rem;
 }
 
+.dispatch-map--vertical {
+  max-width: 38rem;
+  margin-inline: auto;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.dispatch-map--vertical .dispatch-arrow {
+  justify-self: center;
+  transform: none;
+}
+
+.dispatch-map--plan > .dispatch-skill {
+  width: 100%;
+}
+
 .dispatch-node {
   display: flex;
   min-height: 8.5rem;
