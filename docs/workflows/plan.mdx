@@ -3,10 +3,9 @@ title: /plan
 description: Create and approve one implementation plan without starting work.
 ---
 
-`/plan` creates and approves one implementation plan without starting
-implementation or changing provider state. It can run standalone from the
+`/plan` creates and approves one implementation plan. It can run standalone from the
 current request, deriving one transient item only when context is missing, or
-inside another workflow from the official item supplied by the caller.
+inside another workflow from the item supplied by the caller.
 
 Before drafting, it checks that the context represents one coherent delivery
 unit. Otherwise, it returns `needs-refinement` and stops without creating a

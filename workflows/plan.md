@@ -79,10 +79,12 @@ task context.
 Load `../skills/planning-and-task-breakdown/SKILL.md` completely and use it only
 to assess whether the task context represents one coherent delivery unit.
 
-If it reveals independently deliverable parts or meaningful blocking
-relationships, return `needs-refinement` with concise findings and no proposed
-decomposition. Re-evaluate this outcome if later technical analysis reveals
-hidden autonomous units.
+If it reveals multiple independently deliverable or schedulable units, return
+`needs-refinement` with concise findings and no proposed decomposition. Treat
+blocking relationships as evidence only when they connect those autonomous
+units, not when they merely order implementation inside one coherent delivery
+unit. Re-evaluate this outcome if later technical analysis reveals hidden
+autonomous units.
 
 In workflow mode, return `needs-refinement` to the caller. In standalone mode,
 report it to the user and stop.
