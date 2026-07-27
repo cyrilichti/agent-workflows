@@ -4,6 +4,9 @@ When a workflow or agent selects or replaces a Skill as a method for the
 current task, the component that makes the routing decision must announce it
 before the Skill is applied using `../templates/skill-activation.md`.
 
+This announcement is an exception to instructions that keep successful
+orchestration internal.
+
 Announce the initial selection and every change, but do not repeat an unchanged
 Skill.
 
