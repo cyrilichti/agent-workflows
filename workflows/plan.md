@@ -2,10 +2,13 @@
 
 ## Purpose
 
-Create a plan before implementation starts.
+Confirm that the task can be planned as one delivery unit, then create a plan
+before implementation starts.
 
 This workflow turns existing task context, or context collected from the
-user, into a plan file saved under `../plans/`.
+user, into a plan file saved under `../plans/`. It returns
+`needs-refinement` instead when the context contains multiple autonomous
+delivery units.
 
 ---
 
@@ -14,11 +17,11 @@ user, into a plan file saved under `../plans/`.
 Run this workflow in one of these modes:
 
 * **Workflow mode**: another workflow calls this workflow and provides the task
-  context. After approval, return control to the caller.
+  context. Return either an approved plan or `needs-refinement` to the caller.
 * **Standalone mode**: `./play-book.md` selects `plan`, or the `plan` skill is
   explicitly invoked, with no calling workflow or specialized sub-agent.
-  Resolve task context from the current request before planning. After
-  approval, stop.
+  Resolve task context from the current request before planning. Stop after
+  plan approval or after reporting `needs-refinement`.
 
 ---
 
@@ -71,20 +74,32 @@ one meaningful title and one free-form Markdown body from which the objective,
 problem, and expected outcome are known. Keep the returned item as transient
 task context.
 
-### 2. Resolve Planning Sub-agent
+### 2. Check Planifiability
+
+Load `../skills/planning-and-task-breakdown/SKILL.md` completely and use it only
+to assess whether the task context represents one coherent delivery unit.
+
+If it reveals independently deliverable parts or meaningful blocking
+relationships, return `needs-refinement` with concise findings and no proposed
+decomposition. Re-evaluate this outcome if later technical analysis reveals
+hidden autonomous units.
+
+In workflow mode, return `needs-refinement` to the caller. In standalone mode,
+report it to the user and stop.
+
+### 3. Resolve Planning Sub-agent
 
 Once objective, problem, and expected outcome are available, ensure a
-specialized
-sub-agent is active before creating the plan.
+specialized sub-agent is active before creating the plan.
 
 Select and activate the most appropriate specialized sub-agent by following
 `./sub-agent.md`.
 
-### 3. Create Plan File
+### 4. Create Plan File
 
 Create a plan file following `../templates/plan.md`.
 
-### 4. Confirm Plan
+### 5. Confirm Plan
 
 Present the created plan using `../templates/plan-summary.md`.
 
@@ -101,7 +116,7 @@ options:
 If the user selects `Adjust plan`, collect the requested adjustments,
 update the plan file, and present it for confirmation again.
 
-### 5. Return or Stop
+### 6. Return or Stop
 
 After the plan is approved:
 
@@ -128,8 +143,10 @@ This workflow is complete when:
 * the required context is known;
 * standalone context has remained conversational or has been represented by
   exactly one non-persisted transient item;
-* a specialized planning sub-agent is active;
-* a plan file exists under `../plans/`;
-* the user has approved the plan;
-* control has been returned to the caller in workflow mode, or the workflow has
-  stopped in standalone mode.
+* one of these outcomes has been reached:
+  * `needs-refinement` has been returned or reported with concise findings,
+    without a plan file;
+  * a specialized planning sub-agent is active, a plan file exists under
+    `../plans/`, and the user has approved it;
+* control has been returned to the caller in workflow mode, or the workflow
+  has stopped in standalone mode.
