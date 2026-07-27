@@ -87,13 +87,16 @@ hidden autonomous units.
 In workflow mode, return `needs-refinement` to the caller. In standalone mode,
 report it to the user and stop.
 
-### 3. Resolve Planning Sub-agent
-
-Once objective, problem, and expected outcome are available, ensure a
-specialized sub-agent is active before creating the plan.
+### 3. Resolve Planning Author
 
 Select and activate the most appropriate specialized sub-agent by following
 `./sub-agent.md`.
+
+The specialist is the sole plan author. During this workflow, it may inspect
+the relevant local technical context but must not modify it.
+
+If this analysis changes the planifiability assessment, apply the outcome
+defined in Step 2.
 
 ### 4. Create Plan File
 
@@ -146,7 +149,8 @@ This workflow is complete when:
 * one of these outcomes has been reached:
   * `needs-refinement` has been returned or reported with concise findings,
     without a plan file;
-  * a specialized planning sub-agent is active, a plan file exists under
-    `../plans/`, and the user has approved it;
+  * one specialized plan author is active, the relevant local technical context
+    has been inspected, a plan file exists under `../plans/`, and the user has
+    approved it;
 * control has been returned to the caller in workflow mode, or the workflow
   has stopped in standalone mode.
