@@ -169,7 +169,8 @@ Review the complete draft before presenting it. Confirm that:
 - the children cover the complete parent scope exactly once, without omissions
   or overlapping ownership;
 - every blocking edge references an existing child, has no self-reference, and
-  represents a genuine blocking relationship between autonomous children.
+  represents a genuine blocking relationship between autonomous children;
+- the blocking graph contains no cycle.
 
 If the draft fails any check, return the complete draft and concise review
 findings to the same specialist selected in Step 6. Have that specialist revise
@@ -223,22 +224,48 @@ create a replacement, roll back children already created, or create an
 unparented item.
 
 Pass only the confirmed title and body to the creation command. Keep blocking
-edges as workflow metadata; do not add them to a child body or mutate provider
-relationships outside the native parent relation owned by the command.
+edges as workflow metadata until Step 11; do not add them to a child body or
+let the child-creation command mutate relationships outside its native parent
+relation.
 
-### 11. Report the Terminal Outcome
+### 11. Create the Confirmed Blocking Relations
+
+Run this step only for confirmed blocking edges whose blocked and blocking
+children were both created successfully.
+
+Resolve every stable local child reference exclusively through the child
+creation results from Step 10. Do not search the provider or infer an ID from a
+title.
+
+For each created child that has one or more confirmed blockers, run
+`../commands/create-blocking-relations.md` exactly once with:
+
+```text
+provider: resolved item provider
+blocked_item_id: provider ID of the blocked child
+blocking_item_ids:
+  - provider ID of each successfully created blocking child
+```
+
+When either endpoint of a confirmed edge was not created, record that relation
+as failed without calling the provider operation. If relation creation fails,
+record each failed relation and continue with the remaining confirmed
+relations. Do not retry automatically or remove relations already created.
+
+### 12. Report the Terminal Outcome
 
 Report exactly one terminal outcome:
 
-- `complete`: every confirmed child was created. Report every created child
-  title, provider ID, and link when available;
+- `complete`: every confirmed child and blocking relation was created. Report
+  every created child title, provider ID, and link when available, plus every
+  created blocking relation;
 - `cancelled`: the user selected `cancel` in Step 9. Report that no child was
   created;
 - `failed`: no confirmed child was created. Report every failed child title
   and failure;
-- `partially-failed`: some confirmed children were created and some failed.
-  Report the created child titles, provider IDs, and links separately from
-  every failed child title and failure.
+- `partially-failed`: at least one child was created, but a confirmed child or
+  blocking relation failed. Report the created children, failed children,
+  created relations, and failed relations separately.
 
 After reporting, stop `/refine`. Do not retry failures, claim complete success
 after any failure, or modify the official parent item.
@@ -263,6 +290,10 @@ after any failure, or modify the official parent item.
 - Do not create a child that was not included in the latest confirmed preview.
 - Do not change the official parent's content, status, assignment, labels,
   destination, or relationships.
+- Do not create a blocking relation that was not included in the latest
+  confirmed preview.
+- Do not create a cyclic blocking graph.
+- Do not resolve relation endpoints through provider search or documentation.
 - Do not delete or modify a successfully created child to compensate for
   another child's failure.
 
@@ -287,11 +318,11 @@ This refinement stage is complete when:
     without provider mutation, decomposition, or child creation;
   - the user has cancelled a reviewed decomposition and the workflow has
     stopped without provider mutation;
-  - every confirmed child has been created with a provider-native parent
-    relation and `complete` has reported every created child;
+  - every confirmed child and blocking relation has been created natively and
+    `complete` has reported every created child and relation;
   - no confirmed child has been created and `failed` has reported every
     failure;
-  - some confirmed children have been created and `partially-failed` has
-    reported the created children and failures separately without retry or
-    rollback;
+  - at least one confirmed child has been created but a child or blocking
+    relation has failed, and `partially-failed` has reported created and failed
+    children and relations separately without retry or rollback;
 - the official parent item has remained unchanged.
