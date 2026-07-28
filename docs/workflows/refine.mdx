@@ -11,7 +11,8 @@ returns `needs-refinement`.
 
 `/refine` uses one Skill to confirm the scope when it starts standalone and a
 second Skill to produce vertical child tickets. The local workflow keeps
-control of provider access, presentation, approval, and child creation.
+control of provider access, presentation, approval, child creation, and
+blocking relations.
 
 <div class="dispatch-map dispatch-map--vertical dispatch-map--refine">
   <div class="dispatch-node dispatch-node--workflow">
@@ -66,8 +67,8 @@ control of provider access, presentation, approval, and child creation.
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Draft</th>
-      <td>Clarify individual child items when their title or content is still insufficient.</td>
+      <th scope="row">Revise</th>
+      <td>Check that the decomposition is complete and non-overlapping, then return it to the same specialist when corrections are needed.</td>
     </tr>
     <tr>
       <td>5</td>
@@ -77,12 +78,12 @@ control of provider access, presentation, approval, and child creation.
     <tr>
       <td>6</td>
       <th scope="row">Create</th>
-      <td>Create every confirmed proposal as a native child of the official parent.</td>
+      <td>Create every confirmed proposal as a native child and persist its blocking relations.</td>
     </tr>
     <tr>
       <td>7</td>
       <th scope="row">Stop</th>
-      <td>Report every created child or partial failure without changing or starting the parent.</td>
+      <td>Report every created child and blocking relation or any partial failure without changing the parent.</td>
     </tr>
   </tbody>
 </table>
