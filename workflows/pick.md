@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This workflow resolves and summarizes one item, delegates to `/plan`, stops on
-`needs-refinement`, or resumes after plan approval to start the item and
-trigger `/work`.
+This workflow resolves and summarizes one item, delegates to `/plan`, offers
+`/refine` when planning returns `needs-refinement`, or resumes after plan
+approval to start the item and trigger `/work`.
 
 ---
 
@@ -88,6 +88,8 @@ fields:
   - attachments
 ```
 
+Keep the returned provider item as the complete official item context.
+
 Present the summary to the user using `../templates/ticket-summary.md`.
 
 Do not continue to the next step until that summary has been shown in the
@@ -97,13 +99,38 @@ conversation.
 
 Create a plan by following `./plan.md`.
 
-Provide the selected item summary, provider ID, and context.
+Provide the complete official item context and selected provider ID.
 
-Continue only when the plan workflow returns an approved plan.
+Proceed to Step 6 only when the plan workflow returns an approved plan.
 
-If it returns `needs-refinement`, report its concise findings, state that the
-item must be refined before an implementation plan can be created, leave the
-item unchanged, and stop this workflow.
+If it returns `needs-refinement`, keep and report its concise findings, state
+that the item must be refined before an implementation plan can be created,
+then ask the user using `../templates/select-option.md` with:
+
+```text
+question: Do you want to refine this item?
+options:
+- label: Refine item
+  value: refine
+- label: Stop without changes
+  value: stop
+```
+
+Handle the decision as follows:
+
+- `stop`: report that refinement was declined, leave the official item
+  unchanged, and stop this workflow;
+- `refine`: follow `./refine.md` in workflow mode with:
+
+  ```text
+  provider: resolved item provider
+  parent_item_id: selected provider ID
+  parent_item: complete official item context returned by read-item
+  needs_refinement_findings: exact findings returned by plan
+  ```
+
+After `/refine` returns for any reason, stop `/pick`. Do not start or replan the
+parent, select or activate a created child, or trigger `/work`.
 
 ### 6. Start Item
 
@@ -137,6 +164,10 @@ Provide the approved plan and the active item context.
 * Do not update the item status before the plan has been approved.
 * Do not trigger `/work` before the selected item has been moved to
   the active-work status.
+* Do not run `/refine` unless `/plan` has returned `needs-refinement` for the
+  selected official item.
+* Do not update the parent status or trigger `/work` after offering or running
+  `/refine`, regardless of its terminal outcome.
 * Do not select or activate a specialist sub-agent in this workflow. The plan
   workflow owns planning sub-agent selection after required context is known.
 
@@ -152,7 +183,10 @@ This workflow is complete when:
 * one official item has been selected;
 * the selected item has been summarized;
 * one of these outcomes has been reached:
-  * `/plan` returned `needs-refinement`, its findings were reported, the item
+  * `/plan` returned `needs-refinement`, the user declined refinement, the item
     remained unchanged, and `/work` was not triggered;
+  * `/plan` returned `needs-refinement`, `/refine` received the resolved
+    provider, complete official item, provider ID, and exact findings, then
+    `/pick` stopped without activating the parent or triggering `/work`;
   * `/plan` returned an approved plan, the item was moved to the in progress
     status, and `/work` was triggered with the approved plan.
