@@ -393,6 +393,11 @@
   background: rgba(139, 92, 246, 0.12);
 }
 
+.workflow-badge--refine {
+  color: #f9a8d4;
+  background: rgba(236, 72, 153, 0.12);
+}
+
 :root[data-theme="light"] .workflow-badge--write {
   border-color: #22c55e;
   background: #dcfce7;
@@ -409,6 +414,12 @@
   border-color: #a78bfa;
   background: #ede9fe;
   color: #5b21b6;
+}
+
+:root[data-theme="light"] .workflow-badge--refine {
+  border-color: #f472b6;
+  background: #fce7f3;
+  color: #9d174d;
 }
 
 .provider-badges {
@@ -451,7 +462,8 @@
   transform: none;
 }
 
-.dispatch-map--plan > .dispatch-skill {
+.dispatch-map--plan > .dispatch-skill,
+.dispatch-map--refine > .dispatch-skill {
   width: 100%;
 }
 
@@ -590,6 +602,11 @@ a.dispatch-node--link:focus-visible {
 .dispatch-skill--planning {
   --dispatch-skill-color: #c4b5fd;
   --dispatch-skill-bg: rgba(139, 92, 246, 0.12);
+}
+
+.dispatch-skill--to-tickets {
+  --dispatch-skill-color: #f9a8d4;
+  --dispatch-skill-bg: rgba(236, 72, 153, 0.12);
 }
 
 .dispatch-skill--source {

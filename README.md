@@ -16,7 +16,7 @@ Start with the [documentation](https://cyrilichti.github.io/agent-workflows/)
 
 - [x] `/write`: create or reformulate exactly one item, confirm it, save it,
   optionally assign it, and stop.
-- [ ] `/refine`: analyze one oversized item, propose and confirm a decomposition
+- [x] `/refine`: analyze one oversized item, propose and confirm a decomposition
   into autonomous items, save them through the configured provider, and stop.
 - [x] `/pick`: select and summarize an item, trigger `/plan`, activate
   the item after approval, then trigger `/work`.

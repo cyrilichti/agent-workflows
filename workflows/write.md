@@ -68,23 +68,17 @@ options:
 
 Skip this step when creating a new item.
 
-If the user provides an item ID or URL, run
-`../commands/read-item.md` and validate the item.
+Run `../commands/resolve-existing-item.md` with:
 
-Otherwise, ask for the item title or a short title search phrase, then run
-`../commands/search-items.md`. Do not list every item available from the
-provider.
+```text
+provider: resolved item provider
+reference: user-provided provider item ID, when available
+```
 
-- If no item matches, ask the user to refine the search or stop.
-- If exactly one item matches, select it.
-- If multiple items match, ask the user to select one using
-  `../templates/select-option.md`. Use readable labels with title, status, and
-  destination when available, and attach the provider ID as the internal value.
-
-Read the selected item with `../commands/read-item.md`. Identify the
-selected item to the user using its title, status, and link when available.
-Pass its official title and description to the writing sub-agent. Keep its
-provider fields in this workflow so unrequested fields remain unchanged.
+Identify the resolved item to the user using its title, status, and link when
+available. Pass its official title and description to the writing sub-agent.
+Keep its provider fields in this workflow so unrequested fields remain
+unchanged.
 
 ### 4. Resolve Destination
 

@@ -5,7 +5,7 @@ Read one official item from a configured provider.
 ## Input
 
 - `provider`: resolved item provider.
-- `item_id`: provider item ID or an ID resolved from a provider URL.
+- `item_id`: provider item ID.
 - `fields`: optional caller-requested fields in addition to the core item.
 
 ## Steps

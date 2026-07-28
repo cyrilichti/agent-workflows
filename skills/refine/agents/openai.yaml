@@ -1,0 +1,4 @@
+interface:
+  display_name: "Refine"
+  short_description: "Split oversized items into confirmed child items"
+  default_prompt: "Use $refine to split an oversized item into confirmed child items."

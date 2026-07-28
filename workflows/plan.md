@@ -76,18 +76,12 @@ task context.
 
 ### 2. Check Planifiability
 
-Load `../skills/planning-and-task-breakdown/SKILL.md` completely and use it only
-to assess whether the task context represents one coherent delivery unit.
+Run `../commands/assess-refinement-need.md` with the complete task context.
 
-If it reveals multiple independently deliverable or schedulable units, return
-`needs-refinement` with concise findings and no proposed decomposition. Treat
-blocking relationships as evidence only when they connect those autonomous
-units, not when they merely order implementation inside one coherent delivery
-unit. Re-evaluate this outcome if later technical analysis reveals hidden
-autonomous units.
+On `refinement-not-needed`, continue planning.
 
-In workflow mode, return `needs-refinement` to the caller. In standalone mode,
-report it to the user and stop.
+On `needs-refinement`, return its findings to the caller in workflow mode or
+report them and stop in standalone mode.
 
 ### 3. Resolve Planning Author
 
@@ -97,8 +91,9 @@ Select and activate the most appropriate specialized sub-agent by following
 The specialist is the sole plan author. During this workflow, it may inspect
 the relevant local technical context but must not modify it.
 
-If this analysis changes the planifiability assessment, apply the outcome
-defined in Step 2.
+If this analysis reveals hidden autonomous units, run
+`../commands/assess-refinement-need.md` again with the expanded context and
+apply the outcome defined in Step 2.
 
 ### 4. Route Planning Skills and Draft the Plan
 
