@@ -1,6 +1,6 @@
 ---
 title: Providers
-description: Connect workflow item operations to ClickUp or Linear through one normalized interface.
+description: Connect workflow item operations to providers through one normalized interface.
 ---
 
 import { Badge } from '@astrojs/starlight/components'
@@ -10,22 +10,9 @@ import { Badge } from '@astrojs/starlight/components'
   <Badge text="Linear" variant="tip" size="large" />
 </div>
 
-A provider connects a workflow concept to the external system that owns its
-data.
-
-| Provider concept | ClickUp | Linear |
-| --- | --- | --- |
-| Item | Task | Issue |
-| Destination | List | Team and optional project |
-| Assignee | Workspace member | Workspace user |
-| Status | Workspace-specific status | Workspace-specific state |
-
-Workflows define **what** happens. Providers define **how**.
-
 ## Select a provider
 
-With `agent-workflows.yaml` already created, select the item provider through
-`mcp.item.provider`.
+In `agent-workflows.yaml`, select the provider.
 
 Use ClickUp:
 
@@ -42,9 +29,6 @@ mcp:
   item:
     provider: linear
 ```
-
-This only selects the adapter. MCP access and authentication remain configured
-in the AI coding tool.
 
 ## Connect the MCP server
 

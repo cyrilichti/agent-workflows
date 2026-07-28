@@ -443,7 +443,11 @@
 }
 
 .dispatch-map--vertical .dispatch-arrow {
-  justify-self: center;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   transform: none;
 }
 
@@ -452,6 +456,7 @@
 }
 
 .dispatch-node {
+  position: relative;
   display: flex;
   min-height: 8.5rem;
   padding: 1rem;
@@ -461,6 +466,27 @@
   flex-direction: column;
   justify-content: center;
   gap: 0.35rem;
+}
+
+a.dispatch-node--link {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 120ms ease, background-color 120ms ease,
+    transform 120ms ease;
+}
+
+a.dispatch-node--link:hover {
+  border-color: var(--sl-color-accent);
+  background: var(--sl-color-accent-low);
+  transform: translateY(-1px);
+}
+
+a.dispatch-node--link:focus-visible {
+  outline: 2px solid var(--sl-color-accent);
+  outline-offset: 3px;
 }
 
 .dispatch-node strong {
