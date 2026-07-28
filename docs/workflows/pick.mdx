@@ -1,0 +1,86 @@
+---
+title: /pick
+description: Pick your next work item, approve an implementation plan, and hand it off to /work.
+---
+
+`/pick` turns a ready work item into active work. It finds the items you can
+start, lets you choose one, and presents its before planning
+begins. It hands the item to `/plan`, after you approve the plan `/pick`
+move the item to in progress and hand to `/work`.
+
+## Dispatching workflows
+
+`/pick` coordinates two workflow handoffs. `/plan` must return an approved plan
+before the item can move to in progress and `/work` can begin.
+
+<div className="dispatch-map dispatch-map--vertical">
+  <div className="dispatch-node dispatch-node--workflow">
+    <span className="dispatch-node__label">Workflow</span>
+    <strong>/pick</strong>
+    <span>Selects one item and owns the handoffs</span>
+  </div>
+
+  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <a
+    className="dispatch-node dispatch-node--workflow dispatch-node--link"
+    href="/agent-workflows/workflows/plan/"
+  >
+    <span className="dispatch-node__label">Workflow</span>
+    <strong>/plan</strong>
+    <span>Creates and approves the implementation plan</span>
+  </a>
+
+  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <a
+    className="dispatch-node dispatch-node--workflow dispatch-node--link"
+    href="/agent-workflows/workflows/work/"
+  >
+    <span className="dispatch-node__label">Workflow</span>
+    <strong>/work</strong>
+    <span>Receives the approved plan to start implementation</span>
+  </a>
+</div>
+
+## How this workflow is structured
+
+<table className="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Provider</th>
+      <td>Load the configured work item provider.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Items</th>
+      <td>Find the work items that are ready to start.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Pick</th>
+      <td>Choose the item you want to work on next.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Context</th>
+      <td>Review the item's full context before planning.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Plan</th>
+      <td>Use <code>/plan</code> to create and approve an implementation plan.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Start</th>
+      <td>Move the item to in progress only after plan approval.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <th scope="row">Work</th>
+      <td>Hand the approved plan and active item to <code>/work</code>.</td>
+    </tr>
+  </tbody>
+</table>
