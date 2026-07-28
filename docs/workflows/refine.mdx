@@ -1,0 +1,88 @@
+---
+title: /refine
+description: Split one oversized work item into confirmed child items without changing the parent.
+---
+
+`/refine` splits one oversized official item into confirmed child items. Start
+it directly by selecting an item, or enter from another workflow after `/plan`
+returns `needs-refinement`.
+
+## Dispatching external skills
+
+`/refine` uses one Skill to confirm the scope when it starts standalone and a
+second Skill to produce vertical child tickets. The local workflow keeps
+control of provider access, presentation, approval, and child creation.
+
+<div class="dispatch-map dispatch-map--vertical dispatch-map--refine">
+  <div class="dispatch-node dispatch-node--workflow">
+    <span class="dispatch-node__label">Workflow</span>
+    <strong>/refine</strong>
+    <span>Owns context, approval, and provider mutations</span>
+  </div>
+
+  <span class="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <a
+    class="dispatch-skill dispatch-skill--planning"
+    href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown"
+  >
+    <span class="dispatch-skill__label">Skill</span>
+    <span>Standalone only: confirm that refinement is needed</span>
+    <strong>planning-and-task-breakdown ↗</strong>
+    <small>Addy Osmani</small>
+  </a>
+
+  <span class="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <a
+    class="dispatch-skill dispatch-skill--to-tickets"
+    href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-tickets"
+  >
+    <span class="dispatch-skill__label">Skill</span>
+    <span>Draft vertical child tickets and genuine blocking edges</span>
+    <strong>to-tickets ↗</strong>
+    <small>Matt Pocock</small>
+  </a>
+</div>
+
+## How this workflow is structured
+
+<table class="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Context</th>
+      <td>Reuse the caller's official item or select and read one in standalone mode.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Scope</th>
+      <td>In standalone mode, confirm that the item contains multiple autonomous delivery units.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Decompose</th>
+      <td>Draft vertical child tickets and identify only the dependencies that genuinely block them.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Draft</th>
+      <td>Clarify individual child items when their title or content is still insufficient.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Review</th>
+      <td>Preview the complete decomposition, then confirm, adjust, or cancel it.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Create</th>
+      <td>Create every confirmed proposal as a native child of the official parent.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <th scope="row">Stop</th>
+      <td>Report every created child or partial failure without changing or starting the parent.</td>
+    </tr>
+  </tbody>
+</table>
