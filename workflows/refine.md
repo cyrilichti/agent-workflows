@@ -4,7 +4,8 @@
 
 Resolve one official parent item as refinement context, whether the item is
 supplied by another workflow or selected in standalone mode, then verify in
-standalone mode that it contains multiple autonomous delivery units.
+standalone mode that it contains multiple autonomous delivery units and draft
+those units as provider-neutral child proposals.
 
 ---
 
@@ -96,13 +97,65 @@ On `refinement-not-needed`, report the rationale and stop without changing the
 provider or official parent item. On `needs-refinement`, keep its findings as
 refinement context and continue.
 
-### 5. Continue With Official Context
+### 5. Prepare Decomposition Context
 
 Continue refinement with exactly one resolved provider, official parent item
 ID, and complete official parent item.
 
 Preserve the caller's `needs-refinement` findings in workflow mode or the
 standalone refinement findings produced by Step 4.
+
+### 6. Resolve Decomposition Author
+
+Run `./sub-agent.md` with the complete official parent item and preserved
+refinement findings.
+
+Select exactly one appropriate specialist for the parent scope. The selected
+specialist is the sole decomposition author. It may inspect relevant technical
+context explicitly identified by the item or user, but it must not modify that
+context or the provider.
+
+### 7. Draft the Child Decomposition
+
+Have the selected specialist load `../skills/to-tickets/SKILL.md` completely
+and use only its vertical-slicing and blocking-edge methods.
+
+Give the specialist:
+
+- the complete official parent item;
+- the preserved refinement findings;
+- any relevant read-only technical context inspected in Step 6;
+- the instruction to return a provider-neutral draft containing two or more
+  child proposals.
+
+Each child proposal must contain:
+
+- a stable local reference;
+- one meaningful title;
+- one free-form Markdown body;
+- references to other proposed children only when they genuinely block it.
+
+Require the draft to satisfy all of these conditions:
+
+- every child is independently deliverable or schedulable;
+- children are vertical slices rather than isolated technical layers;
+- the children cover the complete parent scope exactly once, without omissions
+  or overlapping ownership;
+- blocking edges connect autonomous children and do not represent ordinary
+  implementation ordering inside one child.
+
+Override and suppress `to-tickets` instructions to:
+
+- run tracker setup or choose a tracker;
+- fetch, search for, reread, or modify the official parent item;
+- quiz the user or approve the decomposition;
+- write ticket files or any other local file;
+- publish, create, update, or label provider items;
+- create native blocking, sub-issue, or other provider relationships;
+- commit, hand off, or start implementation.
+
+Return the draft to `/refine`. Do not present it as approved and do not create
+any child item during this step.
 
 ---
 
@@ -115,23 +168,32 @@ standalone refinement findings produced by Step 4.
 - Do not mutate the provider while resolving refinement context.
 - Do not propose a decomposition or create child items while assessing whether
   refinement is needed.
+- Do not let more than one specialist author the decomposition.
+- Do not let `to-tickets` own provider setup, persistence, labels,
+  relationships, confirmation, or local files.
 
 ---
 
 ## Success Criteria
 
-Context resolution is complete when:
+This refinement stage is complete when:
 
 - the entry mode is explicit;
 - one resolved provider, official parent item ID, and complete official parent
   item are available;
-- workflow mode has preserved the caller context and findings unchanged
-  without provider retrieval;
-- standalone mode has resolved, read, and summarized one official item through
-  the shared existing-item command;
-- standalone mode has used `../commands/assess-refinement-need.md` to determine
-  whether the official item contains multiple autonomous delivery units;
-- a coherent standalone item has returned `refinement-not-needed` and stopped
-  without provider mutation, decomposition, or child creation; or
-- an oversized standalone item has preserved concise refinement findings and
-  continued without proposing a decomposition during the assessment.
+- context has been acquired according to the entry mode:
+  - workflow mode has preserved the caller context and findings unchanged
+    without provider retrieval or a repeated refinement-need assessment;
+  - standalone mode has resolved, read, and summarized one official item
+    through the shared existing-item command, then used
+    `../commands/assess-refinement-need.md` to determine whether it contains
+    multiple autonomous delivery units;
+- one of these outcomes has been reached:
+  - a coherent standalone item has returned `refinement-not-needed` and stopped
+    without provider mutation, decomposition, or child creation;
+  - an oversized item has preserved concise refinement findings, exactly one
+    appropriate specialist has used `to-tickets` to return at least two
+    autonomous provider-neutral vertical child proposals with genuine blocking
+    edges, and those proposals cover the parent scope exactly once without any
+    tracker setup, provider mutation, label, relationship, local file,
+    confirmation, handoff, or implementation side effect.
