@@ -72,7 +72,7 @@ Then run `../commands/resolve-existing-item.md` with:
 
 ```text
 provider: resolved item provider
-reference: user-provided item ID or URL, when available
+reference: user-provided provider item ID, when available
 fields:
   - comments
   - acceptance criteria

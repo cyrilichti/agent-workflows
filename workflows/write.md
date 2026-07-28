@@ -72,7 +72,7 @@ Run `../commands/resolve-existing-item.md` with:
 
 ```text
 provider: resolved item provider
-reference: user-provided item ID or URL, when available
+reference: user-provided provider item ID, when available
 ```
 
 Identify the resolved item to the user using its title, status, and link when

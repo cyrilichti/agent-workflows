@@ -13,7 +13,7 @@ approval to start the item and trigger `/work`.
 Run this workflow after `./play-book.md` selects `pick`, or when the
 `pick` skill is explicitly invoked.
 
-If the user provides an item ID or URL, retrieve it from the configured
+If the user provides a provider item ID, retrieve it from the configured
 context provider and validate that it can be used for this workflow.
 
 Otherwise, resolve the configured context provider and ask the user to

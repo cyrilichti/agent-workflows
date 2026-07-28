@@ -5,13 +5,13 @@ Resolve one existing official item from a configured provider.
 ## Input
 
 - `provider`: resolved item provider.
-- `reference`: optional user-provided item ID or URL.
+- `reference`: optional user-provided provider item ID.
 - `fields`: optional caller-requested fields in addition to the core item.
 
 ## Steps
 
 1. When `reference` is available, run `./read-item.md` with the resolved
-   provider, the item ID or URL, and the caller-requested fields. Return the
+   provider, the item ID, and the caller-requested fields. Return the
    official item and its provider ID, then stop this command.
 2. Otherwise, ask the user for the item title or a short title search phrase,
    then run `./search-items.md` with the resolved provider and that query. Do
@@ -31,6 +31,8 @@ Resolve one existing official item from a configured provider.
 ## Failure Behavior
 
 - Do not treat a search result as official item content before reading it.
+- Do not accept or resolve provider URLs as item references. Ask for a provider
+  item ID or a narrow title search phrase instead.
 - Do not expose provider IDs in selection labels.
 - Do not silently broaden the user's search phrase.
 - If the selected item cannot be read, stop without substituting another
