@@ -6,7 +6,7 @@ Resolve one official parent item as refinement context, whether the item is
 supplied by another workflow or selected in standalone mode, then verify in
 standalone mode that it contains multiple autonomous delivery units and draft
 those units as provider-neutral child proposals for complete user
-confirmation.
+confirmation before creating them as native children.
 
 ---
 
@@ -198,6 +198,51 @@ Handle the decision as follows:
 Do not support partial confirmation. Do not create or update provider items
 during this review and confirmation cycle.
 
+### 10. Create the Confirmed Child Items
+
+Run this step only after Step 9 returns `confirm`. Do not run it after
+`adjust`, `cancel`, or any earlier terminal outcome.
+
+For each child in the stable order of the confirmed preview, run
+`../commands/create-child-item.md` exactly once with:
+
+```text
+provider: resolved item provider
+parent: complete official parent item with its provider ID and destination
+content:
+  title: exact confirmed child title
+  body: exact confirmed child Markdown body
+```
+
+Associate each command result with the child's stable local reference. Preserve
+the returned child ID, title, link, destination, and parent ID when available.
+
+If one child fails, record its stable local reference, title, and failure, then
+continue with the remaining confirmed children. Do not retry automatically,
+create a replacement, roll back children already created, or create an
+unparented item.
+
+Pass only the confirmed title and body to the creation command. Keep blocking
+edges as workflow metadata; do not add them to a child body or mutate provider
+relationships outside the native parent relation owned by the command.
+
+### 11. Report the Terminal Outcome
+
+Report exactly one terminal outcome:
+
+- `complete`: every confirmed child was created. Report every created child
+  title, provider ID, and link when available;
+- `cancelled`: the user selected `cancel` in Step 9. Report that no child was
+  created;
+- `failed`: no confirmed child was created. Report every failed child title
+  and failure;
+- `partially-failed`: some confirmed children were created and some failed.
+  Report the created child titles, provider IDs, and links separately from
+  every failed child title and failure.
+
+After reporting, stop `/refine`. Do not retry failures, claim complete success
+after any failure, or modify the official parent item.
+
 ---
 
 ## Safety
@@ -215,6 +260,11 @@ during this review and confirmation cycle.
 - Do not present an incomplete, overlapping, or scope-incomplete decomposition
   for confirmation.
 - Do not treat an earlier preview as confirmed after the specialist revises it.
+- Do not create a child that was not included in the latest confirmed preview.
+- Do not change the official parent's content, status, assignment, labels,
+  destination, or relationships.
+- Do not delete or modify a successfully created child to compensate for
+  another child's failure.
 
 ---
 
@@ -237,7 +287,11 @@ This refinement stage is complete when:
     without provider mutation, decomposition, or child creation;
   - the user has cancelled a reviewed decomposition and the workflow has
     stopped without provider mutation;
-  - the user has confirmed the latest complete, non-overlapping decomposition
-    authored and revised by exactly one specialist, and the exact confirmed
-    child proposals and blocking edges have been preserved without provider
-    mutation, local-file output, handoff, or implementation.
+  - every confirmed child has been created with a provider-native parent
+    relation and `complete` has reported every created child;
+  - no confirmed child has been created and `failed` has reported every
+    failure;
+  - some confirmed children have been created and `partially-failed` has
+    reported the created children and failures separately without retry or
+    rollback;
+- the official parent item has remained unchanged.
