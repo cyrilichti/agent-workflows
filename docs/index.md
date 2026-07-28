@@ -1,6 +1,6 @@
 ---
-title: Workflows that make agent skills work together.
-description: Coordinate specialized skills through clear, repeatable workflows so your coding agent knows what to use, when to use it, and how to move forward.
+title: Make specialized agent skills work together.
+description: Install controlled workflows that select and sequence the right skills, keep approvals explicit, and connect work items to providers.
 head:
   - tag: title
     content: agent-workflows - make agent skills work together
@@ -8,8 +8,8 @@ template: splash
 editUrl: false
 hero:
   layout: media-left
-  title: Workflows that make agent skills work together.
-  tagline: Coordinate specialized skills through clear, repeatable workflows so your coding agent knows what to use, when to use it, and how to move forward.
+  title: Make specialized agent skills work together.
+  tagline: Install controlled workflows that select and sequence the right skills, keep approvals explicit, and connect work items to providers.
   image:
     html: |-
       <div class="workflow-hero-media" role="img" aria-label="The write workflow dispatching to the idea-refine skill with Linear as the active provider">

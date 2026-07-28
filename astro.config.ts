@@ -10,7 +10,7 @@ export default defineConfig({
     starlight({
       title: 'agent-workflows',
       description:
-        'Coordinate specialized skills through clear, repeatable workflows so your coding agent knows what to use, when to use it, and how to move forward.',
+        'Install controlled workflows that select and sequence the right skills, keep approvals explicit, and connect work items to providers.',
       customCss: ['./docs/styles/custom.css'],
       editLink: {
         baseUrl:
