@@ -5,7 +5,8 @@
 Resolve one official parent item as refinement context, whether the item is
 supplied by another workflow or selected in standalone mode, then verify in
 standalone mode that it contains multiple autonomous delivery units and draft
-those units as provider-neutral child proposals.
+those units as provider-neutral child proposals for complete user
+confirmation.
 
 ---
 
@@ -157,6 +158,46 @@ Override and suppress `to-tickets` instructions to:
 Return the draft to `/refine`. Do not present it as approved and do not create
 any child item during this step.
 
+### 8. Review the Complete Decomposition
+
+Review the complete draft before presenting it. Confirm that:
+
+- it contains at least two child proposals;
+- every child has a meaningful title and sufficiently defined free-form
+  Markdown body;
+- every child remains independently deliverable or schedulable;
+- the children cover the complete parent scope exactly once, without omissions
+  or overlapping ownership;
+- every blocking edge references an existing child, has no self-reference, and
+  represents a genuine blocking relationship between autonomous children.
+
+If the draft fails any check, return the complete draft and concise review
+findings to the same specialist selected in Step 6. Have that specialist revise
+the decomposition under the Step 7 constraints, then repeat this review.
+
+Do not invoke `/write`, `item-writer`, or another specialist to repair a child
+proposal.
+
+### 9. Preview and Confirm the Decomposition
+
+Present the complete reviewed draft using
+`../templates/decomposition-preview.md`, then ask for one decision using
+`../templates/decomposition-confirmation.md`.
+
+Handle the decision as follows:
+
+- `adjust`: collect the requested changes, return them with the complete
+  current draft to the same specialist, then repeat Step 8 and present a new
+  complete preview for confirmation;
+- `cancel`: report cancellation and stop without changing the provider or
+  creating child items;
+- `confirm`: preserve exactly the child titles, bodies, stable local
+  references, and blocking edges shown in the latest preview as the confirmed
+  decomposition, then continue.
+
+Do not support partial confirmation. Do not create or update provider items
+during this review and confirmation cycle.
+
 ---
 
 ## Safety
@@ -171,6 +212,9 @@ any child item during this step.
 - Do not let more than one specialist author the decomposition.
 - Do not let `to-tickets` own provider setup, persistence, labels,
   relationships, confirmation, or local files.
+- Do not present an incomplete, overlapping, or scope-incomplete decomposition
+  for confirmation.
+- Do not treat an earlier preview as confirmed after the specialist revises it.
 
 ---
 
@@ -191,9 +235,9 @@ This refinement stage is complete when:
 - one of these outcomes has been reached:
   - a coherent standalone item has returned `refinement-not-needed` and stopped
     without provider mutation, decomposition, or child creation;
-  - an oversized item has preserved concise refinement findings, exactly one
-    appropriate specialist has used `to-tickets` to return at least two
-    autonomous provider-neutral vertical child proposals with genuine blocking
-    edges, and those proposals cover the parent scope exactly once without any
-    tracker setup, provider mutation, label, relationship, local file,
-    confirmation, handoff, or implementation side effect.
+  - the user has cancelled a reviewed decomposition and the workflow has
+    stopped without provider mutation;
+  - the user has confirmed the latest complete, non-overlapping decomposition
+    authored and revised by exactly one specialist, and the exact confirmed
+    child proposals and blocking edges have been preserved without provider
+    mutation, local-file output, handoff, or implementation.
