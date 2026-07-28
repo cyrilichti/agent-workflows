@@ -1,17 +1,17 @@
 ---
 title: /plan
-description: Create and approve one implementation plan without starting work.
+description: Turn one task into a clear, approved implementation plan before work begins.
 ---
 
-`/plan` creates and approves one implementation plan. It can run standalone from the
-current request, deriving one transient item only when context is missing, or
-inside another workflow from the item supplied by the caller.
-
-Before drafting, it checks that the context represents one coherent delivery
-unit. Otherwise, it returns `needs-refinement` and stops without creating a
-plan.
+`/plan` turns a task into an implementation plan before work begins.
+It first checks that the task can be delivered as one coherent unit. If the
+task is too broad, `/plan` explains why it needs refinement and stops.
 
 ## Dispatching external skills
+
+`/plan` always uses a planning skill to check the scope and structure the work.
+When needed, it can also verify external facts or challenge high-risk decisions
+before you approve the plan.
 
 <div class="dispatch-map dispatch-map--vertical dispatch-map--plan">
   <div class="dispatch-node dispatch-node--workflow">
@@ -27,7 +27,7 @@ plan.
     href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown"
   >
     <span class="dispatch-skill__label">Skill</span>
-    <span>Always: scope and draft</span>
+    <span>Always: scope and structure</span>
     <strong>planning-and-task-breakdown ↗</strong>
     <small>Addy Osmani</small>
   </a>
@@ -40,7 +40,7 @@ plan.
       href="https://github.com/addyosmani/agent-skills/tree/main/skills/source-driven-development"
     >
       <span class="dispatch-skill__label">Skill</span>
-      <span>External facts required</span>
+      <span>When external facts matter</span>
       <strong>source-driven-development ↗</strong>
       <small>Addy Osmani</small>
     </a>
@@ -49,7 +49,7 @@ plan.
       href="https://github.com/addyosmani/agent-skills/tree/main/skills/doubt-driven-development"
     >
       <span class="dispatch-skill__label">Skill</span>
-      <span>High-risk draft decisions</span>
+      <span>When decisions need a second look</span>
       <strong>doubt-driven-development ↗</strong>
       <small>Addy Osmani</small>
     </a>
@@ -63,32 +63,32 @@ plan.
     <tr>
       <td>1</td>
       <th scope="row">Context</th>
-      <td>Use the caller's item or resolve standalone context.</td>
+      <td>Use the current request or the item provided by another workflow.</td>
     </tr>
     <tr>
       <td>2</td>
       <th scope="row">Scope</th>
-      <td>Confirm the work is one coherent delivery unit.</td>
+      <td>Check that the task can be delivered as one coherent unit.</td>
     </tr>
     <tr>
       <td>3</td>
       <th scope="row">Specialist</th>
-      <td>Select one plan author and inspect the local technical context.</td>
+      <td>Select the right specialist to inspect the technical context and author the plan.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Draft</th>
-      <td>Route planning skills and write one implementation plan.</td>
+      <th scope="row">Plan</th>
+      <td>Structure the work, verify external facts when needed, and challenge high-risk decisions.</td>
     </tr>
     <tr>
       <td>5</td>
-      <th scope="row">Confirm</th>
-      <td>Review, adjust, and approve the plan.</td>
+      <th scope="row">Review</th>
+      <td>Approve the plan or return it for revision.</td>
     </tr>
     <tr>
       <td>6</td>
       <th scope="row">Return</th>
-      <td>Return the approved plan to the caller or stop standalone.</td>
+      <td>Return the approved plan to the calling workflow or stop without starting work.</td>
     </tr>
   </tbody>
 </table>
