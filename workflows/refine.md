@@ -3,7 +3,8 @@
 ## Purpose
 
 Resolve one official parent item as refinement context, whether the item is
-supplied by another workflow or selected in standalone mode.
+supplied by another workflow or selected in standalone mode, then verify in
+standalone mode that it contains multiple autonomous delivery units.
 
 ---
 
@@ -83,13 +84,25 @@ official item as the complete parent context.
 
 Present the parent item using `../templates/ticket-summary.md`.
 
-### 4. Continue With Official Context
+### 4. Verify Standalone Refinement Need
+
+Skip this step in workflow mode because the caller's `needs-refinement`
+findings already establish this result.
+
+Run `../commands/assess-refinement-need.md` with the complete official parent
+item.
+
+On `refinement-not-needed`, report the rationale and stop without changing the
+provider or official parent item. On `needs-refinement`, keep its findings as
+refinement context and continue.
+
+### 5. Continue With Official Context
 
 Continue refinement with exactly one resolved provider, official parent item
 ID, and complete official parent item.
 
-Also preserve the caller's `needs-refinement` findings when they are available
-in workflow mode.
+Preserve the caller's `needs-refinement` findings in workflow mode or the
+standalone refinement findings produced by Step 4.
 
 ---
 
@@ -98,9 +111,10 @@ in workflow mode.
 - Do not treat pasted text, a title, or a search result as an official parent
   item.
 - Do not repeat provider resolution or item retrieval in workflow mode.
+- Do not repeat the refinement-need assessment in workflow mode.
 - Do not mutate the provider while resolving refinement context.
-- Do not assess planifiability, propose a decomposition, or create child items
-  during context resolution.
+- Do not propose a decomposition or create child items while assessing whether
+  refinement is needed.
 
 ---
 
@@ -114,4 +128,10 @@ Context resolution is complete when:
 - workflow mode has preserved the caller context and findings unchanged
   without provider retrieval;
 - standalone mode has resolved, read, and summarized one official item through
-  the shared existing-item command.
+  the shared existing-item command;
+- standalone mode has used `../commands/assess-refinement-need.md` to determine
+  whether the official item contains multiple autonomous delivery units;
+- a coherent standalone item has returned `refinement-not-needed` and stopped
+  without provider mutation, decomposition, or child creation; or
+- an oversized standalone item has preserved concise refinement findings and
+  continued without proposing a decomposition during the assessment.
