@@ -163,6 +163,13 @@ Repeat the following steps:
 15. Select the next todo and repeat. Leave the loop when no `in_progress` or
     `pending` todo remains.
 
+### 6. Run Global Validation and Stop
+
+When no todo remains `pending` or `in_progress`, run the global validation
+defined in the selected plan.
+
+Report the validation result and stop. Do not push commits.
+
 ---
 
 ## Safety
@@ -177,6 +184,7 @@ Repeat the following steps:
 - Stage only changes belonging to the active todo.
 - Do not mark a todo `completed` before its approved commit succeeds.
 - Do not push todo commits.
+- Do not push after global validation.
 
 ---
 
@@ -197,4 +205,6 @@ when:
 - adjustment returned to the same todo and specialist;
 - every created todo commit was explicitly approved before creation;
 - each successful todo commit immediately marked its todo `completed`;
-- no todo commit was pushed by `/work`.
+- no todo commit was pushed by `/work`;
+- when no todo remained `pending` or `in_progress`, the global validation
+  defined in the plan ran and `/work` stopped without pushing.
