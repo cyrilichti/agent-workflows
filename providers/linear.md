@@ -185,3 +185,16 @@ Update a Linear issue status.
 3. Pass the selected item ID and resolved state.
 
 Ask the user only when multiple active-work states could match.
+
+## add-request-backlink
+
+```text
+tool: create_comment
+arguments:
+  issueId: item ID or identifier
+  body: exact caller-provided backlink comment
+```
+
+Create only the comment. Do not update issue state or any other issue field.
+Use this operation only after creating a new merge request, never during
+recovery or resume.

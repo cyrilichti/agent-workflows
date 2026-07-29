@@ -1,6 +1,6 @@
 # Providers
 
-Providers are adapters for external work sources.
+Providers are adapters for external work-item and version-control systems.
 
 Provider adapters document the exact MCP operations agents should use for common
 commands.
@@ -25,6 +25,9 @@ Each provider file should define reusable operations such as:
 - `retrieve-items`
 - `read-item`
 - `update-item-status`
+- `create-request`
+- `search-requests`
+- `read-request`
 
 When a command needs a provider, load `./<provider>.md` and use
 the documented operation. Do not inspect provider documentation unless the
