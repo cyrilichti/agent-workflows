@@ -117,9 +117,19 @@ The specialist remains the sole plan author and writes the plan following
 `../templates/plan.md`.
 
 When adversarial review produces actionable findings, the workflow reconciles
-them and asks the specialist to revise the plan. During this workflow, use the
-bounded single-model fresh-context review. Do not offer or invoke cross-model
-review unless the user explicitly requests an additional cross-model opinion.
+them once and asks the specialist to revise the plan once.
+
+Run exactly one single-model fresh-context adversarial review by default. After
+the resulting revision, do not automatically review the revised plan again.
+Proceed to plan confirmation instead.
+
+If substantive uncertainty remains after reconciliation, report it with the
+revised plan so the user can request an adjustment or explicitly ask for
+another review. Do not start another adversarial cycle on the workflow's own
+initiative.
+
+Do not offer or invoke cross-model review unless the user explicitly requests
+an additional cross-model opinion.
 
 ### 5. Confirm Plan
 
@@ -155,6 +165,8 @@ After the plan is approved:
 * Do not create the plan with `item-writer` as the active planning sub-agent.
 * Do not select a planning sub-agent before objective, problem, and expected
   outcome are available.
+* Do not run more than one adversarial review cycle unless the user explicitly
+  requests another review.
 
 ---
 
