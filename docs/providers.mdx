@@ -1,6 +1,6 @@
 ---
 title: Providers
-description: Connect workflow item operations to providers through one normalized interface.
+description: Connect item and version operations to their configured providers.
 ---
 
 import { Badge } from '@astrojs/starlight/components'
@@ -8,11 +8,12 @@ import { Badge } from '@astrojs/starlight/components'
 <div class="provider-badges" aria-label="Supported providers">
   <Badge text="ClickUp" variant="note" size="large" />
   <Badge text="Linear" variant="tip" size="large" />
+  <Badge text="GitLab" variant="caution" size="large" />
 </div>
 
-## Select a provider
+## Item provider
 
-In `agent-workflows.yaml`, select the provider.
+Select ClickUp or Linear for item operations.
 
 Use ClickUp:
 
@@ -30,10 +31,24 @@ mcp:
     provider: linear
 ```
 
-## Connect the MCP server
+## Version provider
 
-Enable the matching MCP server in the AI tool running the workflows. Setup
-depends on the client you use:
+`/work` currently supports GitLab only for version operations:
+
+```yaml
+mcp:
+  version:
+    provider: gitlab
+```
+
+GitLab creates the draft merge request after `/work` pushes the new branch.
+The current provider creates it without a description. GitHub is not supported
+in this release.
+
+## Connect the MCP servers
+
+Enable the MCP servers matching the configured item and version providers in
+the AI tool running the workflows. Setup depends on the client you use:
 
 - [Connect ClickUp's MCP server](https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server)
 - [Connect Linear's MCP server](https://linear.app/docs/mcp)

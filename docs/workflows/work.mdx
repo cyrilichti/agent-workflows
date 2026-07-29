@@ -1,0 +1,91 @@
+---
+title: /work
+description: Execute one selected plan todo by todo on a draft merge request.
+---
+
+`/work` turns an approved plan into confirmed commits. It can receive the plan
+from `/pick` with an active official item, or let you select a plan directly.
+
+## Starting new work
+
+New work starts only when you are on the locally known default branch and it is
+up to date. `/work` then:
+
+1. creates a semantic branch name from the item type or plan objective;
+2. creates one empty initialization commit and pushes the branch;
+3. creates a GitLab draft merge request;
+4. adds the merge request URL to the official item when one was supplied.
+
+The initialization push is the only push owned by `/work`.
+
+## Resuming work
+
+When resuming, `/work` trusts the current branch, existing draft merge request,
+and todo states stored in the selected plan. It does not search for another
+branch or merge request and does not recreate the item backlink.
+
+Todos already marked `completed` or `cancelled` are skipped.
+
+## Executing todos
+
+For each `in_progress` todo, or otherwise the next `pending` todo, `/work`:
+
+1. selects the most appropriate specialist;
+2. lets that specialist route the Skills required for the todo;
+3. implements and validates only that todo;
+4. stages only the changes belonging to it;
+5. lets you request an adjustment;
+6. proposes one commit title and description;
+7. creates the commit only after your confirmation;
+8. marks the todo `completed` after the commit succeeds.
+
+Todo commits are not pushed. Pushing them remains your responsibility.
+
+## Finishing
+
+When no todo remains `pending` or `in_progress`, `/work` runs the global
+validation defined in the plan, reports its result, and stops.
+
+`/work` does not review the merge request or remove its Draft state.
+
+## How this workflow is structured
+
+<table className="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Plan</th>
+      <td>Use the supplied plan or select one in standalone mode.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Branch</th>
+      <td>Initialize new work or trust the current branch when resuming.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Request</th>
+      <td>Create the GitLab draft merge request for new work.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Todo</th>
+      <td>Select a specialist and execute one todo.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Adjustment</th>
+      <td>Adjust the staged work or continue to the commit proposal.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Commit</th>
+      <td>Create the confirmed commit and complete the todo.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <th scope="row">Validation</th>
+      <td>Run the plan's global validation and stop.</td>
+    </tr>
+  </tbody>
+</table>
