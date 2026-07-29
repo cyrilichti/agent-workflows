@@ -55,7 +55,8 @@ Do not:
 - push for initialization;
 - add another item backlink.
 
-Continue directly with plan reconciliation and todo execution.
+Continue directly with todo execution using the states stored in the selected
+plan. Do not infer or update todo states from Git history or local changes.
 
 ### 3. Require the Default Branch for New Work
 
@@ -110,10 +111,57 @@ Resolve each provider or repository only when the corresponding operation
 needs it. Do not persist the branch, remote, repository, provider, or merge
 request in the plan.
 
-### 5. Continue Plan Execution
+### 5. Execute the Todo Loop
 
-Continue with plan reconciliation and todo execution after either new-work
-initialization or resumed-work entry.
+Treat the todo states stored in the plan as authoritative.
+
+Repeat the following steps:
+
+1. Select the single `in_progress` todo when one exists. Otherwise, select the
+   first `pending` todo and mark it `in_progress`.
+2. Select the most appropriate specialist for that todo by following
+   `./sub-agent.md`. Reevaluate the selection for every todo, even when the
+   previous specialist may still be suitable.
+3. Give the specialist the active todo, relevant plan constraints, and required
+   technical context. Let the specialist route the Skills appropriate to that
+   todo.
+4. Let the specialist implement and validate only the active todo.
+5. Stage only the changes belonging to the active todo.
+6. Present the todo with `../templates/todo-review.md`.
+7. Ask the user through `../templates/select-option.md` with:
+
+   ```text
+   question: Do you want an adjustment before the commit proposal?
+   options:
+   - label: Request an adjustment
+     value: adjust
+   - label: Continue to commit proposal
+     value: propose_commit
+   ```
+
+8. On `adjust`, give the requested adjustment to the same specialist, then
+   repeat implementation, validation, staging, and todo review.
+9. On `propose_commit`, present one title and description with
+   `../templates/commit-proposal.md`.
+10. Ask the user through `../templates/select-option.md` with:
+
+    ```text
+    question: What do you want to do with this commit proposal?
+    options:
+    - label: Commit these changes
+      value: commit
+    - label: Request an adjustment
+      value: adjust
+    ```
+
+11. On `adjust`, return to the same specialist and repeat implementation,
+    validation, staging, and review.
+12. On `commit`, create the commit with the approved title and description and
+    no trailers.
+13. Only after the commit succeeds, mark the active todo `completed`.
+14. Do not push the todo commit. Pushing remains the user's responsibility.
+15. Select the next todo and repeat. Leave the loop when no `in_progress` or
+    `pending` todo remains.
 
 ---
 
@@ -126,12 +174,16 @@ initialization or resumed-work entry.
 - Do not perform new-work initialization during resumed work.
 - Add an item backlink only after creating a new merge request.
 - Do not persist execution metadata in the plan.
+- Stage only changes belonging to the active todo.
+- Do not mark a todo `completed` before its approved commit succeeds.
+- Do not push todo commits.
 
 ---
 
 ## Success Criteria
 
-This workflow entry and initialization are complete when:
+This workflow entry, initialization, and todo loop satisfy their contracts
+when:
 
 - one existing plan has been selected or supplied;
 - resumed work has continued without branch or merge-request recovery; or
@@ -139,4 +191,10 @@ This workflow entry and initialization are complete when:
   created one draft merge request, and added its URL to the supplied official
   item when present;
 - item status has not been changed;
-- no execution metadata has been added to the plan.
+- no execution metadata has been added to the plan;
+- each processed todo used a freshly evaluated specialist and its routed
+  Skills;
+- adjustment returned to the same todo and specialist;
+- every created todo commit was explicitly approved before creation;
+- each successful todo commit immediately marked its todo `completed`;
+- no todo commit was pushed by `/work`.
