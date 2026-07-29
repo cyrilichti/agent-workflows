@@ -7,7 +7,7 @@ Create one draft merge request:
 ```text
 tool: create_merge_request
 arguments:
-  id: caller project ID or URL-encoded path
+  id: caller repository as a GitLab project ID or URL-encoded path
   source_branch: caller source branch
   target_branch: caller target branch
   title: caller title beginning with "Draft:"
