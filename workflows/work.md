@@ -117,8 +117,9 @@ Treat the todo states stored in the plan as authoritative.
 
 Repeat the following steps:
 
-1. Select the single `in_progress` todo when one exists. Otherwise, select the
-   first `pending` todo and mark it `in_progress`.
+1. Skip todos already marked `completed` or `cancelled`. Select the single
+   `in_progress` todo when one exists. Otherwise, select the first `pending`
+   todo and mark it `in_progress`.
 2. Select the most appropriate specialist for that todo by following
    `./sub-agent.md`. Reevaluate the selection for every todo, even when the
    previous specialist may still be suitable.

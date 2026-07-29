@@ -22,7 +22,9 @@ Start with the [documentation](https://cyrilichti.github.io/agent-workflows/)
   the item after approval, then trigger `/work`.
 - [x] `/plan`: create and approve a plan standalone or when called by another
   workflow; return to the caller without triggering `/work`.
-- [ ] `/work`: execute the plan and trigger `/ready` on success.
+- [x] `/work`: create a draft MR for new work, execute the plan todo by todo
+  with confirmed commits, run its global validation, and leave pushes to the
+  user.
 - [ ] `/ready`: run completion gates, then return to `/work` or trigger
   `/review`.
 - [ ] `/review`: run an independent review, then return to `/work` or trigger
