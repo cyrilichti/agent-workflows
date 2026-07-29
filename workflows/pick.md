@@ -99,7 +99,13 @@ conversation.
 
 Create a plan by following `./plan.md`.
 
-Provide the complete official item context and selected provider ID.
+Provide:
+
+```text
+item: complete official item context, including its provider ID
+```
+
+`/plan` uses the official item ID from this context as `planId`.
 
 Proceed to Step 6 only when the plan workflow returns an approved plan.
 
@@ -148,27 +154,31 @@ Report the updated item status to the user.
 
 Start implementation by following `./work.md`.
 
-Provide the approved plan and the active item context.
+Provide the approved plan and the active official item context, including the
+selected provider ID and item URL when available. The configured item provider
+remains authoritative.
 
 ---
 
 ## Safety
 
-* Pasted text or titles are not official items until matched to the
+- Pasted text or titles are not official items until matched to the resolved
   provider.
-* Prefer direct deterministic filtering over exploratory MCP probing.
-* Do not proceed from item retrieval to summarization without rendering the
+- Prefer direct deterministic filtering over exploratory MCP probing.
+- Do not proceed from item retrieval to summarization without rendering the
   item selection.
-* Do not proceed from summarization to planning without presenting the ticket
+- Do not proceed from summarization to planning without presenting the ticket
   summary to the user first.
-* Do not update the item status before the plan has been approved.
-* Do not trigger `/work` before the selected item has been moved to
+- Do not update the item status before the plan has been approved.
+- Do not trigger `/work` before the selected item has been moved to
   the active-work status.
-* Do not run `/refine` unless `/plan` has returned `needs-refinement` for the
+- Do not let `/plan` or `/work` replace the selected official source item with
+  pasted or inferred metadata.
+- Do not run `/refine` unless `/plan` has returned `needs-refinement` for the
   selected official item.
-* Do not update the parent status or trigger `/work` after offering or running
+- Do not update the parent status or trigger `/work` after offering or running
   `/refine`, regardless of its terminal outcome.
-* Do not select or activate a specialist sub-agent in this workflow. The plan
+- Do not select or activate a specialist sub-agent in this workflow. The plan
   workflow owns planning sub-agent selection after required context is known.
 
 ---
@@ -177,16 +187,17 @@ Provide the approved plan and the active item context.
 
 This workflow is complete when:
 
-* the item provider has been resolved;
-* matching items have been rendered as selectable options, or zero
+- the item provider has been resolved;
+- matching items have been rendered as selectable options, or zero
   matches have been explicitly reported;
-* one official item has been selected;
-* the selected item has been summarized;
-* one of these outcomes has been reached:
-  * `/plan` returned `needs-refinement`, the user declined refinement, the item
+- one official item has been selected;
+- the selected item has been summarized;
+- one of these outcomes has been reached:
+  - `/plan` returned `needs-refinement`, the user declined refinement, the item
     remained unchanged, and `/work` was not triggered;
-  * `/plan` returned `needs-refinement`, `/refine` received the resolved
+  - `/plan` returned `needs-refinement`, `/refine` received the resolved
     provider, complete official item, provider ID, and exact findings, then
     `/pick` stopped without activating the parent or triggering `/work`;
-  * `/plan` returned an approved plan, the item was moved to the in progress
-    status, and `/work` was triggered with the approved plan.
+  - `/plan` returned an approved plan, the item was moved to the in progress
+    status, and `/work` was triggered with the approved plan and the same
+    official source item context.

@@ -48,6 +48,7 @@ Examples:
 
 ```markdown
 ---
+planId: "<stable plan identity>"
 name: <short plan title>
 overview: <one-line summary of objective and approach>
 todos:
@@ -91,13 +92,46 @@ isProject: false
 
 | Field | Required | Notes |
 | --- | --- | --- |
+| `planId` | yes | Stable plan identity; see **Plan Identity** |
 | `name` | yes | Short title shown in Plan UI |
 | `overview` | yes | One-line scope summary |
 | `todos` | yes | One item per step; count must match `## Steps` |
 | `todos[].id` | yes | Unique kebab-case slug within the plan |
 | `todos[].content` | yes | Actionable, implementation-ready description |
-| `todos[].status` | yes | Use `pending` for new plans |
+| `todos[].status` | yes | `pending`, `in_progress`, `completed`, or `cancelled` |
 | `isProject` | yes | `false` single-task; `true` multi-stream |
+
+---
+
+## Plan Identity
+
+When an official source item is available, use its exact provider item ID as
+`planId`:
+
+```text
+<item-id>
+```
+
+When no official source item exists, generate one UUID once and persist:
+
+```text
+plan:<uuid-v4>
+```
+
+Treat `planId` as an opaque stable value. Do not regenerate or rewrite it when
+the plan is adjusted or its todos change status. Resolve the item provider and
+item details at runtime; do not duplicate them in the plan.
+
+---
+
+## Todo Lifecycle
+
+- New plans start with every todo set to `pending`.
+- At most one todo may be `in_progress`.
+- Use `completed` when its work has been completed.
+- Use `cancelled` only after the user explicitly confirms that the todo will
+  not be performed.
+- A plan is complete when every todo is `completed` or `cancelled`.
 
 ---
 
