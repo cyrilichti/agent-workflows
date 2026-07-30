@@ -35,9 +35,14 @@ todo. Otherwise, treat it as new work.
 In caller mode, use the approved plan supplied by the caller. Preserve the
 official item context when provided.
 
-In standalone mode, list the available files under `../plans/` and ask the user
-to select exactly one using `../templates/select-option.md`. Use readable plan
-names as labels and plan file paths as internal values.
+In standalone mode, select only files under `../plans/` whose names end with
+`.plan.md`. Sort them by modification time from newest to oldest, keep at most
+the first 10, and ask the user to select exactly one using
+`../templates/select-option.md`. Use readable plan names as labels and plan
+file paths as internal values.
+
+When no matching plan exists, report that no executable plan is
+available and stop.
 
 Read the selected plan and require its existing `planId` and todo states. Do not
 create, rewrite, or approve a plan in this workflow.
