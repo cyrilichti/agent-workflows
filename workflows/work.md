@@ -145,8 +145,9 @@ Repeat the following steps:
      value: propose_commit
    ```
 
-8. On `adjust`, give the requested adjustment to the same specialist, then
-   repeat implementation, validation, staging, and todo review.
+8. On `adjust`, ask what should change and wait for the user's free-form
+   response. Give that requested adjustment to the same specialist, then repeat
+   implementation, validation, staging, and todo review.
 9. On `propose_commit`, present one title and description with
    `../templates/commit-proposal.md`.
 10. Ask the user through `../templates/select-option.md` with:
@@ -160,8 +161,9 @@ Repeat the following steps:
       value: adjust
     ```
 
-11. On `adjust`, return to the same specialist and repeat implementation,
-    validation, staging, and review.
+11. On `adjust`, ask what should change and wait for the user's free-form
+    response. Give that requested adjustment to the same specialist, then
+    repeat implementation, validation, staging, and review.
 12. On `commit`, create the commit with the approved title and description and
     no trailers.
 13. Only after the commit succeeds, mark the active todo `completed`.
