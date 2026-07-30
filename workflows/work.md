@@ -134,41 +134,27 @@ Repeat the following steps:
 4. Let the specialist implement and validate only the active todo.
 5. Stage only the changes belonging to the active todo.
 6. Present the todo with `../templates/todo-review.md`.
-7. Ask the user through `../templates/select-option.md` with:
+7. Immediately present one title and description with
+   `../templates/commit-proposal.md`.
+8. Ask the user through `../templates/select-option.md` with:
 
    ```text
-   question: Do you want an adjustment before the commit proposal?
+   question: What do you want to do with this commit proposal?
    options:
+   - label: Commit these changes
+     value: commit
    - label: Request an adjustment
      value: adjust
-   - label: Continue to commit proposal
-     value: propose_commit
    ```
 
-8. On `adjust`, ask what should change and wait for the user's free-form
+9. On `adjust`, ask what should change and wait for the user's free-form
    response. Give that requested adjustment to the same specialist, then repeat
-   implementation, validation, staging, and todo review.
-9. On `propose_commit`, present one title and description with
-   `../templates/commit-proposal.md`.
-10. Ask the user through `../templates/select-option.md` with:
-
-    ```text
-    question: What do you want to do with this commit proposal?
-    options:
-    - label: Commit these changes
-      value: commit
-    - label: Request an adjustment
-      value: adjust
-    ```
-
-11. On `adjust`, ask what should change and wait for the user's free-form
-    response. Give that requested adjustment to the same specialist, then
-    repeat implementation, validation, staging, and review.
-12. On `commit`, create the commit with the approved title and description and
+   implementation, validation, staging, todo review, and commit proposal.
+10. On `commit`, create the commit with the approved title and description and
     no trailers.
-13. Only after the commit succeeds, mark the active todo `completed`.
-14. Do not push the todo commit. Pushing remains the user's responsibility.
-15. Select the next todo and repeat. Leave the loop when no `in_progress` or
+11. Only after the commit succeeds, mark the active todo `completed`.
+12. Do not push the todo commit. Pushing remains the user's responsibility.
+13. Select the next todo and repeat. Leave the loop when no `in_progress` or
     `pending` todo remains.
 
 ### 6. Run Global Validation and Stop
