@@ -17,3 +17,5 @@ skills/*
 !skills/write/**
 !skills/refine/
 !skills/refine/**
+!skills/work/
+!skills/work/**

@@ -33,11 +33,8 @@ A plan needs:
 * problem: what must be solved and why it matters;
 * expected outcome: how success will be recognized.
 
-Optional context (use when available):
-
-* item provider ID (for file naming).
-
-In workflow mode, use the official item context supplied by the caller.
+In workflow mode, use the official item context supplied by the caller,
+including its provider item ID.
 
 In standalone mode, use the current request when it already provides the
 required context. Otherwise, derive one lightweight transient item with
@@ -53,6 +50,9 @@ In workflow mode, check the item context supplied by the caller and the current
 conversation. Preserve the official item as provided. If required planning
 context is still missing, ask the user only for the missing information. Do not
 rewrite the official item or activate `item-writer`.
+
+Use the provider item ID from the official item context as the plan identity.
+Do not derive it from pasted text or persist duplicated item metadata.
 
 In standalone mode, check whether the current request and conversation already
 provide the required context. If they do, continue without activating an
@@ -116,6 +116,16 @@ Route Skills according to the planning phase:
 The specialist remains the sole plan author and writes the plan following
 `../templates/plan.md`.
 
+Before the specialist writes a new plan, provide its stable identity:
+
+* in workflow mode with an official source item, set `planId` to its exact
+  provider item ID;
+* in standalone mode, generate `plan:<uuid-v4>` once.
+
+Require every new todo to use `pending`. Preserve `planId` unchanged during
+plan revision. Todo status updates after planning may use only `pending`,
+`in_progress`, `completed`, or `cancelled`, with at most one `in_progress`.
+
 When adversarial review produces actionable findings, the workflow reconciles
 them once and asks the specialist to revise the plan once.
 
@@ -146,7 +156,8 @@ options:
 ```
 
 If the user selects `Adjust plan`, collect the requested adjustments,
-update the plan file, and present it for confirmation again.
+update the plan file without regenerating `planId`, and present it for
+confirmation again.
 
 ### 6. Return or Stop
 
@@ -167,6 +178,8 @@ After the plan is approved:
   outcome are available.
 * Do not run more than one adversarial review cycle unless the user explicitly
   requests another review.
+* Do not derive a provider item `planId` from pasted ticket text.
+* Do not regenerate `planId` after the plan file has been created.
 
 ---
 
@@ -175,6 +188,7 @@ After the plan is approved:
 This workflow is complete when:
 
 * the required context is known;
+* the plan has one stable `planId`;
 * standalone context has remained conversational or has been represented by
   exactly one non-persisted transient item;
 * one of these outcomes has been reached:

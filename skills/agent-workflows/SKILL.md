@@ -98,11 +98,17 @@ npx skills experimental_install
 
 Stop and report the command output when dependency installation fails.
 
-## Configure Item Provider
+## Configure Providers
 
-When `agent-workflows.yaml` already exists, preserve it unchanged.
+When `agent-workflows.yaml` already exists:
 
-When it is absent:
+1. Preserve the configured item provider and every unrelated setting.
+2. When `mcp.version.provider` is absent, add it with the value `gitlab`.
+3. When `mcp.version.provider` already exists with another value, stop and
+   explain that this release supports only GitLab for version operations. Do
+   not overwrite the existing value.
+
+When `agent-workflows.yaml` is absent:
 
 1. Ask the user which item provider the project uses:
 
@@ -119,6 +125,9 @@ When it is absent:
    `agent-workflows.yaml`.
 3. Set only `mcp.item.provider` to the selected value.
 
+Do not ask the user to select a version provider. Keep
+`mcp.version.provider: gitlab` from the example configuration.
+
 ## Validate
 
 Before reporting success, verify:
@@ -132,9 +141,10 @@ Before reporting success, verify:
 - every declared Skill is installed;
 - `agent-workflows.yaml` exists;
 - `mcp.item.provider` is either `clickup` or `linear`.
+- `mcp.version.provider` is exactly `gitlab`.
 
 Always remove the temporary download after success or failure.
 
 Report whether agent-workflows was installed or updated, which directories were
 deployed, which lock entries were added or replaced, and the configured item
-provider.
+and version providers.

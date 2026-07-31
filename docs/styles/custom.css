@@ -398,6 +398,11 @@
   background: rgba(236, 72, 153, 0.12);
 }
 
+.workflow-badge--work {
+  color: #fcd34d;
+  background: rgba(245, 158, 11, 0.12);
+}
+
 :root[data-theme="light"] .workflow-badge--write {
   border-color: #22c55e;
   background: #dcfce7;
@@ -420,6 +425,12 @@
   border-color: #f472b6;
   background: #fce7f3;
   color: #9d174d;
+}
+
+:root[data-theme="light"] .workflow-badge--work {
+  border-color: #f59e0b;
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .provider-badges {
@@ -519,6 +530,14 @@ a.dispatch-node--link:focus-visible {
   font-size: var(--sl-text-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.dispatch-node--agent .dispatch-node__label {
+  color: #67e8f9;
+}
+
+:root[data-theme="light"] .dispatch-node--agent .dispatch-node__label {
+  color: #0e7490;
 }
 
 .dispatch-arrow {

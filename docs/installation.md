@@ -16,3 +16,7 @@ Then invoke it explicitly from your agent:
 ```
 
 The same command installs a new project or updates an existing installation.
+
+During installation, select the project's item provider: ClickUp or Linear.
+The version provider is configured as GitLab because it is the only version
+provider supported by `/work` in this release.

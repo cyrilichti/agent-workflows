@@ -1,0 +1,67 @@
+---
+title: /work
+description: Execute one selected plan todo by todo on a draft merge request.
+---
+
+`/work` turns an approved plan into confirmed commits. It can receive the plan
+from `/pick` with an active official item, or let you select from recent plans.
+
+## Dispatching agents
+
+`/work` evaluates each active todo and routes it to the most suitable agent.
+The selected agent implements and validates that todo, while `/work` keeps
+control of sequencing, plan state, staging, and commits. The choice is
+reevaluated for every todo.
+
+<div className="dispatch-map dispatch-map--vertical">
+  <div className="dispatch-node dispatch-node--workflow">
+    <span className="dispatch-node__label">Workflow</span>
+    <strong>/work</strong>
+    <span>Owns execution and selects the agent for each todo</span>
+  </div>
+
+  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <div className="dispatch-node dispatch-node--agent">
+    <span className="dispatch-node__label">Agent</span>
+    <strong>Most suitable agent</strong>
+    <span>Implements and validates the active todo</span>
+  </div>
+</div>
+
+## How this workflow is structured
+
+<table className="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Plan</th>
+      <td>Use the supplied plan or select one in standalone mode.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Branch</th>
+      <td>Initialize new work or trust the current branch when resuming.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Request</th>
+      <td>Create the GitLab draft merge request for new work.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Agent</th>
+      <td>Select the most suitable agent and execute one todo.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Commit</th>
+      <td>Create the confirmed commit and complete the todo.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Validation</th>
+      <td>Run the plan's global validation and stop.</td>
+    </tr>
+  </tbody>
+</table>
