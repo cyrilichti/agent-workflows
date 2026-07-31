@@ -6,6 +6,29 @@ description: Execute one selected plan todo by todo on a draft merge request.
 `/work` turns an approved plan into confirmed commits. It can receive the plan
 from `/pick` with an active official item, or let you select from recent plans.
 
+## Dispatching agents
+
+`/work` evaluates each active todo and routes it to the most suitable agent.
+The selected agent implements and validates that todo, while `/work` keeps
+control of sequencing, plan state, staging, and commits. The choice is
+reevaluated for every todo.
+
+<div className="dispatch-map dispatch-map--vertical">
+  <div className="dispatch-node dispatch-node--workflow">
+    <span className="dispatch-node__label">Workflow</span>
+    <strong>/work</strong>
+    <span>Owns execution and selects the agent for each todo</span>
+  </div>
+
+  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <div className="dispatch-node dispatch-node--agent">
+    <span className="dispatch-node__label">Agent</span>
+    <strong>Most suitable agent</strong>
+    <span>Implements and validates the active todo</span>
+  </div>
+</div>
+
 ## How this workflow is structured
 
 <table className="workflow-steps">
@@ -27,8 +50,8 @@ from `/pick` with an active official item, or let you select from recent plans.
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Todo</th>
-      <td>Select a specialist and execute one todo.</td>
+      <th scope="row">Agent</th>
+      <td>Select the most suitable agent and execute one todo.</td>
     </tr>
     <tr>
       <td>5</td>

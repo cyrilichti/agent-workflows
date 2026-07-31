@@ -532,6 +532,14 @@ a.dispatch-node--link:focus-visible {
   text-transform: uppercase;
 }
 
+.dispatch-node--agent .dispatch-node__label {
+  color: #67e8f9;
+}
+
+:root[data-theme="light"] .dispatch-node--agent .dispatch-node__label {
+  color: #0e7490;
+}
+
 .dispatch-arrow {
   color: var(--sl-color-gray-3);
   font-size: 1.4rem;
