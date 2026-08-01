@@ -201,5 +201,5 @@ arguments:
 ```
 
 Create only the comment. Do not update item status or any other item field.
-Use this operation only after creating a new merge request, never during
-recovery or resume.
+Use this operation only after creating a new request and never during resumed
+work.

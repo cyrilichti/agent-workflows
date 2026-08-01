@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Execute one selected plan incrementally on a dedicated branch and draft merge
-request.
+Execute one selected plan incrementally on a dedicated branch and draft
+version-control request.
 
 This workflow initializes new work once, resumes existing work without
 rediscovery, and leaves item status ownership to the calling workflow.
@@ -50,12 +50,12 @@ create, rewrite, or approve a plan in this workflow.
 ### 2. Resume Existing Work
 
 For resumed work, trust that the current branch is the correct work branch and
-that its draft merge request already exists.
+that its draft request already exists.
 
 Do not:
 
 - switch or create a branch;
-- search for, read, recover, or recreate the merge request;
+- search for, read, recover, or recreate the request;
 - create another initialization commit;
 - push for initialization;
 - add another item backlink.
@@ -94,10 +94,11 @@ After the user is on the locally known default branch and it is up to date:
 4. Push the branch to the current push remote.
 5. Resolve the configured version provider by running
    `../commands/resolve-version-provider.md`.
-6. Resolve the version-control repository from the push remote only when
-   preparing the request creation.
+6. Resolve the version-control repository by running
+   `../commands/resolve-version-repository.md` with the configured provider and
+   push remote only when preparing request creation.
 7. Format the title with `../templates/request-title.md`.
-8. Create the draft merge request by running `../commands/create-request.md`
+8. Create the draft request by running `../commands/create-request.md`
    with:
 
    ```text
@@ -109,8 +110,8 @@ After the user is on the locally known default branch and it is up to date:
    ```
 
 9. When caller mode supplied an official item, resolve its configured item
-   provider and run `../commands/link-request-to-item.md` with the new merge
-   request URL. Do not update the item status.
+   provider and run `../commands/link-request-to-item.md` with the initialized
+   request kind and URL, plus the stable plan ID. Do not update the item status.
 
 Resolve each provider or repository only when the corresponding operation
 needs it. Do not persist the branch, remote, repository, provider, or merge
@@ -173,7 +174,7 @@ Report the validation result and stop. Do not push commits.
 - Do not initialize work until the user is on the default branch and it is up
   to date.
 - Do not perform new-work initialization during resumed work.
-- Add an item backlink only after creating a new merge request.
+- Add an item backlink only after creating one new request.
 - Do not persist execution metadata in the plan.
 - Stage only changes belonging to the active todo.
 - Do not mark a todo `completed` before its approved commit succeeds.
@@ -188,10 +189,10 @@ This workflow entry, initialization, and todo loop satisfy their contracts
 when:
 
 - one existing plan has been selected or supplied;
-- resumed work has continued without branch or merge-request recovery; or
+- resumed work has continued without branch or request recovery; or
 - new work has created and pushed its branch and empty initialization commit,
-  created one draft merge request, and added its URL to the supplied official
-  item when present;
+  created one draft request, and added its URL to the supplied official item
+  when present;
 - item status has not been changed;
 - no execution metadata has been added to the plan;
 - each processed todo used a freshly evaluated specialist and its routed

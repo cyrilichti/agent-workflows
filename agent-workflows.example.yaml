@@ -9,5 +9,6 @@ mcp:
   item:
     provider: clickup
 
+  # Supported values: github, gitlab
   version:
     provider: gitlab

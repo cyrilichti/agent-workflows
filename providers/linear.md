@@ -196,5 +196,5 @@ arguments:
 ```
 
 Create only the comment. Do not update issue state or any other issue field.
-Use this operation only after creating a new merge request, never during
-recovery or resume.
+Use this operation only after creating a new request and never during resumed
+work.
