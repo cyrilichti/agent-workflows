@@ -1,5 +1,12 @@
 # GitLab Provider
 
+## resolve-repository
+
+Accept the GitLab project path or URL derived by the caller from the current
+push remote. Return the URL-encoded namespace and project path expected by the
+GitLab MCP as the repository identity. Stop when the path is empty or does not
+identify a project; do not contact GitLab to infer it.
+
 ## create-request
 
 Create one draft merge request:
