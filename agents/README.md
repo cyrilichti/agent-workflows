@@ -23,9 +23,6 @@ Agents help the AI:
 * reduce prompt complexity;
 * delegate complex tasks to specialized workers.
 
-Agents should focus on **how to perform a role**, while project knowledge
-remains in the other `.agents` directories.
-
 ---
 
 ## Organization
@@ -35,7 +32,7 @@ Each agent is defined in its own Markdown file.
 ```text
 ./
 ├── README.md
-├── business-analyst.md
+├── product-owner.md
 ├── backend-developer.md
 ├── reviewer.md
 ├── devops-engineer.md
@@ -122,6 +119,69 @@ Delegation is particularly useful for:
 * Keep agent instructions concise.
 * Reference project knowledge instead of duplicating it.
 * Make the agent's mission immediately understandable from its description.
+
+---
+
+## Matrix
+
+Select the most specific agent that matches the active todo. Broad agents are
+fallbacks when no technology or domain specialist exists. A specialist may
+reuse the general Skills of its family in addition to its own starting Skills.
+
+### Cohorts
+
+| Cohort | Purpose |
+| --- | --- |
+| Product and content | Define value, scope, items, documentation, and SEO direction. |
+| Design and accessibility | Shape user experience, visual systems, and accessible outcomes. |
+| Architecture and assurance | Design solutions and independently assess correctness, security, and performance. |
+| Application delivery | Implement generic, cross-layer, mobile, and developer-tooling work. |
+| Specialized delivery | Implement work where a language or framework materially determines the method. |
+| Data and AI | Analyze data, build data and model workflows, and deliver AI capabilities. |
+| Quality and diagnosis | Define and implement validation, reproduce failures, and isolate root causes. |
+| Operations | Design cloud infrastructure, automate delivery, and improve production reliability. |
+
+### Complete profile inventory
+
+This is the target catalog. Profiles marked as fallbacks are selected only
+when no more specific profile matches.
+
+| Profile | Cohort | Primary responsibility |
+| --- | --- | --- |
+| `item-writer` | Product and content | Draft or reformulate one provider-neutral item. |
+| `product-manager` | Product and content | Evaluate value, product strategy, investment choices, and roadmap order. |
+| `product-owner` | Product and content | Define the next deliverable, backlog scope, and acceptance decisions. |
+| `technical-writer` | Product and content | Produce structured technical documentation and guidance. |
+| `seo-specialist` | Product and content | Cover technical, semantic, content, keyword, crawl, indexing, linking, and structured-data SEO. |
+| `ux-designer` | Design and accessibility | Design journeys, interactions, navigation, and usability. |
+| `ui-designer` | Design and accessibility | Define visual direction, responsive composition, components, and design systems. |
+| `accessibility-specialist` | Design and accessibility | Audit WCAG compliance, semantics, keyboard use, assistive technology, and visual accessibility. |
+| `solution-architect` | Architecture and assurance | Design architecture within one system or across multiple systems and rollout paths. |
+| `reviewer` | Architecture and assurance | Review changes for defects, regressions, maintainability, and convention drift. |
+| `security-engineer` | Architecture and assurance | Assess threats, authentication, authorization, data exposure, and hardening. |
+| `performance-engineer` | Architecture and assurance | Measure and diagnose latency, throughput, scalability, and resource use. |
+| `backend-developer` | Application delivery | Implement backend work when no framework specialist exists. Fallback. |
+| `frontend-developer` | Application delivery | Implement frontend work when no framework specialist exists. Fallback. |
+| `fullstack-developer` | Application delivery | Deliver a genuinely atomic vertical slice spanning frontend and backend. |
+| `mobile-developer` | Application delivery | Implement mobile work across platforms and frameworks. Fallback. |
+| `developer-experience-engineer` | Application delivery | Improve local tooling, developer CLIs, SDK ergonomics, generators, and repository automation. |
+| `laravel-developer` | Specialized delivery | Implement Laravel-specific backend work. |
+| `symfony-developer` | Specialized delivery | Implement Symfony-specific backend work. |
+| `nestjs-developer` | Specialized delivery | Implement NestJS services and applications. |
+| `python-developer` | Specialized delivery | Implement general Python work when no Python framework specialist exists. Fallback. |
+| `fastapi-developer` | Specialized delivery | Implement FastAPI services and applications. |
+| `react-developer` | Specialized delivery | Implement React-specific frontend work. |
+| `vue-developer` | Specialized delivery | Implement Vue-specific frontend work at component or application scale. |
+| `data-analyst` | Data and AI | Explore data, define KPIs, identify trends, and support decisions. |
+| `data-scientist` | Data and AI | Cover advanced analysis, models, experiments, and data pipelines. |
+| `database-engineer` | Data and AI | Design schemas, optimize queries, run safe migrations, and preserve integrity. |
+| `ml-engineer` | Data and AI | Build training, serving, monitoring, and model-lifecycle systems. |
+| `ai-engineer` | Data and AI | Build LLM and agent features, including prompting, retrieval, evaluation, and guardrails. |
+| `qa-engineer` | Quality and diagnosis | Define validation strategy and implement automated or manual test coverage. |
+| `debugger` | Quality and diagnosis | Reproduce failures, test hypotheses, isolate causes, and return root-cause evidence. |
+| `cloud-engineer` | Operations | Design and implement cloud infrastructure with cost and security constraints. |
+| `devops-engineer` | Operations | Build CI/CD, release, container, deployment, and rollback automation. |
+| `sre` | Operations | Improve SLOs, observability, resilience, incident response, and production reliability. |
 
 ---
 

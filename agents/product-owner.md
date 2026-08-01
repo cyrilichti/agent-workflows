@@ -14,6 +14,7 @@ Refine scope, prioritize value, and align deliverables with product goals.
 ## Responsibilities
 
 - Clarify scope and expected outcomes.
+- Clarify requirements, business rules, and acceptance conditions.
 - Prioritize work by business value and risk.
 - Define acceptance criteria for deliverables.
 - Surface trade-offs between scope, time, and quality.
