@@ -8,6 +8,7 @@ import { Badge } from '@astrojs/starlight/components'
 <div class="provider-badges" aria-label="Supported providers">
   <Badge text="ClickUp" variant="note" size="large" />
   <Badge text="Linear" variant="tip" size="large" />
+  <Badge text="GitHub" variant="note" size="large" />
   <Badge text="GitLab" variant="caution" size="large" />
 </div>
 
@@ -15,41 +16,29 @@ import { Badge } from '@astrojs/starlight/components'
 
 Select ClickUp or Linear for item operations.
 
-Use ClickUp:
-
 ```yaml
 mcp:
   item:
-    provider: clickup
-```
-
-Or use Linear:
-
-```yaml
-mcp:
-  item:
-    provider: linear
+    provider: linear # or clickup
 ```
 
 ## Version provider
 
-`/work` currently supports GitLab only for version operations:
+Select GitHub or GitLab for version operations.
 
 ```yaml
 mcp:
   version:
-    provider: gitlab
+    provider: github # or gitlab
 ```
-
-GitLab creates the draft merge request after `/work` pushes the new branch.
-The current provider creates it without a description. GitHub is not supported
-in this release.
 
 ## Connect the MCP servers
 
-Enable the MCP servers matching the configured item and version providers in
-the AI tool running the workflows. Setup depends on the client you use:
+As a prerequisite, enable the official MCP servers matching the configured
+item and version providers in the AI client running the workflows. Setup and
+credentials depend on that client and remain outside `agent-workflows`:
 
 - [Connect ClickUp's MCP server](https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server)
 - [Connect Linear's MCP server](https://linear.app/docs/mcp)
+- [Connect GitHub's MCP server](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp-in-your-ide)
 - [Connect GitLab's MCP server](https://docs.gitlab.com/user/gitlab_duo/model_context_protocol/mcp_server/)
