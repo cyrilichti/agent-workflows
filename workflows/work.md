@@ -111,7 +111,7 @@ After the user is on the locally known default branch and it is up to date:
 
 9. When caller mode supplied an official item, resolve its configured item
    provider and run `../commands/link-request-to-item.md` with the initialized
-   request URL. Do not update the item status.
+   request kind and URL, plus the stable plan ID. Do not update the item status.
 
 Resolve each provider or repository only when the corresponding operation
 needs it. Do not persist the branch, remote, repository, provider, or merge
