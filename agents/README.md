@@ -144,44 +144,81 @@ reuse the general Skills of its family in addition to its own starting Skills.
 ### Complete profile inventory
 
 This is the target catalog. Profiles marked as fallbacks are selected only
-when no more specific profile matches.
+when no more specific profile matches. Starting Skills are reviewed,
+non-exhaustive routes: an agent reevaluates them for the active context and may
+combine or replace them. Related specialists intentionally share strong family
+Skills instead of depending on weaker keyword matches.
 
-| Profile | Cohort | Primary responsibility |
-| --- | --- | --- |
-| `item-writer` | Product and content | Draft or reformulate one provider-neutral item. |
-| `product-manager` | Product and content | Evaluate value, product strategy, investment choices, and roadmap order. |
-| `product-owner` | Product and content | Define the next deliverable, backlog scope, and acceptance decisions. |
-| `technical-writer` | Product and content | Produce structured technical documentation and guidance. |
-| `seo-specialist` | Product and content | Cover technical, semantic, content, keyword, crawl, indexing, linking, and structured-data SEO. |
-| `ux-designer` | Design and accessibility | Design journeys, interactions, navigation, and usability. |
-| `ui-designer` | Design and accessibility | Define visual direction, responsive composition, components, and design systems. |
-| `accessibility-specialist` | Design and accessibility | Audit WCAG compliance, semantics, keyboard use, assistive technology, and visual accessibility. |
-| `solution-architect` | Architecture and assurance | Design architecture within one system or across multiple systems and rollout paths. |
-| `reviewer` | Architecture and assurance | Review changes for defects, regressions, maintainability, and convention drift. |
-| `security-engineer` | Architecture and assurance | Assess threats, authentication, authorization, data exposure, and hardening. |
-| `performance-engineer` | Architecture and assurance | Measure and diagnose latency, throughput, scalability, and resource use. |
-| `backend-developer` | Application delivery | Implement backend work when no framework specialist exists. Fallback. |
-| `frontend-developer` | Application delivery | Implement frontend work when no framework specialist exists. Fallback. |
-| `fullstack-developer` | Application delivery | Deliver a genuinely atomic vertical slice spanning frontend and backend. |
-| `mobile-developer` | Application delivery | Implement mobile work across platforms and frameworks. Fallback. |
-| `developer-experience-engineer` | Application delivery | Improve local tooling, developer CLIs, SDK ergonomics, generators, and repository automation. |
-| `laravel-developer` | Specialized delivery | Implement Laravel-specific backend work. |
-| `symfony-developer` | Specialized delivery | Implement Symfony-specific backend work. |
-| `nestjs-developer` | Specialized delivery | Implement NestJS services and applications. |
-| `python-developer` | Specialized delivery | Implement general Python work when no Python framework specialist exists. Fallback. |
-| `fastapi-developer` | Specialized delivery | Implement FastAPI services and applications. |
-| `react-developer` | Specialized delivery | Implement React-specific frontend work. |
-| `vue-developer` | Specialized delivery | Implement Vue-specific frontend work at component or application scale. |
-| `data-analyst` | Data and AI | Explore data, define KPIs, identify trends, and support decisions. |
-| `data-scientist` | Data and AI | Cover advanced analysis, models, experiments, and data pipelines. |
-| `database-engineer` | Data and AI | Design schemas, optimize queries, run safe migrations, and preserve integrity. |
-| `ml-engineer` | Data and AI | Build training, serving, monitoring, and model-lifecycle systems. |
-| `ai-engineer` | Data and AI | Build LLM and agent features, including prompting, retrieval, evaluation, and guardrails. |
-| `qa-engineer` | Quality and diagnosis | Define validation strategy and implement automated or manual test coverage. |
-| `debugger` | Quality and diagnosis | Reproduce failures, test hypotheses, isolate causes, and return root-cause evidence. |
-| `cloud-engineer` | Operations | Design and implement cloud infrastructure with cost and security constraints. |
-| `devops-engineer` | Operations | Build CI/CD, release, container, deployment, and rollback automation. |
-| `sre` | Operations | Improve SLOs, observability, resilience, incident response, and production reliability. |
+| Profile | Cohort | Primary responsibility | Starting Skills |
+| --- | --- | --- | --- |
+| `item-writer` | Product and content | Draft or reformulate one provider-neutral item. | `interview-me`, `idea-refine`, `grilling`, `to-spec` |
+| `product-manager` | Product and content | Evaluate value, product strategy, investment choices, and roadmap order. | `prioritization-advisor` |
+| `product-owner` | Product and content | Define the next deliverable, backlog scope, and acceptance decisions. | `to-spec`, `to-tickets` |
+| `technical-writer` | Product and content | Produce structured technical documentation and guidance. | `technical-writing`, `source-driven-development` |
+| `seo-specialist` | Product and content | Cover technical, semantic, content, keyword, crawl, indexing, linking, and structured-data SEO. | `seo-geo` |
+| `ux-designer` | Design and accessibility | Design journeys, interactions, navigation, and usability. | `customer-journey-map`, `interview-me` |
+| `ui-designer` | Design and accessibility | Define visual direction, responsive composition, components, and design systems. | `frontend-design` |
+| `accessibility-specialist` | Design and accessibility | Audit WCAG compliance, semantics, keyboard use, assistive technology, and visual accessibility. | `web-design-guidelines` |
+| `solution-architect` | Architecture and assurance | Design architecture within one system or across multiple systems and rollout paths. | `planning-and-task-breakdown`, `source-driven-development` |
+| `reviewer` | Architecture and assurance | Review changes for defects, regressions, maintainability, and convention drift. | `code-review-and-quality` |
+| `security-engineer` | Architecture and assurance | Assess threats, authentication, authorization, data exposure, and hardening. | `security-and-hardening` |
+| `performance-engineer` | Architecture and assurance | Measure and diagnose latency, throughput, scalability, and resource use. | `performance-optimization` |
+| `backend-developer` | Application delivery | Implement backend work when no framework specialist exists. Fallback. | `source-driven-development`, `test-driven-development`, `api-and-interface-design`, `service-decomposition` |
+| `frontend-developer` | Application delivery | Implement frontend work when no framework specialist exists. Fallback. | `source-driven-development`, `test-driven-development`, `tailwind-4-docs`, `web-design-guidelines` |
+| `fullstack-developer` | Application delivery | Deliver a genuinely atomic vertical slice spanning frontend and backend. | `source-driven-development`, `test-driven-development` |
+| `mobile-developer` | Application delivery | Implement mobile work across platforms and frameworks. Fallback. | `source-driven-development`, `test-driven-development` |
+| `developer-experience-engineer` | Application delivery | Improve local tooling, developer CLIs, SDK ergonomics, generators, and repository automation. | `source-driven-development`, `test-driven-development` |
+| `laravel-developer` | Specialized delivery | Implement Laravel-specific backend work. | `laravel-best-practices`, `test-driven-development`, `api-and-interface-design`, `service-decomposition` |
+| `symfony-developer` | Specialized delivery | Implement Symfony-specific backend work. | `symfony:tdd-with-phpunit`, `source-driven-development`, `api-and-interface-design`, `service-decomposition` |
+| `nestjs-developer` | Specialized delivery | Implement NestJS services and applications. | `nestjs-best-practices`, `source-driven-development`, `test-driven-development`, `api-and-interface-design`, `service-decomposition` |
+| `python-developer` | Specialized delivery | Implement general Python work when no Python framework specialist exists. Fallback. | `source-driven-development`, `test-driven-development` |
+| `fastapi-developer` | Specialized delivery | Implement FastAPI services and applications. | `source-driven-development`, `test-driven-development`, `api-and-interface-design`, `service-decomposition` |
+| `react-developer` | Specialized delivery | Implement React-specific frontend work. | `source-driven-development`, `test-driven-development`, `vercel-react-best-practices`, `tailwind-4-docs`, `shadcn` |
+| `vue-developer` | Specialized delivery | Implement Vue-specific frontend work at component or application scale. | `vue`, `source-driven-development`, `test-driven-development`, `tailwind-4-docs` |
+| `data-analyst` | Data and AI | Explore data, define KPIs, identify trends, and support decisions. | `data-analysis-jupyter` |
+| `data-scientist` | Data and AI | Cover advanced analysis, models, experiments, and data pipelines. | `data-analysis-jupyter`, `scikit-learn-best-practices`, `test-driven-development` |
+| `database-engineer` | Data and AI | Design schemas, optimize queries, run safe migrations, and preserve integrity. | `supabase-postgres-best-practices`, `source-driven-development` |
+| `ml-engineer` | Data and AI | Build training, serving, monitoring, and model-lifecycle systems. | `scikit-learn-best-practices`, `test-driven-development`, `observability-and-instrumentation` |
+| `ai-engineer` | Data and AI | Build LLM and agent features, including prompting, retrieval, evaluation, and guardrails. | `evaluate-rag`, `source-driven-development`, `test-driven-development` |
+| `qa-engineer` | Quality and diagnosis | Define validation strategy and implement automated or manual test coverage. | `test-driven-development`, `code-review-and-quality` |
+| `debugger` | Quality and diagnosis | Reproduce failures, test hypotheses, isolate causes, and return root-cause evidence. | `systematic-debugging` |
+| `cloud-engineer` | Operations | Design and implement cloud infrastructure with cost and security constraints. | `source-driven-development`, `security-and-hardening`, `planning-and-task-breakdown` |
+| `devops-engineer` | Operations | Build CI/CD, release, container, deployment, and rollback automation. | `ci-cd-and-automation` |
+| `sre` | Operations | Improve SLOs, observability, resilience, incident response, and production reliability. | `observability-and-instrumentation`, `systematic-debugging` |
+
+### Approved Skill sources
+
+The package reference identifies the exact reviewed source. Existing locked
+Skills keep their current source in `skills-lock.json`.
+
+| Skill | Package reference |
+| --- | --- |
+| `prioritization-advisor` | `deanpeters/product-manager-skills@prioritization-advisor` |
+| `customer-journey-map` | `phuryn/pm-skills@customer-journey-map` |
+| `technical-writing` | `proffesor-for-testing/agentic-qe@technical-writing` |
+| `seo-geo` | `resciencelab/opc-skills@seo-geo` |
+| `frontend-design` | `anthropics/skills@frontend-design` |
+| `web-design-guidelines` | `vercel-labs/agent-skills@web-design-guidelines` |
+| `code-review-and-quality` | `addyosmani/agent-skills@code-review-and-quality` |
+| `security-and-hardening` | `addyosmani/agent-skills@security-and-hardening` |
+| `performance-optimization` | `addyosmani/agent-skills@performance-optimization` |
+| `test-driven-development` | `addyosmani/agent-skills@test-driven-development` |
+| `api-and-interface-design` | `addyosmani/agent-skills@api-and-interface-design` |
+| `service-decomposition` | `proyecto26/system-design-skills@service-decomposition` |
+| `laravel-best-practices` | `laravel/boost@laravel-best-practices` |
+| `symfony:tdd-with-phpunit` | `makfly/superpowers-symfony@symfony:tdd-with-phpunit` |
+| `nestjs-best-practices` | `ejirocodes/agent-skills@nestjs-best-practices` |
+| `vercel-react-best-practices` | `vercel-labs/agent-skills@react-best-practices` |
+| `tailwind-4-docs` | `lombiq/tailwind-agent-skills@tailwind-4-docs` |
+| `shadcn` | `shadcn/ui@shadcn` |
+| `vue` | `antfu/skills@vue` |
+| `data-analysis-jupyter` | `mindrally/skills@data-analysis-jupyter` |
+| `scikit-learn-best-practices` | `mindrally/skills@scikit-learn-best-practices` |
+| `supabase-postgres-best-practices` | `supabase/agent-skills@supabase-postgres-best-practices` |
+| `evaluate-rag` | `hamelsmu/evals-skills@evaluate-rag` |
+| `systematic-debugging` | `obra/superpowers@systematic-debugging` |
+| `ci-cd-and-automation` | `addyosmani/agent-skills@ci-cd-and-automation` |
+| `observability-and-instrumentation` | `addyosmani/agent-skills@observability-and-instrumentation` |
 
 ---
 
