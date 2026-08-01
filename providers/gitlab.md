@@ -14,8 +14,18 @@ arguments:
 ```
 
 Do not send a description because the available operation does not accept one.
-Return the created merge request IID and URL with its title, state, source
-branch, and target branch.
+Normalize the result as:
+
+```text
+request_id: merge request IID
+kind: merge_request
+title: merge request title
+state: open when GitLab returns opened, otherwise closed when applicable
+draft: native GitLab Draft state
+source_branch: GitLab source branch
+target_branch: GitLab target branch
+url: merge request URL
+```
 
 ## search-requests
 
@@ -35,9 +45,12 @@ arguments:
   per_page: 20
 ```
 
-Search may return partial title matches. Return their IID, title, state, and URL
-so the caller can enforce exact matching and read each candidate. Do not
-paginate unless the exact merge request cannot be resolved from the first page.
+Search may return partial title matches. Return each candidate as a partial
+provider-neutral request record containing `request_id`,
+`kind: merge_request`, title, normalized state, Draft state when available,
+and URL. This lets the caller enforce exact matching before reading each
+candidate. Do not paginate unless the exact merge request cannot be resolved
+from the first page.
 
 ## read-request
 
@@ -48,8 +61,10 @@ arguments:
   merge_request_iid: caller merge request IID
 ```
 
-Return the merge request IID, title, state, Draft state, source branch, target
-branch, author, and URL.
+Return the complete provider-neutral request record: map the merge request IID
+to `request_id`, set `kind: merge_request`, normalize `opened` to `open`, and
+return title, Draft state as `draft`, source branch as `source_branch`, target
+branch as `target_branch`, author, and URL.
 
 When commits are requested:
 

@@ -1,11 +1,12 @@
 # Create Request
 
-Create one draft merge request through the configured version-control provider.
+Create one draft request through the configured version-control provider.
 
 ## Input
 
 - `provider`: resolved version-control provider.
-- `repository`: version-control repository derived from the push remote.
+- `repository`: provider-specific repository identity derived from the push
+  remote.
 - `source_branch`: pushed work branch.
 - `target_branch`: merge target branch.
 - `title`: confirmed title beginning with `Draft:`.
@@ -15,7 +16,15 @@ Create one draft merge request through the configured version-control provider.
 1. Load `../providers/<provider>.md`.
 2. Use the provider operation named `create-request`.
 3. Create one request with the supplied repository, branches, and title.
-4. Return its IID, title, state, source branch, target branch, and URL.
+4. Return one provider-neutral request record containing:
+   - `request_id`: provider-native merge-request IID or pull-request number;
+   - `kind`: `merge_request` or `pull_request`;
+   - `title`;
+   - `state`: normalized to `open` or `closed` when available;
+   - `draft`;
+   - `source_branch`;
+   - `target_branch`;
+   - `url`.
 
 Do not add a description, change ticket state, assign reviewers, or create
-another merge request when recovery has already returned one match.
+another request when recovery has already returned one match.
