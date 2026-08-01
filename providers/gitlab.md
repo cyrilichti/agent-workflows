@@ -2,10 +2,11 @@
 
 ## resolve-repository
 
-Accept the GitLab project path or URL derived by the caller from the current
-push remote. Return the URL-encoded namespace and project path expected by the
-GitLab MCP as the repository identity. Stop when the path is empty or does not
-identify a project; do not contact GitLab to infer it.
+Parse the caller push remote, remove its host and one trailing `.git` suffix,
+then URL-encode the remaining namespace and project path as the repository
+identity expected by the GitLab MCP. Preserve every namespace segment. Stop
+when the path is empty or does not identify a project; do not contact GitLab to
+infer it.
 
 ## create-request
 
