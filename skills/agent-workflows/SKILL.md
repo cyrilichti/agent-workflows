@@ -103,10 +103,11 @@ Stop and report the command output when dependency installation fails.
 When `agent-workflows.yaml` already exists:
 
 1. Preserve the configured item provider and every unrelated setting.
-2. When `mcp.version.provider` is absent, add it with the value `gitlab`.
-3. When `mcp.version.provider` already exists with another value, stop and
-   explain that this release supports only GitLab for version operations. Do
-   not overwrite the existing value.
+2. When `mcp.version.provider` is absent, ask which version provider the
+   project uses with the selection below, then add the selected value.
+3. When `mcp.version.provider` is `github` or `gitlab`, preserve it.
+4. When `mcp.version.provider` has another value, stop and list the supported
+   values. Do not overwrite the existing value.
 
 When `agent-workflows.yaml` is absent:
 
@@ -121,12 +122,23 @@ When `agent-workflows.yaml` is absent:
      value: linear
    ```
 
-2. Copy the downloaded `agent-workflows.example.yaml` to
-   `agent-workflows.yaml`.
-3. Set only `mcp.item.provider` to the selected value.
+2. Ask which version provider the project uses:
 
-Do not ask the user to select a version provider. Keep
-`mcp.version.provider: gitlab` from the example configuration.
+   ```text
+   question: Which version-control provider does this project use?
+   options:
+   - label: GitHub
+     value: github
+   - label: GitLab
+     value: gitlab
+   ```
+
+3. Copy the downloaded `agent-workflows.example.yaml` to
+   `agent-workflows.yaml`.
+4. Set `mcp.item.provider` and `mcp.version.provider` to the selected values.
+
+Use the same version-provider selection when an existing configuration is
+missing `mcp.version.provider`.
 
 ## Validate
 
@@ -141,7 +153,7 @@ Before reporting success, verify:
 - every declared Skill is installed;
 - `agent-workflows.yaml` exists;
 - `mcp.item.provider` is either `clickup` or `linear`.
-- `mcp.version.provider` is exactly `gitlab`.
+- `mcp.version.provider` is either `github` or `gitlab`.
 
 Always remove the temporary download after success or failure.
 
