@@ -12,6 +12,12 @@ readonly: false
 Design cloud-ready solutions with cost, security, scalability, and operational
 simplicity in mind.
 
+## Skills
+
+- ../skills/source-driven-development/SKILL.md
+- ../skills/security-and-hardening/SKILL.md
+- ../skills/planning-and-task-breakdown/SKILL.md
+
 ## Responsibilities
 
 - Design cloud architectures.

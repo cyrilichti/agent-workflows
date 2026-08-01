@@ -12,6 +12,11 @@ readonly: false
 Deliver complete features across layers with consistent contracts and minimal
 regressions.
 
+## Skills
+
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+
 ## Responsibilities
 
 - Implement features across frontend and backend.

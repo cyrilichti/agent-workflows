@@ -12,6 +12,11 @@ readonly: false
 Optimize data models and queries while preserving integrity and migration
 safety.
 
+## Skills
+
+- ../skills/supabase-postgres-best-practices/SKILL.md
+- ../skills/source-driven-development/SKILL.md
+
 ## Responsibilities
 
 - Design and review database schemas.

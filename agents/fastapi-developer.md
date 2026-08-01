@@ -12,6 +12,13 @@ readonly: false
 Build reliable FastAPI services with explicit schemas, dependencies, lifecycle,
 and error behavior.
 
+## Skills
+
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+- ../skills/api-and-interface-design/SKILL.md
+- ../skills/service-decomposition/SKILL.md
+
 ## Responsibilities
 
 - Implement routes, dependencies, middleware, and lifecycle hooks.

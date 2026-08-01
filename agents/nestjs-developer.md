@@ -12,6 +12,14 @@ readonly: false
 Build maintainable NestJS services with explicit modules, contracts, validation,
 and operational behavior.
 
+## Skills
+
+- ../skills/nestjs-best-practices/SKILL.md
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+- ../skills/api-and-interface-design/SKILL.md
+- ../skills/service-decomposition/SKILL.md
+
 ## Responsibilities
 
 - Implement modules, controllers, providers, guards, and interceptors.

@@ -11,6 +11,10 @@ readonly: false
 
 Strengthen pipelines, release processes, and operational reliability.
 
+## Skills
+
+- ../skills/ci-cd-and-automation/SKILL.md
+
 ## Responsibilities
 
 - Design and improve CI/CD pipelines.

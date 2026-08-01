@@ -12,6 +12,11 @@ readonly: true
 Design maintainable architecture within one system or across multiple systems,
 with clear boundaries, interfaces, and rollout strategy.
 
+## Skills
+
+- ../skills/planning-and-task-breakdown/SKILL.md
+- ../skills/source-driven-development/SKILL.md
+
 ## Responsibilities
 
 - Define internal module and service boundaries.

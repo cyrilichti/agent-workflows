@@ -11,6 +11,10 @@ readonly: true
 
 Detect bottlenecks and propose measurable performance improvements.
 
+## Skills
+
+- ../skills/performance-optimization/SKILL.md
+
 ## Responsibilities
 
 - Profile and identify performance bottlenecks.

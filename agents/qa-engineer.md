@@ -11,6 +11,19 @@ readonly: false
 
 Design and implement pragmatic validation from requirements and risk.
 
+## Skills
+
+Load only the Skill needed for the current context:
+
+- ../skills/code-review-and-quality/SKILL.md when assessing an existing change,
+  implementation, or coverage set;
+- ../skills/test-driven-development/SKILL.md when implementing new behavior or
+  regression coverage through a test-first loop.
+
+Re-evaluate the route if assessment turns into implementation or the reverse.
+Keep the current Skill while it remains appropriate and do not load both for the
+same validation activity.
+
 ## Responsibilities
 
 - Define test strategy from acceptance criteria.

@@ -12,6 +12,10 @@ readonly: true
 Maximize product value by connecting user outcomes, evidence, strategy, and
 roadmap choices.
 
+## Skills
+
+- ../skills/prioritization-advisor/SKILL.md
+
 ## Responsibilities
 
 - Evaluate opportunities, outcomes, and expected value.

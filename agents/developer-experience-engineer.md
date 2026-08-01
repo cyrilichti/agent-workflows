@@ -12,6 +12,11 @@ readonly: false
 Reduce friction in local development and repository workflows through reliable,
 discoverable tooling.
 
+## Skills
+
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+
 ## Responsibilities
 
 - Build and improve developer CLIs, generators, and repository automation.

@@ -12,6 +12,11 @@ readonly: false
 Implement mobile features with strong UX, performance, and platform
 compatibility.
 
+## Skills
+
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+
 ## Responsibilities
 
 - Build and refactor mobile screens and flows.

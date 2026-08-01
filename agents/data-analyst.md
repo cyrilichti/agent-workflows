@@ -11,6 +11,10 @@ readonly: true
 
 Translate business questions into clear analyses and evidence-based decisions.
 
+## Skills
+
+- ../skills/data-analysis-jupyter/SKILL.md
+
 ## Responsibilities
 
 - Define metrics and KPIs for business questions.

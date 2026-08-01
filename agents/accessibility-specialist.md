@@ -12,6 +12,10 @@ readonly: true
 Identify accessibility barriers and define verifiable remediation guidance for
 inclusive digital experiences.
 
+## Skills
+
+- ../skills/web-design-guidelines/SKILL.md
+
 ## Responsibilities
 
 - Audit semantics, keyboard flows, focus, contrast, and responsive behavior.

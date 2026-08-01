@@ -12,6 +12,10 @@ readonly: true
 Create coherent visual interfaces that communicate hierarchy and scale across
 screens and components.
 
+## Skills
+
+- ../skills/frontend-design/SKILL.md
+
 ## Responsibilities
 
 - Define visual direction, layout, typography, color, and spacing.

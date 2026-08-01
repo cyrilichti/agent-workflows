@@ -128,6 +128,19 @@ Select the most specific agent that matches the active todo. Broad agents are
 fallbacks when no technology or domain specialist exists. A specialist may
 reuse the general Skills of its family in addition to its own starting Skills.
 
+### Skills
+
+Each profile declares exact entrypoints for a reviewed, locked starting
+collection. Unless a profile explicitly defines routing, its Skills are
+complementary capabilities rather than mutually exclusive routes. Use them when
+relevant; the collection is a non-exhaustive starting point, not a fixed limit.
+
+`item-writer`, `product-owner`, `ux-designer`, `qa-engineer`, and `sre` define
+contextual routing because their Skills represent distinct working modes. The
+active profile remains authoritative over a Skill for scope, permissions, side
+effects, and output. Skill activation is governed globally by
+`../rules/skill-activation.md`.
+
 ### Cohorts
 
 | Cohort | Purpose |
@@ -145,9 +158,8 @@ reuse the general Skills of its family in addition to its own starting Skills.
 
 This is the target catalog. Profiles marked as fallbacks are selected only
 when no more specific profile matches. Starting Skills are reviewed,
-non-exhaustive routes: an agent reevaluates them for the active context and may
-combine or replace them. Related specialists intentionally share strong family
-Skills instead of depending on weaker keyword matches.
+non-exhaustive capabilities. Related specialists intentionally share strong
+family Skills instead of depending on weaker keyword matches.
 
 | Profile | Cohort | Primary responsibility | Starting Skills |
 | --- | --- | --- | --- |
@@ -156,7 +168,7 @@ Skills instead of depending on weaker keyword matches.
 | `product-owner` | Product and content | Define the next deliverable, backlog scope, and acceptance decisions. | `to-spec`, `to-tickets` |
 | `technical-writer` | Product and content | Produce structured technical documentation and guidance. | `technical-writing`, `source-driven-development` |
 | `seo-specialist` | Product and content | Cover technical, semantic, content, keyword, crawl, indexing, linking, and structured-data SEO. | `seo-geo` |
-| `ux-designer` | Design and accessibility | Design journeys, interactions, navigation, and usability. | `customer-journey-map`, `interview-me` |
+| `ux-designer` | Design and accessibility | Design journeys, interactions, navigation, and usability. | `interview-me`, `customer-journey-map` |
 | `ui-designer` | Design and accessibility | Define visual direction, responsive composition, components, and design systems. | `frontend-design` |
 | `accessibility-specialist` | Design and accessibility | Audit WCAG compliance, semantics, keyboard use, assistive technology, and visual accessibility. | `web-design-guidelines` |
 | `solution-architect` | Architecture and assurance | Design architecture within one system or across multiple systems and rollout paths. | `planning-and-task-breakdown`, `source-driven-development` |
@@ -180,11 +192,11 @@ Skills instead of depending on weaker keyword matches.
 | `database-engineer` | Data and AI | Design schemas, optimize queries, run safe migrations, and preserve integrity. | `supabase-postgres-best-practices`, `source-driven-development` |
 | `ml-engineer` | Data and AI | Build training, serving, monitoring, and model-lifecycle systems. | `scikit-learn-best-practices`, `test-driven-development`, `observability-and-instrumentation` |
 | `ai-engineer` | Data and AI | Build LLM and agent features, including prompting, retrieval, evaluation, and guardrails. | `evaluate-rag`, `source-driven-development`, `test-driven-development` |
-| `qa-engineer` | Quality and diagnosis | Define validation strategy and implement automated or manual test coverage. | `test-driven-development`, `code-review-and-quality` |
+| `qa-engineer` | Quality and diagnosis | Define validation strategy and implement automated or manual test coverage. | `code-review-and-quality`, `test-driven-development` |
 | `debugger` | Quality and diagnosis | Reproduce failures, test hypotheses, isolate causes, and return root-cause evidence. | `systematic-debugging` |
 | `cloud-engineer` | Operations | Design and implement cloud infrastructure with cost and security constraints. | `source-driven-development`, `security-and-hardening`, `planning-and-task-breakdown` |
 | `devops-engineer` | Operations | Build CI/CD, release, container, deployment, and rollback automation. | `ci-cd-and-automation` |
-| `sre` | Operations | Improve SLOs, observability, resilience, incident response, and production reliability. | `observability-and-instrumentation`, `systematic-debugging` |
+| `sre` | Operations | Improve SLOs, observability, resilience, incident response, and production reliability. | `systematic-debugging`, `observability-and-instrumentation` |
 
 ### Approved Skill sources
 

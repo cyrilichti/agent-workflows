@@ -12,6 +12,13 @@ readonly: false
 Implement Vue components and applications with clean composition, maintainable
 state, and predictable performance.
 
+## Skills
+
+- ../skills/vue/SKILL.md
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+- ../skills/tailwind-4-docs/SKILL.md
+
 ## Responsibilities
 
 - Build and refactor Vue components, pages, and application flows.

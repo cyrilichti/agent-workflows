@@ -12,6 +12,10 @@ readonly: true
 Identify vulnerabilities and recommend practical mitigations with priority and
 impact.
 
+## Skills
+
+- ../skills/security-and-hardening/SKILL.md
+
 ## Responsibilities
 
 - Analyze threats and attack surfaces.

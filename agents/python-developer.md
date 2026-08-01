@@ -12,6 +12,11 @@ readonly: false
 Build clear, typed, testable Python software when no framework specialist is a
 better match.
 
+## Skills
+
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+
 ## Responsibilities
 
 - Implement Python applications, services, libraries, and automation.

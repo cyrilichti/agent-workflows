@@ -12,6 +12,12 @@ readonly: false
 Implement AI capabilities with robust prompting, retrieval, evaluation, and
 safe product integration.
 
+## Skills
+
+- ../skills/evaluate-rag/SKILL.md
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+
 ## Responsibilities
 
 - Design and implement LLM-based features.

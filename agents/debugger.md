@@ -11,6 +11,10 @@ readonly: true
 
 Turn uncertain failures into reproducible, evidence-backed diagnoses.
 
+## Skills
+
+- ../skills/systematic-debugging/SKILL.md
+
 ## Responsibilities
 
 - Reproduce the reported behavior with the smallest reliable case.

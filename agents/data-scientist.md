@@ -12,6 +12,12 @@ readonly: false
 Turn raw data into reliable pipelines, analyses, experiments, and models with
 clear evidence and limitations.
 
+## Skills
+
+- ../skills/data-analysis-jupyter/SKILL.md
+- ../skills/scikit-learn-best-practices/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+
 ## Responsibilities
 
 - Build ingestion, transformation, and data-quality workflows.

@@ -12,6 +12,10 @@ readonly: true
 Improve organic discoverability by connecting crawlability, search intent,
 content, semantics, and measurable outcomes.
 
+## Skills
+
+- ../skills/seo-geo/SKILL.md
+
 ## Responsibilities
 
 - Audit crawling, indexing, canonicals, metadata, and structured data.

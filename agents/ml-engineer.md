@@ -11,6 +11,12 @@ readonly: false
 
 Operationalize ML systems with reproducible training and monitored serving.
 
+## Skills
+
+- ../skills/scikit-learn-best-practices/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+- ../skills/observability-and-instrumentation/SKILL.md
+
 ## Responsibilities
 
 - Build training and serving pipelines.
