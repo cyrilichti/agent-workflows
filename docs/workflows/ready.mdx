@@ -1,0 +1,67 @@
+---
+title: /ready
+description: Verify completed work, confirm its push, and promote its request for human review.
+---
+
+`/ready` receives completed work from `/work` or lets you select a recent plan.
+When the caller does not provide the request, it asks for the exact pull-request
+number or merge-request IID instead of searching for one.
+
+## Dispatching workflows
+
+<div className="dispatch-map dispatch-map--vertical">
+  <div className="dispatch-node dispatch-node--workflow">
+    <span className="dispatch-node__label">Workflow</span>
+    <strong>/ready</strong>
+    <span>Checks whether completed work can be promoted</span>
+  </div>
+
+  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <a
+    className="dispatch-node dispatch-node--workflow dispatch-node--link"
+    href="/agent-workflows/workflows/work/"
+  >
+    <span className="dispatch-node__label">Workflow</span>
+    <strong>/work</strong>
+    <span>Returns actionable findings when work is not ready</span>
+  </a>
+</div>
+
+## How this workflow is structured
+
+<table className="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Context</th>
+      <td>Use caller context or select a completed plan and exact request.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Preflight</th>
+      <td>Check terminal todos, clean worktree, branch, upstream, and request.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Validate</th>
+      <td>Rerun the plan validation at the current HEAD.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Assess</th>
+      <td>Have a read-only specialist compare the complete diff with the Objective and Expected Outcome.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Confirm</th>
+      <td>Show the exact request body and mutations before asking once.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Promote</th>
+      <td>Push, promote the request, attempt item review best-effort, report, and stop without invoking /review.</td>
+    </tr>
+  </tbody>
+</table>
+

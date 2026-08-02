@@ -403,6 +403,11 @@
   background: rgba(245, 158, 11, 0.12);
 }
 
+.workflow-badge--ready {
+  color: #67e8f9;
+  background: rgba(6, 182, 212, 0.12);
+}
+
 :root[data-theme="light"] .workflow-badge--write {
   border-color: #22c55e;
   background: #dcfce7;
@@ -431,6 +436,12 @@
   border-color: #f59e0b;
   background: #fef3c7;
   color: #92400e;
+}
+
+:root[data-theme="light"] .workflow-badge--ready {
+  border-color: #06b6d4;
+  background: #cffafe;
+  color: #155e75;
 }
 
 .provider-badges {

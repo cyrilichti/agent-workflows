@@ -23,10 +23,11 @@ Start with the [documentation](https://cyrilichti.github.io/agent-workflows/)
 - [x] `/plan`: create and approve a plan standalone or when called by another
   workflow; return to the caller without triggering `/work`.
 - [x] `/work`: create a draft MR for new work, execute the plan todo by todo
-  with confirmed commits, run its global validation, and leave pushes to the
-  user.
-- [ ] `/ready`: run completion gates, then return to `/work` or trigger
-  `/review`.
+  with confirmed commits, run its global validation, then hand successful work
+  to `/ready`.
+- [x] `/ready`: verify completed work against its plan, confirm before pushing,
+  promote its request for human review, report the optional item transition,
+  and stop.
 - [ ] `/review`: run an independent review, then return to `/work` or trigger
   `/done`.
 - [ ] `/done`: execute configured delivery actions and support
