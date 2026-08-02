@@ -116,7 +116,8 @@ and stop. Continue only on a justified `ready` verdict.
 
 ### 6. Prepare and Preview Promotion
 
-Prepare the exact request body using `../templates/request-description.md`.
+Prepare the exact request body using `../templates/request-description.md`,
+including the official item ID and URL when both are available.
 Present the complete preflight and proposed mutations using
 `../templates/ready-preflight.md`, including:
 

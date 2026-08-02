@@ -13,6 +13,7 @@ Use to prepare the exact pull-request or merge-request body during `/ready`.
 
 - <plan validation check and observed successful result>
 
+Item: [<official item ID>](<official item URL>)
 Agent-Workflows-Plan: <planId>
 ```
 
@@ -22,6 +23,8 @@ Agent-Workflows-Plan: <planId>
 - Keep the summary concise and describe the delivered outcome, not the agent's
   process.
 - Include every global validation check that was actually completed.
+- Include the linked `Item` line only when the official item URL is available;
+  otherwise omit it.
 - Preserve the exact `planId`.
 - Do not add a requirement matrix, review verdict, smoke test, reviewer,
   deployment claim, or unchecked assertion.
