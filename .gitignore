@@ -19,3 +19,5 @@ skills/*
 !skills/refine/**
 !skills/work/
 !skills/work/**
+!skills/ready/
+!skills/ready/**

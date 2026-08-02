@@ -140,7 +140,7 @@ parent, select or activate a created child, or trigger `/work`.
 
 ### 6. Start Item
 
-Run `../commands/start-item.md` with:
+Run `../commands/transition-item-status.md` with:
 
 ```text
 provider: resolved item provider

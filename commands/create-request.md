@@ -24,6 +24,7 @@ Create one draft request through the configured version-control provider.
    - `draft`;
    - `source_branch`;
    - `target_branch`;
+   - `body`: request description normalized to an empty string when absent;
    - `url`.
 
 Do not add a description, change ticket state, assign reviewers, or create

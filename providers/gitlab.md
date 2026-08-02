@@ -32,6 +32,7 @@ state: open when GitLab returns opened, otherwise closed when applicable
 draft: native GitLab Draft state
 source_branch: GitLab source branch
 target_branch: GitLab target branch
+body: GitLab description normalized to an empty string when absent
 url: merge request URL
 ```
 
@@ -72,7 +73,8 @@ arguments:
 Return the complete provider-neutral request record: map the merge request IID
 to `request_id`, set `kind: merge_request`, normalize `opened` to `open`, and
 return title, Draft state as `draft`, source branch as `source_branch`, target
-branch as `target_branch`, author, and URL.
+branch as `target_branch`, description as `body` normalized to an empty string
+when absent, author, and URL.
 
 When commits are requested:
 
@@ -94,3 +96,9 @@ arguments:
 
 Continue pagination only when the caller needs more commits or diffs than the
 first page returns.
+
+## update-request
+
+Description replacement and draft removal are unsupported by the current
+verified adapter operations. Return `unsupported` with this exact reason
+without calling a similarly named or inferred GitLab operation.

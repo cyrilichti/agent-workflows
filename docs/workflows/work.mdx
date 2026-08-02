@@ -1,6 +1,6 @@
 ---
 title: /work
-description: Execute one selected plan todo by todo on a draft pull or merge request.
+description: Execute one selected plan todo by todo, then hand validated work to /ready.
 ---
 
 export const agentSkills = [
@@ -52,6 +52,9 @@ export const agentSkillCohorts = [
 
 `/work` turns an approved plan into confirmed commits. It can receive the plan
 from `/pick` with an active official item, or let you select from recent plans.
+After successful global validation, it hands the same plan, optional item, and
+known request ID to `/ready`. `/work` does not push the completed todo commits;
+`/ready` owns that confirmation boundary.
 
 ## Dispatching external skills
 
@@ -128,8 +131,12 @@ from `/pick` with an active official item, or let you select from recent plans.
     </tr>
     <tr>
       <td>6</td>
-      <th scope="row">Validation</th>
-      <td>Run the plan's global validation and stop.</td>
+      <th scope="row">Ready</th>
+      <td>Validate globally, then hand successful work to <code>/ready</code>.</td>
     </tr>
   </tbody>
 </table>
+
+If global validation fails, `/work` stops without pushing. When resumed work no
+longer has its initialized request record in context, `/ready` asks for the
+exact pull-request number or merge-request IID.

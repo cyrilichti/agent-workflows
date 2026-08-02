@@ -13,8 +13,8 @@ Read one request through the configured version-control provider.
 
 1. Load `../providers/<provider>.md`.
 2. Use the provider operation named `read-request`.
-3. Return the provider-neutral request record defined by
-   `./create-request.md`, plus author, commits when requested, and diffs when
-   requested.
+3. Return the complete provider-neutral request record defined by
+   `./create-request.md`, including the normalized `body`, plus author, commits
+   when requested, and diffs when requested.
 
 If the request cannot be read, stop without substituting another search result.

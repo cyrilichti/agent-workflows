@@ -3,10 +3,11 @@
 ## Purpose
 
 Execute one selected plan incrementally on a dedicated branch and draft
-version-control request.
+version-control request, then hand validated completed work to `/ready`.
 
 This workflow initializes new work once, resumes existing work without
-rediscovery, and leaves item status ownership to the calling workflow.
+rediscovery, and does not itself push completed todo commits or change item
+status.
 
 ---
 
@@ -109,7 +110,9 @@ After the user is on the locally known default branch and it is up to date:
    title: formatted draft request title
    ```
 
-9. When caller mode supplied an official item, resolve its configured item
+9. Keep the complete created request record in the current execution context
+   for the later `/ready` call. Do not persist it in the plan.
+10. When caller mode supplied an official item, resolve its configured item
    provider and run `../commands/link-request-to-item.md` with the initialized
    request kind and URL, plus the stable plan ID. Do not update the item status.
 
@@ -158,12 +161,24 @@ Repeat the following steps:
 13. Select the next todo and repeat. Leave the loop when no `in_progress` or
     `pending` todo remains.
 
-### 6. Run Global Validation and Stop
+### 6. Run Global Validation and Start Ready
 
 When no todo remains `pending` or `in_progress`, run the global validation
 defined in the selected plan.
 
-Report the validation result and stop. Do not push commits.
+On validation failure, report the actionable findings and stop without pushing.
+
+On validation success, follow `./ready.md` in caller mode with:
+
+```text
+plan: authoritative selected plan
+item: active official item context, when available
+request_id: request ID from the created request record, when available
+```
+
+For resumed work, the request record may be unavailable; `/ready` asks for the
+request number or IID. `/work` does not push the todo commits itself. `/ready`
+owns the confirmation boundary and any resulting push or provider mutation.
 
 ---
 
@@ -179,7 +194,9 @@ Report the validation result and stop. Do not push commits.
 - Stage only changes belonging to the active todo.
 - Do not mark a todo `completed` before its approved commit succeeds.
 - Do not push todo commits.
-- Do not push after global validation.
+- Do not push completed todo commits directly; delegate any confirmed push to
+  `/ready`.
+- Do not invoke `/review`.
 
 ---
 
@@ -202,4 +219,7 @@ when:
 - each successful todo commit immediately marked its todo `completed`;
 - no todo commit was pushed by `/work`;
 - when no todo remained `pending` or `in_progress`, the global validation
-  defined in the plan ran and `/work` stopped without pushing.
+  defined in the plan ran;
+- failed validation stopped without pushing; or successful validation called
+  `/ready` with the same plan, optional official item, and known request ID;
+- `/work` did not push completed todo commits or invoke `/review` itself.

@@ -53,6 +53,7 @@ state: open when GitHub returns open, otherwise closed when applicable
 draft: native GitHub draft state
 source_branch: pull request head branch
 target_branch: pull request base branch
+body: pull request body, normalized to an empty string when null or absent
 url: pull request HTML URL
 ```
 
@@ -95,11 +96,43 @@ arguments:
 
 Return the complete provider-neutral request record: map the pull request
 number to `request_id`, set `kind: pull_request`, normalize its state, and map
-the native draft state, head branch, base branch, author, and HTML URL.
+the native draft state, head branch, base branch, body normalized to an empty
+string when null or absent, author, and HTML URL.
 
 When a diff is requested, call `pull_request_read` with `method: get_diff` and
 the same owner, repository, and pull request number. When changed files are
 requested, use `method: get_files` and paginate only as required by the caller.
+
+## update-request
+
+Require the writable `update_pull_request` operation. If it is unavailable,
+return the provider error and do not substitute an issue or file update.
+
+For `replace-description`:
+
+```text
+tool: update_pull_request
+arguments:
+  owner: caller repository owner
+  repo: caller repository name
+  pullNumber: caller request ID
+  body: caller exact replacement body
+```
+
+For `mark-ready`:
+
+```text
+tool: update_pull_request
+arguments:
+  owner: caller repository owner
+  repo: caller repository name
+  pullNumber: caller request ID
+  draft: false
+```
+
+Send no omitted optional field. In particular, do not change title, base,
+state, reviewers, or maintainer settings, and do not combine description and
+draft mutations in one call.
 
 ## Sources
 
@@ -107,3 +140,5 @@ requested, use `method: get_files` and paginate only as required by the caller.
   https://github.com/github/github-mcp-server
 - Official GitHub MCP toolset configuration:
   https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp-in-your-ide/configure-toolsets
+- Current local MCP schemas verified for `pull_request_read` and
+  `update_pull_request`.

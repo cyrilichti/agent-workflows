@@ -176,18 +176,56 @@ arguments:
 
 Do not include other update fields.
 
-## update-item-status
+## transition-item-status
 
-Update a ClickUp task status.
+Resolve and update a ClickUp task status.
 
-```text
-tool: clickup_update_task
-arguments:
-  task_id: item ID
-  status: target status
-```
+1. Read the task and its available statuses:
 
-Use the status provided by the caller.
+   ```text
+   tool: clickup_get_task
+   arguments:
+     task_id: caller item ID
+     expand_statuses: true
+   ```
+
+   For `in progress`, stop if this read fails. For `review`, return a
+   non-transitioned best-effort result with the provider failure as its reason.
+
+2. Resolve the caller's normalized target by case-insensitive status name and
+   ClickUp status type:
+   - for `in progress`, prefer an exact `in progress` name or the single
+     non-review active-work equivalent;
+   - for `review`, keep only statuses whose name clearly identifies review; do
+     not substitute an active-work status or create a status.
+3. For `in progress`, stop when no status matches and ask the user to select
+   one when multiple statuses match equally.
+4. For `review`, continue only when exactly one review-like status exists. For
+   zero or multiple matches, do not mutate and do not ask the user to choose.
+5. Update only the task status when the preceding rules selected one status:
+
+   ```text
+   tool: clickup_update_task
+   arguments:
+     task_id: caller item ID
+     status: resolved workspace status name
+   ```
+
+6. For `in progress`, return the updated task status and stop on failure.
+7. For `review`, return a best-effort result containing:
+   - `transitioned`: `true` only when the update succeeded;
+   - `previous_status`: the status read in Step 1 when available;
+   - `target_status`: `review`;
+   - `resolved_target_status`: the single matched status when available;
+   - `resulting_status`: the updated status when returned or confirmed;
+   - `reason`: required when `transitioned` is `false`, including read failure,
+     no match, ambiguous matches, or update failure.
+
+Do not let a non-transitioned `review` result block the caller's request
+promotion.
+
+Do not pass name, description, assignees, dates, priority, custom fields, task
+type, or any other optional `clickup_update_task` field.
 
 ## add-request-backlink
 

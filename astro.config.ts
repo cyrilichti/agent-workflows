@@ -53,6 +53,7 @@ export default defineConfig({
             { label: '/plan', slug: 'workflows/plan' },
             { label: '/refine', slug: 'workflows/refine' },
             { label: '/work', slug: 'workflows/work' },
+            { label: '/ready', slug: 'workflows/ready' },
           ],
         },
       ],
