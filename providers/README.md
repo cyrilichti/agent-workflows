@@ -24,7 +24,7 @@ Each provider file should define reusable operations such as:
 
 - `retrieve-items`
 - `read-item`
-- `update-item-status`
+- `transition-item-status`
 - `resolve-repository`
 - `create-request`
 - `search-requests`

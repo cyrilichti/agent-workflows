@@ -174,17 +174,62 @@ arguments:
 
 Do not include other update fields.
 
-## update-item-status
+## transition-item-status
 
-Update a Linear issue status.
+Resolve and update a Linear issue status.
 
-1. Resolve the normalized target status to the workspace-specific Linear state.
-   Prefer an active-work state such as `in progress` or its configured
-   equivalent.
-2. Use the available Linear MCP operation for updating an issue's state.
-3. Pass the selected item ID and resolved state.
+1. Read the item to obtain its team:
 
-Ask the user only when multiple active-work states could match.
+   ```text
+   tool: get_issue
+   arguments:
+     id: caller item ID or identifier
+   ```
+
+2. List the team's available statuses:
+
+   ```text
+   tool: list_issue_statuses
+   arguments:
+     team: item team name or ID
+   ```
+
+   For `in progress`, stop if Steps 1 or 2 fail. For `review`, return a
+   non-transitioned best-effort result with the provider failure as its reason.
+
+3. Resolve the caller's normalized target by case-insensitive status name and
+   Linear status type:
+   - for `in progress`, prefer an exact `in progress` name or the single
+     non-review active-work equivalent;
+   - for `review`, keep only statuses whose name clearly identifies review; do
+     not substitute an active-work status or create a status.
+4. For `in progress`, stop when no status matches and ask the user to select
+   one when multiple statuses match equally.
+5. For `review`, continue only when exactly one review-like status exists. For
+   zero or multiple matches, do not mutate and do not ask the user to choose.
+6. Update only the issue state when the preceding rules selected one status:
+
+   ```text
+   tool: save_issue
+   arguments:
+     id: caller item ID or identifier
+     state: resolved workspace status name or ID
+   ```
+7. For `in progress`, return the updated issue status and stop on failure.
+8. For `review`, return a best-effort result containing:
+   - `transitioned`: `true` only when the update succeeded;
+   - `previous_status`: the state read in Step 1 when available;
+   - `target_status`: `review`;
+   - `resolved_target_status`: the single matched status when available;
+   - `resulting_status`: the updated status when returned or confirmed;
+   - `reason`: required when `transitioned` is `false`, including read failure,
+     no match, ambiguous matches, or update failure.
+
+Do not let a non-transitioned `review` result block the caller's request
+promotion.
+
+Do not pass title, description, team, project, assignee, labels, or any other
+optional `save_issue` field.
 
 ## add-request-backlink
 
