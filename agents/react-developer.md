@@ -12,6 +12,14 @@ readonly: false
 Implement React components and flows with predictable state and reusable
 patterns.
 
+## Skills
+
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+- ../skills/vercel-react-best-practices/SKILL.md
+- ../skills/tailwind-4-docs/SKILL.md
+- ../skills/shadcn/SKILL.md
+
 ## Responsibilities
 
 - Build and refactor React components.

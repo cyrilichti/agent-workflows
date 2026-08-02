@@ -9,14 +9,21 @@ readonly: false
 
 ## Mission
 
-Implement Vue components and flows with clean composition and maintainable
-state.
+Implement Vue components and applications with clean composition, maintainable
+state, and predictable performance.
+
+## Skills
+
+- ../skills/vue/SKILL.md
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+- ../skills/tailwind-4-docs/SKILL.md
 
 ## Responsibilities
 
-- Build and refactor Vue components.
-- Manage reactivity, composables, and data fetching.
-- Preserve accessibility and performance.
+- Build and refactor Vue components, pages, and application flows.
+- Manage reactivity, composables, state, and data fetching.
+- Preserve accessibility, rendering performance, and bundle efficiency.
 - Keep component boundaries clear and testable.
 
 ## Constraints

@@ -3,15 +3,11 @@ title: /pick
 description: Pick your next work item, approve an implementation plan, and hand it off to /work.
 ---
 
-`/pick` turns a ready work item into active work. It finds the items you can
-start, lets you choose one, and presents its full context before planning
-begins. It then hands the item to `/plan`. After you approve the plan, `/pick`
-moves the item to in progress and hands the approved plan to `/work`.
+`/pick` turns a ready item into active work. It lets you choose an item, reviews
+its context, and sends it to `/plan`. Once you approve the plan, `/pick` moves
+the item to in progress and hands the plan to `/work`.
 
 ## Dispatching workflows
-
-`/pick` coordinates two workflow handoffs. `/plan` must return an approved plan
-before the item can move to in progress and `/work` can begin.
 
 <div className="dispatch-map dispatch-map--vertical">
   <div className="dispatch-node dispatch-node--workflow">

@@ -9,10 +9,6 @@ task is too broad, `/plan` explains why it needs refinement and stops.
 
 ## Dispatching external skills
 
-`/plan` always uses a planning skill to check the scope and structure the work.
-When needed, it can also verify external facts or challenge high-risk decisions
-before you approve the plan.
-
 <div class="dispatch-map dispatch-map--vertical dispatch-map--plan">
   <div class="dispatch-node dispatch-node--workflow">
     <span class="dispatch-node__label">Workflow</span>
@@ -23,7 +19,7 @@ before you approve the plan.
   <span class="dispatch-arrow" aria-hidden="true">↓</span>
 
   <a
-    class="dispatch-skill dispatch-skill--planning"
+    class="dispatch-skill dispatch-skill--planning dispatch-skill--cohort-architecture"
     href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown"
   >
     <span class="dispatch-skill__label">Skill</span>
@@ -36,7 +32,7 @@ before you approve the plan.
 
   <div class="dispatch-skills dispatch-skills--conditional">
     <a
-      class="dispatch-skill dispatch-skill--source"
+      class="dispatch-skill dispatch-skill--source dispatch-skill--cohort-delivery"
       href="https://github.com/addyosmani/agent-skills/tree/main/skills/source-driven-development"
     >
       <span class="dispatch-skill__label">Skill</span>
@@ -45,7 +41,7 @@ before you approve the plan.
       <small>Addy Osmani</small>
     </a>
     <a
-      class="dispatch-skill dispatch-skill--doubt"
+      class="dispatch-skill dispatch-skill--doubt dispatch-skill--cohort-architecture"
       href="https://github.com/addyosmani/agent-skills/tree/main/skills/doubt-driven-development"
     >
       <span class="dispatch-skill__label">Skill</span>

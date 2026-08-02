@@ -12,6 +12,11 @@ readonly: true
 Write concise documentation that helps developers and stakeholders understand
 the system.
 
+## Skills
+
+- ../skills/technical-writing/SKILL.md
+- ../skills/source-driven-development/SKILL.md
+
 ## Responsibilities
 
 - Draft and improve technical documentation.

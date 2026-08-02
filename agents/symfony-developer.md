@@ -12,6 +12,13 @@ readonly: false
 Build Symfony-based features with clean architecture and framework best
 practices.
 
+## Skills
+
+- ../skills/symfony-tdd-with-phpunit/SKILL.md
+- ../skills/source-driven-development/SKILL.md
+- ../skills/api-and-interface-design/SKILL.md
+- ../skills/service-decomposition/SKILL.md
+
 ## Responsibilities
 
 - Implement controllers, services, and domain logic.

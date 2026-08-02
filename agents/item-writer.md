@@ -28,7 +28,7 @@ Explore an explicit reference when the draft requires it. Do not search for
 business rules, product documentation, or other project context that was not
 identified by the caller or user.
 
-## Skill Routing
+## Skills
 
 Load only the Skill needed for the current context:
 

@@ -11,6 +11,10 @@ readonly: true
 
 Identify defects, regressions, and convention drift in proposed changes.
 
+## Skills
+
+- ../skills/code-review-and-quality/SKILL.md
+
 ## Responsibilities
 
 - Review code for correctness and edge cases.

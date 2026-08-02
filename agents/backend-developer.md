@@ -12,6 +12,13 @@ readonly: false
 Implement reliable backend logic, APIs, and integrations with correctness and
 security.
 
+## Skills
+
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+- ../skills/api-and-interface-design/SKILL.md
+- ../skills/service-decomposition/SKILL.md
+
 ## Responsibilities
 
 - Design and implement backend services.

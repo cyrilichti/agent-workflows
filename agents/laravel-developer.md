@@ -11,6 +11,13 @@ readonly: false
 
 Build Laravel features with maintainable structure and secure defaults.
 
+## Skills
+
+- ../skills/laravel-best-practices/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+- ../skills/api-and-interface-design/SKILL.md
+- ../skills/service-decomposition/SKILL.md
+
 ## Responsibilities
 
 - Implement controllers, services, and Eloquent models.

@@ -12,6 +12,13 @@ readonly: false
 Implement robust UI features with accessibility, performance, and
 maintainability.
 
+## Skills
+
+- ../skills/source-driven-development/SKILL.md
+- ../skills/test-driven-development/SKILL.md
+- ../skills/tailwind-4-docs/SKILL.md
+- ../skills/web-design-guidelines/SKILL.md
+
 ## Responsibilities
 
 - Build and refactor frontend components.

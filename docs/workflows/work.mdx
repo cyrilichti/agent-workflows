@@ -3,17 +3,68 @@ title: /work
 description: Execute one selected plan todo by todo on a draft pull or merge request.
 ---
 
+export const agentSkills = [
+  { name: "api-and-interface-design", source: "addyosmani/agent-skills", cohort: "architecture", cohortLabel: "Architecture and assurance" },
+  { name: "ci-cd-and-automation", source: "addyosmani/agent-skills", cohort: "operations", cohortLabel: "Operations" },
+  { name: "code-review-and-quality", source: "addyosmani/agent-skills", cohort: "architecture", cohortLabel: "Architecture and assurance" },
+  { name: "customer-journey-map", source: "phuryn/pm-skills", cohort: "design", cohortLabel: "Design and accessibility" },
+  { name: "data-analysis-jupyter", source: "mindrally/skills", cohort: "data-ai", cohortLabel: "Data and AI" },
+  { name: "evaluate-rag", source: "hamelsmu/evals-skills", cohort: "data-ai", cohortLabel: "Data and AI" },
+  { name: "frontend-design", source: "anthropics/skills", cohort: "design", cohortLabel: "Design and accessibility" },
+  { name: "grilling", source: "mattpocock/skills", cohort: "product", cohortLabel: "Product and content" },
+  { name: "idea-refine", source: "addyosmani/agent-skills", cohort: "product", cohortLabel: "Product and content" },
+  { name: "interview-me", source: "addyosmani/agent-skills", cohort: "product", cohortLabel: "Product and content" },
+  { name: "laravel-best-practices", source: "laravel/boost", cohort: "specialized", cohortLabel: "Specialized delivery" },
+  { name: "nestjs-best-practices", source: "ejirocodes/agent-skills", cohort: "specialized", cohortLabel: "Specialized delivery" },
+  { name: "observability-and-instrumentation", source: "addyosmani/agent-skills", cohort: "operations", cohortLabel: "Operations" },
+  { name: "performance-optimization", source: "addyosmani/agent-skills", cohort: "architecture", cohortLabel: "Architecture and assurance" },
+  { name: "planning-and-task-breakdown", source: "addyosmani/agent-skills", cohort: "architecture", cohortLabel: "Architecture and assurance" },
+  { name: "prioritization-advisor", source: "deanpeters/product-manager-skills", cohort: "product", cohortLabel: "Product and content" },
+  { name: "scikit-learn-best-practices", source: "mindrally/skills", cohort: "data-ai", cohortLabel: "Data and AI" },
+  { name: "security-and-hardening", source: "addyosmani/agent-skills", cohort: "architecture", cohortLabel: "Architecture and assurance" },
+  { name: "seo-geo", source: "resciencelab/opc-skills", cohort: "product", cohortLabel: "Product and content" },
+  { name: "service-decomposition", source: "proyecto26/system-design-skills", cohort: "architecture", cohortLabel: "Architecture and assurance" },
+  { name: "shadcn", source: "shadcn/ui", cohort: "specialized", cohortLabel: "Specialized delivery" },
+  { name: "source-driven-development", source: "addyosmani/agent-skills", cohort: "delivery", cohortLabel: "Application delivery" },
+  { name: "supabase-postgres-best-practices", source: "supabase/agent-skills", cohort: "data-ai", cohortLabel: "Data and AI" },
+  { name: "symfony:tdd-with-phpunit", source: "makfly/superpowers-symfony", cohort: "specialized", cohortLabel: "Specialized delivery" },
+  { name: "systematic-debugging", source: "obra/superpowers", cohort: "quality", cohortLabel: "Quality and diagnosis" },
+  { name: "tailwind-4-docs", source: "lombiq/tailwind-agent-skills", cohort: "specialized", cohortLabel: "Specialized delivery" },
+  { name: "technical-writing", source: "proffesor-for-testing/agentic-qe", cohort: "product", cohortLabel: "Product and content" },
+  { name: "test-driven-development", source: "addyosmani/agent-skills", cohort: "quality", cohortLabel: "Quality and diagnosis" },
+  { name: "to-spec", source: "mattpocock/skills", cohort: "product", cohortLabel: "Product and content" },
+  { name: "to-tickets", source: "mattpocock/skills", cohort: "product", cohortLabel: "Product and content" },
+  { name: "vercel-react-best-practices", source: "vercel-labs/agent-skills", cohort: "specialized", cohortLabel: "Specialized delivery" },
+  { name: "vue", source: "antfu/skills", cohort: "specialized", cohortLabel: "Specialized delivery" },
+  { name: "web-design-guidelines", source: "vercel-labs/agent-skills", cohort: "design", cohortLabel: "Design and accessibility" },
+];
+
+export const agentSkillCohorts = [
+  { slug: "product", label: "Product and content" },
+  { slug: "design", label: "Design and accessibility" },
+  { slug: "architecture", label: "Architecture and assurance" },
+  { slug: "delivery", label: "Application delivery" },
+  { slug: "specialized", label: "Specialized delivery" },
+  { slug: "data-ai", label: "Data and AI" },
+  { slug: "quality", label: "Quality and diagnosis" },
+  { slug: "operations", label: "Operations" },
+];
+
 `/work` turns an approved plan into confirmed commits. It can receive the plan
 from `/pick` with an active official item, or let you select from recent plans.
 
-## Dispatching agents
+## Dispatching external skills
 
-`/work` evaluates each active todo and routes it to the most suitable agent.
-The selected agent implements and validates that todo, while `/work` keeps
-control of sequencing, plan state, staging, and commits. The choice is
-reevaluated for every todo.
+<br />
+<div className="skill-cohort-badges" aria-label="Skill cohorts">
+  {agentSkillCohorts.map((cohort) => (
+    <span className={`skill-cohort-badge dispatch-skill--cohort-${cohort.slug}`}>
+      {cohort.label}
+    </span>
+  ))}
+</div>
 
-<div className="dispatch-map dispatch-map--vertical">
+<div className="dispatch-map dispatch-map--vertical dispatch-map--work">
   <div className="dispatch-node dispatch-node--workflow">
     <span className="dispatch-node__label">Workflow</span>
     <strong>/work</strong>
@@ -23,9 +74,26 @@ reevaluated for every todo.
   <span className="dispatch-arrow" aria-hidden="true">↓</span>
 
   <div className="dispatch-node dispatch-node--agent">
-    <span className="dispatch-node__label">Agent</span>
+    <span className="dispatch-node__label">Sub-agent</span>
     <strong>Most suitable agent</strong>
-    <span>Implements and validates the active todo</span>
+    <span>The sub-agent profile selected for the active todo</span>
+  </div>
+
+  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <div className="dispatch-skills dispatch-skills--catalog">
+    {agentSkillCohorts
+      .flatMap((cohort) => agentSkills.filter((skill) => skill.cohort === cohort.slug))
+      .map((skill) => (
+        <a
+          className={`dispatch-skill dispatch-skill--cohort-${skill.cohort}`}
+          href={`https://github.com/${skill.source}`}
+        >
+          <span className="dispatch-skill__label">Skill</span>
+          <strong>{skill.name} ↗</strong>
+          <small>{skill.source}</small>
+        </a>
+      ))}
   </div>
 </div>
 
@@ -46,7 +114,7 @@ reevaluated for every todo.
     <tr>
       <td>3</td>
       <th scope="row">Request</th>
-      <td>Create the GitHub draft pull request or GitLab draft merge request for new work.</td>
+      <td>Create the draft pull request or merge request for new work.</td>
     </tr>
     <tr>
       <td>4</td>
