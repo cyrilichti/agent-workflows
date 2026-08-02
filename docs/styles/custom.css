@@ -478,6 +478,34 @@
   width: 100%;
 }
 
+.dispatch-skills--catalog {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dispatch-skills--catalog .dispatch-skill {
+  min-height: 5.5rem;
+}
+
+.skill-cohort-badges {
+  display: flex;
+  margin-block: 0 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skill-cohort-badge {
+  display: inline-flex;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--dispatch-skill-color);
+  border-radius: 999px;
+  background: var(--dispatch-skill-bg);
+  color: var(--dispatch-skill-color);
+  font-family: var(--sl-font-mono);
+  font-size: var(--sl-text-xs);
+  font-weight: 600;
+  line-height: 1;
+}
+
 .dispatch-node {
   position: relative;
   display: flex;
@@ -598,44 +626,76 @@ a.dispatch-node--link:focus-visible {
   color: var(--dispatch-skill-color);
 }
 
-.dispatch-skill--interview {
-  --dispatch-skill-color: #86efac;
-  --dispatch-skill-bg: rgba(34, 197, 94, 0.12);
-}
-
-.dispatch-skill--idea {
-  --dispatch-skill-color: #67e8f9;
-  --dispatch-skill-bg: rgba(6, 182, 212, 0.12);
-}
-
-.dispatch-skill--grilling {
-  --dispatch-skill-color: #fbbf24;
-  --dispatch-skill-bg: rgba(245, 158, 11, 0.12);
-}
-
-.dispatch-skill--to-spec {
+.dispatch-skill--cohort-product {
   --dispatch-skill-color: #c4b5fd;
   --dispatch-skill-bg: rgba(139, 92, 246, 0.12);
 }
 
-.dispatch-skill--planning {
-  --dispatch-skill-color: #c4b5fd;
-  --dispatch-skill-bg: rgba(139, 92, 246, 0.12);
-}
-
-.dispatch-skill--to-tickets {
+.dispatch-skill--cohort-design {
   --dispatch-skill-color: #f9a8d4;
   --dispatch-skill-bg: rgba(236, 72, 153, 0.12);
 }
 
-.dispatch-skill--source {
+.dispatch-skill--cohort-architecture {
+  --dispatch-skill-color: #fbbf24;
+  --dispatch-skill-bg: rgba(245, 158, 11, 0.12);
+}
+
+.dispatch-skill--cohort-delivery {
   --dispatch-skill-color: #67e8f9;
   --dispatch-skill-bg: rgba(6, 182, 212, 0.12);
 }
 
-.dispatch-skill--doubt {
-  --dispatch-skill-color: #fbbf24;
-  --dispatch-skill-bg: rgba(245, 158, 11, 0.12);
+.dispatch-skill--cohort-specialized {
+  --dispatch-skill-color: #93c5fd;
+  --dispatch-skill-bg: rgba(59, 130, 246, 0.12);
+}
+
+.dispatch-skill--cohort-data-ai {
+  --dispatch-skill-color: #86efac;
+  --dispatch-skill-bg: rgba(34, 197, 94, 0.12);
+}
+
+.dispatch-skill--cohort-quality {
+  --dispatch-skill-color: #fdba74;
+  --dispatch-skill-bg: rgba(249, 115, 22, 0.12);
+}
+
+.dispatch-skill--cohort-operations {
+  --dispatch-skill-color: #5eead4;
+  --dispatch-skill-bg: rgba(20, 184, 166, 0.12);
+}
+
+:root[data-theme="light"] .dispatch-skill--cohort-product {
+  --dispatch-skill-color: #7c3aed;
+}
+
+:root[data-theme="light"] .dispatch-skill--cohort-design {
+  --dispatch-skill-color: #be185d;
+}
+
+:root[data-theme="light"] .dispatch-skill--cohort-architecture {
+  --dispatch-skill-color: #b45309;
+}
+
+:root[data-theme="light"] .dispatch-skill--cohort-delivery {
+  --dispatch-skill-color: #0e7490;
+}
+
+:root[data-theme="light"] .dispatch-skill--cohort-specialized {
+  --dispatch-skill-color: #1d4ed8;
+}
+
+:root[data-theme="light"] .dispatch-skill--cohort-data-ai {
+  --dispatch-skill-color: #15803d;
+}
+
+:root[data-theme="light"] .dispatch-skill--cohort-quality {
+  --dispatch-skill-color: #c2410c;
+}
+
+:root[data-theme="light"] .dispatch-skill--cohort-operations {
+  --dispatch-skill-color: #0f766e;
 }
 
 .sl-markdown-content table.workflow-steps {
