@@ -23,6 +23,7 @@ provides criteria; the provider explains how to execute them.
 Each provider file should define reusable operations such as:
 
 - `retrieve-items`
+- `resolve-item-status`
 - `read-item`
 - `transition-item-status`
 - `resolve-repository`
