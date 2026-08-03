@@ -30,6 +30,8 @@ Each provider file should define reusable operations such as:
 - `create-request`
 - `search-requests`
 - `read-request`
+- `resolve-request-backlinks`
+- `publish-review`
 
 When a command needs a provider, load `./<provider>.md` and use
 the documented operation. Do not inspect provider documentation unless the

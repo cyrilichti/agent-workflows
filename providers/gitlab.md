@@ -8,6 +8,13 @@ identity expected by the GitLab MCP. Preserve every namespace segment. Stop
 when the path is empty or does not identify a project; do not contact GitLab to
 infer it.
 
+## resolve-request-backlinks
+
+Keep only URLs served by the configured GitLab provider whose decoded project
+path exactly matches the resolved repository and whose remaining path is
+`/-/merge_requests/<iid>`. Return the unique merge-request IIDs. Ignore foreign
+or malformed URLs without following them.
+
 ## create-request
 
 Create one draft merge request:
@@ -97,8 +104,35 @@ arguments:
 Continue pagination only when the caller needs more commits or diffs than the
 first page returns.
 
+For `review_activity`, call `get_merge_request_notes` and follow every `after`
+cursor. Return all notes and their discussion IDs. Native verdicts are
+unsupported by the verified GitLab MCP.
+
+For `review_snapshot`, also return the merge request head SHA and exhaust
+`get_merge_request_diffs` with `page` and `per_page`. Derive the complete
+changed-file set and available anchor data from those diffs. Read the merge
+request again and require the same head SHA before returning the snapshot.
+Stop when diffs or notes are partial or truncated.
+
 ## update-request
 
 Description replacement and draft removal are unsupported by the current
 verified adapter operations. Return `unsupported` with this exact reason
 without calling a similarly named or inferred GitLab operation.
+
+## publish-review
+
+Observe operation markers through complete merge-request notes before writing.
+
+For a request comment, call `create_merge_request_note` with the repository,
+merge-request IID, and exact marked body. Follow every `after` cursor with
+`get_merge_request_notes` to verify the marker after each write or ambiguous
+result. If either notes operation is unavailable, return `unsupported`.
+
+Return `unsupported` for inline comments and native verdicts. Do not substitute
+REST, CLI, quick actions, or request-level notes for those operations.
+
+## Sources
+
+- Official GitLab MCP tool reference:
+  https://docs.gitlab.com/user/model_context_protocol/mcp_server_tools/
