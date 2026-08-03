@@ -150,22 +150,17 @@ draft mutations in one call.
 
 ## publish-review
 
-Observe operation markers through complete request comments, review threads,
-and reviews before writing.
-
-- For a request comment, call `add_issue_comment` with the exact marked body.
+- For a request comment, call `add_issue_comment` with the exact body.
 - For inline comments, create one pending review at the caller's `head_sha`,
-  then call `add_comment_to_pending_review` with each exact marked body and
+  then call `add_comment_to_pending_review` with each exact body and
   validated path, line, side, range, and subject type.
 - Submit the pending review with `pull_request_review_write`, method
   `submit_pending`, using `REQUEST_CHANGES`, `APPROVE`, or `COMMENT` from the
-  terminal operation and its exact marked body. Use `COMMENT` when inline
-  comments exist without a terminal verdict.
+  terminal operation and its exact body. Use `COMMENT` when inline comments
+  exist without a terminal verdict.
 
-Use `pull_request_review_write` with method `create` only when no matching
-pending review for this request and SHA is observed. After an ambiguous result,
-reread complete review activity and continue only when the exact marker is
-observed. Never delete or reuse an unrelated pending review.
+After each operation, return the observed request activity. On an ambiguous or
+unobserved result, stop without retrying, deleting, or reusing a pending review.
 
 ## Sources
 
