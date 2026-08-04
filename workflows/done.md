@@ -110,8 +110,8 @@ Require the same open request, exact previewed head SHA, and
 confirmation.
 
 Run `../commands/merge-request.md` with the resolved provider, repository, and
-request ID. Include a merge method only when the provider required the user to
-select one.
+request ID. Do not provide a merge method; repository settings remain
+authoritative.
 
 Continue only when the normalized result is `merged`. For `blocked`,
 `unsupported`, `failed`, or `unobserved`, report the request result and
