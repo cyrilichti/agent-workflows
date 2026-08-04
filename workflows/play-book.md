@@ -33,6 +33,7 @@ user starts a new unrelated task, and no playbook has been selected.
    - Refine an item
    - Execute a plan
    - Prepare work for review
+   - Complete a request
    - Other
    ```
 
@@ -46,6 +47,7 @@ user starts a new unrelated task, and no playbook has been selected.
    * Refine an item → `./refine.md`
    * Execute a plan → `./work.md`
    * Prepare work for review → `./ready.md`
+   * Complete a request → `./done.md`
 
 4. Stop this workflow after delegating to the selected playbook.
 

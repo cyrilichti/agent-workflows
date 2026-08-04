@@ -1,0 +1,60 @@
+---
+title: /done
+description: Merge one exact request, then complete its official item from observed provider states.
+---
+
+`/done` is a standalone, explicitly invoked workflow. It resolves one official
+item and its exact non-draft pull request or merge request, previews the
+remaining mutations, and asks once before making any change.
+
+An open request must be reported as mergeable by its provider. An already
+merged request skips the merge. In both cases, `/done` moves the official item
+to its resolved completed state only after the request is observed as merged.
+
+## How this workflow is structured
+
+<table className="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Item</th>
+      <td>Select one item awaiting completion or provide its exact ID.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Request</th>
+      <td>Resolve its exact open or already merged request.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Preflight</th>
+      <td>Resolve merge eligibility and the item's exact completed state.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Confirm</th>
+      <td>Preview the remaining mutations and ask once before changing anything.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Merge</th>
+      <td>Recheck the request head and merge an eligible open request.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Complete</th>
+      <td>Transition only the official item state after observing the merge.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <th scope="row">Report</th>
+      <td>Report completed, blocked, unsupported, failed, or partial outcomes.</td>
+    </tr>
+  </tbody>
+</table>
+
+When a merge is observed but the item transition fails, `/done` keeps the
+partial result explicit. A rerun rereads the provider states, skips the
+completed merge, and presents only the remaining item transition. `/done`
+never deploys, releases, tags, retries automatically, or invokes another
+workflow.
