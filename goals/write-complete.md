@@ -14,7 +14,6 @@ Exactly one confirmed item has been saved through the configured item provider.
 ## Stop Conditions
 
 - Stop successfully when all success criteria are satisfied.
-- Stop without mutation when content confirmation is refused or unavailable.
 - Stop and report partial success when the item is saved but assignment fails.
 - Stop and report the blocker when a required provider operation fails before
   any item is saved.
