@@ -30,5 +30,5 @@ Start with the [documentation](https://cyrilichti.github.io/agent-workflows/)
   and stop.
 - [x] `/review`: independently review one request snapshot, curate and confirm
   every finding, publish the observed result, and stop.
-- [ ] `/done`: execute configured delivery actions and support
-  `blocked/retry` recovery.
+- [x] `/done`: confirm and merge one exact request, complete its official item,
+  and preserve partial outcomes for an explicit rerun.

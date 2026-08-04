@@ -23,3 +23,5 @@ skills/*
 !skills/ready/**
 !skills/review/
 !skills/review/**
+!skills/done/
+!skills/done/**
