@@ -20,7 +20,7 @@ Create one draft request through the configured version-control provider.
    - `request_id`: provider-native merge-request IID or pull-request number;
    - `kind`: `merge_request` or `pull_request`;
    - `title`;
-   - `state`: normalized to `open` or `closed` when available;
+   - `state`: normalized to `open`, `merged`, or `closed` when available;
    - `draft`;
    - `source_branch`;
    - `target_branch`;

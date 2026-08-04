@@ -1,6 +1,6 @@
 # Resolve Request
 
-Resolve one exact open request.
+Resolve one exact request.
 
 ## Input
 
@@ -12,6 +12,8 @@ Resolve one exact open request.
   number already known by the caller.
 - `request_backlinks`: optional URLs read from an official item.
 - `require_non_draft`: optional boolean, default `false`.
+- `allowed_states`: optional normalized states accepted by the caller, default
+  `open`.
 
 A caller may provide an already known `request_id`.
 
@@ -24,7 +26,7 @@ A caller may provide an already known `request_id`.
    Otherwise, ask the user for the exact pull-request number or merge-request
    IID. Do not list or search requests.
 3. Run `./read-request.md` with that exact request ID.
-4. Require the normalized request `state` to be `open`.
+4. Require the normalized request `state` to be one of `allowed_states`.
 5. When `source_branch` is supplied, require an exact match.
 6. When `require_non_draft` is `true`, require `draft: false`.
 7. On any mismatch, stop with the observed request and exact diagnostic. Do

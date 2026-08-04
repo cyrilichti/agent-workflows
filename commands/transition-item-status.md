@@ -7,7 +7,7 @@ provider.
 
 - `provider`: resolved item provider.
 - `item_id`: official provider item ID.
-- `target_status`: exactly `in progress` or `review`.
+- `target_status`: exactly `in progress`, `review`, or `done`.
 
 ## Steps
 
@@ -32,6 +32,21 @@ provider.
      status when available, and a reason whenever `transitioned` is `false`.
 6. Treat the `review` transition as best-effort. Its missing, ambiguous, or
    failed provider transition must not block the caller's request promotion.
+
+For `done`:
+
+- resolve the next provider state after the current state whose semantic
+  meaning is completed or done;
+- when the item is already in such a state, return a successful no-op;
+- when exactly one next state matches, update only the item's state or status;
+- when no state or multiple states match, return a non-transitioned report
+  without asking the user to choose;
+- return `transitioned`, `already_at_target`, previous state, resolved target,
+  resulting state, and a reason whenever neither transition nor successful
+  no-op occurred.
+
+Treat `done` as best-effort because its caller may already have completed an
+irreversible merge.
 
 Do not change the item's title, description, assignee, labels, project,
 relationships, or any other field.

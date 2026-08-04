@@ -78,10 +78,15 @@ arguments:
 ```
 
 Return the complete provider-neutral request record: map the merge request IID
-to `request_id`, set `kind: merge_request`, normalize `opened` to `open`, and
+to `request_id`, set `kind: merge_request`, normalize `opened` to `open`,
+`merged` to `merged`, and other terminal states to `closed`, and
 return title, Draft state as `draft`, source branch as `source_branch`, target
 branch as `target_branch`, description as `body` normalized to an empty string
 when absent, author, and URL.
+
+For `delivery_state`, also return the exact head SHA and normalize the native
+merge-status fields to `merge_status: mergeable`, `blocked`, `unknown`, or
+`merged`. Preserve the provider's concise blocker reason when available.
 
 When commits are requested:
 
@@ -130,6 +135,12 @@ unavailable, return `unsupported`.
 
 Return `unsupported` for inline comments and native verdicts. Do not substitute
 REST, CLI, quick actions, or request-level notes for those operations.
+
+## merge-request
+
+The current verified GitLab MCP exposes no merge operation. Return
+`unsupported` with this exact reason. Do not substitute REST, CLI, a quick
+action, or another MCP operation.
 
 ## Sources
 
