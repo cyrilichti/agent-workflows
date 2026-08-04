@@ -8,6 +8,10 @@ provider.
 - `provider`: resolved item provider.
 - `item_id`: official provider item ID.
 - `target_status`: exactly `in progress`, `review`, or `done`.
+- `mode`: optional `resolve` or `apply`, default `apply`. `resolve` is supported
+  only for `done` and must not mutate the item.
+- `resolved_target_status`: optional exact provider state previously returned
+  by `mode: resolve` for a confirmed `done` transition.
 
 ## Steps
 
@@ -38,6 +42,10 @@ For `done`:
 - resolve the next provider state after the current state whose semantic
   meaning is completed or done;
 - when the item is already in such a state, return a successful no-op;
+- in `resolve` mode, return the current state, `already_at_target`, and the
+  single resolved target without mutation;
+- in `apply` mode, require any supplied `resolved_target_status` to remain an
+  available matching target before updating;
 - when exactly one next state matches, update only the item's state or status;
 - when no state or multiple states match, return a non-transitioned report
   without asking the user to choose;

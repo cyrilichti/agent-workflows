@@ -223,7 +223,12 @@ Resolve and update a ClickUp task status.
 4. For `review` or `done`, continue only when exactly one matching status
    exists. For zero or multiple matches, do not mutate and do not ask the user
    to choose.
-5. Update only the task status when the preceding rules selected one status:
+5. For `done` with `mode: resolve`, return the current status,
+   `already_at_target`, and the resolved target without mutation. For
+   `mode: apply`, require a caller-supplied resolved target to remain the exact
+   selected available status.
+6. Update only the task status when the preceding rules selected one status in
+   apply mode:
 
    ```text
    tool: clickup_update_task
@@ -232,8 +237,8 @@ Resolve and update a ClickUp task status.
      status: resolved workspace status name
    ```
 
-6. For `in progress`, return the updated task status and stop on failure.
-7. For `review` or `done`, return a best-effort result containing:
+7. For `in progress`, return the updated task status and stop on failure.
+8. For `review` or `done`, return a best-effort result containing:
    - `transitioned`: `true` only when the update succeeded;
    - `previous_status`: the status read in Step 1 when available;
    - `target_status`: `review` or `done`;

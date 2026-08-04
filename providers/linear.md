@@ -228,7 +228,12 @@ Resolve and update a Linear issue status.
 5. For `review` or `done`, continue only when exactly one matching state exists.
    For zero or multiple matches, do not mutate and do not ask the user to
    choose.
-6. Update only the issue state when the preceding rules selected one status:
+6. For `done` with `mode: resolve`, return the current state,
+   `already_at_target`, and the resolved target without mutation. For
+   `mode: apply`, require a caller-supplied resolved target to remain the exact
+   selected available state.
+7. Update only the issue state when the preceding rules selected one status in
+   apply mode:
 
    ```text
    tool: save_issue
@@ -236,8 +241,8 @@ Resolve and update a Linear issue status.
      id: caller item ID or identifier
      state: resolved workspace status name or ID
    ```
-7. For `in progress`, return the updated issue status and stop on failure.
-8. For `review` or `done`, return a best-effort result containing:
+8. For `in progress`, return the updated issue status and stop on failure.
+9. For `review` or `done`, return a best-effort result containing:
    - `transitioned`: `true` only when the update succeeded;
    - `previous_status`: the state read in Step 1 when available;
    - `target_status`: `review` or `done`;
