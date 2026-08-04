@@ -2,7 +2,7 @@
 
 ## retrieve-items
 
-Retrieve Linear issues assigned to a person.
+Retrieve Linear issues matching the caller's criteria.
 
 ### Current User
 
@@ -22,6 +22,18 @@ Retrieve Linear issues assigned to a person.
 
 Use Linear state names and state types as workspace-specific values. Do not
 assume every workspace uses the same status labels.
+
+### Status Criteria
+
+Use `list_issues` with the caller's resolved `team` and `state`. Do not pass
+`assignee` unless the caller requested it. Follow every returned cursor and
+fail rather than returning a partial result.
+
+## resolve-item-status
+
+Use `list_teams`, then `list_issue_statuses` for each team, and return every
+matching `team` and `state` pair for `semantic_status`. If teams or states
+cannot be listed, report resolution as unavailable. Do not retrieve issues.
 
 ## search-items
 
@@ -51,6 +63,10 @@ Return the issue's title, description, state, team, project, assignee, and URL.
 Set `includeRelations: true` when linked resources are requested. When comments
 are requested, call `list_comments` with `issueId` set to the same issue ID or
 identifier. Attachments are returned by `get_issue`.
+
+For `request_backlinks`, call `list_comments`, follow every returned cursor
+until no next page remains, and return every `Draft PR:` or `Draft MR:` URL. If
+a comments page fails or is truncated, stop without returning the item.
 
 ## list-destinations
 

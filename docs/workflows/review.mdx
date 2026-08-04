@@ -1,0 +1,57 @@
+---
+title: /review
+description: Independently review one exact request snapshot and publish only the confirmed result.
+---
+
+`/review` is a standalone, manually invoked workflow. It resolves one official
+item and its pull or merge request, reviews a frozen snapshot, and lets you
+accept, reject, or modify every finding before anything is published.
+
+No delivery workflow invokes `/review`, and `/review` never invokes another
+workflow.
+
+## How this workflow is structured
+
+<table className="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Item</th>
+      <td>Select one item in review or resolve one by exact ID or narrow title.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Request</th>
+      <td>Resolve one open, non-draft request from its backlink or exact ID.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Snapshot</th>
+      <td>Freeze the complete request state and head SHA.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Review</th>
+      <td>Produce concrete, evidence-based findings without changing the code.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Curate</th>
+      <td>Accept, reject, or modify every finding.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Confirm</th>
+      <td>Preview the exact publication and reject it when the head SHA changed.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <th scope="row">Publish</th>
+      <td>Publish supported operations, report the observed result, and stop.</td>
+    </tr>
+  </tbody>
+</table>
+
+Throughout the review cycle, `/review` never modifies code, items, commits,
+branches, or existing comments. It never invokes `/work` or `/done`, and never
+pushes, merges, deploys, or releases.

@@ -2,7 +2,7 @@
 
 ## retrieve-items
 
-Retrieve ClickUp tasks assigned to a person.
+Retrieve ClickUp tasks matching the caller's criteria.
 
 ### Current User
 
@@ -35,6 +35,18 @@ workspace uses the same status labels.
 
 Do not call `clickup_search` for this operation when `clickup_filter_tasks` can
 retrieve the requested tasks.
+
+### Status Criteria
+
+Use `clickup_filter_tasks` with the caller's resolved `statuses`. Do not pass
+`assignees` unless the caller requested them. Follow every returned page and
+fail rather than returning a partial result.
+
+## resolve-item-status
+
+Use `clickup_get_workspace_hierarchy` with `max_depth: "2"` and return every
+status name that clearly matches `semantic_status`. If the hierarchy does not
+expose statuses, report resolution as unavailable. Do not retrieve tasks.
 
 ## search-items
 
@@ -69,6 +81,11 @@ URL.
 Add supported `include` values such as `attachments` or `linked_tasks` when the
 caller requests them. When comments are requested, call
 `clickup_get_task_comments` with the same task ID.
+
+For `request_backlinks`, call `clickup_get_task_comments`, follow every returned
+continuation until no next page remains, and return every `Draft PR:` or
+`Draft MR:` URL. If a comments page fails or is truncated, stop without
+returning the item.
 
 ## list-destinations
 

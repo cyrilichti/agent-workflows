@@ -28,7 +28,7 @@ Start with the [documentation](https://cyrilichti.github.io/agent-workflows/)
 - [x] `/ready`: verify completed work against its plan, confirm before pushing,
   promote its request for human review, report the optional item transition,
   and stop.
-- [ ] `/review`: run an independent review, then return to `/work` or trigger
-  `/done`.
+- [x] `/review`: independently review one request snapshot, curate and confirm
+  every finding, publish the observed result, and stop.
 - [ ] `/done`: execute configured delivery actions and support
   `blocked/retry` recovery.

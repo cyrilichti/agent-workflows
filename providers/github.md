@@ -24,6 +24,12 @@ Reject local paths, file URLs, missing owners, nested paths, and ambiguous URL
 forms. Do not infer `github.com`; the MCP server configuration remains
 authoritative for GitHub.com versus GitHub Enterprise connectivity.
 
+## resolve-request-backlinks
+
+Keep only URLs whose host, owner, and repository exactly match the resolved
+repository and whose path is `/<owner>/<repo>/pull/<number>`. Return the unique
+pull-request numbers. Ignore foreign or malformed URLs without following them.
+
 ## create-request
 
 Create one native draft pull request:
@@ -103,6 +109,14 @@ When a diff is requested, call `pull_request_read` with `method: get_diff` and
 the same owner, repository, and pull request number. When changed files are
 requested, use `method: get_files` and paginate only as required by the caller.
 
+For `review_activity`, exhaust `get_review_comments`, `get_reviews`, and
+`get_comments`. Return their complete threads, replies, comments, and verdicts.
+
+For `review_snapshot`, also return the head SHA, untruncated `get_diff` result,
+and every paginated `get_files` result with its anchor data. Read the pull
+request again and require the same head SHA before returning the snapshot.
+Stop when any required collection is partial, filtered, or truncated.
+
 ## update-request
 
 Require the writable `update_pull_request` operation. If it is unavailable,
@@ -133,6 +147,20 @@ arguments:
 Send no omitted optional field. In particular, do not change title, base,
 state, reviewers, or maintainer settings, and do not combine description and
 draft mutations in one call.
+
+## publish-review
+
+- For a request comment, call `add_issue_comment` with the exact body.
+- For inline comments, create one pending review at the caller's `head_sha`,
+  then call `add_comment_to_pending_review` with each exact body and
+  validated path, line, side, range, and subject type.
+- Submit the pending review with `pull_request_review_write`, method
+  `submit_pending`, using `REQUEST_CHANGES`, `APPROVE`, or `COMMENT` from the
+  terminal operation and its exact body. Use `COMMENT` when inline comments
+  exist without a terminal verdict.
+
+After each operation, return the observed request activity. On an ambiguous or
+unobserved result, stop without retrying, deleting, or reusing a pending review.
 
 ## Sources
 

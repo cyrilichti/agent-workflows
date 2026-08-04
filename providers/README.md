@@ -23,12 +23,15 @@ provides criteria; the provider explains how to execute them.
 Each provider file should define reusable operations such as:
 
 - `retrieve-items`
+- `resolve-item-status`
 - `read-item`
 - `transition-item-status`
 - `resolve-repository`
 - `create-request`
 - `search-requests`
 - `read-request`
+- `resolve-request-backlinks`
+- `publish-review`
 
 When a command needs a provider, load `./<provider>.md` and use
 the documented operation. Do not inspect provider documentation unless the
