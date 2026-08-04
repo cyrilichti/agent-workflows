@@ -29,5 +29,6 @@ An operation succeeds only when matching provider state is observed.
 5. Return the observed result of every attempted operation, including partial
    failure and unsupported kinds.
 
-Do not retry automatically, edit existing comments, change code or request
-content, merge, push, or infer an alternate provider operation.
+Do not create operation markers. Do not retry automatically, edit existing
+comments, change code or request content, merge, push, or infer an alternate
+provider operation.
