@@ -5,9 +5,6 @@
 Create or reformulate exactly one provider-backed item, then optionally
 assign it.
 
-This workflow owns every provider interaction and stops after the confirmed
-item has been saved and the explicit assignment choice has been honored.
-
 ---
 
 ## Entry Condition
@@ -19,6 +16,8 @@ authoring to it.
 ---
 
 ## Required Context
+
+Load `../goals/write-complete.md` once as this workflow's completion contract.
 
 Do not impose a shared ticket schema. An item is ready to confirm when the
 `item-writer` returns exactly one meaningful title and one free-form
@@ -190,30 +189,9 @@ state when available.
 
 ## Safety
 
-- Create or reformulate exactly one item.
-- Do not create or update an item before the user confirms its final title
-  and body.
-- Do not let the writing sub-agent call provider operations or perform side
-  effects.
 - Do not treat search results as official item content before reading the
   selected item.
 - Do not update an item that has not been identified by provider ID.
 - Preserve existing provider fields that the user did not ask to change.
 - Do not expose provider IDs in selection labels.
-- Always ask for an assignment choice, including an option that performs no
-  assignment.
 - Do not create a plan, change item status, or start implementation.
-- If saving succeeds but assignment fails, report the saved item and failed
-  assignment explicitly.
-
----
-
-## Success Criteria
-
-This workflow is complete when:
-
-- exactly one item with a confirmed title and free-form Markdown body has been
-  created or reformulated;
-- only the workflow has performed provider mutations;
-- the user's explicit assignment choice has been honored;
-- the saved item link and assignment state have been reported when available.
