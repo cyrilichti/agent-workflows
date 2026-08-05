@@ -10,10 +10,10 @@ Draft, confirm, optionally assign, and save one item.
 
 Run only from a mode branch with:
 
-- `provider`: resolved item provider.
-- `create`: `mode` and resolved `destination`.
-- `update`: `mode`, official `item_id`, `item_title`, `item_description`, and
-  `current_assignment`.
+- `provider`: carried item provider.
+- `create`: `mode` and carried `destination`.
+- `update`: `mode`, carried official `item_id`, `item_title`,
+  `item_description`, `current_assignment`, and `item_link` when available.
 
 ---
 
@@ -81,26 +81,33 @@ options:
 If the user leaves the item unassigned or selects `keep`, do not run an
 assignment command.
 
-Otherwise, ask for `me` or a person name, then run
-`../commands/resolve-item-assignee.md` with the resolved provider and supplied
+Otherwise, if a selected assignee value is already carried for this run, reuse
+it. If not, ask for `me` or a person name, then run
+`../commands/resolve-item-assignee.md` with the carried provider and supplied
 query.
 
 When multiple people match, ask the user to select one using
-`../templates/select-option.md`.
+`../templates/select-option.md`. Keep the selected assignee value in carried
+state.
 
 ### 4. Save Item and Apply Assignment Choice
 
 Run `../commands/save-item.md` with:
 
-- selected mode and provider;
+- selected mode and carried provider;
 - only the confirmed title and Markdown body;
-- destination when mode is `create`;
-- existing item ID when mode is `update`.
+- carried destination when mode is `create`;
+- carried item ID when mode is `update`.
+
+Keep the saved item ID, title, and link returned by `save-item` in carried
+state.
 
 If assignment choice is `assign`, run `../commands/assign-item.md` with the
-saved item ID and selected assignee. Otherwise, leave assignment untouched.
+carried saved item ID and selected assignee. Otherwise, leave assignment
+untouched.
 
-Finish according to `../goals/write-complete.md`.
+Finish according to `../goals/write-complete.md`, using carried fields and the
+reporting precedence defined in `./write.md`.
 
 ---
 

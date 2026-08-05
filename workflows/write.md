@@ -126,7 +126,7 @@ After mode selection, follow exactly one branch:
 - for `create`, follow `./write-create.md`;
 - for `update`, follow `./write-update.md`.
 
-Pass the resolved provider into the chosen branch.
+Pass the carried `provider` into the chosen branch.
 
 ---
 

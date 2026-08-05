@@ -10,7 +10,7 @@ Resolve create-only context, then follow the shared execution.
 
 Run only from `./write.md` after mode selection with:
 
-- `provider`: resolved item provider.
+- `provider`: carried item provider.
 
 ---
 
@@ -18,20 +18,25 @@ Run only from `./write.md` after mode selection with:
 
 ### 1. Resolve Destination
 
-Run `../commands/resolve-item-destination.md` with the resolved provider.
+If a create `destination` is already carried for this run, reuse it.
+
+Otherwise run `../commands/resolve-item-destination.md` with the carried
+provider.
 
 If no destination matches, ask the user to refine the destination. If
 exactly one destination matches, select it. If multiple destinations match, ask
 the user to select one using `../templates/select-option.md`.
+
+Keep the selected destination in the workflow carried state.
 
 ### 2. Follow Shared Execution
 
 Follow `./write-confirm.md` with:
 
 ```text
-provider: resolved item provider
+provider: carried item provider
 mode: create
-destination: resolved create destination
+destination: carried create destination
 ```
 
 ---
