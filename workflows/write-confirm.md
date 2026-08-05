@@ -2,7 +2,8 @@
 
 ## Purpose
 
-Execute shared drafting, confirmation, and save behavior for `/write`.
+Execute shared drafting, confirmation, assignment, and save behavior for
+`/write`.
 
 This branch is called by `./write-create.md` and `./write-update.md`.
 
@@ -16,11 +17,8 @@ Run only from a mode branch with:
 - `mode`: `create` or `update`.
 - mode-specific context required for save:
   - `create`: resolved destination;
-  - `update`: resolved official item ID and preserved provider fields.
-- resolved assignment decision:
-  - create: `leave-unassigned` or `assign`;
-  - update: `keep` or `assign`.
-- resolved assignee when assignment decision is `assign`.
+  - `update`: resolved official item ID, preserved provider fields, and current
+    assignment.
 
 ---
 
@@ -70,7 +68,42 @@ again.
 
 Do not continue until the user explicitly selects `Save item`.
 
-### 3. Save Item and Apply Assignment Choice
+### 3. Resolve Optional Assignment
+
+Always ask what should happen to assignment.
+
+When mode is `create`, ask using `../templates/select-option.md` with:
+
+```text
+question: What should happen to assignment?
+options:
+- Leave item unassigned
+- Assign item
+```
+
+When mode is `update`, ask using `../templates/select-option.md` with:
+
+```text
+question: What should happen to assignment?
+options:
+- label: Keep current assignment: <current_assignment>
+  value: keep
+- label: Assign or reassign item
+  value: assign
+```
+
+If the user leaves the item unassigned or selects `keep`, do not run an
+assignment command.
+
+Otherwise, ask for `me` or a person name, then run
+`../commands/resolve-item-assignee.md` with the resolved provider and supplied
+query.
+
+If exactly one person matches, select that person. If multiple people match,
+ask the user to select one using `../templates/select-option.md`. If no person
+matches, ask for a refined name. Do not choose implicitly.
+
+### 4. Save Item and Apply Assignment Choice
 
 After explicit content confirmation, run `../commands/save-item.md` with:
 

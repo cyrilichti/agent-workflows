@@ -4,8 +4,8 @@
 
 Continue `/write` after `mode: update`.
 
-This branch owns update-only steps and update-specific assignment choices,
-then follows confirmation and save execution.
+This branch owns update-only setup, then follows shared drafting, confirmation,
+assignment, and save execution.
 
 ---
 
@@ -34,35 +34,7 @@ available. Pass its official title and description to the writing sub-agent.
 Keep its provider fields in this workflow so unrequested fields remain
 unchanged.
 
-### 2. Resolve Optional Assignment
-
-Always ask what should happen to assignment.
-
-Include the current assignee names in the `keep` option label. Use
-`Unassigned` when empty and `Unavailable` when the provider did not return
-assignment information.
-
-Ask using `../templates/select-option.md` with:
-
-```text
-question: What should happen to assignment?
-options:
-- label: Keep current assignment: <assignee names, Unassigned, or Unavailable>
-  value: keep
-- label: Assign or reassign item
-  value: assign
-```
-
-If the user selects `keep`, do not run an assignment command.
-
-Otherwise, ask for `me` or a person name, then run
-`../commands/resolve-item-assignee.md`.
-
-If exactly one person matches, select that person. If multiple people match,
-ask the user to select one using `../templates/select-option.md`. If no
-person matches, ask for a refined name. Do not choose implicitly.
-
-### 3. Follow Confirmation and Save
+### 2. Follow Shared Execution
 
 Follow `./write-confirm.md` with:
 
@@ -73,8 +45,7 @@ item_id: resolved official item ID
 item_title: resolved official item title
 item_description: resolved official item description
 item_provider_fields: preserved official provider fields
-assignment_choice: keep or assign
-assignee: resolved assignee, when assignment_choice is assign
+current_assignment: assignee names, Unassigned, or Unavailable
 ```
 
 ---

@@ -4,8 +4,8 @@
 
 Continue `/write` after `mode: create`.
 
-This branch owns create-only steps and create-specific assignment choices,
-then follows confirmation and save execution.
+This branch owns create-only setup, then follows shared drafting, confirmation,
+assignment, and save execution.
 
 ---
 
@@ -28,28 +28,7 @@ If no destination matches, ask the user to refine the destination. If
 exactly one destination matches, select it. If multiple destinations match, ask
 the user to select one using `../templates/select-option.md`.
 
-### 2. Resolve Optional Assignment
-
-Always ask what should happen to assignment using
-`../templates/select-option.md` with:
-
-```text
-question: What should happen to assignment?
-options:
-- Leave item unassigned
-- Assign item
-```
-
-If the user leaves the item unassigned, do not run an assignment command.
-
-Otherwise, ask for `me` or a person name, then run
-`../commands/resolve-item-assignee.md`.
-
-If exactly one person matches, select that person. If multiple people match,
-ask the user to select one using `../templates/select-option.md`. If no
-person matches, ask for a refined name. Do not choose implicitly.
-
-### 3. Follow Confirmation and Save
+### 2. Follow Shared Execution
 
 Follow `./write-confirm.md` with:
 
@@ -57,8 +36,6 @@ Follow `./write-confirm.md` with:
 provider: resolved item provider
 mode: create
 destination: resolved create destination
-assignment_choice: leave-unassigned or assign
-assignee: resolved assignee, when assignment_choice is assign
 ```
 
 ---
