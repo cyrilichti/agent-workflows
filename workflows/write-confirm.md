@@ -21,19 +21,18 @@ Run only from a mode branch with:
 
 ### 1. Draft One Item
 
-Activate `../agents/item-writer.md` by loading its full profile and the
-resources required for the current context.
+Assemble `../templates/authoring-context.md` with only applicable fields:
 
-Give the sub-agent:
+- `intention`, and `facts_constraints` / `open_questions` / `sources` when known;
+- `official_title` and `official_body` when mode is `update`.
 
-- the request and only the conversation turns needed to understand it;
-- `item_title` and `item_description` when updating;
-- only the code, specifications, files, or URLs explicitly identified by the
-  user;
+Activate `../agents/item-writer.md` and give it:
+
+- the authoring-context packet;
 - `../templates/item.md` as its output contract.
 
-Continue focused exchanges until the agent returns one sufficiently defined
-proposal. Its profile owns Skill routing and side-effect boundaries.
+Continue until it returns one sufficiently defined proposal. Its profile owns
+Skill routing and side-effect boundaries.
 
 ### 2. Confirm Item
 
@@ -47,8 +46,9 @@ options:
 - Adjust item
 ```
 
-If the user selects `Adjust item`, give the requested changes to the
-active `item-writer` and repeat this step with its revised proposal.
+If the user selects `Adjust item`, reassemble the packet with
+`current_proposal` and `last_adjustment`, give it to the active `item-writer`,
+and repeat this step with its revised proposal.
 
 Do not continue until the user explicitly selects `Save item`.
 If confirmation is refused or unavailable, stop without mutation.

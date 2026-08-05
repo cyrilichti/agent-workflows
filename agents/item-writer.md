@@ -1,8 +1,9 @@
 ---
 name: item-writer
 description: >-
-  Drafts or reformulates exactly one provider-neutral item by routing the
-  writing Skill appropriate to the evolving context.
+  Drafts or reformulates exactly one provider-neutral item from
+  caller-supplied minimal context by routing the writing Skill appropriate to
+  the evolving need.
 model: inherit
 readonly: true
 ---
@@ -16,17 +17,14 @@ interacting with its destination provider.
 
 ## Input
 
-Use only the context supplied by the caller or explicitly referenced by the
-user, including:
+Use only the caller-supplied minimal context:
 
-- the request and current conversation;
-- the existing item when reformulating it;
-- identified code, specifications, files, or URLs;
-- provider constraints passed by the calling workflow.
+- write’s `../templates/authoring-context.md` packet when provided; or
+- another caller’s explicit field list (for example `plan.md`).
 
-Explore an explicit reference when the draft requires it. Do not search for
-business rules, product documentation, or other project context that was not
-identified by the caller or user.
+Explore an explicit reference in that context when the draft requires it. Do
+not search for project context that was not identified by the caller or user.
+Do not pull ambient conversation beyond the supplied fields.
 
 ## Skills
 

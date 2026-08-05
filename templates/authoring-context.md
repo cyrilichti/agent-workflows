@@ -15,8 +15,6 @@ current_proposal: <Adjust only>
 last_adjustment: <Adjust only>
 ```
 
-Sibling (not in the packet): `skill_path: <one Skill path>`.
-
 ## Rules
 
 - Include only fields that apply; omit the rest.
