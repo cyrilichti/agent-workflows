@@ -9,7 +9,8 @@ Exactly one confirmed item has been saved through the configured item provider.
 - The saved item contains the confirmed title and Markdown body.
 - Only the workflow performed provider mutations.
 - The explicit assignment choice was honored.
-- The saved item link and resulting assignment were reported when available.
+- The saved item link and resulting assignment were reported from returned or
+  carried state when available, otherwise as `Unavailable`.
 
 ## Stop Conditions
 

@@ -24,6 +24,17 @@ proposal, blockers, and the saved result unless the user asks for details.
 
 ---
 
+## Run State
+
+Reuse successful command results only within the current run; commands keep no
+hidden cache. Replace only fields affected by mutation. A search selection
+still requires its official read.
+
+After mutation, report from its response, then still-valid state. Read once
+only for a missing or ambiguous required field; otherwise use `Unavailable`.
+
+---
+
 ## Steps
 
 ### 1. Resolve Provider

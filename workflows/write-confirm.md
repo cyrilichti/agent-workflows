@@ -12,8 +12,8 @@ Run only from a mode branch with:
 
 - `provider`: resolved item provider.
 - `create`: `mode` and resolved `destination`.
-- `update`: `mode`, official `item_id`, `item_title`, `item_description`, and
-  `current_assignment`.
+- `update`: `mode`, official `item_id`, `item_title`,
+  `item_description`, `current_assignment`, and `item_link` when available.
 
 ---
 
@@ -96,6 +96,8 @@ Run `../commands/save-item.md` with:
 - only the confirmed title and Markdown body;
 - destination when mode is `create`;
 - existing item ID when mode is `update`.
+
+Use the `save-item` result for subsequent assignment and reporting.
 
 If assignment choice is `assign`, run `../commands/assign-item.md` with the
 saved item ID and selected assignee. Otherwise, leave assignment untouched.
