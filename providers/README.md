@@ -2,37 +2,17 @@
 
 Providers are adapters for external work-item and version-control systems.
 
-Provider adapters document the exact MCP operations agents should use for common
-commands.
+They map generic workflow commands to concrete MCP tools and arguments so agents
+do not rediscover provider APIs on every run. Providers do not decide which work
+to select; callers supply criteria and providers document how to execute them.
 
-## Responsibilities
+## Layout
 
-Use providers to:
+- `github.md` and `gitlab.md` — version-control adapters (single file each).
+- `clickup.md` and `linear.md` — shared item-provider operations that have not
+  been split out yet.
+- `clickup/<operation>.md` and `linear/<operation>.md` — one file per extracted
+  item operation (for example search, read, create, update, assign).
 
-- map generic commands to concrete provider tools;
-- document known MCP calls and arguments;
-- prevent agents from rediscovering provider APIs during each task.
-
-## Boundaries
-
-Providers do not decide which work should be selected or performed. The caller
-provides criteria; the provider explains how to execute them.
-
-## Structure
-
-Each provider file should define reusable operations such as:
-
-- `retrieve-items`
-- `resolve-item-status`
-- `read-item`
-- `transition-item-status`
-- `resolve-repository`
-- `create-request`
-- `search-requests`
-- `read-request`
-- `resolve-request-backlinks`
-- `publish-review`
-
-When a command needs a provider, load `./<provider>.md` and use
-the documented operation. Do not inspect provider documentation unless the
-adapter is missing or incomplete.
+Commands load the per-operation file when it exists for that provider;
+otherwise they use the matching section in the provider monolith.
