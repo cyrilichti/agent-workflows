@@ -1,6 +1,5 @@
 # search-items
 
-
 Search tasks by user-provided title text:
 
 ```text

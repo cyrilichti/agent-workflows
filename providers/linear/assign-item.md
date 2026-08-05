@@ -1,6 +1,5 @@
 # assign-item
 
-
 ```text
 tool: save_issue
 arguments:

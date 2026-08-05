@@ -1,6 +1,5 @@
 # update-item
 
-
 ```text
 tool: clickup_update_task
 arguments:

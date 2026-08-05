@@ -1,6 +1,5 @@
 # search-items
 
-
 ```text
 tool: list_issues
 arguments:

@@ -1,6 +1,5 @@
 # read-item
 
-
 ```text
 tool: clickup_get_task
 arguments:

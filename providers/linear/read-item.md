@@ -1,6 +1,5 @@
 # read-item
 
-
 ```text
 tool: get_issue
 arguments:

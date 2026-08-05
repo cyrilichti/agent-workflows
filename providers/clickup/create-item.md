@@ -1,6 +1,5 @@
 # create-item
 
-
 Serialize the confirmed item sections as Markdown, then create the task:
 
 ```text
