@@ -63,135 +63,18 @@ options:
   value: update
 ```
 
-### 3. Resolve Existing Item
+### 3. Follow One Mode Branch
 
-Skip this step when creating a new item.
+After mode selection, follow exactly one branch:
 
-Run `../commands/resolve-existing-item.md` with:
+- for `create`, follow `./write-create.md`;
+- for `update`, follow `./write-update.md`.
 
-```text
-provider: resolved item provider
-reference: user-provided provider item ID, when available
-```
-
-Identify the resolved item to the user using its title, status, and link when
-available. Pass its official title and description to the writing sub-agent.
-Keep its provider fields in this workflow so unrequested fields remain
-unchanged.
-
-### 4. Resolve Destination
-
-When creating an item, run `../commands/resolve-item-destination.md`.
-
-If no destination matches, ask the user to refine the destination. If
-exactly one destination matches, select it. If multiple destinations match, ask
-the user to select one using `../templates/select-option.md`.
-
-Skip this step when reformulating an existing item.
-
-### 5. Draft One Item
-
-Activate `../agents/item-writer.md` by loading its full profile and the
-resources it requires for the current context. Keep its activation internal.
-
-Give the sub-agent:
-
-- the user's request and relevant conversation context;
-- the existing item title and description when reformulating;
-- only the code, specifications, files, or URLs explicitly identified by the
-  user;
-- `../templates/item.md` as its output contract.
-
-Let the sub-agent route and reroute its writing Skills as the context evolves.
-Continue focused exchanges until it returns exactly one sufficiently defined
-proposal. Do not make it resolve the provider, destination, assignment, or any
-other provider field.
-
-If a writing Skill requests a file, commit, publication, ticket mutation,
-multiple items, planning, implementation, or downstream handoff, keep the
-useful result as returned content and suppress the side effect.
-
-### 6. Confirm Item
-
-Validate that the proposal follows `../templates/item.md` and contains
-exactly one title and one free-form Markdown body.
-
-Present the proposal using `../templates/item-preview.md`, then ask using
-`../templates/select-option.md` with:
-
-```text
-question: What do you want to do with this item?
-options:
-- Save item
-- Adjust item
-```
-
-If the user selects `Adjust item`, give the requested changes to the
-active `item-writer`, let it reroute Skills when necessary, and present the
-revised proposal using `../templates/item-preview.md` for confirmation
-again.
-
-Do not continue until the user explicitly selects `Save item`.
-
-### 7. Resolve Optional Assignment
-
-Always ask what should happen to assignment.
-
-When creating an item, ask using `../templates/select-option.md` with:
-
-```text
-question: What should happen to assignment?
-options:
-- Leave item unassigned
-- Assign item
-```
-
-When reformulating an existing item, include the current assignee names in the
-`keep` option label. Use `Unassigned` when empty and `Unavailable` when the
-provider did not return assignment information.
-
-```text
-question: What should happen to assignment?
-options:
-- label: Keep current assignment: <assignee names, Unassigned, or Unavailable>
-  value: keep
-- label: Assign or reassign item
-  value: assign
-```
-
-If the user leaves the item unassigned or selects `keep`, do not run an
-assignment command.
-
-Otherwise, ask for `me` or a person name, then run
-`../commands/resolve-item-assignee.md`.
-
-If exactly one person matches, select that person. If multiple people match,
-ask the user to select one using `../templates/select-option.md`. If no
-person matches, ask for a refined name. Do not choose implicitly.
-
-### 8. Save Item and Apply Assignment Choice
-
-After explicit content confirmation, run `../commands/save-item.md`
-with:
-
-- the selected mode and provider;
-- only the confirmed title and Markdown body;
-- the existing item ID when reformulating;
-- the destination when creating.
-
-If an assignee was selected, run `../commands/assign-item.md` with the
-saved item ID and selected assignee. Otherwise, leave assignment untouched.
-
-Report the item title, provider ID, link, destination, and resulting assignment
-state when available.
+Pass the resolved provider and selected mode into the chosen branch.
 
 ---
 
 ## Safety
 
-- Do not treat search results as official item content before reading the
-  selected item.
-- Do not update an item that has not been identified by provider ID.
-- Preserve existing provider fields that the user did not ask to change.
-- Do not expose provider IDs in selection labels.
+- Do not follow both branches in one execution.
 - Do not create a plan, change item status, or start implementation.
