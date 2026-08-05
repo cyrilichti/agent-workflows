@@ -48,45 +48,6 @@ Use `clickup_get_workspace_hierarchy` with `max_depth: "2"` and return every
 status name that clearly matches `semantic_status`. If the hierarchy does not
 expose statuses, report resolution as unavailable. Do not retrieve tasks.
 
-## search-items
-
-Search tasks by user-provided title text:
-
-```text
-tool: clickup_search
-arguments:
-  keywords: caller query
-  filters:
-    asset_types:
-      - task
-  count: 20
-```
-
-Prefer results whose names match the query. Return task ID, name, status, URL,
-and hierarchy. Do not paginate unless the user refines the search.
-
-## read-item
-
-```text
-tool: clickup_get_task
-arguments:
-  task_id: item ID
-  include:
-    - description
-```
-
-Return the task's core fields, full description, list hierarchy, assignees, and
-URL.
-
-Add supported `include` values such as `attachments` or `linked_tasks` when the
-caller requests them. When comments are requested, call
-`clickup_get_task_comments` with the same task ID.
-
-For `request_backlinks`, call `clickup_get_task_comments`, follow every returned
-continuation until no next page remains, and return every `Draft PR:` or
-`Draft MR:` URL. If a comments page fails or is truncated, stop without
-returning the item.
-
 ## list-destinations
 
 ```text
@@ -114,21 +75,6 @@ When a readable member record or disambiguation is needed, use
 `clickup_find_member_by_name`. If the name is ambiguous, use
 `clickup_get_workspace_members` and post-filter by the query rather than asking
 the user for a numeric ID.
-
-## create-item
-
-Serialize the confirmed item sections as Markdown, then create the task:
-
-```text
-tool: clickup_create_task
-arguments:
-  list_id: selected destination ID
-  name: confirmed title
-  markdown_description: confirmed free-form Markdown body
-```
-
-Omit assignment and status so the caller can handle them separately. Return the
-created task ID, name, and URL from the mutation response.
 
 ## create-child-item
 
@@ -169,32 +115,6 @@ provider documentation and do not inspect tool schemas at runtime. Do not use
 
 Create no other relationship and do not update either child task or their
 official parent.
-
-## update-item
-
-```text
-tool: clickup_update_task
-arguments:
-  task_id: item ID
-  name: confirmed title, when changed
-  markdown_description: confirmed free-form Markdown body, when changed
-```
-
-Omit every field that the user did not confirm changing. Return the task ID,
-name, and URL from the mutation response when available.
-
-## assign-item
-
-```text
-tool: clickup_update_task
-arguments:
-  task_id: item ID
-  assignees:
-    - selected numeric user ID
-```
-
-Do not include other update fields. Return the task ID and assignees from the
-mutation response when available.
 
 ## transition-item-status
 

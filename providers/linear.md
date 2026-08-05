@@ -35,39 +35,6 @@ Use `list_teams`, then `list_issue_statuses` for each team, and return every
 matching `team` and `state` pair for `semantic_status`. If teams or states
 cannot be listed, report resolution as unavailable. Do not retrieve issues.
 
-## search-items
-
-```text
-tool: list_issues
-arguments:
-  query: caller query
-  includeArchived: false
-  orderBy: updatedAt
-  limit: 20
-```
-
-Prefer title matches. Return issue ID or identifier, title, state, team,
-project,
-and URL. Do not paginate unless the user refines the search.
-
-## read-item
-
-```text
-tool: get_issue
-arguments:
-  id: item ID or identifier
-```
-
-Return the issue's title, description, state, team, project, assignee, and URL.
-
-Set `includeRelations: true` when linked resources are requested. When comments
-are requested, call `list_comments` with `issueId` set to the same issue ID or
-identifier. Attachments are returned by `get_issue`.
-
-For `request_backlinks`, call `list_comments`, follow every returned cursor
-until no next page remains, and return every `Draft PR:` or `Draft MR:` URL. If
-a comments page fails or is truncated, stop without returning the item.
-
 ## list-destinations
 
 First list available teams:
@@ -105,22 +72,6 @@ arguments:
 ```
 
 Return matching user names and IDs.
-
-## create-item
-
-Serialize the confirmed item sections as Markdown, then create the issue:
-
-```text
-tool: save_issue
-arguments:
-  team: selected destination team
-  project: selected destination project, when provided
-  title: confirmed title
-  description: confirmed free-form Markdown body
-```
-
-Omit assignment and state so the caller can handle them separately. Return the
-created issue ID or identifier, title, and URL from the mutation response.
 
 ## create-child-item
 
@@ -167,31 +118,6 @@ other field.
 
 This operation applies only to a newly created child issue and must not update
 its official parent.
-
-## update-item
-
-```text
-tool: save_issue
-arguments:
-  id: item ID or identifier
-  title: confirmed title, when changed
-  description: confirmed free-form Markdown body, when changed
-```
-
-Omit every field that the user did not confirm changing. Return the issue ID or
-identifier, title, and URL from the mutation response when available.
-
-## assign-item
-
-```text
-tool: save_issue
-arguments:
-  id: item ID or identifier
-  assignee: selected user ID or me
-```
-
-Do not include other update fields. Return the issue ID or identifier and
-assignee from the mutation response when available.
 
 ## transition-item-status
 
