@@ -34,6 +34,10 @@ Activate `../agents/item-writer.md` and give it:
 Continue until it returns one sufficiently defined proposal. Its profile owns
 Skill routing and side-effect boundaries.
 
+During those exchanges, rebuild and resend the packet after each answer or new
+source. Integrate only useful information; remove resolved `open_questions` and
+superseded content.
+
 ### 2. Confirm Item
 
 Present the proposal using `../templates/item-preview.md`, then ask using
