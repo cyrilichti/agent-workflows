@@ -24,23 +24,14 @@ proposal, blockers, and the saved result unless the user asks for details.
 
 ---
 
-## Carried State
+## Run State
 
-For one continuous run, carry successful outputs explicitly between branches
-and commands: `provider`, create `destination`, update official item fields,
-selected assignee, and saved item fields. Commands remain request/response and
-must not create a hidden cache.
+Reuse successful command results only within the current run; commands keep no
+hidden cache. Replace only fields affected by mutation. A search selection
+still requires its official read.
 
-Resolve each value only when it is absent. A selected search result still
-requires its official read; a refined query is new input. Do not refresh merely
-because drafting took time, and never add provider state to the
-`item-writer` packet.
-
-After mutation, replace only affected carried fields with returned values.
-Report in this order: mutation response, still-valid carried state, one
-conditional read when a required field is missing or ambiguous, then
-`Unavailable`. Preserve an observed save result when assignment fails. A new
-run resolves its own state.
+After mutation, report from its response, then still-valid state. Read once
+only for a missing or ambiguous required field; otherwise use `Unavailable`.
 
 ---
 
@@ -54,8 +45,8 @@ Run `../commands/resolve-item-provider.md` with:
 context: item
 ```
 
-Keep the resolved provider in this workflow's carried state. Do not pass
-provider operations or mutation responsibility to the writing sub-agent.
+Keep the resolved provider in this workflow. Do not pass provider operations or
+mutation responsibility to the writing sub-agent.
 
 ### 2. Select Authoring Mode
 
@@ -77,7 +68,7 @@ After mode selection, follow exactly one branch:
 - for `create`, follow `./write-create.md`;
 - for `update`, follow `./write-update.md`.
 
-Pass the carried `provider` into the chosen branch.
+Pass the resolved provider into the chosen branch.
 
 ---
 
