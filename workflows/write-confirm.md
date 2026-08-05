@@ -31,8 +31,7 @@ Activate `../agents/item-writer.md` and give it:
 - the authoring-context packet;
 - `../templates/item.md` as its output contract.
 
-Continue until it returns one sufficiently defined proposal. Its profile owns
-Skill routing and side-effect boundaries.
+Continue until it returns one sufficiently defined proposal.
 
 During those exchanges, rebuild and resend the packet after each answer or new
 source. Integrate only useful information; remove resolved `open_questions` and
