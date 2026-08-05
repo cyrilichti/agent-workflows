@@ -8,4 +8,5 @@ arguments:
   description: confirmed free-form Markdown body, when changed
 ```
 
-Omit every field that the user did not confirm changing.
+Omit every field that the user did not confirm changing. Return the issue ID or
+identifier, title, and URL from the mutation response when available.

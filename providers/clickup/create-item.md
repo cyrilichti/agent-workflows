@@ -10,4 +10,5 @@ arguments:
   markdown_description: confirmed free-form Markdown body
 ```
 
-Omit assignment and status so the caller can handle them separately.
+Omit assignment and status so the caller can handle them separately. Return the
+created task ID, name, and URL from the mutation response.

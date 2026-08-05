@@ -8,4 +8,5 @@ arguments:
   markdown_description: confirmed free-form Markdown body, when changed
 ```
 
-Omit every field that the user did not confirm changing.
+Omit every field that the user did not confirm changing. Return the task ID,
+name, and URL from the mutation response when available.

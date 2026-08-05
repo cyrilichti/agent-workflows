@@ -11,4 +11,5 @@ arguments:
   description: confirmed free-form Markdown body
 ```
 
-Omit assignment and state so the caller can handle them separately.
+Omit assignment and state so the caller can handle them separately. Return the
+created issue ID or identifier, title, and URL from the mutation response.
