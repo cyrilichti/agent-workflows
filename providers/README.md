@@ -2,37 +2,15 @@
 
 Providers are adapters for external work-item and version-control systems.
 
-Provider adapters document the exact MCP operations agents should use for common
-commands.
+They map generic workflow commands to concrete MCP tools and arguments so agents
+do not rediscover provider APIs on every run. Providers do not decide which work
+to select; callers supply criteria and providers document how to execute them.
 
-## Responsibilities
+## Layout
 
-Use providers to:
+- Provider operations live in `<provider>/<operation>.md`.
+- Each operation file is the unique authoritative definition for that provider
+  operation.
 
-- map generic commands to concrete provider tools;
-- document known MCP calls and arguments;
-- prevent agents from rediscovering provider APIs during each task.
-
-## Boundaries
-
-Providers do not decide which work should be selected or performed. The caller
-provides criteria; the provider explains how to execute them.
-
-## Structure
-
-Each provider file should define reusable operations such as:
-
-- `retrieve-items`
-- `resolve-item-status`
-- `read-item`
-- `transition-item-status`
-- `resolve-repository`
-- `create-request`
-- `search-requests`
-- `read-request`
-- `resolve-request-backlinks`
-- `publish-review`
-
-When a command needs a provider, load `./<provider>.md` and use
-the documented operation. Do not inspect provider documentation unless the
-adapter is missing or incomplete.
+Commands load only the exact operation file they require and stop when it is
+missing.
