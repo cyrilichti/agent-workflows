@@ -2,10 +2,7 @@
 
 ## Purpose
 
-Continue `/write` after `mode: create`.
-
-This branch owns create-only setup, then follows shared drafting, confirmation,
-assignment, and save execution.
+Resolve create-only context, then follow the shared execution.
 
 ---
 
@@ -14,7 +11,6 @@ assignment, and save execution.
 Run only from `./write.md` after mode selection with:
 
 - `provider`: resolved item provider.
-- `mode`: `create`.
 
 ---
 
@@ -22,7 +18,7 @@ Run only from `./write.md` after mode selection with:
 
 ### 1. Resolve Destination
 
-Run `../commands/resolve-item-destination.md`.
+Run `../commands/resolve-item-destination.md` with the resolved provider.
 
 If no destination matches, ask the user to refine the destination. If
 exactly one destination matches, select it. If multiple destinations match, ask
@@ -43,5 +39,3 @@ destination: resolved create destination
 ## Safety
 
 - Do not resolve or read an existing item in this branch.
-- Do not expose provider IDs in selection labels.
-- Do not create a plan, change item status, or start implementation.
