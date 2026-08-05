@@ -119,7 +119,8 @@ arguments:
   description: confirmed free-form Markdown body
 ```
 
-Omit assignment and state so the caller can handle them separately.
+Omit assignment and state so the caller can handle them separately. Return the
+created issue ID or identifier, title, and URL from the mutation response.
 
 ## create-child-item
 
@@ -177,7 +178,8 @@ arguments:
   description: confirmed free-form Markdown body, when changed
 ```
 
-Omit every field that the user did not confirm changing.
+Omit every field that the user did not confirm changing. Return the issue ID or
+identifier, title, and URL from the mutation response when available.
 
 ## assign-item
 
@@ -188,7 +190,8 @@ arguments:
   assignee: selected user ID or me
 ```
 
-Do not include other update fields.
+Do not include other update fields. Return the issue ID or identifier and
+assignee from the mutation response when available.
 
 ## transition-item-status
 

@@ -17,7 +17,10 @@ Create a new item or update the authored fields of an existing item.
    confirmed content and destination.
 3. For `update`, use the provider operation named `update-item` with the item ID
    and only the confirmed authored fields.
-4. Return the saved item ID, title, link, and destination when available.
+4. Prefer the mutation response for the saved item ID, title, link, and
+   destination when available. Do not systematically re-read after the
+   mutation. If an indispensable returned field is missing or ambiguous, read
+   it once; otherwise return `Unavailable` for that field.
 
 Do not change status, assignment, or provider fields outside the confirmed
 content. Persist only the confirmed title and Markdown body as authored

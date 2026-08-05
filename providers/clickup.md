@@ -127,7 +127,8 @@ arguments:
   markdown_description: confirmed free-form Markdown body
 ```
 
-Omit assignment and status so the caller can handle them separately.
+Omit assignment and status so the caller can handle them separately. Return the
+created task ID, name, and URL from the mutation response.
 
 ## create-child-item
 
@@ -179,7 +180,8 @@ arguments:
   markdown_description: confirmed free-form Markdown body, when changed
 ```
 
-Omit every field that the user did not confirm changing.
+Omit every field that the user did not confirm changing. Return the task ID,
+name, and URL from the mutation response when available.
 
 ## assign-item
 
@@ -191,7 +193,8 @@ arguments:
     - selected numeric user ID
 ```
 
-Do not include other update fields.
+Do not include other update fields. Return the task ID and assignees from the
+mutation response when available.
 
 ## transition-item-status
 
