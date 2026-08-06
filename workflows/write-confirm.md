@@ -29,6 +29,9 @@ Build the first `../templates/authoring-context.md` packet from the collected
 - `facts_constraints` / `open_questions` / `sources` when known;
 - `official_title` and `official_body` when mode is `update`.
 
+Keep destination, item ID, status, assignees, links, and other provider results
+in this workflow only. Do not put them in the packet.
+
 Activate `../agents/item-writer.md` and give it:
 
 - the authoring-context packet;
@@ -86,6 +89,7 @@ assignment command.
 
 Otherwise, ask for `me`, a name, or an email, then run
 `../commands/resolve-item-assignee.md` with the provider and that query.
+Run that resolution only after the user selects `assign`.
 
 Select the single match, or ask with `../templates/select-option.md` when
 several match.

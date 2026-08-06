@@ -18,4 +18,7 @@ last_adjustment: <Adjust only>
 ## Rules
 
 - Include only fields that apply; omit the rest.
-- Exclude orchestration, provider IDs/results (beyond official title/body), and obsolete history.
+- Exclude orchestration, destination, status, assignees, links, provider IDs,
+  and other provider results. Official title and body are the only provider
+  content allowed, and only for update.
+- Exclude obsolete history.
