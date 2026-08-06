@@ -22,6 +22,7 @@ arguments:
 Return a name result as an unconfirmed candidate with readable name, email,
 internal ID, and `confirmation_required: true`. The tool does not expose all
 name matches, so never infer uniqueness or select the candidate implicitly.
-The caller must confirm it or refine the expression, preferably to an email.
+The caller must confirm it. If refused, require the member email instead of
+retrying with another name expression.
 
 Do not call `clickup_get_workspace_members`.
