@@ -6,6 +6,7 @@ Resolve one existing official item from a configured provider.
 
 - `provider`: resolved item provider.
 - `reference`: optional user-provided provider item ID.
+- `query`: optional caller-provided item title or short title search phrase.
 - `fields`: optional caller-requested fields in addition to the core item.
 
 ## Steps
@@ -13,9 +14,8 @@ Resolve one existing official item from a configured provider.
 1. When `reference` is available, run `./read-item.md` with the resolved
    provider, the item ID, and the caller-requested fields. Return the
    official item and its provider ID, then stop this command.
-2. Otherwise, ask the user for the item title or a short title search phrase,
-   then run `./search-items.md` with the resolved provider and that query. Do
-   not list every item available from the provider.
+2. Otherwise, reuse `query` or ask for an item title or short title phrase,
+   then run `./search-items.md`. Do not list every available item.
 3. Handle the search result:
    - If no item matches, ask the user to refine the search or stop. Repeat the
      search only when the user provides a refined phrase.

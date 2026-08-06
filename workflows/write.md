@@ -37,18 +37,7 @@ only for a missing or ambiguous required field; otherwise use `Unavailable`.
 
 ## Steps
 
-### 1. Resolve Provider
-
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
-
-Keep the resolved provider in this workflow. Do not pass provider operations or
-mutation responsibility to the writing sub-agent.
-
-### 2. Select Authoring Mode
+### 1. Select Authoring Mode
 
 Ask the user using `../templates/select-option.md` with:
 
@@ -61,18 +50,32 @@ options:
   value: update
 ```
 
+Do not resolve the item provider before this choice. Keep the prefix through
+playbook entry and this first user choice free of provider resolution.
+
+### 2. Collect Need Description
+
+Ask for a light free-form description of the need. Keep it as this run's
+`intention`.
+
+Do not activate `item-writer` or assemble `../templates/authoring-context.md`
+before that description exists.
+
 ### 3. Follow One Mode Branch
 
-After mode selection, follow exactly one branch:
+After the need description is collected, follow exactly one branch:
 
 - for `create`, follow `./write-create.md`;
 - for `update`, follow `./write-update.md`.
 
-Pass the resolved provider into the chosen branch.
+Pass `intention` into the chosen branch. Do not resolve the item provider in
+this workflow; each branch resolves it when its first provider operation needs
+it.
 
 ---
 
 ## Safety
 
+- Do not resolve the item provider before the user selects create or update.
 - Do not follow both branches in one execution.
 - Do not create a plan, change item status, or start implementation.

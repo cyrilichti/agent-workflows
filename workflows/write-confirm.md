@@ -11,6 +11,7 @@ Draft, confirm, optionally assign, and save one item.
 Run only from a mode branch with:
 
 - `provider`: resolved item provider.
+- `intention`: light need description collected for this run.
 - `create`: `mode` and resolved `destination`.
 - `update`: `mode`, official `item_id`, `item_title`,
   `item_description`, `current_assignment`, and `item_link` when available.
@@ -21,10 +22,15 @@ Run only from a mode branch with:
 
 ### 1. Draft One Item
 
-Assemble `../templates/authoring-context.md` with only applicable fields:
+Build the first `../templates/authoring-context.md` packet from the collected
+`intention` before activating `item-writer`. Include only applicable fields:
 
-- `intention`, and `facts_constraints` / `open_questions` / `sources` when known;
+- `intention` from the collected need description;
+- `facts_constraints` / `open_questions` / `sources` when known;
 - `official_title` and `official_body` when mode is `update`.
+
+Keep destination, item ID, status, assignees, links, and other provider results
+in this workflow only. Do not put them in the packet.
 
 Activate `../agents/item-writer.md` and give it:
 
@@ -83,6 +89,7 @@ assignment command.
 
 Otherwise, ask for `me`, a name, or an email, then run
 `../commands/resolve-item-assignee.md` with the provider and that query.
+Run that resolution only after the user selects `assign`.
 
 Select the single match, or ask with `../templates/select-option.md` when
 several match.

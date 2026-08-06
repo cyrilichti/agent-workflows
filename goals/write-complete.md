@@ -23,3 +23,5 @@ Exactly one confirmed item has been saved through the configured item provider.
 
 The title and body require explicit confirmation before saving.
 Assignment requires a separate explicit choice.
+Mode and need description precede provider resolution and `item-writer`
+activation.
