@@ -108,10 +108,19 @@ Use the `save-item` result for subsequent assignment and reporting.
 If assignment choice is `assign`, run `../commands/assign-item.md` with the
 saved item ID and selected assignee. Otherwise, leave assignment untouched.
 
-Finish according to `../goals/write-complete.md`.
+Finish according to `../goals/write-complete.md`. Present the outcome using
+`../templates/write-result.md` with:
+
+```text
+Item: titled markdown link from returned or carried state, or Unavailable
+Status: returned or carried provider status, or Unavailable
+Assignment: observed assignee names, Unassigned, or Unavailable
+```
 
 ---
 
 ## Safety
 
 - Do not expose provider IDs in selection labels.
+- Do not narrate assignee resolution; ask for the query or selection, then
+  continue from the command result.
