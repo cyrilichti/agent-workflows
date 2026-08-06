@@ -25,14 +25,3 @@ Only the following fields belong to the provider-backed item:
 The body has no mandatory internal sections. Structure it according to the
 actual item rather than forcing a bug, improvement, debt item, epic, idea, or
 specification into a shared schema.
-
-## Rules
-
-- Return exactly one item.
-- Provide a concise, meaningful title.
-- Provide a free-form Markdown body containing the useful result of the writing
-  process.
-- Do not require Objective, Business Context, Acceptance Criteria, or any other
-  generic section.
-- Do not include provider-specific fields such as ID, destination, type, status,
-  labels, or assignee.
