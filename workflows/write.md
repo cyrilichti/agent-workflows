@@ -11,8 +11,7 @@ assign it.
 
 Load `../goals/write-complete.md` once as this workflow's completion contract.
 
-Keep successful orchestration internal. Surface only required questions, the
-proposal, blockers, and the saved result unless the user asks for details.
+Follow `../rules/user-facing-output.md`.
 
 ---
 
