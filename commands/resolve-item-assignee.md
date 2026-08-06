@@ -11,8 +11,9 @@ Resolve a person who can be assigned to an item.
 
 1. Require a non-empty `query`. If missing, stop and ask for `me`, a name, or
    an email.
-2. Load `../providers/<provider>.md`.
-3. Use `resolve-assignees` with that query only. Do not list every member.
+2. Load `../providers/<provider>/resolve-assignees.md`. If the file is missing,
+   stop.
+3. Follow the loaded operation with that query only. Do not list every member.
 4. Return matching people with readable names and internal IDs.
 
 If none match, ask for a more precise expression. Do not choose implicitly.

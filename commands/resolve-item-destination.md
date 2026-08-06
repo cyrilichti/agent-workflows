@@ -10,8 +10,10 @@ Resolve the provider-specific destination for a new item.
 ## Steps
 
 1. Require a non-empty `query`. If missing, stop and ask for one.
-2. Load `../providers/<provider>.md`.
-3. Use `list-destinations` with that query only. Do not list every destination.
+2. Load `../providers/<provider>/list-destinations.md`. If the file is missing,
+   stop.
+3. Follow the loaded operation with that query only. Do not list every
+   destination.
 4. Return matching creatable destinations with a readable label and internal
    value each.
 
