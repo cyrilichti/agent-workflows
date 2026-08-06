@@ -81,12 +81,11 @@ options:
 If the user leaves the item unassigned or selects `keep`, do not run an
 assignment command.
 
-Otherwise, ask for `me` or a person name, then run
-`../commands/resolve-item-assignee.md` with the resolved provider and supplied
-query.
+Otherwise, ask for `me`, a name, or an email, then run
+`../commands/resolve-item-assignee.md` with the provider and that query.
 
-When multiple people match, ask the user to select one using
-`../templates/select-option.md`.
+Select the single match, or ask with `../templates/select-option.md` when
+several match.
 
 ### 4. Save Item and Apply Assignment Choice
 
