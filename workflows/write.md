@@ -53,8 +53,4 @@ Pass `intention` into the chosen branch.
 
 ## Safety
 
-- Do not resolve the item provider before the user selects create or update.
-- Do not follow both branches in one execution.
 - Do not create a plan, change item status, or start implementation.
-- Do not announce that the intention was confirmed after collecting the need
-  description.
