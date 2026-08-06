@@ -1,28 +1,12 @@
 # Playbook
 
-## Purpose
-
-Determine which playbook should be used before starting non-trivial project
-work.
-
-A playbook defines how a specific type of work is performed. Once a playbook has
-been selected, control is delegated to the corresponding workflow.
-
-This workflow acts only as a router.
-
----
-
-## Trigger
-
-Run this workflow at the beginning of a new IDE conversation, or when the
-user starts a new unrelated task, and no playbook has been selected.
-
----
+Route non-trivial project work to one playbook workflow. Run at the start of a
+new IDE conversation or unrelated task when no playbook is selected yet. Stop
+after delegating.
 
 ## Steps
 
-1. Ask the user which type of task they want to start for this session
-   using `../templates/select-option.md` with:
+1. Ask which task type to start using `../templates/select-option.md` with:
 
    ```text
    question: Which type of task do you want to start?
@@ -37,9 +21,9 @@ user starts a new unrelated task, and no playbook has been selected.
    - Other
    ```
 
-2. Wait for the user to select one task type.
+2. Wait for exactly one selection.
 
-3. Delegate execution to the corresponding workflow:
+3. Delegate to the matching workflow, then stop:
 
    * Write an item → `./write.md`
    * Pick an item → `./pick.md`
@@ -49,23 +33,8 @@ user starts a new unrelated task, and no playbook has been selected.
    * Prepare work for review → `./ready.md`
    * Complete a request → `./done.md`
 
-4. Stop this workflow after delegating to the selected playbook.
-
----
-
 ## Safety
 
-* If the task type clearly matches an available playbook, select it.
-* If multiple playbooks could match, ask for clarification.
-* If no available playbook matches, stop and explain that no playbook is
-  available.
-
----
-
-## Success Criteria
-
-This workflow is complete when:
-
-* a playbook has been selected;
-* the corresponding workflow has been identified;
-* execution has been delegated to that workflow.
+* If the task clearly matches one playbook, select it without asking.
+* If several could match, ask for clarification.
+* If none match, stop and explain that no playbook is available.
