@@ -115,3 +115,5 @@ Finish according to `../goals/write-complete.md`.
 ## Safety
 
 - Do not expose provider IDs in selection labels.
+- Do not narrate assignee resolution; ask for the query or selection, then
+  continue from the command result.
