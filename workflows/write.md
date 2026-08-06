@@ -40,9 +40,6 @@ playbook entry and this first user choice free of provider resolution.
 Ask for a light free-form description of the need. Keep it as this run's
 `intention`.
 
-Do not activate `item-writer` or assemble `../templates/authoring-context.md`
-before that description exists.
-
 ### 3. Follow One Mode Branch
 
 After the need description is collected, follow exactly one branch:
@@ -50,9 +47,7 @@ After the need description is collected, follow exactly one branch:
 - for `create`, follow `./write-create.md`;
 - for `update`, follow `./write-update.md`.
 
-Pass `intention` into the chosen branch. Do not resolve the item provider in
-this workflow; each branch resolves it when its first provider operation needs
-it.
+Pass `intention` into the chosen branch.
 
 ---
 
