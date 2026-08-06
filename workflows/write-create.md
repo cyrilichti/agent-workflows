@@ -11,6 +11,7 @@ Resolve create-only context, then follow the shared execution.
 Run only from `./write.md` after mode selection with:
 
 - `provider`: resolved item provider.
+- `intention`: light need description collected for this run.
 
 ---
 
@@ -34,6 +35,7 @@ Follow `./write-confirm.md` with:
 provider: resolved item provider
 mode: create
 destination: selected create destination
+intention: collected need description
 ```
 
 ---

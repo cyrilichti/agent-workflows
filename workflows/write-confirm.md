@@ -11,6 +11,7 @@ Draft, confirm, optionally assign, and save one item.
 Run only from a mode branch with:
 
 - `provider`: resolved item provider.
+- `intention`: light need description collected for this run.
 - `create`: `mode` and resolved `destination`.
 - `update`: `mode`, official `item_id`, `item_title`,
   `item_description`, `current_assignment`, and `item_link` when available.
@@ -21,9 +22,11 @@ Run only from a mode branch with:
 
 ### 1. Draft One Item
 
-Assemble `../templates/authoring-context.md` with only applicable fields:
+Build the first `../templates/authoring-context.md` packet from the collected
+`intention` before activating `item-writer`. Include only applicable fields:
 
-- `intention`, and `facts_constraints` / `open_questions` / `sources` when known;
+- `intention` from the collected need description;
+- `facts_constraints` / `open_questions` / `sources` when known;
 - `official_title` and `official_body` when mode is `update`.
 
 Activate `../agents/item-writer.md` and give it:

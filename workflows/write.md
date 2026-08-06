@@ -53,9 +53,18 @@ options:
 Do not resolve the item provider before this choice. Keep the prefix through
 playbook entry and this first user choice free of provider resolution.
 
-### 2. Resolve Provider
+### 2. Collect Need Description
 
-After mode selection, run `../commands/resolve-item-provider.md` with:
+Ask for a light free-form description of the need. Keep it as this run's
+`intention`.
+
+Do not activate `item-writer` or assemble `../templates/authoring-context.md`
+before that description exists.
+
+### 3. Resolve Provider
+
+After the need description is collected, run
+`../commands/resolve-item-provider.md` with:
 
 ```text
 context: item
@@ -64,14 +73,14 @@ context: item
 Keep the resolved provider in this workflow. Do not pass provider operations or
 mutation responsibility to the writing sub-agent.
 
-### 3. Follow One Mode Branch
+### 4. Follow One Mode Branch
 
 After provider resolution, follow exactly one branch:
 
 - for `create`, follow `./write-create.md`;
 - for `update`, follow `./write-update.md`.
 
-Pass the resolved provider into the chosen branch.
+Pass the resolved provider and `intention` into the chosen branch.
 
 ---
 

@@ -11,6 +11,7 @@ Resolve update-only context, then follow the shared execution.
 Run only from `./write.md` after mode selection with:
 
 - `provider`: resolved item provider.
+- `intention`: light need description collected for this run.
 
 ---
 
@@ -41,4 +42,5 @@ item_title: resolved official item title
 item_description: resolved official item description
 current_assignment: assignee names, Unassigned, or Unavailable
 item_link: official item link, when available
+intention: collected need description
 ```
