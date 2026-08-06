@@ -18,11 +18,13 @@ Run only from `./write.md` after mode selection with:
 
 ### 1. Resolve Destination
 
-Run `../commands/resolve-item-destination.md` with the resolved provider.
+Reuse a create `destination` already available for this run.
 
-If no destination matches, ask the user to refine the destination. If
-exactly one destination matches, select it. If multiple destinations match, ask
-the user to select one using `../templates/select-option.md`.
+Otherwise ask for a destination name, then run
+`../commands/resolve-item-destination.md` with the provider and that query.
+
+Select the single match, or ask with `../templates/select-option.md` when
+several match. Keep the selected destination for this run.
 
 ### 2. Follow Shared Execution
 
@@ -31,7 +33,7 @@ Follow `./write-confirm.md` with:
 ```text
 provider: resolved item provider
 mode: create
-destination: resolved create destination
+destination: selected create destination
 ```
 
 ---
@@ -39,3 +41,5 @@ destination: resolved create destination
 ## Safety
 
 - Do not resolve or read an existing item in this branch.
+- Do not resolve a destination without an explicit expression unless one is
+  already available for this run.
