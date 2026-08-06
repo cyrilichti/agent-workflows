@@ -12,17 +12,11 @@ Create a new item or update the authored fields of an existing item.
 
 ## Steps
 
-1. Require `mode` to be exactly `create` or `update`. Stop if it is not.
-2. For `create`, load `../providers/<provider>/create-item.md`. If the file is
-   missing, stop. Follow the loaded operation with the confirmed content and
-   destination.
-3. For `update`, load `../providers/<provider>/update-item.md`. If the file is
-   missing, stop. Follow the loaded operation with the item ID and only the
-   confirmed authored fields.
-4. Return mutation response fields without re-reading. Read once only when a
-   caller-required field is missing or ambiguous; otherwise return
-   `Unavailable` for that field.
-
-Do not change status, assignment, or provider fields outside the confirmed
-content. Persist only the confirmed title and Markdown body as authored
-content.
+1. Load exactly one provider operation for `mode`:
+   - `create` → `../providers/<provider>/create-item.md`;
+   - `update` → `../providers/<provider>/update-item.md`.
+   Stop when `mode` is invalid or the operation file is missing.
+2. Follow the operation with `content` and the mode-specific `destination` or
+   `item_id`. Persist only the confirmed title and Markdown body; leave every
+   other field unchanged.
+3. Return according to `../rules/mutation-response.md`.

@@ -14,13 +14,9 @@ Exactly one confirmed item has been saved through the configured item provider.
 ## Stop Conditions
 
 - Stop successfully when all success criteria are satisfied.
-- Stop and report partial success when the item is saved but assignment fails.
-- Stop and report the blocker when a required provider operation fails before
-  any item is saved.
+- Stop and report when an operation fails.
 
 ## Human Validation
 
 The title and body require explicit confirmation before saving.
 Assignment requires a separate explicit choice.
-Mode and need description precede provider resolution and `item-writer`
-activation.

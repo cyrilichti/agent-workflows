@@ -22,6 +22,3 @@ arguments:
 ```
 
 Return a composite destination with the required team and optional project.
-Keep IDs internal. If no project matches, ask for a more precise expression; if
-several match, return them for explicit selection. Do not list teams or projects
-without a query.

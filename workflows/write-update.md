@@ -56,9 +56,3 @@ current_assignment: assignee names, Unassigned, or Unavailable
 item_link: official item link, when available
 intention: collected need description
 ```
-
----
-
-## Safety
-
-- Do not load provider operations other than those required by the active step.
