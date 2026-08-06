@@ -16,7 +16,12 @@ Run only from `./write.md` after mode selection with:
 
 ## Steps
 
-### 1. Resolve Provider
+### 1. Collect Destination Expression
+
+Reuse an available `destination` or destination query. Otherwise ask for a
+destination name. Do not resolve the provider before this input exists.
+
+### 2. Resolve Provider and Destination
 
 Run `../commands/resolve-item-provider.md` with:
 
@@ -24,19 +29,13 @@ Run `../commands/resolve-item-provider.md` with:
 context: item
 ```
 
-Keep the resolved provider in this branch. Do not pass provider operations or
-mutation responsibility to the writing sub-agent.
+When the destination is not already resolved, run
+`../commands/resolve-item-destination.md` with the provider and the collected
+query.
 
-### 2. Resolve Destination
-
-Reuse a create `destination` already available for this run.
-
-Otherwise ask for a destination name, then run
-`../commands/resolve-item-destination.md` with the provider and that query.
-
-Load only that destination operation for this step. Select the single match,
-or ask with `../templates/select-option.md` when several match. Keep the
-selected destination for this run.
+Select the single match, or ask with `../templates/select-option.md` when
+several match. Keep the provider and destination in this branch; do not pass
+provider operations or mutation responsibility to the writing sub-agent.
 
 ### 3. Follow Shared Execution
 

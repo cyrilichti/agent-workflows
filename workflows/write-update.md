@@ -16,7 +16,13 @@ Run only from `./write.md` after mode selection with:
 
 ## Steps
 
-### 1. Resolve Provider
+### 1. Collect Item Expression
+
+Reuse an available provider item ID or title query. Otherwise ask for the item
+title or a short title search phrase. Do not resolve the provider before this
+input exists.
+
+### 2. Resolve Provider and Item
 
 Run `../commands/resolve-item-provider.md` with:
 
@@ -24,16 +30,12 @@ Run `../commands/resolve-item-provider.md` with:
 context: item
 ```
 
-Keep the resolved provider in this branch. Do not pass provider operations or
-mutation responsibility to the writing sub-agent.
-
-### 2. Resolve Existing Item
-
-Run `../commands/resolve-existing-item.md` with:
+Then run `../commands/resolve-existing-item.md` with:
 
 ```text
 provider: resolved item provider
 reference: user-provided provider item ID, when available
+query: collected title query, when no item ID is available
 fields: assignment
 ```
 
