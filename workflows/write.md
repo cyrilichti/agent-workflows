@@ -7,14 +7,6 @@ assign it.
 
 ---
 
-## Entry Condition
-
-Run this workflow after `./play-book.md` selects `write`, when the `write` Skill
-is explicitly invoked, or when another workflow delegates item
-authoring to it.
-
----
-
 ## Required Context
 
 Load `../goals/write-complete.md` once as this workflow's completion contract.
