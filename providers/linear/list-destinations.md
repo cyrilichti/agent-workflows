@@ -1,15 +1,16 @@
 # list-destinations
 
-First list available teams:
+Require the caller `query` (team name). Search teams with:
 
 ```text
 tool: list_teams
 arguments:
+  query: caller query
   includeArchived: false
 ```
 
-A team is required to create an issue. After the team is selected, list its
-projects when the user wants to attach the issue to a project:
+A team is required to create an issue. After one team is selected, list its
+projects only when the user wants to attach a project:
 
 ```text
 tool: list_projects
@@ -18,5 +19,5 @@ arguments:
   includeArchived: false
 ```
 
-Return a composite destination containing the required team and optional
-project. Keep their IDs internal.
+Return a composite destination with the required team and optional project.
+Keep IDs internal. Do not list every team without a query.
