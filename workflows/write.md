@@ -13,16 +13,7 @@ Load `../goals/write-complete.md` once as this workflow's completion contract.
 
 Follow `../rules/user-facing-output.md`.
 
----
-
-## Run State
-
-Reuse successful command results only within the current run; commands keep no
-hidden cache. Replace only fields affected by mutation. A search selection
-still requires its official read.
-
-After mutation, report from its response, then still-valid state. Read once
-only for a missing or ambiguous required field; otherwise use `Unavailable`.
+Follow `../rules/mutation-response.md`.
 
 ---
 

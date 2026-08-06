@@ -19,9 +19,7 @@ Create a new item or update the authored fields of an existing item.
 3. For `update`, load `../providers/<provider>/update-item.md`. If the file is
    missing, stop. Follow the loaded operation with the item ID and only the
    confirmed authored fields.
-4. Return mutation response fields without re-reading. Read once only when a
-   caller-required field is missing or ambiguous; otherwise return
-   `Unavailable` for that field.
+4. Return according to `../rules/mutation-response.md`.
 
 Do not change status, assignment, or provider fields outside the confirmed
 content. Persist only the confirmed title and Markdown body as authored
