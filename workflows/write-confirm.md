@@ -64,35 +64,33 @@ If confirmation is refused or unavailable, stop without mutation.
 
 ### 3. Resolve Optional Assignment
 
-When mode is `create`, ask using `../templates/select-option.md` with:
+Ask using `../templates/select-option.md` with:
 
 ```text
 question: What should happen to assignment?
 options:
-- Leave item unassigned
-- Assign item
-```
-
-When mode is `update`, ask using `../templates/select-option.md` with:
-
-```text
-question: What should happen to assignment?
-options:
-- label: Keep current assignment: <current_assignment>
-  value: keep
-- label: Assign or reassign item
+- label: Choose an assignee
   value: assign
+- label: Skip assignment
+  value: skip
 ```
 
-If the user leaves the item unassigned or selects `keep`, do not run an
-assignment command.
+If the user selects `skip`, leave a new item unassigned or preserve an existing
+item's current assignment. Do not run an assignment command.
 
 Otherwise, ask for `me`, a name, or an email, then run
 `../commands/resolve-item-assignee.md` with the provider and that query.
 Run that resolution only after the user selects `assign`.
 
-Select the single match, or ask with `../templates/select-option.md` when
-several match.
+Select the single match. When several match, ask using
+`../templates/select-option.md` with:
+
+```text
+question: Who should be assigned?
+options:
+- label: <readable name and email when available>
+  value: <internal provider assignee value>
+```
 
 ### 4. Save Item and Apply Assignment Choice
 
@@ -116,11 +114,3 @@ Item: titled markdown link from returned or carried state, or Unavailable
 Status: returned or carried provider status, or Unavailable
 Assignment: observed assignee names, Unassigned, or Unavailable
 ```
-
----
-
-## Safety
-
-- Do not expose provider IDs in selection labels.
-- Do not narrate assignee resolution; ask for the query or selection, then
-  continue from the command result.
