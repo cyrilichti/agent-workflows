@@ -11,8 +11,9 @@ Resolve one existing official item from a configured provider.
 
 ## Steps
 
-1. When `reference` is available, run `./read-item.md` with the resolved
-   provider, the item ID, and the caller-requested fields. Return the
+1. When `reference` is available, require a provider item ID. If it is a URL,
+   ask for an item ID or a narrow title phrase instead. Run `./read-item.md`
+   with the resolved provider, item ID, and caller-requested fields. Return the
    official item and its provider ID, then stop this command.
 2. Otherwise, reuse `query` or ask for an item title or short title phrase,
    then run `./search-items.md`.
