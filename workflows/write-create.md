@@ -10,24 +10,35 @@ Resolve create-only context, then follow the shared execution.
 
 Run only from `./write.md` after mode selection with:
 
-- `provider`: resolved item provider.
 - `intention`: light need description collected for this run.
 
 ---
 
 ## Steps
 
-### 1. Resolve Destination
+### 1. Resolve Provider
+
+Run `../commands/resolve-item-provider.md` with:
+
+```text
+context: item
+```
+
+Keep the resolved provider in this branch. Do not pass provider operations or
+mutation responsibility to the writing sub-agent.
+
+### 2. Resolve Destination
 
 Reuse a create `destination` already available for this run.
 
 Otherwise ask for a destination name, then run
 `../commands/resolve-item-destination.md` with the provider and that query.
 
-Select the single match, or ask with `../templates/select-option.md` when
-several match. Keep the selected destination for this run.
+Load only that destination operation for this step. Select the single match,
+or ask with `../templates/select-option.md` when several match. Keep the
+selected destination for this run.
 
-### 2. Follow Shared Execution
+### 3. Follow Shared Execution
 
 Follow `./write-confirm.md` with:
 
@@ -45,3 +56,4 @@ intention: collected need description
 - Do not resolve or read an existing item in this branch.
 - Do not resolve a destination without an explicit expression unless one is
   already available for this run.
+- Do not load provider operations other than those required by the active step.

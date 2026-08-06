@@ -10,14 +10,24 @@ Resolve update-only context, then follow the shared execution.
 
 Run only from `./write.md` after mode selection with:
 
-- `provider`: resolved item provider.
 - `intention`: light need description collected for this run.
 
 ---
 
 ## Steps
 
-### 1. Resolve Existing Item
+### 1. Resolve Provider
+
+Run `../commands/resolve-item-provider.md` with:
+
+```text
+context: item
+```
+
+Keep the resolved provider in this branch. Do not pass provider operations or
+mutation responsibility to the writing sub-agent.
+
+### 2. Resolve Existing Item
 
 Run `../commands/resolve-existing-item.md` with:
 
@@ -27,10 +37,10 @@ reference: user-provided provider item ID, when available
 fields: assignment
 ```
 
-Identify the resolved item to the user using its title, status, and link when
-available.
+Load only that official-item read path for this step. Identify the resolved
+item to the user using its title, status, and link when available.
 
-### 2. Follow Shared Execution
+### 3. Follow Shared Execution
 
 Follow `./write-confirm.md` with:
 
@@ -44,3 +54,9 @@ current_assignment: assignee names, Unassigned, or Unavailable
 item_link: official item link, when available
 intention: collected need description
 ```
+
+---
+
+## Safety
+
+- Do not load provider operations other than those required by the active step.

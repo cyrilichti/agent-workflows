@@ -61,26 +61,16 @@ Ask for a light free-form description of the need. Keep it as this run's
 Do not activate `item-writer` or assemble `../templates/authoring-context.md`
 before that description exists.
 
-### 3. Resolve Provider
+### 3. Follow One Mode Branch
 
-After the need description is collected, run
-`../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
-
-Keep the resolved provider in this workflow. Do not pass provider operations or
-mutation responsibility to the writing sub-agent.
-
-### 4. Follow One Mode Branch
-
-After provider resolution, follow exactly one branch:
+After the need description is collected, follow exactly one branch:
 
 - for `create`, follow `./write-create.md`;
 - for `update`, follow `./write-update.md`.
 
-Pass the resolved provider and `intention` into the chosen branch.
+Pass `intention` into the chosen branch. Do not resolve the item provider in
+this workflow; each branch resolves it when its first provider operation needs
+it.
 
 ---
 
