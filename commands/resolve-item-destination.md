@@ -5,7 +5,7 @@ Resolve the provider-specific destination for a new item.
 ## Input
 
 - `provider`: resolved item provider.
-- `query`: destination name or path phrase.
+- `query`: destination name.
 
 ## Steps
 

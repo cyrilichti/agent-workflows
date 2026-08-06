@@ -20,7 +20,7 @@ Run only from `./write.md` after mode selection with:
 
 Reuse a create `destination` already available for this run.
 
-Otherwise ask for a name or path expression, then run
+Otherwise ask for a destination name, then run
 `../commands/resolve-item-destination.md` with the provider and that query.
 
 Select the single match, or ask with `../templates/select-option.md` when
