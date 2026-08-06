@@ -35,44 +35,6 @@ Use `list_teams`, then `list_issue_statuses` for each team, and return every
 matching `team` and `state` pair for `semantic_status`. If teams or states
 cannot be listed, report resolution as unavailable. Do not retrieve issues.
 
-## list-destinations
-
-First list available teams:
-
-```text
-tool: list_teams
-arguments:
-  includeArchived: false
-```
-
-A team is required to create an issue. After the team is selected, list its
-projects when the user wants to attach the issue to a project:
-
-```text
-tool: list_projects
-arguments:
-  team: selected team ID
-  includeArchived: false
-```
-
-Return a composite destination containing the required team and optional
-project. Keep their IDs internal.
-
-## resolve-assignees
-
-For `me`, preserve the literal value because Linear accepts it directly.
-
-For a name or email:
-
-```text
-tool: list_users
-arguments:
-  query: caller query
-  limit: 20
-```
-
-Return matching user names and IDs.
-
 ## create-child-item
 
 Create the confirmed issue as a sub-issue in the official parent issue's

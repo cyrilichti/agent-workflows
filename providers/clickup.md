@@ -48,34 +48,6 @@ Use `clickup_get_workspace_hierarchy` with `max_depth: "2"` and return every
 status name that clearly matches `semantic_status`. If the hierarchy does not
 expose statuses, report resolution as unavailable. Do not retrieve tasks.
 
-## list-destinations
-
-```text
-tool: clickup_get_workspace_hierarchy
-arguments:
-  max_depth: "2"
-```
-
-Only Lists are valid creation destinations. Return each List with a readable
-`Space / Folder / List` path and its List ID. Continue pagination only when
-needed to resolve the user's requested destination.
-
-## resolve-assignees
-
-For `me` or an exact name or email:
-
-```text
-tool: clickup_resolve_assignees
-arguments:
-  assignees:
-    - caller query
-```
-
-When a readable member record or disambiguation is needed, use
-`clickup_find_member_by_name`. If the name is ambiguous, use
-`clickup_get_workspace_members` and post-filter by the query rather than asking
-the user for a numeric ID.
-
 ## create-child-item
 
 Create the confirmed item as a subtask in the official parent task's List:
