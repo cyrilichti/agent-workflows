@@ -28,13 +28,21 @@ Do not pull ambient conversation beyond the supplied fields.
 
 ## Skills
 
+Route from the supplied need in the caller packet (`intention` and related
+fields). Choose the Skill that fits that need; do not default to
+`interview-me`.
+
 Load only the Skill needed for the current context:
 
-- ../skills/interview-me/SKILL.md when the request is insufficiently defined;
+- ../skills/interview-me/SKILL.md only when the supplied need remains
+  insufficiently defined after assessing the packet;
 - ../skills/idea-refine/SKILL.md while the idea remains open;
 - ../skills/grilling/SKILL.md when decisions need deep challenge;
 - ../skills/to-spec/SKILL.md only when the user explicitly asks to turn
   the item into a full, structured specification.
+
+When the supplied need is already enough to draft, draft without loading a
+Skill, or load a non-interview Skill only if the need clearly calls for it.
 
 Re-evaluate the route after each meaningful answer or new source. Keep the
 current Skill while it remains appropriate, replace it when the context
