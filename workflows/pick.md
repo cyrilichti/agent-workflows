@@ -67,11 +67,6 @@ Run `../commands/read-item.md` with:
 ```text
 provider: resolved item provider
 item_id: resolved item ID
-fields:
-  - title
-  - description
-  - comments
-  - request_backlinks
 ```
 
 Require the returned item to match the Step 2 assignee and status criteria.
