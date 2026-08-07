@@ -16,15 +16,24 @@ provider.
 ## Steps
 
 1. Reject any other `target_status`.
-2. Load `../providers/<provider>.md`.
-3. Use the provider operation named `transition-item-status` with `item_id` and
-   `target_status`.
+2. Load `../providers/<provider>/transition-item-status.md`. If the file is
+   missing, stop.
+3. Follow the loaded operation with `item_id` and `target_status`.
 4. For `in progress`:
    - when exactly one workspace status matches, update only the item's state or
      status field;
    - when no status matches, stop without mutation;
-   - when multiple statuses match, ask the user to choose one using
-     `../templates/select-option.md`, then update only the selected status;
+   - when multiple statuses match, ask using
+     `../templates/select-option.md` with:
+
+     ```text
+     question: Which status should be used for in progress?
+     options:
+     - label: <provider status name>
+       value: <exact provider status ID or name>
+     ```
+
+     Then update only the status identified by the selected value;
    - return the updated item status, and stop on update failure.
 5. For `review`:
    - when exactly one review-like workspace status exists, attempt to update
