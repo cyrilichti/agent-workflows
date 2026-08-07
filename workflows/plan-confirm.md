@@ -40,14 +40,12 @@ delivery units, reassess the expanded context with Step 1.
 
 ### 3. Draft and Review the Plan
 
-The specialist is the sole author. Load and apply Skills only within these
-bounds:
+The specialist is the sole plan author. It may load and apply:
 
 | Skill | Trigger | Bounded use |
 | --- | --- | --- |
 | `planning-and-task-breakdown` | Always; reuse the Step 1 load | Order dependencies, prefer vertical slices, and create the fewest small, verifiable todos. Ignore its formats, paths, estimates, file lists, checkpoints, and templates. |
 | `source-driven-development` | A decision depends on an unverified external versioned fact | Verify and cite only that fact. Ignore its implementation process. |
-| `doubt-driven-development` | The draft contains high-risk or unfamiliar decisions | Run CLAIM, EXTRACT, DOUBT, and RECONCILE once. Ignore its loop and cross-model procedure. |
 
 Have the specialist write using `../templates/plan.md` with:
 
@@ -56,11 +54,21 @@ task_context: resolved task context
 planId: plan_id
 ```
 
-For doubt review, pass only the affected decision excerpts and local planning
-contract. Give actionable findings to the author for one revision: put
-implementation gaps in todos, verification gaps in `Validation`, and unresolved
-decisions in `Open Questions`. Discard commentary and report remaining
-uncertainty. Run nothing further unless requested.
+For high-risk or unfamiliar decisions, the workflow—not the author—loads
+`doubt-driven-development` and invokes one fresh-context reviewer while keeping
+the plan author active. Apply only CLAIM, EXTRACT, DOUBT, and RECONCILE once
+with:
+
+```text
+artifact: affected decision excerpts
+contract: task_context and local plan contract
+```
+
+Do not pass planning history or author reasoning. Reconcile findings and ask the
+same author for one revision: implementation gaps go to todos, verification
+gaps to `Validation`, and unresolved decisions to `Open Questions`. Ignore
+multi-cycle and cross-model procedures, discard review commentary, and report
+remaining substantive uncertainty. Run no further review unless requested.
 
 ### 4. Confirm Plan
 
