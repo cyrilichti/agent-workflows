@@ -47,7 +47,6 @@ Follow `./refine-confirm.md` with:
 
 ```text
 provider: resolved item provider
-parent_item_id: official parent item ID
 parent_item: complete official parent item
 needs_refinement_findings: exact assessment findings
 ```

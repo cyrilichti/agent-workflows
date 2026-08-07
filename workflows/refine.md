@@ -24,9 +24,8 @@ Reuse these rules when already active from the caller; otherwise follow them:
 
 Follow exactly one branch:
 
-- follow `./refine-item.md` when the caller supplies a resolved provider, an
-  official parent item ID, the complete official parent item, and
-  `needs-refinement` findings;
+- follow `./refine-item.md` when the caller supplies a resolved provider, the
+  complete official parent item, and `needs-refinement` findings;
 - otherwise, follow `./refine-standalone.md`.
 
 Fail an explicit but incomplete caller handoff instead of switching it to

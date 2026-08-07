@@ -105,7 +105,6 @@ options:
 
   ```text
   provider: resolved item provider
-  parent_item_id: resolved item ID
   parent_item: complete official item context
   needs_refinement_findings: exact findings returned by plan
   ```

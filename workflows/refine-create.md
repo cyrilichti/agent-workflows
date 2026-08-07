@@ -27,8 +27,8 @@ replacement or rollback.
 
 ### 2. Create Blocking Relations
 
-Resolve references only through successful Step 1 results. For each created
-child with confirmed blockers, run
+Group every confirmed `blocking_ref` by its `blocked_ref`, then resolve both
+only through successful Step 1 results. For each created blocked child, run
 `../commands/create-blocking-relations.md` once with:
 
 ```text

@@ -7,7 +7,9 @@ official parent item into multiple child items.
 
 - `children`: two or more proposed children, each containing a stable local
   reference, one title, and one free-form Markdown body.
-- `blocking_edges`: optional directed relationships between child references.
+- `blocking_edges`: optional directed relationships containing:
+  - `blocked_ref`: stable reference of the child that waits;
+  - `blocking_ref`: stable reference of the child that must complete first.
 
 ## Format (Markdown)
 
@@ -36,6 +38,8 @@ Repeat the child section for every proposal.
   restructuring them.
 - Number children in a stable order and resolve blocking edges to those
   readable numbers and titles.
+- Under the child identified by `blocked_ref`, render the child identified by
+  `blocking_ref` as its `Blocked by` value. Never invert the direction.
 - Omit `Blocked by` when a child has no blocking relationship.
 - Keep blocking relationships outside the persisted child body.
 - Do not display provider IDs, destinations, status, labels, assignees, or

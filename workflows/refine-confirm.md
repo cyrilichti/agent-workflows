@@ -2,8 +2,8 @@
 
 ## Entry Condition
 
-Run with a resolved provider, official parent item ID, complete official parent
-item, and preserved `needs-refinement` findings.
+Run with a resolved provider, complete official parent item, and preserved
+`needs-refinement` findings.
 
 ---
 
@@ -27,6 +27,14 @@ through `Draft vertical slices`. Require at least two provider-neutral children
 with stable references, meaningful titles, Markdown bodies, and genuine
 blocking edges when applicable.
 
+Tracker setup is not required for this draft-only invocation. Return every
+blocking edge as:
+
+```text
+blocked_ref: stable reference of the child that waits
+blocking_ref: stable reference of the child that must complete first
+```
+
 The children must be autonomous vertical slices covering the parent scope
 exactly once. Return the draft to `/refine` before Step 4 of `to-tickets`;
 `/refine` owns confirmation and provider operations.
@@ -43,7 +51,7 @@ Present using `../templates/decomposition-preview.md` with:
 
 ```text
 children: complete reviewed child proposals with stable references, titles, and bodies
-blocking_edges: complete reviewed blocking edges, or none
+blocking_edges: complete reviewed blocked_ref and blocking_ref pairs, or none
 ```
 
 Then ask using `../templates/select-option.md` with:
