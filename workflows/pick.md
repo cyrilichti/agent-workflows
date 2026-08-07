@@ -126,12 +126,18 @@ Report the updated item status.
 
 ### 7. Hand Off to Work
 
-Hand off to `./work.md` in a fresh context with only:
+Run `../commands/handoff-workflow.md` with:
 
 ```text
-plan: approved plan
-item: complete official item context with the observed updated status
+source: ./pick.md
+target: ./work.md
+mode: caller
+payload:
+  plan: approved plan
+  item: complete official item context with the observed updated status
 ```
+
+Report the result and stop `/pick`. Never continue with `/work` here.
 
 ---
 

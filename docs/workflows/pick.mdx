@@ -5,7 +5,8 @@ description: Pick your next work item, approve an implementation plan, and hand 
 
 `/pick` turns a ready item into active work. It lets you choose an item, reviews
 its context, and sends it to `/plan`. Once you approve the plan, `/pick` moves
-the item to in progress and hands off to `/work` in a fresh context.
+the item to in progress and hands its plan to `/work` in a separate task. The
+new task identifies the handoff; `/pick` stops.
 
 ## Dispatching workflows
 
@@ -80,8 +81,8 @@ the item to in progress and hands off to `/work` in a fresh context.
       <td>7</td>
       <th scope="row">Handoff</th>
       <td>
-        Hand off the approved plan and active item to <code>/work</code> in a
-        fresh context.
+        Hand the approved plan and active item to <code>/work</code> in a
+        separate task, identify the handoff, then stop <code>/pick</code>.
       </td>
     </tr>
   </tbody>
