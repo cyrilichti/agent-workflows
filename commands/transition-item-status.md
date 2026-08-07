@@ -1,69 +1,52 @@
 # Transition Item Status
 
-Move one official item to a normalized workflow status through its configured
-provider.
+Move one official item to `in progress`, `review`, or `done`.
 
 ## Input
 
 - `provider`: resolved item provider.
 - `item_id`: official provider item ID.
-- `target_status`: exactly `in progress`, `review`, or `done`.
-- `mode`: optional `resolve` or `apply`, default `apply`. `resolve` is supported
-  only for `done` and must not mutate the item.
-- `resolved_target_status`: optional exact provider state previously returned
-  by `mode: resolve` for a confirmed `done` transition.
+- `target_status`: `in progress`, `review`, or `done`.
+- `mode`: `resolve` or `apply`, default `apply`; `resolve` is only valid for
+  `done`.
+- `resolved_target_status`: exact status returned by a prior `done` resolution,
+  required when applying that transition.
 
 ## Steps
 
-1. Reject any other `target_status`.
-2. Load `../providers/<provider>/transition-item-status.md`. If the file is
-   missing, stop.
-3. Follow the loaded operation with `item_id` and `target_status`.
-4. For `in progress`:
-   - when exactly one workspace status matches, update only the item's state or
-     status field;
-   - when no status matches, stop without mutation;
-   - when multiple statuses match, ask using
-     `../templates/select-option.md` with:
+1. Validate the input and load
+   `../providers/<provider>/transition-item-status.md`.
+2. Use its read operation to obtain the current status and available statuses
+   as `id`, `name`, and `category`: `active`, `review`, `completed`, or `other`.
+3. Resolve candidates:
+   - `in progress`: prefer one case-insensitive exact name, otherwise use
+     `active` statuses;
+   - `review`: use `review` statuses;
+   - `done`: use `completed` statuses.
+4. Apply the target policy:
+   - `in progress`: stop on no match; on multiple matches, ask the user to
+     select one with `../templates/select-option.md`;
+   - `review`: require one match, otherwise return a non-transitioned result;
+   - `done`: return a successful no-op when already completed; otherwise
+     require one match without asking the user.
+5. For `done` in `resolve` mode, return the current and resolved statuses
+   without mutation.
+6. For `done` in `apply` mode, require `resolved_target_status` to still match
+   the single candidate.
+7. Use the adapter's apply operation to update only the status.
 
-     ```text
-     question: Which status should be used for in progress?
-     options:
-     - label: <provider status name>
-       value: <exact provider status ID or name>
-     ```
+For ambiguous `in progress` candidates, ask:
 
-     Then update only the status identified by the selected value;
-   - return the updated item status, and stop on update failure.
-5. For `review`:
-   - when exactly one review-like workspace status exists, attempt to update
-     only the item's state or status field;
-   - when zero or multiple review-like statuses exist, do not mutate and do not
-     ask the user to choose;
-   - return a report containing `transitioned`, the previous status when
-     available, normalized target, resolved target when available, resulting
-     status when available, and a reason whenever `transitioned` is `false`.
-6. Treat the `review` transition as best-effort. Its missing, ambiguous, or
-   failed provider transition must not block the caller's request promotion.
+```text
+question: Which status should be used for in progress?
+options:
+- label: <provider status name>
+  value: <provider status ID or name>
+```
 
-For `done`:
+Return `transitioned`, `already_at_target` for `done`, `previous_status`,
+`target_status`, `resolved_target_status`, `resulting_status`, and a `reason`
+on failure. An `in progress` read, resolution, or update failure stops; `review`
+and `done` return their failure as best-effort results.
 
-- resolve the next provider state after the current state whose semantic
-  meaning is completed or done;
-- when the item is already in such a state, return a successful no-op;
-- in `resolve` mode, return the current state, `already_at_target`, and the
-  single resolved target without mutation;
-- in `apply` mode, require any supplied `resolved_target_status` to remain an
-  available matching target before updating;
-- when exactly one next state matches, update only the item's state or status;
-- when no state or multiple states match, return a non-transitioned report
-  without asking the user to choose;
-- return `transitioned`, `already_at_target`, previous state, resolved target,
-  resulting state, and a reason whenever neither transition nor successful
-  no-op occurred.
-
-Treat `done` as best-effort because its caller may already have completed an
-irreversible merge.
-
-Do not change the item's title, description, assignee, labels, project,
-relationships, or any other field.
+Never update another item field.
