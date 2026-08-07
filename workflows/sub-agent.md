@@ -16,9 +16,11 @@ Select and activate one specialized agent profile.
 
 ### 1. Select Profile
 
-Keep the active profile when it remains appropriate. Otherwise, select exactly
-one most-specific profile from `../agents/`. Ask the user when the choice is
-ambiguous.
+Keep the active profile when it remains appropriate. Otherwise, load
+`../data/agent-routing.md`, select one theme, then its most-specific profile.
+
+Ask the user when either choice is ambiguous. Do not scan agent profiles for
+routing.
 
 ### 2. Activate Profile
 
