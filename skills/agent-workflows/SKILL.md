@@ -51,6 +51,8 @@ under `.agents`:
 ```text
 agents
 commands
+data
+goals
 plans
 providers
 rules
