@@ -40,11 +40,6 @@ provider: resolved item provider
 criteria:
   assigned_to: current user
   status: open or ready to start
-  exclude:
-    - assigned to other people
-    - in progress
-    - done
-    - closed
 fields:
   - provider_id
   - title
