@@ -17,6 +17,5 @@ content.
 
 ## Rules
 
-- Read `name` and the todo count from the plan frontmatter, and link to
-  `.agents/plans/<filename>`.
-- Do not include any other plan content.
+- Use the frontmatter `name` and todo count, link to
+  `.agents/plans/<filename>`, and include no other plan content.

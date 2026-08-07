@@ -16,11 +16,8 @@ Follow `../rules/user-facing-output.md`.
 
 ### 1. Resolve Conversational Context
 
-Use the current request and conversation when they provide:
-
-- objective: what must be achieved;
-- problem: what must be solved and why it matters;
-- expected outcome: how success will be recognized.
+Use the current request and conversation when the objective, problem, and
+expected outcome are known.
 
 Otherwise, activate `../agents/item-writer.md`. Give it the current request,
 relevant conversation context, and only code, specifications, files, or URLs
@@ -35,16 +32,12 @@ body: free-form Markdown containing the objective, problem, and expected outcome
 
 Keep the returned item as transient task context.
 
-### 2. Create Plan Identity
-
-Generate one `plan:<uuid-v4>`.
-
-### 3. Follow Shared Execution
+### 2. Follow Shared Execution
 
 Follow `./plan-confirm.md` with:
 
 ```text
 task_context: complete conversational or transient item context
-plan_id: generated plan identity
+plan_id: one generated plan:<uuid-v4>
 entry_mode: standalone
 ```

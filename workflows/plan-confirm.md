@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Assess, draft, review, and confirm one plan from resolved context.
+Assess, author, and confirm one plan.
 
 ---
 
@@ -26,9 +26,7 @@ Run `../commands/assess-refinement-need.md` with:
 context: task_context
 ```
 
-On `refinement-not-needed`, continue.
-
-On `needs-refinement`:
+Continue on `refinement-not-needed`. On `needs-refinement`:
 
 - in `workflow` mode, return the findings to the caller, which owns any
   refinement offer;
@@ -36,48 +34,33 @@ On `needs-refinement`:
 
 ### 2. Resolve Planning Author
 
-Select and activate one specialized plan author by following `./sub-agent.md`
-with `task_context`.
-
-The specialist may inspect relevant technical context but must not modify it.
-If that inspection reveals autonomous delivery units, reassess the expanded
-context with Step 1.
+Follow `./sub-agent.md` with `task_context` to activate one plan author. The
+author may inspect technical context read-only. If that reveals autonomous
+delivery units, reassess the expanded context with Step 1.
 
 ### 3. Draft and Review the Plan
 
-The specialist is the sole plan author.
+The specialist is the sole author. Load and apply Skills only within these
+bounds:
 
-Reuse `planning-and-task-breakdown` from Step 1 without loading it again. For
-drafting, use it only to order dependencies, prefer vertical slices, and
-produce the fewest small, verifiable todos. Do not follow that Skill's task
-format, output paths, estimates, file lists, checkpoints, or templates.
-
-When a decision depends on an external versioned fact not established locally,
-load `source-driven-development` only to verify that fact against an official
-source and cite the finding. Do not follow its implementation process or expand
-verification to unrelated decisions.
+| Skill | Trigger | Bounded use |
+| --- | --- | --- |
+| `planning-and-task-breakdown` | Always; reuse the Step 1 load | Order dependencies, prefer vertical slices, and create the fewest small, verifiable todos. Ignore its formats, paths, estimates, file lists, checkpoints, and templates. |
+| `source-driven-development` | A decision depends on an unverified external versioned fact | Verify and cite only that fact. Ignore its implementation process. |
+| `doubt-driven-development` | The draft contains high-risk or unfamiliar decisions | Run CLAIM, EXTRACT, DOUBT, and RECONCILE once. Ignore its loop and cross-model procedure. |
 
 Have the specialist write using `../templates/plan.md` with:
 
 ```text
 task_context: resolved task context
 planId: plan_id
-initial_todo_status: pending
 ```
 
-After a draft containing high-risk or unfamiliar non-trivial decisions, load
-`doubt-driven-development` under this contract:
-
-- apply CLAIM, EXTRACT, DOUBT, and RECONCILE once;
-- give the reviewer only the affected decision excerpts and the local planning
-  contract, not the full planning history;
-- ignore its multi-cycle loop and cross-model procedure;
-- send actionable findings to the specialist for one revision;
-- place implementation gaps in todos, verification gaps in `Validation`, and
-  unresolved decisions in `Open Questions`; do not persist review commentary.
-
-Report substantive uncertainty that remains after the revision. Do not run
-another review or offer cross-model review unless the user requests it.
+For doubt review, pass only the affected decision excerpts and local planning
+contract. Give actionable findings to the author for one revision: put
+implementation gaps in todos, verification gaps in `Validation`, and unresolved
+decisions in `Open Questions`. Discard commentary and report remaining
+uncertainty. Run nothing further unless requested.
 
 ### 4. Confirm Plan
 
@@ -105,6 +88,5 @@ Continue only on `Approve plan`.
 
 ### 5. Finish
 
-Finish according to `../goals/plan-complete.md`.
-
-Return the approved plan in `workflow` mode; otherwise stop.
+Finish according to `../goals/plan-complete.md`: return the approved plan in
+`workflow` mode; otherwise stop.

@@ -10,15 +10,8 @@ Resolve official-item planning context, then follow the shared execution.
 
 ### 1. Resolve Official Context
 
-Use the official item and current conversation as the planning context. A plan
-requires:
-
-- objective: what must be achieved;
-- problem: what must be solved and why it matters;
-- expected outcome: how success will be recognized.
-
-Preserve the official item as provided. When required context is missing, ask
-only for the missing information.
+Preserve the official item and use the conversation to complete only a missing
+objective, problem, or expected outcome.
 
 ### 2. Follow Shared Execution
 

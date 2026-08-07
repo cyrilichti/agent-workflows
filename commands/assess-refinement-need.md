@@ -10,10 +10,9 @@ units.
 ## Steps
 
 1. Reuse `../skills/planning-and-task-breakdown/SKILL.md` when already loaded
-   in the current workflow run; otherwise load it completely. Use it only to
-   assess delivery-unit autonomy, dependencies, and vertical slicing. Ignore
-   its drafting process, task format, sizing, checkpoints, output paths, and
-   templates.
+   in this workflow run; otherwise load it completely. Use only its autonomy,
+   dependency, and vertical-slicing guidance; ignore all drafting and output
+   guidance.
 2. Treat the context as `needs-refinement` only when it contains multiple
    independently deliverable or schedulable units. Multiple steps, technical
    layers, or sequential changes may remain one unit.

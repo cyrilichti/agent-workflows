@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Create and approve one implementation plan for one delivery unit, or return
-`needs-refinement`.
+Create and approve one plan, or return `needs-refinement` for multiple delivery
+units.
 
 ---
 
@@ -17,8 +17,5 @@ Load `../goals/plan-complete.md` once as this workflow's completion contract.
 
 ### 1. Follow One Context Branch
 
-Follow exactly one branch:
-
-- when a caller provides complete official item context—not pasted or inferred
-  metadata—follow `./plan-item.md`;
-- otherwise, follow `./plan-standalone.md`.
+Follow `./plan-item.md` when the caller supplies complete official item context,
+not pasted or inferred metadata. Otherwise, follow `./plan-standalone.md`.

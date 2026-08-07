@@ -1,48 +1,17 @@
 # Plan
 
-Use this template when creating a plan before implementation.
+Use for a Plan UI-compatible implementation plan.
 
-The output is a `.plan.md` markdown file with YAML frontmatter and a structured
-body so metadata and todos can integrate with compatible Plan UIs.
+## File
 
----
-
-## File Location
-
-Write the plan to:
+Write to `../plans/<basename>.plan.md` using:
 
 ```text
-../plans/<basename>.plan.md
+{YYYY-MM-DD}-[{provider-id}-]{objective-slug}
 ```
 
-See **Naming** below for `<basename>`.
-
----
-
-## Naming
-
-Base name pattern:
-
-```text
-{YYYY-MM-DD}-{slug}
-```
-
-Rules:
-
-- `{YYYY-MM-DD}` — plan creation date (ISO 8601).
-- `{slug}` — kebab-case summary of the objective (lowercase, `[a-z0-9-]`, max 40
-  characters).
-- When an item provider ID is available, insert it before the slug:
-  `{YYYY-MM-DD}-{provider-id}-{slug}`
-- If the target file already exists, append a numeric suffix: `-2`, `-3`, etc.
-
-Examples:
-
-```text
-2026-07-14-auth-refactor.plan.md
-2026-07-14-cu-abc123-auth-refactor.plan.md
-2026-07-14-auth-refactor-2.plan.md
-```
+Use a lowercase kebab-case slug of at most 40 characters. Omit the provider ID
+when unavailable, and append `-2`, `-3`, etc. when the filename exists.
 
 ## Format
 
@@ -50,13 +19,10 @@ Examples:
 ---
 planId: "<stable plan identity>"
 name: <short plan title>
-overview: <one-line summary of objective and approach>
+overview: <one-line objective and approach>
 todos:
-  - id: <step-slug>
-    content: <actionable step description>
-    status: pending
-  - id: <step-slug>
-    content: <actionable step description>
+  - id: <unique step slug>
+    content: <one-sentence actionable step>
     status: pending
 isProject: false
 ---
@@ -77,75 +43,36 @@ isProject: false
 
 ## Steps
 
-1. <step 1 — same text as first todo `content`>
-2. <step 2 — same text as second todo `content`>
-3. <step 3 — same text as third todo `content`>
+1. <exact first todo content>
 
 ## Validation
 
 - [ ] <how the work will be checked>
 ```
 
----
-
 ## Frontmatter Rules
 
 | Field | Required | Notes |
 | --- | --- | --- |
-| `planId` | yes | Stable plan identity; see **Plan Identity** |
+| `planId` | yes | Stable plan identity |
 | `name` | yes | Short title shown in Plan UI |
 | `overview` | yes | One-line scope summary |
-| `todos` | yes | One item per step; count must match `## Steps` |
+| `todos` | yes | One item per numbered step |
 | `todos[].id` | yes | Unique kebab-case slug within the plan |
-| `todos[].content` | yes | Actionable, implementation-ready description |
+| `todos[].content` | yes | Exact corresponding step text |
 | `todos[].status` | yes | `pending`, `in_progress`, `completed`, or `cancelled` |
-| `isProject` | yes | `false` single-task; `true` multi-stream |
+| `isProject` | yes | `false` for one delivery unit |
 
----
+## Rules
 
-## Plan Identity
-
-When an official source item is available, use its exact provider item ID as
-`planId`:
-
-```text
-<item-id>
-```
-
-When no official source item exists, generate one UUID once and persist:
-
-```text
-plan:<uuid-v4>
-```
-
-Treat `planId` as an opaque stable value. Do not regenerate or rewrite it when
-the plan is adjusted or its todos change status. Resolve the item provider and
-item details at runtime; do not duplicate them in the plan.
-
----
-
-## Todo Lifecycle
-
-- New plans start with every todo set to `pending`.
-- At most one todo may be `in_progress`.
-- Use `completed` when its work has been completed.
-- Use `cancelled` only after the user explicitly confirms that the todo will
-  not be performed.
-- A plan is complete when every todo is `completed` or `cancelled`.
-
----
-
-## Body Rules
-
-- Keep the plan practical enough to guide implementation.
-- Use the fewest todos that remain small and verifiable. Keep each todo to one
-  sentence.
-- **Todos and Steps must match exactly**: same count, same order, same wording
-  (`todos[].content` = corresponding numbered item under `## Steps`). Do not add
-  todos without a matching step, or steps without a matching todo.
-- Do not add Skill-specific task formats, estimates, file lists, or checkpoints.
-- Use only the provided context and user answers.
-- Do not include implementation details that require codebase analysis unless
-  that analysis has already happened.
-- Include an `## Open Questions` section only when unresolved questions remain.
-  Omit the section instead of writing "None".
+- Use the exact provider item ID as `planId` when available; otherwise use one
+  generated `plan:<uuid-v4>`. Never change it.
+- Start every todo as `pending`. Later allow only `pending`, `in_progress`,
+  `completed`, or `cancelled`, with at most one `in_progress`; cancellation
+  requires explicit user confirmation.
+- Use the fewest small, verifiable todos. Their content and the numbered steps
+  must match exactly in count, order, and wording.
+- Use only supplied or inspected context. Do not add Skill-specific formats,
+  estimates, file lists, or checkpoints.
+- Do not duplicate provider metadata in the plan; resolve it at runtime.
+- Add `## Open Questions` only for unresolved decisions.
