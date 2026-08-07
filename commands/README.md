@@ -12,7 +12,6 @@ Use commands to:
 - resolve project configuration;
 - retrieve or prepare repeated context;
 - check whether a provider or tool is available;
-- dispatch a workflow to a fresh context with an explicit handoff envelope;
 - keep common agent operations consistent.
 
 ## Boundaries

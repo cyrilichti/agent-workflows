@@ -4,7 +4,7 @@
 
 Resolve and summarize one official item, create a plan via `/plan`, offer
 `/refine` on `needs-refinement`, or after plan approval move the item to
-in progress and hand off to `/work`.
+in progress and continue with `/work`.
 
 ---
 
@@ -124,20 +124,14 @@ target_status: in progress
 
 Report the updated item status.
 
-### 7. Hand Off to Work
+### 7. Continue with Work
 
-Run `../commands/handoff-workflow.md` with:
+Follow `./work.md` in caller mode with:
 
 ```text
-source: ./pick.md
-target: ./work.md
-mode: caller
-payload:
-  plan: approved plan
-  item: complete official item context with the observed updated status
+plan: approved plan
+item: complete official item context with the observed updated status
 ```
-
-Report the result and stop `/pick`. Never continue with `/work` here.
 
 ---
 

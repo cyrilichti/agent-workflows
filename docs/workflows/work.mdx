@@ -50,9 +50,10 @@ export const agentSkillCohorts = [
   { slug: "operations", label: "Operations" },
 ];
 
-`/work` turns an approved plan into confirmed commits. It identifies a handoff
-from `/pick`, or lets you select a recent plan. After successful validation, it
-hands the work to `/ready`, which owns the push confirmation.
+`/work` turns an approved plan into confirmed commits. It can receive the plan
+from `/pick` with an active official item, or let you select from recent plans.
+After successful global validation, it continues with `/ready` using the same
+plan, optional item, and known request ID. `/ready` owns the push confirmation.
 
 ## Dispatching external skills
 

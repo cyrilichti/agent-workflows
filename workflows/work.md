@@ -15,15 +15,13 @@ status.
 
 Run this workflow in one of these modes:
 
-- **Caller mode**: another workflow provides a handoff marker containing its
-  source, `mode: caller`, and `context: fresh`, an approved plan, and, when
+- **Caller mode**: another workflow provides an approved plan and, when
   available, the active official item context.
 - **Standalone mode**: `./play-book.md` selects `work`, or the `work` Skill is
   explicitly invoked without a calling workflow.
 
-For a fresh caller handoff from `./pick.md`, require the marker and active item,
-treat it as new work, and report the handoff once. Do not infer a handoff from
-the plan or item alone.
+Caller mode from `./pick.md` is new work. `/pick` has already moved the official
+item to its active status before calling `/work`.
 
 Treat standalone execution as resumed work when the user explicitly asks to
 resume or the selected plan already contains an `in_progress` or `completed`
@@ -35,7 +33,8 @@ todo. Otherwise, treat it as new work.
 
 ### 1. Select the Plan
 
-In caller mode, use the supplied plan and preserve the official item context.
+In caller mode, use the approved plan supplied by the caller. Preserve the
+official item context when provided.
 
 In standalone mode, select only files under `../plans/` whose names end with
 `.plan.md`. Sort them by modification time from newest to oldest, keep at most
