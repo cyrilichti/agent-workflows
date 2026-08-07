@@ -9,7 +9,7 @@ arguments:
   filters:
     asset_types:
       - task
-  count: 20
+  count: 5
 ```
 
 Prefer results whose names match the query. Return task ID, name, status, URL,

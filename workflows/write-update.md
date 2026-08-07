@@ -8,9 +8,7 @@ Resolve update-only context, then follow the shared execution.
 
 ## Entry Condition
 
-Run only from `./write.md` after mode selection with:
-
-- `intention`: light need description collected for this run.
+Run only from `./write.md` after mode selection.
 
 ---
 
@@ -42,7 +40,12 @@ fields: assignment
 Load only that official-item read path for this step. Identify the resolved
 item to the user using its title, status, and link when available.
 
-### 3. Follow Shared Execution
+### 3. Collect Need Description
+
+After identifying the official item, ask what should be reformulated and in
+which direction. Keep the light free-form response as this run's `intention`.
+
+### 4. Follow Shared Execution
 
 Follow `./write-confirm.md` with:
 

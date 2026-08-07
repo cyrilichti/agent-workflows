@@ -7,13 +7,21 @@ Use when `/write` finishes after a successful save.
 ```markdown
 ## Write Result
 
-Item: <markdown link with the item title as label, or Unavailable>
-Status: <returned or carried provider status, or Unavailable>
-Assignment: <observed assignee names, Unassigned, or Unavailable>
+### <item title, or Item unavailable>
+
+[Open in <provider display name> ↗](<item URL>)
+
+- **Status:** <returned or carried provider status, or Unavailable>
+- **Assignment:** <observed assignee names, Unassigned, or Unavailable>
 ```
 
 ## Rules
 
 - Report observed states rather than intended states.
-- Prefer a titled markdown link for `Item`; never show a raw URL alone.
+- Use the item title as a subheading, not as the link label.
+- When the item URL is available, show one `Open in <provider> ↗` link on its
+  own line. Never show a raw URL.
+- Omit the link when the item URL is unavailable.
+- Present status and assignment as separate list items so Markdown renderers do
+  not collapse them onto one line.
 - Never echo internal tokens such as `me` in `Assignment`.

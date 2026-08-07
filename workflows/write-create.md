@@ -8,11 +8,16 @@ Resolve create-only context, then follow the shared execution.
 
 ## Steps
 
-### 1. Collect Destination Expression
+### 1. Collect Need Description
+
+Ask for a light free-form description of the need. Keep it as this run's
+`intention`.
+
+### 2. Collect Destination Expression
 
 Reuse an available destination query. Otherwise ask for a destination name.
 
-### 2. Resolve Provider and Destination
+### 3. Resolve Provider and Destination
 
 Run `../commands/resolve-item-provider.md` with:
 
@@ -33,7 +38,7 @@ options:
   value: <internal provider destination value>
 ```
 
-### 3. Follow Shared Execution
+### 4. Follow Shared Execution
 
 Follow `./write-confirm.md` with:
 

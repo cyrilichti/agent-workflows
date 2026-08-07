@@ -33,19 +33,14 @@ options:
 Do not resolve the item provider before this choice. Keep the prefix through
 playbook entry and this first user choice free of provider resolution.
 
-### 2. Collect Need Description
+### 2. Follow One Mode Branch
 
-Ask for a light free-form description of the need. Keep it as this run's
-`intention`.
-
-### 3. Follow One Mode Branch
-
-After the need description is collected, follow exactly one branch:
+Follow exactly one branch:
 
 - for `Create a new item`, follow `./write-create.md`;
 - for `Reformulate an existing item`, follow `./write-update.md`.
 
-Pass `intention` into the chosen branch.
+Each branch owns when to collect the need description.
 
 ---
 

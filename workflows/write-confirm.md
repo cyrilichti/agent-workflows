@@ -109,7 +109,9 @@ Finish according to `../goals/write-complete.md`. Present the outcome using
 `../templates/write-result.md` with:
 
 ```text
-Item: titled markdown link from returned or carried state, or Unavailable
+Provider: resolved provider display name
+Item title: returned or carried item title, or Item unavailable
+Item URL: returned or carried item URL, when available
 Status: returned or carried provider status, or Unavailable
 Assignment: observed assignee names, Unassigned, or Unavailable
 ```
