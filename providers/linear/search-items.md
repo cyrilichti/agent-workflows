@@ -6,7 +6,7 @@ arguments:
   query: caller query
   includeArchived: false
   orderBy: updatedAt
-  limit: 20
+  limit: 5
 ```
 
 Prefer title matches. Return issue ID or identifier, title, state, team,
