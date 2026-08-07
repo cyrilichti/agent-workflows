@@ -11,9 +11,10 @@ items without changing the parent.
 
 Load `../goals/refine-complete.md` once as this workflow's completion contract.
 
-Follow `../rules/user-facing-output.md`.
+Reuse these rules when already active from the caller; otherwise follow them:
 
-Follow `../rules/mutation-response.md`.
+- `../rules/user-facing-output.md`;
+- `../rules/mutation-response.md`.
 
 ---
 
