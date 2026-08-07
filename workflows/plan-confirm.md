@@ -45,16 +45,19 @@ context with Step 1.
 
 ### 3. Draft and Review the Plan
 
-Route these Skills as needed:
+The specialist is the sole plan author.
 
-- `planning-and-task-breakdown`: always, before drafting;
-- `source-driven-development`: when a decision depends on an external
-  versioned fact not established locally;
-- `doubt-driven-development`: after a draft containing high-risk or unfamiliar
-  non-trivial decisions.
+Reuse `planning-and-task-breakdown` from Step 1 without loading it again. For
+drafting, use it only to order dependencies, prefer vertical slices, and
+produce the fewest small, verifiable todos. Do not follow that Skill's task
+format, output paths, estimates, file lists, checkpoints, or templates.
 
-The specialist is the sole plan author. Have it write using
-`../templates/plan.md` with:
+When a decision depends on an external versioned fact not established locally,
+load `source-driven-development` only to verify that fact against an official
+source and cite the finding. Do not follow its implementation process or expand
+verification to unrelated decisions.
+
+Have the specialist write using `../templates/plan.md` with:
 
 ```text
 task_context: resolved task context
@@ -62,13 +65,19 @@ planId: plan_id
 initial_todo_status: pending
 ```
 
-The local template, file location, and read-only planning boundary override
-conflicting Skill instructions.
+After a draft containing high-risk or unfamiliar non-trivial decisions, load
+`doubt-driven-development` under this contract:
 
-When `doubt-driven-development` applies, run one single-model fresh-context
-review. Reconcile its findings and request at most one revision from the
-specialist. Report remaining substantive uncertainty. Do not offer or invoke a
-cross-model review unless the user explicitly requests it.
+- apply CLAIM, EXTRACT, DOUBT, and RECONCILE once;
+- give the reviewer only the affected decision excerpts and the local planning
+  contract, not the full planning history;
+- ignore its multi-cycle loop and cross-model procedure;
+- send actionable findings to the specialist for one revision;
+- place implementation gaps in todos, verification gaps in `Validation`, and
+  unresolved decisions in `Open Questions`; do not persist review commentary.
+
+Report substantive uncertainty that remains after the revision. Do not run
+another review or offer cross-model review unless the user requests it.
 
 ### 4. Confirm Plan
 

@@ -138,9 +138,12 @@ item details at runtime; do not duplicate them in the plan.
 ## Body Rules
 
 - Keep the plan practical enough to guide implementation.
+- Use the fewest todos that remain small and verifiable. Keep each todo to one
+  sentence.
 - **Todos and Steps must match exactly**: same count, same order, same wording
   (`todos[].content` = corresponding numbered item under `## Steps`). Do not add
   todos without a matching step, or steps without a matching todo.
+- Do not add Skill-specific task formats, estimates, file lists, or checkpoints.
 - Use only the provided context and user answers.
 - Do not include implementation details that require codebase analysis unless
   that analysis has already happened.

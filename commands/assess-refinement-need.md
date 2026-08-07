@@ -9,13 +9,17 @@ units.
 
 ## Steps
 
-1. Load `../skills/planning-and-task-breakdown/SKILL.md` completely and use it
-   only for this assessment.
-2. Return exactly one outcome with concise findings:
+1. Reuse `../skills/planning-and-task-breakdown/SKILL.md` when already loaded
+   in the current workflow run; otherwise load it completely. Use it only to
+   assess delivery-unit autonomy, dependencies, and vertical slicing. Ignore
+   its drafting process, task format, sizing, checkpoints, output paths, and
+   templates.
+2. Treat the context as `needs-refinement` only when it contains multiple
+   independently deliverable or schedulable units. Multiple steps, technical
+   layers, or sequential changes may remain one unit.
+3. Return exactly one outcome with concise findings:
    - `refinement-not-needed`: one coherent delivery unit;
    - `needs-refinement`: multiple independently deliverable or schedulable
      units.
-
-Multiple steps, technical layers, or sequential changes may remain one unit.
 
 Return only the assessment; do not draft, decompose, persist, or mutate items.
