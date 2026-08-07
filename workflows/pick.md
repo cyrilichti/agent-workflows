@@ -81,14 +81,11 @@ fields:
   - request_backlinks
 ```
 
-Validate the returned item against the eligibility criteria in Step 2. Stop
-when it is not eligible for this workflow.
+Require the returned item to match the Step 2 assignee and status criteria.
 
-Set `resolved item ID` to the provider ID returned by `read-item`. Keep the
-returned provider item as the complete official item context.
+Use the returned item and provider ID as the complete official item context.
 
-Present it with `../templates/ticket-summary.md`. Do not continue until that
-summary has been shown.
+Present it with `../templates/ticket-summary.md` and wait for the user.
 
 ### 5. Create Plan
 
