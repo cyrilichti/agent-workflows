@@ -1,8 +1,8 @@
-# retrieve-items
+# Retrieve Items
 
 Retrieve Linear issues matching the caller's criteria.
 
-### Current User
+## Current User
 
 1. Retrieve issues assigned to the current user:
 
@@ -21,7 +21,7 @@ Retrieve Linear issues matching the caller's criteria.
 Use Linear state names and state types as workspace-specific values. Do not
 assume every workspace uses the same status labels.
 
-### Status Criteria
+## Status Criteria
 
 Use `list_issues` with the caller's resolved `team` and `state`. Do not pass
 `assignee` unless the caller requested it. Follow every returned cursor and
