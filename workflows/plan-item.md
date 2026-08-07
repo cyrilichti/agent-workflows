@@ -18,7 +18,7 @@ objective, problem, or expected outcome.
 Follow `./plan-confirm.md` with:
 
 ```text
-task_context: complete official item context
+task_context: official item context plus supplied planning context
 plan_id: exact provider item ID
 entry_mode: workflow
 ```

@@ -4,14 +4,14 @@ Use for a Plan UI-compatible implementation plan.
 
 ## File
 
-Write to `../plans/<basename>.plan.md` using:
+Write to:
 
 ```text
-{YYYY-MM-DD}-[{provider-id}-]{objective-slug}
+../plans/{YYYY-MM-DD}-{objective-slug}.plan.md
 ```
 
-Use a lowercase kebab-case slug of at most 40 characters. Omit the provider ID
-when unavailable, and append `-2`, `-3`, etc. when the filename exists.
+Use a lowercase kebab-case slug of at most 40 characters. Append `-2`, `-3`,
+etc. when the filename exists.
 
 ## Format
 
