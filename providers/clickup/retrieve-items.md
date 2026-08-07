@@ -21,12 +21,13 @@ Retrieve ClickUp tasks matching the caller's criteria.
      assignees: resolved numeric user IDs
      include_closed: false
      subtasks: false
-     order_by: updated
-     reverse: true
    ```
 
 3. Apply the caller criteria to the returned tasks when ClickUp cannot express
    them directly.
+
+Keep the first `limit` matches without requesting another page. Normalize `id`
+as `provider_id`, `name` as `title`, and the list label as `destination`.
 
 Use ClickUp status names as workspace-specific values. Do not assume every
 workspace uses the same status labels.
@@ -37,5 +38,4 @@ retrieve the requested tasks.
 ### Status Criteria
 
 Use `clickup_filter_tasks` with the caller's resolved `statuses`. Do not pass
-`assignees` unless the caller requested them. Follow every returned page and
-fail rather than returning a partial result.
+`assignees` unless requested.

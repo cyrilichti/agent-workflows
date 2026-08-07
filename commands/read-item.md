@@ -16,9 +16,8 @@ Read one official item from a configured provider.
 3. Retrieve the caller-requested fields when the provider supports them.
 4. Return the official item and its provider ID to the caller.
 
-When `fields` contains `request_backlinks`, retrieve every page of the item's
-comments and return every pull-request or merge-request backlink URL. If every
-comments page cannot be read, stop without returning the item. Do not retrieve
-comments when `request_backlinks` was not requested.
+When comments or `request_backlinks` are requested, retrieve all comments once
+and return the requested comments and backlink URLs. Stop without returning the
+item when the comments are incomplete.
 
 If the item cannot be found or read, stop without substituting a search result.

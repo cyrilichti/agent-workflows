@@ -45,7 +45,11 @@ criteria:
     - in progress
     - done
     - closed
-  scope: do not list every item available from the provider
+fields:
+  - provider_id
+  - title
+  - status
+limit: 5
 ```
 
 ### 3. Select Item
@@ -79,10 +83,7 @@ fields:
   - title
   - description
   - comments
-  - acceptance criteria
-  - labels
-  - linked resources
-  - attachments
+  - request_backlinks
 ```
 
 Validate the returned item against the eligibility criteria in Step 2. Stop
