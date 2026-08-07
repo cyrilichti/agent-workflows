@@ -141,62 +141,10 @@ active profile remains authoritative over a Skill for scope, permissions, side
 effects, and output. Skill activation is governed globally by
 `../rules/skill-activation.md`.
 
-### Cohorts
+### Routing
 
-| Cohort | Purpose |
-| --- | --- |
-| Product and content | Define value, scope, items, documentation, and SEO direction. |
-| Design and accessibility | Shape user experience, visual systems, and accessible outcomes. |
-| Architecture and assurance | Design solutions and independently assess correctness, security, and performance. |
-| Application delivery | Implement generic, cross-layer, mobile, and developer-tooling work. |
-| Specialized delivery | Implement work where a language or framework materially determines the method. |
-| Data and AI | Analyze data, build data and model workflows, and deliver AI capabilities. |
-| Quality and diagnosis | Define and implement validation, reproduce failures, and isolate root causes. |
-| Operations | Design cloud infrastructure, automate delivery, and improve production reliability. |
-
-### Complete profile inventory
-
-This is the target catalog. Profiles marked as fallbacks are selected only
-when no more specific profile matches. Starting Skills are reviewed,
-non-exhaustive capabilities. Related specialists intentionally share strong
-family Skills instead of depending on weaker keyword matches.
-
-| Profile | Cohort | Primary responsibility | Starting Skills |
-| --- | --- | --- | --- |
-| `item-writer` | Product and content | Draft or reformulate one provider-neutral item. | `interview-me`, `idea-refine`, `grilling`, `to-spec` |
-| `product-manager` | Product and content | Evaluate value, product strategy, investment choices, and roadmap order. | `prioritization-advisor` |
-| `product-owner` | Product and content | Define the next deliverable, backlog scope, and acceptance decisions. | `to-spec`, `to-tickets` |
-| `technical-writer` | Product and content | Produce structured technical documentation and guidance. | `technical-writing`, `source-driven-development` |
-| `seo-specialist` | Product and content | Cover technical, semantic, content, keyword, crawl, indexing, linking, and structured-data SEO. | `seo-geo` |
-| `ux-designer` | Design and accessibility | Design journeys, interactions, navigation, and usability. | `interview-me`, `customer-journey-map` |
-| `ui-designer` | Design and accessibility | Define visual direction, responsive composition, components, and design systems. | `frontend-design` |
-| `accessibility-specialist` | Design and accessibility | Audit WCAG compliance, semantics, keyboard use, assistive technology, and visual accessibility. | `web-design-guidelines` |
-| `solution-architect` | Architecture and assurance | Design architecture within one system or across multiple systems and rollout paths. | `planning-and-task-breakdown`, `source-driven-development` |
-| `reviewer` | Architecture and assurance | Review changes for defects, regressions, maintainability, and convention drift. | `code-review-and-quality` |
-| `security-engineer` | Architecture and assurance | Assess threats, authentication, authorization, data exposure, and hardening. | `security-and-hardening` |
-| `performance-engineer` | Architecture and assurance | Measure and diagnose latency, throughput, scalability, and resource use. | `performance-optimization` |
-| `backend-developer` | Application delivery | Implement backend work when no framework specialist exists. Fallback. | `source-driven-development`, `test-driven-development`, `api-and-interface-design`, `service-decomposition` |
-| `frontend-developer` | Application delivery | Implement frontend work when no framework specialist exists. Fallback. | `source-driven-development`, `test-driven-development`, `tailwind-4-docs`, `web-design-guidelines` |
-| `fullstack-developer` | Application delivery | Deliver a genuinely atomic vertical slice spanning frontend and backend. | `source-driven-development`, `test-driven-development` |
-| `mobile-developer` | Application delivery | Implement mobile work across platforms and frameworks. Fallback. | `source-driven-development`, `test-driven-development` |
-| `developer-experience-engineer` | Application delivery | Improve local tooling, developer CLIs, SDK ergonomics, generators, and repository automation. | `source-driven-development`, `test-driven-development` |
-| `laravel-developer` | Specialized delivery | Implement Laravel-specific backend work. | `laravel-best-practices`, `test-driven-development`, `api-and-interface-design`, `service-decomposition` |
-| `symfony-developer` | Specialized delivery | Implement Symfony-specific backend work. | `symfony:tdd-with-phpunit`, `source-driven-development`, `api-and-interface-design`, `service-decomposition` |
-| `nestjs-developer` | Specialized delivery | Implement NestJS services and applications. | `nestjs-best-practices`, `source-driven-development`, `test-driven-development`, `api-and-interface-design`, `service-decomposition` |
-| `python-developer` | Specialized delivery | Implement general Python work when no Python framework specialist exists. Fallback. | `source-driven-development`, `test-driven-development` |
-| `fastapi-developer` | Specialized delivery | Implement FastAPI services and applications. | `source-driven-development`, `test-driven-development`, `api-and-interface-design`, `service-decomposition` |
-| `react-developer` | Specialized delivery | Implement React-specific frontend work. | `source-driven-development`, `test-driven-development`, `vercel-react-best-practices`, `tailwind-4-docs`, `shadcn` |
-| `vue-developer` | Specialized delivery | Implement Vue-specific frontend work at component or application scale. | `vue`, `source-driven-development`, `test-driven-development`, `tailwind-4-docs` |
-| `data-analyst` | Data and AI | Explore data, define KPIs, identify trends, and support decisions. | `data-analysis-jupyter` |
-| `data-scientist` | Data and AI | Cover advanced analysis, models, experiments, and data pipelines. | `data-analysis-jupyter`, `scikit-learn-best-practices`, `test-driven-development` |
-| `database-engineer` | Data and AI | Design schemas, optimize queries, run safe migrations, and preserve integrity. | `supabase-postgres-best-practices`, `source-driven-development` |
-| `ml-engineer` | Data and AI | Build training, serving, monitoring, and model-lifecycle systems. | `scikit-learn-best-practices`, `test-driven-development`, `observability-and-instrumentation` |
-| `ai-engineer` | Data and AI | Build LLM and agent features, including prompting, retrieval, evaluation, and guardrails. | `evaluate-rag`, `source-driven-development`, `test-driven-development` |
-| `qa-engineer` | Quality and diagnosis | Define validation strategy and implement automated or manual test coverage. | `code-review-and-quality`, `test-driven-development` |
-| `debugger` | Quality and diagnosis | Reproduce failures, test hypotheses, isolate causes, and return root-cause evidence. | `systematic-debugging` |
-| `cloud-engineer` | Operations | Design and implement cloud infrastructure with cost and security constraints. | `source-driven-development`, `security-and-hardening`, `planning-and-task-breakdown` |
-| `devops-engineer` | Operations | Build CI/CD, release, container, deployment, and rollback automation. | `ci-cd-and-automation` |
-| `sre` | Operations | Improve SLOs, observability, resilience, incident response, and production reliability. | `systematic-debugging`, `observability-and-instrumentation` |
+Use `../data/agent-routing.md` when `../workflows/sub-agent.md` needs to select
+a new profile. Do not scan profile frontmatter for routing.
 
 ### Approved Skill sources
 

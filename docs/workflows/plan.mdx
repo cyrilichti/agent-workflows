@@ -5,7 +5,8 @@ description: Turn one task into a clear, approved implementation plan before wor
 
 `/plan` turns a task into an implementation plan before work begins.
 It first checks that the task can be delivered as one coherent unit. If the
-task is too broad, `/plan` explains why it needs refinement and stops.
+task is too broad, standalone mode reports why and stops; caller mode returns
+the findings so the caller can offer `/refine`.
 
 ## Dispatching external skills
 
@@ -23,7 +24,7 @@ task is too broad, `/plan` explains why it needs refinement and stops.
     href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown"
   >
     <span class="dispatch-skill__label">Skill</span>
-    <span>Always: scope and structure</span>
+    <span>Always: assess and structure</span>
     <strong>planning-and-task-breakdown ↗</strong>
     <small>Addy Osmani</small>
   </a>
@@ -59,7 +60,7 @@ task is too broad, `/plan` explains why it needs refinement and stops.
     <tr>
       <td>1</td>
       <th scope="row">Context</th>
-      <td>Use the current request or the item provided by another workflow.</td>
+      <td>Use standalone conversation context or preserve the official item supplied by a caller.</td>
     </tr>
     <tr>
       <td>2</td>
@@ -79,12 +80,12 @@ task is too broad, `/plan` explains why it needs refinement and stops.
     <tr>
       <td>5</td>
       <th scope="row">Review</th>
-      <td>Approve the plan or return it for revision.</td>
+      <td>Show only the plan name, link, and todo count, then approve or adjust it.</td>
     </tr>
     <tr>
       <td>6</td>
       <th scope="row">Return</th>
-      <td>Return the approved plan to the calling workflow or stop without starting work.</td>
+      <td>Return the approved plan or refinement findings to the caller; standalone mode stops.</td>
     </tr>
   </tbody>
 </table>

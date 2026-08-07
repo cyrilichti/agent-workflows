@@ -2,28 +2,13 @@
 
 ## Purpose
 
-Select and activate the most appropriate sub-agent profile for the current task.
-
-Selection chooses a role. Activation makes that role effective by loading the
-full profile and its required resources.
-
----
-
-## Trigger
-
-Run this workflow when a routing workflow asks for sub-agent selection, or when
-the current task needs a specialist profile and no appropriate profile is
-active.
+Select and activate one specialized agent profile.
 
 ---
 
 ## Input
 
-Use the available task context:
-
-* item summary;
-* user request;
-* current conversation objective.
+- `task_context`: available item, request, and conversation context.
 
 ---
 
@@ -31,61 +16,31 @@ Use the available task context:
 
 ### 1. Select Profile
 
-Select exactly one primary profile from `../agents/`.
+Keep the active profile when it remains appropriate. Otherwise, load
+`../data/agent-routing.md`, select one theme, then its most-specific profile.
 
-Prefer the most specific relevant profile. If the task is ambiguous, ask the
-user to confirm.
+Ask the user when either choice is ambiguous. Do not scan agent profiles for
+routing.
 
-### 2. Load Profile
+### 2. Activate Profile
 
-Read the full selected profile file:
+Read the full `../agents/<agent-name>.md` profile, then load only its referenced
+resources required for `task_context`. Do not rely on frontmatter or partial
+content.
+
+### 3. Report Activation
+
+After loading the profile and required resources, report using
+`../templates/sub-agent-activation.md` with:
 
 ```text
-../agents/<agent-name>.md
+name: readable activated profile name
+reason: short reason related to task_context
 ```
-
-Do not rely on frontmatter or partial content.
-
-### 3. Load Required Resources
-
-Load only resources explicitly referenced by the selected profile and required
-for the current task.
-
-Do not load generic documentation unless the selected profile explicitly
-requires it.
-
-### 4. Confirm Activation
-
-Confirm activation using `../templates/sub-agent-activation.md`.
-
-Emit one user-facing report only, after the profile and required resources have
-been loaded.
-
----
-
-## Re-activation
-
-Before selecting a profile, check whether the active profile is still
-appropriate for the current task.
-
-If it is appropriate, keep using it.
-
-If it is missing or no longer appropriate, run this workflow from the beginning.
 
 ---
 
 ## Safety
 
-* Do not announce activation before loading the full profile.
-* Do not start implementation when called from a routing workflow.
-
----
-
-## Success Criteria
-
-This workflow is complete when:
-
-* one primary profile has been selected;
-* the full profile has been read;
-* required resources have been loaded;
-* activation has been confirmed.
+- Do not announce activation before the profile is loaded.
+- Do not start implementation when invoked by a routing workflow.

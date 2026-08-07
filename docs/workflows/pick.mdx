@@ -5,7 +5,8 @@ description: Pick your next work item, approve its plan, and continue with /work
 
 `/pick` turns a ready item into active work. It lets you choose an item, reviews
 its context, and sends it to `/plan`. Once you approve the plan, `/pick` moves
-the item to in progress and continues with `/work`.
+the item to in progress and continues with `/work`. When the item needs
+refinement, `/pick` offers `/refine` or stops without changing it.
 
 ## Dispatching workflows
 
@@ -29,14 +30,24 @@ the item to in progress and continues with `/work`.
 
   <span className="dispatch-arrow" aria-hidden="true">↓</span>
 
-  <a
-    className="dispatch-node dispatch-node--workflow dispatch-node--link"
-    href="/agent-workflows/workflows/work/"
-  >
-    <span className="dispatch-node__label">Workflow</span>
-    <strong>/work</strong>
-    <span>Executes the approved plan</span>
-  </a>
+  <div className="dispatch-skills dispatch-skills--conditional">
+    <a
+      className="dispatch-node dispatch-node--workflow dispatch-node--link"
+      href="/agent-workflows/workflows/work/"
+    >
+      <span className="dispatch-node__label">Approved plan</span>
+      <strong>/work</strong>
+      <span>Executes the plan</span>
+    </a>
+    <a
+      className="dispatch-node dispatch-node--workflow dispatch-node--link"
+      href="/agent-workflows/workflows/refine/"
+    >
+      <span className="dispatch-node__label">Needs refinement</span>
+      <strong>/refine</strong>
+      <span>Splits the item after confirmation</span>
+    </a>
+  </div>
 </div>
 
 ## How this workflow is structured
@@ -66,12 +77,12 @@ the item to in progress and continues with `/work`.
     <tr>
       <td>5</td>
       <th scope="row">Plan</th>
-      <td>Use <code>/plan</code> to create and approve an implementation plan.</td>
+      <td>Approve a plan, or choose whether to refine an oversized item.</td>
     </tr>
     <tr>
       <td>6</td>
       <th scope="row">Start</th>
-      <td>Move the item to in progress after plan approval.</td>
+      <td>After approval, move the item to in progress.</td>
     </tr>
     <tr>
       <td>7</td>
