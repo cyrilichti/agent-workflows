@@ -95,12 +95,10 @@ Follow `./plan.md` with:
 item: complete official item context, including its provider ID
 ```
 
-`/plan` uses that provider ID as `planId`.
+On an approved plan, continue to Step 6.
 
-Continue to Step 6 only when `/plan` returns an approved plan.
-
-On `needs-refinement`, report its concise findings, state that the item must be
-refined before an implementation plan can be created, then ask using
+On `needs-refinement`, report the findings and explain that no plan can be
+created yet, then ask using
 `../templates/select-option.md` with:
 
 ```text
@@ -110,18 +108,17 @@ options:
 - Stop without changes
 ```
 
-- `Stop without changes`: leave the official item unchanged and stop.
+- `Stop without changes`: stop.
 - `Refine item`: follow `./refine.md` in workflow mode with:
 
   ```text
   provider: resolved item provider
   parent_item_id: resolved item ID
-  parent_item: complete official item context returned by read-item
+  parent_item: complete official item context
   needs_refinement_findings: exact findings returned by plan
   ```
 
-  After `/refine` returns for any reason, stop `/pick`. Do not start or replan
-  the parent, activate a created child, or trigger `/work`.
+  Then stop `/pick`.
 
 ### 6. Start Item
 
