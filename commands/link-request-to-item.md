@@ -30,10 +30,11 @@ Agent-Workflows-Plan: <plan_id>
 
 ## Steps
 
-1. Load `../providers/<provider>.md`.
+1. Load `../providers/<provider>/add-request-backlink.md`. Stop when it is
+   missing.
 2. Select the exact comment for `request_kind`. Stop when the kind is not
    supported.
-3. Use `add-request-backlink` with that exact comment.
+3. Follow the operation with the item ID and exact comment.
 4. Return the created backlink.
 
 Do not update item status, title, description, assignment, labels, or any other
