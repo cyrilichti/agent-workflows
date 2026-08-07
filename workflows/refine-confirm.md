@@ -11,15 +11,22 @@ complete official parent item, and preserved `needs-refinement` findings.
 
 ### 1. Resolve Decomposition Author
 
-Follow `./sub-agent.md` with the complete parent item and findings as
-`task_context`. Keep its selected specialist as the sole author. It may inspect
-user- or item-identified technical context read-only.
+Follow `./sub-agent.md` with:
+
+```text
+task_context:
+  parent_item: complete official parent item
+  needs_refinement_findings: preserved refinement findings
+```
+
+Keep its selected specialist as the sole author. It may inspect user- or
+item-identified technical context read-only.
 
 ### 2. Draft the Decomposition
 
-Have the specialist load `../skills/to-tickets/SKILL.md` completely and apply
-only its vertical-slicing and blocking-edge methods to the parent item,
-findings, and inspected context.
+Have the specialist load `../skills/to-tickets/SKILL.md` completely and run
+only Steps 1–3 through `Draft vertical slices` with the parent item, findings,
+and inspected context.
 
 Require at least two provider-neutral children, each with a stable local
 reference, meaningful title, free-form Markdown body, and genuine blockers
@@ -27,9 +34,8 @@ when applicable. They must be autonomous vertical slices covering the parent
 scope exactly once. Edges may connect children but must not encode internal
 implementation steps.
 
-Ignore all other `to-tickets` behavior, including setup, retrieval,
-confirmation, files, provider operations, handoff, and implementation. Return
-the draft to `/refine` without presenting or persisting it.
+Return the provider-neutral draft to `/refine` before Step 4. `/refine` owns
+user confirmation and all provider operations.
 
 ### 3. Review the Decomposition
 
