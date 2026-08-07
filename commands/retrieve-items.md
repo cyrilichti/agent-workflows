@@ -7,7 +7,7 @@ Retrieve items from a resolved provider.
 - `provider`: resolved MCP provider.
 - `criteria`: item filtering rules.
 - `fields`: optional subset of `provider_id`, `title`, `status`, and
-  `destination`.
+  `destination`; defaults to all four.
 - `limit`: optional maximum number of items to return.
 
 ## Steps
