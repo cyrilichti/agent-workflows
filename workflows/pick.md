@@ -85,7 +85,13 @@ Require the returned item to match the Step 2 assignee and status criteria.
 
 Use the returned item and provider ID as the complete official item context.
 
-Present it with `../templates/ticket-summary.md` and wait for the user.
+Present with `../templates/ticket-summary.md`:
+
+```text
+item: complete official item context
+```
+
+Then wait for the user.
 
 ### 5. Create Plan
 
