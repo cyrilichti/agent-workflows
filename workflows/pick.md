@@ -148,14 +148,6 @@ authoritative.
 
 ## Safety
 
-- Pasted text or titles are not official items until matched to the resolved
-  provider.
-- Do not update item status before the plan is approved.
-- Do not trigger `/work` before the item is in its active-work status.
-- Do not let `/plan` or `/work` replace the official source item with pasted or
-  inferred metadata.
-- Do not run `/refine` unless `/plan` returned `needs-refinement`. After
-  offering or running `/refine`, stop without updating the parent or triggering
-  `/work`.
-- Do not select a planning specialist here; `/plan` owns that after required
-  context is known.
+- Preserve the complete official item context across `/plan` and `/work`; never
+  replace it with pasted or inferred metadata.
+- Let `/plan` own planning specialist selection.
