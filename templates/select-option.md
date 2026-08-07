@@ -1,57 +1,36 @@
 # Select Option
 
-Use this template when the user must choose exactly one option from a short
-list.
+Use this template when the user must choose exactly one option.
 
-## Format
+Follow `../rules/default-language.md` for all user-facing output.
 
-Workflow input:
+## Input
 
 ```text
 question: <question>
 options:
 - <option label>
-- <option label>
-```
-
-When the caller provides internal values, keep them attached to their labels:
-
-```text
-question: <question>
-options:
-- label: <option label>
-  value: <internal value>
 - label: <option label>
   value: <internal value>
 ```
 
-Native output:
+Use labels directly by default. Add a value only when the caller needs hidden
+data distinct from the label.
 
-Use the AI tool's native single-selection control when available.
+## Behavior
 
-Text fallback:
+Use a native single-selection control only when it can present every option
+without changing the choice or adding a recommendation.
+
+Otherwise use this text fallback:
 
 ```markdown
 <question>
 
-- <option label>
-- <option label>
+1. <option label>
+2. <option label>
 ```
 
-## Rules
-
-* Use the native single-selection control when available. Do not render the
-  options as a plain Markdown list first.
-* Use the text fallback only when no native single-selection control is
-  available.
-* Allow exactly one selected option.
-* Localize authored questions and option labels according to
-  `../rules/default-language.md`. Preserve their meaning rather than reproducing
-  their wording exactly.
-* Return the selected option value to the caller when values are provided.
-* Do not add descriptions unless required by the workflow or native UI.
-* Use readable labels for the user.
-* Keep text originating from external systems, such as item titles,
-  unchanged unless the system provides a localized form.
-* Keep technical identifiers and internal option values unchanged and do not
-  expose them in labels.
+Wait for exactly one selection. Return the caller's original option label, or
+its internal value when one is provided. Do not expose internal values or
+preselect an option.

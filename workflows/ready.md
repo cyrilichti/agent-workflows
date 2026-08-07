@@ -30,9 +30,14 @@ and request ID.
 
 In standalone mode, select only files under `../plans/` whose names end with
 `.plan.md`. Sort them by modification time from newest to oldest, keep at most
-the first 10, and ask the user to select exactly one using
-`../templates/select-option.md`. Use readable plan names as labels and plan
-paths as internal values.
+the first 10, and ask using `../templates/select-option.md` with:
+
+```text
+question: Which plan do you want to prepare for review?
+options:
+- label: <readable plan name>
+  value: <plan file path>
+```
 
 When no plan exists, report that no ready plan is available and stop.
 
@@ -135,14 +140,12 @@ Ask once using `../templates/select-option.md`:
 ```text
 question: Push this branch and promote its request for review?
 options:
-- label: Confirm push and promotion
-  value: confirm
-- label: Stop without changes
-  value: stop
+- Confirm push and promotion
+- Stop without changes
 ```
 
-On `stop`, perform no mutation and stop. Do not push or call a provider
-mutation without `confirm`.
+On `Stop without changes`, perform no mutation and stop. Do not push or call a
+provider mutation without `Confirm push and promotion`.
 
 ### 7. Push and Promote
 

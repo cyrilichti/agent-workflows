@@ -26,10 +26,8 @@ Ask the user using `../templates/select-option.md` with:
 ```text
 question: What do you want to write?
 options:
-- label: Create a new item
-  value: create
-- label: Reformulate an existing item
-  value: update
+- Create a new item
+- Reformulate an existing item
 ```
 
 Do not resolve the item provider before this choice. Keep the prefix through
@@ -44,8 +42,8 @@ Ask for a light free-form description of the need. Keep it as this run's
 
 After the need description is collected, follow exactly one branch:
 
-- for `create`, follow `./write-create.md`;
-- for `update`, follow `./write-update.md`.
+- for `Create a new item`, follow `./write-create.md`;
+- for `Reformulate an existing item`, follow `./write-update.md`.
 
 Pass `intention` into the chosen branch.
 

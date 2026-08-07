@@ -69,18 +69,16 @@ Ask using `../templates/select-option.md` with:
 ```text
 question: What should happen to assignment?
 options:
-- label: Choose an assignee
-  value: assign
-- label: Skip assignment
-  value: skip
+- Choose an assignee
+- Skip assignment
 ```
 
-If the user selects `skip`, leave a new item unassigned or preserve an existing
-item's current assignment. Do not run an assignment command.
+If the user selects `Skip assignment`, leave a new item unassigned or preserve
+an existing item's current assignment. Do not run an assignment command.
 
 Otherwise, ask for `me`, a name, or an email, then run
 `../commands/resolve-item-assignee.md` with the provider and that query.
-Run that resolution only after the user selects `assign`.
+Run that resolution only after the user selects `Choose an assignee`.
 
 Select the single match. When several match, ask using
 `../templates/select-option.md` with:
@@ -103,8 +101,9 @@ Run `../commands/save-item.md` with:
 
 Use the `save-item` result for subsequent assignment and reporting.
 
-If assignment choice is `assign`, run `../commands/assign-item.md` with the
-saved item ID and selected assignee. Otherwise, leave assignment untouched.
+If assignment choice is `Choose an assignee`, run
+`../commands/assign-item.md` with the saved item ID and selected assignee.
+Otherwise, leave assignment untouched.
 
 Finish according to `../goals/write-complete.md`. Present the outcome using
 `../templates/write-result.md` with:

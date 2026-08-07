@@ -30,10 +30,18 @@ and `fields: request_backlinks`.
 
 Otherwise, run `../commands/resolve-item-status.md` with
 `semantic_status: review`. When it returns criteria, run
-`../commands/retrieve-items.md` with those exact criteria, then ask the user to
-select one complete option using `../templates/select-option.md`. When
-discovery is unavailable or finds no item, ask for an exact item ID. Read the
-selected item with
+`../commands/retrieve-items.md` with those exact criteria. When it returns
+items, ask using `../templates/select-option.md` with:
+
+```text
+question: Which item do you want to complete?
+options:
+- label: <title, status, and destination when available>
+  value: <provider item ID>
+```
+
+When discovery is unavailable or finds no item, ask for an exact item ID. Read
+the selected item with
 `fields: request_backlinks` and keep that read as the official item context.
 
 ### 2. Resolve the Exact Request
@@ -92,13 +100,11 @@ Ask once through `../templates/select-option.md`:
 ```text
 question: Complete this request and its item?
 options:
-- label: Confirm completion
-  value: confirm
-- label: Stop without changes
-  value: stop
+- Confirm completion
+- Stop without changes
 ```
 
-On `stop`, perform no mutation and stop.
+On `Stop without changes`, perform no mutation and stop.
 
 ### 5. Merge the Open Request
 

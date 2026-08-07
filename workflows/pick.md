@@ -113,14 +113,12 @@ refined before an implementation plan can be created, then ask using
 ```text
 question: Do you want to refine this item?
 options:
-- label: Refine item
-  value: refine
-- label: Stop without changes
-  value: stop
+- Refine item
+- Stop without changes
 ```
 
-- `stop`: leave the official item unchanged and stop.
-- `refine`: follow `./refine.md` in workflow mode with:
+- `Stop without changes`: leave the official item unchanged and stop.
+- `Refine item`: follow `./refine.md` in workflow mode with:
 
   ```text
   provider: resolved item provider

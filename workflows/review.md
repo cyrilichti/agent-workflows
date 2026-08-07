@@ -40,12 +40,20 @@ a failure.
 
 ### 2. Select One Official Item
 
-When review-status retrieval returned items, present all of them together using
-`../templates/select-option.md`. Use title, status, and destination in readable
-labels, keep provider IDs as internal values, and append `Select another item`.
+When review-status retrieval returned items, ask using
+`../templates/select-option.md` with:
+
+```text
+question: Which item do you want to review?
+options:
+- label: <title, status, and destination when available>
+  value: <provider item ID>
+- Select another item
+```
+
 Never preselect an item, including when only one item is available.
 
-For a selected item, run `../commands/read-item.md` with:
+For a selected provider item, run `../commands/read-item.md` with:
 
 ```text
 provider: resolved item provider
@@ -55,14 +63,30 @@ fields:
 ```
 
 When no review status exists, status resolution is unavailable, or the user
-selects `Select another item`, ask whether to use an exact item ID or a narrow
-title phrase through `../templates/select-option.md`.
+selects `Select another item`, ask using `../templates/select-option.md` with:
 
-- For an exact ID, run `../commands/read-item.md` with that ID and
+```text
+question: How do you want to select the item?
+options:
+- Enter an exact item ID
+- Search by title
+```
+
+- On `Enter an exact item ID`, ask for the exact ID, then run
+  `../commands/read-item.md` with it and `fields: request_backlinks`.
+- On `Search by title`, ask for a narrow title phrase and run
+  `../commands/search-items.md`. When results are returned, ask using
+  `../templates/select-option.md` with:
+
+  ```text
+  question: Which item do you want to review?
+  options:
+  - label: <title, status, and destination when available>
+    value: <provider item ID>
+  ```
+
+  Then run `../commands/read-item.md` with the selected ID and
   `fields: request_backlinks`.
-- For a title phrase, run `../commands/search-items.md`. Always ask the user to
-  select one result explicitly, then run `../commands/read-item.md` with its ID
-  and `fields: request_backlinks`.
 
 Search and retrieval results are not official context. Continue only from the
 complete official item returned by `read-item`.
@@ -158,13 +182,11 @@ Present the complete payload with
 ```text
 question: Publish this exact review result?
 options:
-- label: Confirm publication
-  value: confirm
-- label: Stop without publishing
-  value: stop
+- Confirm publication
+- Stop without publishing
 ```
 
-On `stop`, perform no provider mutation and stop.
+On `Stop without publishing`, perform no provider mutation and stop.
 
 ### 8. Reject a Stale Confirmation
 
