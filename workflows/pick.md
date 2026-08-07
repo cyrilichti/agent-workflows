@@ -124,13 +124,13 @@ target_status: in progress
 
 Report the updated item status.
 
-### 7. Start Work
+### 7. Hand Off to Work
 
-Follow `./work.md` with:
+Hand off to `./work.md` in a fresh context with only:
 
 ```text
 plan: approved plan
-item: complete official item context
+item: complete official item context with the observed updated status
 ```
 
 ---
