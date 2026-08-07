@@ -8,6 +8,16 @@ in progress and hand off to `/work`.
 
 ---
 
+## Required Context
+
+Load `../goals/pick-complete.md` once as this workflow's completion contract.
+
+Follow `../rules/user-facing-output.md`.
+
+Follow `../rules/mutation-response.md`.
+
+---
+
 ## Steps
 
 ### 1. Resolve Context Provider
