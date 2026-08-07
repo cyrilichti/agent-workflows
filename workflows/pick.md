@@ -22,7 +22,8 @@ context: item
 
 When the user supplies a provider item ID, run `../commands/read-item.md` with
 that ID and the fields in Step 4, validate it can be used for this workflow,
-keep it as the complete official item context, and continue at Step 4.
+set `resolved item ID` to the provider ID returned by `read-item`, keep the item
+as the complete official item context, and continue at Step 4.
 
 Otherwise run `../commands/retrieve-items.md` with:
 
@@ -59,6 +60,8 @@ options:
 Do not continue until the selection control or text fallback has been rendered
 and the user has selected exactly one item.
 
+Set `resolved item ID` to the selected provider ID.
+
 ### 4. Summarize Item
 
 Unless Step 2 already returned the official item, run
@@ -66,7 +69,7 @@ Unless Step 2 already returned the official item, run
 
 ```text
 provider: resolved item provider
-item_id: selected provider ID
+item_id: resolved item ID
 fields:
   - title
   - description
@@ -77,7 +80,8 @@ fields:
   - attachments
 ```
 
-Keep the returned provider item as the complete official item context.
+Set `resolved item ID` to the provider ID returned by `read-item`. Keep the
+returned provider item as the complete official item context.
 
 Present it with `../templates/ticket-summary.md`. Do not continue until that
 summary has been shown.
@@ -112,7 +116,7 @@ options:
 
   ```text
   provider: resolved item provider
-  parent_item_id: selected provider ID
+  parent_item_id: resolved item ID
   parent_item: complete official item context returned by read-item
   needs_refinement_findings: exact findings returned by plan
   ```
@@ -126,7 +130,7 @@ Run `../commands/transition-item-status.md` with:
 
 ```text
 provider: resolved item provider
-item_id: selected provider ID
+item_id: resolved item ID
 target_status: in progress
 ```
 
