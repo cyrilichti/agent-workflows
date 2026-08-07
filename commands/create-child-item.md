@@ -11,9 +11,9 @@ Create one confirmed item as a native child of an official parent item.
 ## Steps
 
 1. Require the official parent's provider ID and destination from the caller.
-2. Load `../providers/<provider>.md`.
-3. Use the provider operation named `create-child-item` with the confirmed
-   content, parent ID, and parent destination.
+2. Load `../providers/<provider>/create-child-item.md`. Stop when it is missing.
+3. Follow the operation with the confirmed content, parent ID, and parent
+   destination.
 4. Return the created child item ID, title, link, destination, and parent ID
    when available.
 

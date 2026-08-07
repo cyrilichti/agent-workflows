@@ -14,9 +14,10 @@ child item.
 
 1. Require every provider ID from the caller. Do not resolve an ID from a
    title, search result, URL, or other provider lookup.
-2. Load `../providers/<provider>.md`.
-3. Use the provider operation named `create-blocking-relations` with the
-   blocked child ID and complete list of blocking child IDs.
+2. Load `../providers/<provider>/create-blocking-relations.md`. Stop when it is
+   missing.
+3. Follow the operation with the blocked child ID and complete list of blocking
+   child IDs.
 4. Return every created blocking relation and any failed relation.
 
 Use only the operation and exact payload documented by the selected provider.
