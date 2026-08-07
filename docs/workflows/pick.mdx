@@ -1,11 +1,11 @@
 ---
 title: /pick
-description: Pick your next work item, approve an implementation plan, and hand it off to /work.
+description: Pick your next work item, approve its plan, and continue with /work.
 ---
 
 `/pick` turns a ready item into active work. It lets you choose an item, reviews
 its context, and sends it to `/plan`. Once you approve the plan, `/pick` moves
-the item to in progress and hands off to `/work` in a fresh context.
+the item to in progress and continues with `/work`.
 
 ## Dispatching workflows
 
@@ -13,7 +13,7 @@ the item to in progress and hands off to `/work` in a fresh context.
   <div className="dispatch-node dispatch-node--workflow">
     <span className="dispatch-node__label">Workflow</span>
     <strong>/pick</strong>
-    <span>Selects one item and owns the handoffs</span>
+    <span>Selects one item and owns the workflow sequence</span>
   </div>
 
   <span className="dispatch-arrow" aria-hidden="true">↓</span>
@@ -27,10 +27,7 @@ the item to in progress and hands off to `/work` in a fresh context.
     <span>Creates and approves the implementation plan</span>
   </a>
 
-  <span className="dispatch-arrow dispatch-arrow--labeled">
-    <span className="dispatch-arrow__label">Handoff</span>
-    <span aria-hidden="true">↓</span>
-  </span>
+  <span className="dispatch-arrow" aria-hidden="true">↓</span>
 
   <a
     className="dispatch-node dispatch-node--workflow dispatch-node--link"
@@ -38,7 +35,7 @@ the item to in progress and hands off to `/work` in a fresh context.
   >
     <span className="dispatch-node__label">Workflow</span>
     <strong>/work</strong>
-    <span>Starts implementation from the approved plan in a fresh context</span>
+    <span>Executes the approved plan</span>
   </a>
 </div>
 
@@ -74,15 +71,12 @@ the item to in progress and hands off to `/work` in a fresh context.
     <tr>
       <td>6</td>
       <th scope="row">Start</th>
-      <td>Move the item to in progress only after plan approval.</td>
+      <td>Move the item to in progress after plan approval.</td>
     </tr>
     <tr>
       <td>7</td>
-      <th scope="row">Handoff</th>
-      <td>
-        Hand off the approved plan and active item to <code>/work</code> in a
-        fresh context.
-      </td>
+      <th scope="row">Work</th>
+      <td>Continue with <code>/work</code> using the approved plan and item.</td>
     </tr>
   </tbody>
 </table>

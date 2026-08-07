@@ -8,17 +8,16 @@ its planning result.
 ## Success Criteria
 
 - The selected item is an official provider item and its summary was shown.
-- An approved plan caused the item to move to `in progress` before the plan and
-  updated official item context were handed off to `/work`.
+- An approved plan caused the item to move to `in progress` before `/work`
+  received the plan and updated official item context.
 - A `needs-refinement` result left the parent item unchanged by `/pick`,
-  honored the user's refinement choice, and stopped without handing off to
-  `/work`.
+  honored the user's refinement choice, and stopped before implementation.
 - Observed provider results were reported without inferring a successful
   mutation.
 
 ## Stop Conditions
 
-- Stop successfully after handing off to `/work` from an approved plan and a
+- Stop successfully after continuing with `/work` from an approved plan and a
   successful `in progress` transition.
 - Stop successfully after the selected `needs-refinement` outcome completes.
 - Stop and report when a required operation fails.

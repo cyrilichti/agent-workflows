@@ -4,7 +4,7 @@
 
 Resolve and summarize one official item, create a plan via `/plan`, offer
 `/refine` on `needs-refinement`, or after plan approval move the item to
-in progress and hand off to `/work`.
+in progress and continue with `/work`.
 
 ---
 
@@ -124,9 +124,9 @@ target_status: in progress
 
 Report the updated item status.
 
-### 7. Hand Off to Work
+### 7. Continue with Work
 
-Hand off to `./work.md` in a fresh context with only:
+Follow `./work.md` in caller mode with:
 
 ```text
 plan: approved plan
