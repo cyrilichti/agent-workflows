@@ -23,8 +23,8 @@ fields:
   - attachments
 ```
 
-Keep the returned provider ID and complete official item. Present with
-`../templates/ticket-summary.md`:
+Use the returned item and provider ID as the complete official parent item
+context. Present with `../templates/ticket-summary.md`:
 
 ```text
 item: complete official parent item

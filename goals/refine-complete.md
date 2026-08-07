@@ -11,10 +11,12 @@ Report exactly one outcome:
 
 - `refinement-not-needed`: one coherent unit; no mutation;
 - `cancelled`: confirmation cancelled; no child created;
-- `complete`: every confirmed child and relation created;
-- `failed`: no child created; every child failure reported;
-- `partially-failed`: some creation succeeded; created and failed children and
-  relations reported separately.
+- `complete`: every confirmed child and relation created; report each child
+  title, provider ID, link when available, and each created relation;
+- `failed`: no child created; report every failed child title and failure;
+- `partially-failed`: some creation succeeded; report created child titles,
+  provider IDs, and links when available, failed child titles and failures, and
+  created and failed relations separately.
 
 ## Stop Conditions
 

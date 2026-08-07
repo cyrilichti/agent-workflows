@@ -28,7 +28,8 @@ replacement or rollback.
 ### 2. Create Blocking Relations
 
 Group every confirmed `blocking_ref` by its `blocked_ref`, then resolve both
-only through successful Step 1 results. For each created blocked child, run
+only through successful Step 1 results. For each group whose blocked child and
+at least one blocking child were created, run
 `../commands/create-blocking-relations.md` once with:
 
 ```text
@@ -38,7 +39,8 @@ blocking_item_ids:
   - provider ID of each successfully created blocking child
 ```
 
-Record missing endpoints without a provider call. Record operation failures
+Record every edge with a missing endpoint without a provider call. Do not call
+the command when no blocker in the group was created. Record operation failures
 and continue without removing successful relations.
 
 ### 3. Finish
