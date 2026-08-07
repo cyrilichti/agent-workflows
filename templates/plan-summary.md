@@ -1,30 +1,22 @@
 # Plan Summary
 
-Use when presenting a created plan to the user before approval.
+Use when presenting a created plan before approval without repeating its
+content.
 
-## Format (Markdown)
+## Format
 
 ```markdown
 ## Plan Ready
 
-Plan: <plan file link>
+### <plan name>
 
-### Objective
+[Open plan](<plan file link>)
 
-<objective>
-
-### Expected Outcome
-
-<expected outcome>
-
-### Todos
-
-- <todo title>
-- <todo title>
+- **Todos:** <todo count>
 ```
 
 ## Rules
 
-* Use `.agents/plans/<filename>` for the plan link.
-* Show todo titles only.
-* Do not include the full plan body.
+- Read `name` and the todo count from the plan frontmatter, and link to
+  `.agents/plans/<filename>`.
+- Do not include any other plan content.
