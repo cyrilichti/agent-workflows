@@ -16,9 +16,9 @@ provider.
 ## Steps
 
 1. Reject any other `target_status`.
-2. Load `../providers/<provider>.md`.
-3. Use the provider operation named `transition-item-status` with `item_id` and
-   `target_status`.
+2. Load `../providers/<provider>/transition-item-status.md`. If the file is
+   missing, stop.
+3. Follow the loaded operation with `item_id` and `target_status`.
 4. For `in progress`:
    - when exactly one workspace status matches, update only the item's state or
      status field;
