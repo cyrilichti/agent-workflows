@@ -595,6 +595,25 @@ a.dispatch-node--link:focus-visible {
   font-size: 1.4rem;
 }
 
+.dispatch-arrow--labeled {
+  flex-direction: column;
+  gap: 0.2rem;
+  line-height: 1.2;
+}
+
+.dispatch-arrow__label {
+  color: var(--sl-color-accent);
+  font-family: var(--sl-font-mono);
+  font-size: var(--sl-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dispatch-map--vertical .dispatch-arrow--labeled {
+  transform: none;
+}
+
 .dispatch-skills {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
