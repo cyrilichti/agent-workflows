@@ -49,10 +49,6 @@ limit: 5
 
 ### 3. Select Item
 
-Prepare one selectable option per retrieved item.
-
-Attach the provider ID as the internal value. Do not require raw ID selection.
-
 Ask using `../templates/select-option.md` with:
 
 ```text
@@ -61,9 +57,6 @@ options:
 - label: <title> — <status>
   value: <provider id>
 ```
-
-Do not continue until the selection control or text fallback has been rendered
-and the user has selected exactly one item.
 
 Set `resolved item ID` to the selected provider ID.
 
@@ -91,14 +84,12 @@ Present with `../templates/ticket-summary.md`:
 item: complete official item context
 ```
 
-Then wait for the user.
-
 ### 5. Create Plan
 
 Follow `./plan.md` with:
 
 ```text
-item: complete official item context, including its provider ID
+item: complete official item context
 ```
 
 On an approved plan, continue to Step 6.
@@ -140,9 +131,12 @@ Report the updated item status.
 
 ### 7. Start Work
 
-Follow `./work.md` with the approved plan and the same official item context
-(provider ID and item URL when available). The configured item provider remains
-authoritative.
+Follow `./work.md` with:
+
+```text
+plan: approved plan
+item: complete official item context
+```
 
 ---
 
