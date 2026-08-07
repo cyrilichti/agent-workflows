@@ -187,22 +187,23 @@ Present the complete reviewed draft using
 
 Handle the decision as follows:
 
-- `adjust`: collect the requested changes, return them with the complete
-  current draft to the same specialist, then repeat Step 8 and present a new
-  complete preview for confirmation;
-- `cancel`: report cancellation and stop without changing the provider or
-  creating child items;
-- `confirm`: preserve exactly the child titles, bodies, stable local
-  references, and blocking edges shown in the latest preview as the confirmed
-  decomposition, then continue.
+- `Adjust the decomposition`: collect the requested changes, return them with
+  the complete current draft to the same specialist, then repeat Step 8 and
+  present a new complete preview for confirmation;
+- `Cancel without changes`: report cancellation and stop without changing the
+  provider or creating child items;
+- `Confirm and create all child items`: preserve exactly the child titles,
+  bodies, stable local references, and blocking edges shown in the latest
+  preview as the confirmed decomposition, then continue.
 
 Do not support partial confirmation. Do not create or update provider items
 during this review and confirmation cycle.
 
 ### 10. Create the Confirmed Child Items
 
-Run this step only after Step 9 returns `confirm`. Do not run it after
-`adjust`, `cancel`, or any earlier terminal outcome.
+Run this step only after Step 9 returns `Confirm and create all child items`.
+Do not run it after `Adjust the decomposition`, `Cancel without changes`, or
+any earlier terminal outcome.
 
 For each child in the stable order of the confirmed preview, run
 `../commands/create-child-item.md` exactly once with:
@@ -259,8 +260,8 @@ Report exactly one terminal outcome:
 - `complete`: every confirmed child and blocking relation was created. Report
   every created child title, provider ID, and link when available, plus every
   created blocking relation;
-- `cancelled`: the user selected `cancel` in Step 9. Report that no child was
-  created;
+- `cancelled`: the user selected `Cancel without changes` in Step 9. Report
+  that no child was created;
 - `failed`: no confirmed child was created. Report every failed child title
   and failure;
 - `partially-failed`: at least one child was created, but a confirmed child or

@@ -8,6 +8,16 @@ in progress and hand off to `/work`.
 
 ---
 
+## Required Context
+
+Load `../goals/pick-complete.md` once as this workflow's completion contract.
+
+Follow `../rules/user-facing-output.md`.
+
+Follow `../rules/mutation-response.md`.
+
+---
+
 ## Steps
 
 ### 1. Resolve Context Provider
@@ -20,10 +30,8 @@ context: item
 
 ### 2. Resolve Item
 
-When the user supplies a provider item ID, run `../commands/read-item.md` with
-that ID and the fields in Step 4, validate it can be used for this workflow,
-set `resolved item ID` to the provider ID returned by `read-item`, keep the item
-as the complete official item context, and continue at Step 4.
+When the user supplies a provider item ID, set `resolved item ID` to that ID
+and continue at Step 4.
 
 Otherwise run `../commands/retrieve-items.md` with:
 
@@ -32,21 +40,14 @@ provider: resolved item provider
 criteria:
   assigned_to: current user
   status: open or ready to start
-  exclude:
-    - assigned to other people
-    - in progress
-    - done
-    - closed
-  scope: do not list every item available from the provider
+fields:
+  - provider_id
+  - title
+  - status
+limit: 5
 ```
 
 ### 3. Select Item
-
-Prepare one selectable option per retrieved item. Do not replace the options
-with a count, status summary, or vague question.
-
-Each option must use a readable label with at least title and status. Attach
-the provider ID as the internal value. Do not require raw ID selection.
 
 Ask using `../templates/select-option.md` with:
 
@@ -57,72 +58,59 @@ options:
   value: <provider id>
 ```
 
-Do not continue until the selection control or text fallback has been rendered
-and the user has selected exactly one item.
-
 Set `resolved item ID` to the selected provider ID.
 
 ### 4. Summarize Item
 
-Unless Step 2 already returned the official item, run
-`../commands/read-item.md` with:
+Run `../commands/read-item.md` with:
 
 ```text
 provider: resolved item provider
 item_id: resolved item ID
-fields:
-  - title
-  - description
-  - comments
-  - acceptance criteria
-  - labels
-  - linked resources
-  - attachments
 ```
 
-Set `resolved item ID` to the provider ID returned by `read-item`. Keep the
-returned provider item as the complete official item context.
+Require the returned item to match the Step 2 assignee and status criteria.
 
-Present it with `../templates/ticket-summary.md`. Do not continue until that
-summary has been shown.
+Use the returned item and provider ID as the complete official item context.
+
+Present with `../templates/ticket-summary.md`:
+
+```text
+item: complete official item context
+```
 
 ### 5. Create Plan
 
 Follow `./plan.md` with:
 
 ```text
-item: complete official item context, including its provider ID
+item: complete official item context
 ```
 
-`/plan` uses that provider ID as `planId`.
+On an approved plan, continue to Step 6.
 
-Continue to Step 6 only when `/plan` returns an approved plan.
-
-On `needs-refinement`, report its concise findings, state that the item must be
-refined before an implementation plan can be created, then ask using
+On `needs-refinement`, report the findings and explain that no plan can be
+created yet, then ask using
 `../templates/select-option.md` with:
 
 ```text
 question: Do you want to refine this item?
 options:
-- label: Refine item
-  value: refine
-- label: Stop without changes
-  value: stop
+- Refine item
+- Stop without changes
 ```
 
-- `stop`: leave the official item unchanged and stop.
-- `refine`: follow `./refine.md` in workflow mode with:
+- `Stop without changes`: stop.
+- `Refine item`: follow `./refine.md` in workflow mode with:
 
   ```text
   provider: resolved item provider
   parent_item_id: resolved item ID
-  parent_item: complete official item context returned by read-item
+  parent_item: complete official item context
   needs_refinement_findings: exact findings returned by plan
   ```
 
-  After `/refine` returns for any reason, stop `/pick`. Do not start or replan
-  the parent, activate a created child, or trigger `/work`.
+  Then stop `/pick`.
 
 ### 6. Start Item
 
@@ -136,24 +124,19 @@ target_status: in progress
 
 Report the updated item status.
 
-### 7. Start Work
+### 7. Hand Off to Work
 
-Follow `./work.md` with the approved plan and the same official item context
-(provider ID and item URL when available). The configured item provider remains
-authoritative.
+Hand off to `./work.md` in a fresh context with only:
+
+```text
+plan: approved plan
+item: complete official item context with the observed updated status
+```
 
 ---
 
 ## Safety
 
-- Pasted text or titles are not official items until matched to the resolved
-  provider.
-- Do not update item status before the plan is approved.
-- Do not trigger `/work` before the item is in its active-work status.
-- Do not let `/plan` or `/work` replace the official source item with pasted or
-  inferred metadata.
-- Do not run `/refine` unless `/plan` returned `needs-refinement`. After
-  offering or running `/refine`, stop without updating the parent or triggering
-  `/work`.
-- Do not select a planning specialist here; `/plan` owns that after required
-  context is known.
+- Preserve the complete official item context across `/plan` and `/work`; never
+  replace it with pasted or inferred metadata.
+- Let `/plan` own planning specialist selection.

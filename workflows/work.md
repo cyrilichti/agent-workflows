@@ -38,9 +38,14 @@ official item context when provided.
 
 In standalone mode, select only files under `../plans/` whose names end with
 `.plan.md`. Sort them by modification time from newest to oldest, keep at most
-the first 10, and ask the user to select exactly one using
-`../templates/select-option.md`. Use readable plan names as labels and plan
-file paths as internal values.
+the first 10, and ask using `../templates/select-option.md` with:
+
+```text
+question: Which plan do you want to execute?
+options:
+- label: <readable plan name>
+  value: <plan file path>
+```
 
 When no matching plan exists, report that no executable plan is
 available and stop.
@@ -145,17 +150,16 @@ Repeat the following steps:
    ```text
    question: What do you want to do with this commit proposal?
    options:
-   - label: Commit these changes
-     value: commit
-   - label: Request an adjustment
-     value: adjust
+   - Commit these changes
+   - Request an adjustment
    ```
 
-9. On `adjust`, ask what should change and wait for the user's free-form
-   response. Give that requested adjustment to the same specialist, then repeat
-   implementation, validation, staging, todo review, and commit proposal.
-10. On `commit`, create the commit with the approved title and description and
-    no trailers.
+9. On `Request an adjustment`, ask what should change and wait for the user's
+   free-form response. Give that requested adjustment to the same specialist,
+   then repeat implementation, validation, staging, todo review, and commit
+   proposal.
+10. On `Commit these changes`, create the commit with the approved title and
+    description and no trailers.
 11. Only after the commit succeeds, mark the active todo `completed`.
 12. Do not push the todo commit. Pushing remains the user's responsibility.
 13. Select the next todo and repeat. Leave the loop when no `in_progress` or

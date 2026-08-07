@@ -5,7 +5,7 @@ description: Pick your next work item, approve an implementation plan, and hand 
 
 `/pick` turns a ready item into active work. It lets you choose an item, reviews
 its context, and sends it to `/plan`. Once you approve the plan, `/pick` moves
-the item to in progress and hands the plan to `/work`.
+the item to in progress and hands off to `/work` in a fresh context.
 
 ## Dispatching workflows
 
@@ -27,7 +27,10 @@ the item to in progress and hands the plan to `/work`.
     <span>Creates and approves the implementation plan</span>
   </a>
 
-  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+  <span className="dispatch-arrow dispatch-arrow--labeled">
+    <span className="dispatch-arrow__label">Handoff</span>
+    <span aria-hidden="true">↓</span>
+  </span>
 
   <a
     className="dispatch-node dispatch-node--workflow dispatch-node--link"
@@ -35,7 +38,7 @@ the item to in progress and hands the plan to `/work`.
   >
     <span className="dispatch-node__label">Workflow</span>
     <strong>/work</strong>
-    <span>Receives the approved plan to start implementation</span>
+    <span>Starts implementation from the approved plan in a fresh context</span>
   </a>
 </div>
 
@@ -75,8 +78,11 @@ the item to in progress and hands the plan to `/work`.
     </tr>
     <tr>
       <td>7</td>
-      <th scope="row">Work</th>
-      <td>Hand the approved plan and active item to <code>/work</code>.</td>
+      <th scope="row">Handoff</th>
+      <td>
+        Hand off the approved plan and active item to <code>/work</code> in a
+        fresh context.
+      </td>
     </tr>
   </tbody>
 </table>

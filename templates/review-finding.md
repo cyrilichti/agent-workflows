@@ -34,12 +34,9 @@ Then ask through `./select-option.md`:
 ```text
 question: What do you want to do with this finding?
 options:
-- label: Accept
-  value: accept
-- label: Reject
-  value: reject
-- label: Modify
-  value: modify
+- Accept
+- Reject
+- Modify
 ```
 
 ## Rules
