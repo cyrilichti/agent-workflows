@@ -30,10 +30,8 @@ context: item
 
 ### 2. Resolve Item
 
-When the user supplies a provider item ID, run `../commands/read-item.md` with
-that ID and the fields in Step 4, validate it can be used for this workflow,
-set `resolved item ID` to the provider ID returned by `read-item`, keep the item
-as the complete official item context, and continue at Step 4.
+When the user supplies a provider item ID, set `resolved item ID` to that ID
+and continue at Step 4.
 
 Otherwise run `../commands/retrieve-items.md` with:
 
@@ -52,11 +50,9 @@ criteria:
 
 ### 3. Select Item
 
-Prepare one selectable option per retrieved item. Do not replace the options
-with a count, status summary, or vague question.
+Prepare one selectable option per retrieved item.
 
-Each option must use a readable label with at least title and status. Attach
-the provider ID as the internal value. Do not require raw ID selection.
+Attach the provider ID as the internal value. Do not require raw ID selection.
 
 Ask using `../templates/select-option.md` with:
 
@@ -74,8 +70,7 @@ Set `resolved item ID` to the selected provider ID.
 
 ### 4. Summarize Item
 
-Unless Step 2 already returned the official item, run
-`../commands/read-item.md` with:
+Run `../commands/read-item.md` with:
 
 ```text
 provider: resolved item provider
@@ -89,6 +84,9 @@ fields:
   - linked resources
   - attachments
 ```
+
+Validate the returned item against the eligibility criteria in Step 2. Stop
+when it is not eligible for this workflow.
 
 Set `resolved item ID` to the provider ID returned by `read-item`. Keep the
 returned provider item as the complete official item context.
