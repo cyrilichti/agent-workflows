@@ -14,9 +14,9 @@ Run with:
 
 ### 1. Require the Plan Contract
 
-Require the authoritative plan to contain its existing `planId`, name,
-Objective, Expected Outcome, todos with valid states, and global Validation.
-Treat its todo states as authoritative.
+Require the authoritative plan file, name, Objective, Expected Outcome, todos
+with valid states, and global Validation. Treat its project-relative path as
+its canonical reference and its todo states as authoritative.
 
 ### 2. Resolve Initialization
 

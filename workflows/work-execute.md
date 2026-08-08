@@ -72,7 +72,7 @@ request_id: created request ID, when available
 ```
 
 When resumed work has no request ID, `/ready` asks for its number or IID. It
-owns confirmation and every resulting push or provider mutation.
+owns the direct plan check, one confirmation, and the resulting promotion.
 
 ---
 

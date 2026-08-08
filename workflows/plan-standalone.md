@@ -38,6 +38,5 @@ Follow `./plan-confirm.md` with:
 
 ```text
 task_context: complete conversational or transient item context
-plan_id: one generated plan:<uuid-v4>
 entry_mode: standalone
 ```

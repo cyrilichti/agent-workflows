@@ -34,16 +34,21 @@ Apply one provider-neutral promotion mutation to an existing open request.
    4. Run `./read-request.md` again. Return `succeeded` when its `body` exactly
       equals `body`; otherwise return `failed` with the observed record.
 4. For `mark-ready`:
-   1. Return `succeeded` without mutation when the current `draft` is `false`.
-   2. Load `../providers/<provider>/update-request.md` and run it with only
-      `mark-ready`.
-   3. If the adapter reports that this operation is unavailable, return
+   1. Derive the ready title by removing exactly one leading `Draft:` prefix
+      and its following whitespace from the current title. Otherwise preserve
+      the title unchanged.
+   2. Return `succeeded` without mutation only when the current `draft` is
+      `false` and the title already equals the ready title.
+   3. Load `../providers/<provider>/update-request.md` and run it with
+      `mark-ready` and the ready title only when it differs.
+   4. If the adapter reports that this operation is unavailable, return
       `unsupported` with its exact reason.
-   4. Run `./read-request.md` again. Return `succeeded` when its `draft` is
-      `false`; otherwise return `failed` with the observed record.
+   5. Run `./read-request.md` again. Return `succeeded` when its `draft` is
+      `false` and its title equals the ready title; otherwise return `failed`
+      with the observed record.
 
 If a provider mutation fails, return `failed` with the complete observed
-request record when one is available. Each action checks and verifies only its
-own target field. Never merge descriptions, combine both mutations in one
-provider call, change the request title, target branch, or state, or retry
-automatically.
+request record when one is available. Never merge descriptions, combine both
+actions in one provider call, change the title except to remove its exact
+leading `Draft:` prefix during `mark-ready`, change the target branch or state,
+or retry automatically.

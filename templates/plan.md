@@ -17,7 +17,6 @@ etc. when the filename exists.
 
 ```markdown
 ---
-planId: "<stable plan identity>"
 name: <short plan title>
 overview: <one-line objective and approach>
 todos:
@@ -54,7 +53,6 @@ isProject: false
 
 | Field | Required | Notes |
 | --- | --- | --- |
-| `planId` | yes | Stable plan identity |
 | `name` | yes | Short title shown in Plan UI |
 | `overview` | yes | One-line scope summary |
 | `todos` | yes | One item per numbered step |
@@ -65,8 +63,8 @@ isProject: false
 
 ## Rules
 
-- Use the exact provider item ID as `planId` when available; otherwise use one
-  generated `plan:<uuid-v4>`. Never change it.
+- Treat the project-relative `.plan.md` file path as the canonical plan
+  reference. Do not store a separate identity in frontmatter.
 - Start every todo as `pending`. Later allow only `pending`, `in_progress`,
   `completed`, or `cancelled`, with at most one `in_progress`; cancellation
   requires explicit user confirmation.

@@ -23,7 +23,9 @@ arguments:
   repo: caller repository name
   pullNumber: caller request ID
   draft: false
+  title: caller ready title, only when supplied
 ```
 
-Send no omitted field. Do not change title, base, state, reviewers, or
-maintainer settings, or combine both actions.
+Send no omitted field. Do not change base, state, reviewers, or maintainer
+settings, or combine both actions. For `mark-ready`, change the title only when
+the caller supplies the current title with its leading `Draft:` removed.
