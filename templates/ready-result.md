@@ -1,27 +1,22 @@
 # Ready Result
 
-Use when `/ready` finishes or stops after a partial promotion.
+Use after `/ready` attempts promotion.
 
 ## Format
 
 ```markdown
-## Ready Result
+## Promotion Result
 
-Branch: <pushed and verified at HEAD, or exact current state>
-Request description: <verified, manual action required, or failed>
-Draft state: <ready, manual action required, or failed>
-Item review: <transitioned, not transitioned with reason, or not available>
+Branch: <pushed, already current, or failed>
+Request: <description updated or already current>; <ready or failed>
+Item: <moved to review, unchanged with reason, or not available>
 
-Remaining actions:
-
-- <only actions still required; omit this section when complete>
+Remaining: <exact action, only when required>
 ```
 
 ## Rules
 
-- Report observed final state, not intended state.
-- Distinguish successful, manual, failed, and non-blocking item outcomes.
-- Include the exact request body when manual description application is
-  required.
-- Keep partial-failure recovery concise and do not retry automatically.
-- End without invoking `/review`.
+- Report observed mutation results, not intended state.
+- Omit the item or remaining line when it does not apply.
+- Include the exact request body only when it must be applied manually.
+- Do not reread state already established by a successful verified command.

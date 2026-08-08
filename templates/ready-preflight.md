@@ -1,35 +1,22 @@
 # Ready Preflight
 
-Use after `/ready` passes validation and readiness assessment, before its one
-mutation confirmation.
+Use immediately before `/ready` asks for its single mutation confirmation.
 
 ## Format
 
 ```markdown
-## Ready for Promotion
+## Promotion Proposal
 
-Plan: <name and planId>
-Validation: passed at <HEAD>
-Readiness: ready — <concise justification>
-Branch: <branch> → <upstream ref> (<ahead count> commits to push)
-Request: <kind, ID, URL, description action, draft action>
-Item: <best-effort review transition or not available>
-
-### Exact Request Body
-
-<exact body from request-description.md>
-
-### Mutations After Confirmation
-
-- <normal branch push, only when needed>
-- <description replacement, only when needed>
-- <draft removal, only when needed>
-- <best-effort item transition, only when available>
+Plan: <name and planId> — validation passed; delivered work matches the plan
+Branch: <branch> — <push required or already current>
+Request: <kind, ID and URL> — <description action>; <draft action>
+Item: <best-effort review transition, when available>
 ```
 
 ## Rules
 
-- Show exact refs, request identity, proposed body, and mutations.
-- Omit already-satisfied mutation lines.
-- Label the item transition best-effort and non-blocking.
-- Leave confirmation to the workflow's following `select-option.md` call.
+- Keep the result compact and show every pending mutation.
+- Do not display the prepared request body.
+- Omit already-satisfied actions and the item line when no official item is
+  available.
+- Leave confirmation to the workflow.
