@@ -24,9 +24,16 @@ routing.
 
 ### 2. Activate Profile
 
-Read the full `../agents/<agent-name>.md` profile, then load only its referenced
-resources required for `task_context`. Do not rely on frontmatter or partial
-content.
+Read the full `../agents/<agent-name>.md` profile without loading its referenced
+Skills. Do not rely on frontmatter or partial content.
+
+For the current activity, load only Skills whose explicit profile triggers
+apply. Work directly when none apply. Load multiple Skills only when each is
+independently required now; never preload them for possible later use.
+
+Re-evaluate routing when the context or activity changes, keeping, adding,
+replacing, or stopping Skills accordingly. The profile remains authoritative
+over scope, permissions, side effects, and output.
 
 ### 3. Report Activation
 

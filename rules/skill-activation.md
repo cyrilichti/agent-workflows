@@ -8,5 +8,5 @@ orchestration internal.
 Announce the initial selection and every change; do not repeat an unchanged
 Skill. Applies to mandatory workflow-scoped Skills and conditional or dynamic
 routing. Does not apply to thin workflow bridge Skills or fixed profile
-resources (loading them is not a routing decision). Callers and sub-agents must
-not re-announce the same selection.
+non-Skill resources (loading them is not a Skill-routing decision). Callers and
+sub-agents must not re-announce the same selection.
