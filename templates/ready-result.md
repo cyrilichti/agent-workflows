@@ -8,7 +8,7 @@ Use after `/ready` attempts promotion.
 ## Promotion Result
 
 Branch: <pushed, already current, or failed>
-Request: <description updated or already current>; <ready or failed>
+Request: <title updated or already current>; <description updated or already current>; <ready or failed>
 Item: <moved to review, unchanged with reason, or not available>
 
 Remaining: <exact action, only when required>

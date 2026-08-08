@@ -13,8 +13,9 @@ unchanged or promoted for human review after one explicit confirmation.
 - The complete branch diff is coherent with the plan's Objective and Expected
   Outcome without performing an independent code review.
 - The user sees one concise promotion proposal before any mutation.
-- Confirmed promotion pushes only when needed, applies the exact request body,
-  removes draft state, and reports the best-effort item review transition.
+- Confirmed promotion pushes only when needed, removes the leading `Draft:`
+  title prefix, applies the exact request body, removes draft state, and
+  reports the best-effort item review transition.
 - The workflow stops without invoking `/review`.
 
 ## Stop Conditions

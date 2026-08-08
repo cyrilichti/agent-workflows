@@ -9,7 +9,7 @@ Use immediately before `/ready` asks for its single mutation confirmation.
 
 Plan: <name and planId> — validation passed; delivered work matches the plan
 Branch: <branch> — <push required or already current>
-Request: <kind, ID and URL> — <description action>; <draft action>
+Request: <kind, ID and URL> — <title action>; <description action>; <draft action>
 Item: <best-effort review transition, when available>
 ```
 
