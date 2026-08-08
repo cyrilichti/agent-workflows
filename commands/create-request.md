@@ -14,9 +14,8 @@ Create one draft request through the configured version-control provider.
 ## Steps
 
 1. Load `../providers/<provider>/create-request.md`. Stop when it is missing.
-2. Run the operation with the supplied input.
-3. Create one request with the supplied repository, branches, and title.
-4. Return one provider-neutral request record containing:
+2. Run it once with the supplied repository, branches, and title.
+3. Return one provider-neutral request record containing:
    - `request_id`: provider-native merge-request IID or pull-request number;
    - `kind`: `merge_request` or `pull_request`;
    - `title`;

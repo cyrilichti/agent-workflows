@@ -12,6 +12,6 @@ arguments:
   merge_method: caller merge method, when provided
 ```
 
-Omit `merge_method` when absent. After the attempt, read the same pull request
-with `delivery_state` and normalize through `../../commands/merge-request.md`.
-Do not retry an ambiguous operation.
+Omit `merge_method` when absent. Return the provider result without reading the
+pull request or normalizing its delivery state. Do not retry an ambiguous
+operation.
