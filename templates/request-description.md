@@ -14,7 +14,7 @@ Use to prepare the exact pull-request or merge-request body during `/ready`.
 - <plan validation check and observed successful result>
 
 Item: [<official item ID>](<official item URL>)
-Agent-Workflows-Plan: <planId>
+Agent-Workflows-Plan: <project-relative plan file path>
 ```
 
 ## Rules
@@ -25,7 +25,7 @@ Agent-Workflows-Plan: <planId>
 - Include every global validation check that was actually completed.
 - Include the linked `Item` line only when the official item URL is available;
   otherwise omit it.
-- Preserve the exact `planId`.
+- Preserve the exact canonical plan reference.
 - Do not add a requirement matrix, review verdict, smoke test, reviewer,
   deployment claim, or unchecked assertion.
 - Return one exact body without surrounding commentary.

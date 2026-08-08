@@ -6,8 +6,9 @@ One task context produces an approved plan or `needs-refinement`.
 
 ## Success Criteria
 
-- An approved plan follows `../templates/plan.md`, has a stable `planId`, exists
-  under `../plans/`, and has explicit user approval.
+- An approved plan follows `../templates/plan.md`, exists under `../plans/`,
+  uses its project-relative file path as its canonical reference, and has
+  explicit user approval.
 - A `needs-refinement` result contains concise findings and creates no plan
   file.
 

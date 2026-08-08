@@ -11,7 +11,6 @@ Assess, author, and confirm one plan.
 Run from a context branch with:
 
 - `task_context`: objective, problem, and expected outcome;
-- `plan_id`: stable plan identity;
 - `entry_mode`: `workflow` or `standalone`.
 
 ---
@@ -51,7 +50,6 @@ Have the specialist write using `../templates/plan.md` with:
 
 ```text
 task_context: resolved task context
-planId: plan_id
 ```
 
 For high-risk or unfamiliar decisions, the workflow—not the author—loads
@@ -89,8 +87,8 @@ options:
 - Adjust plan
 ```
 
-On `Adjust plan`, give the adjustment and unchanged `plan_id` to the active
-specialist, then repeat this step with the revised plan.
+On `Adjust plan`, give the adjustment to the active specialist, then repeat
+this step with the revised plan.
 
 Continue only on `Approve plan`.
 

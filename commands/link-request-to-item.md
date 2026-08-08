@@ -8,7 +8,7 @@ Add one discoverable draft request backlink to an official item.
 - `item_id`: official provider item ID.
 - `request_kind`: `merge_request` or `pull_request` from the created request.
 - `request_url`: newly created request URL.
-- `plan_id`: stable plan ID.
+- `plan_reference`: project-relative authoritative plan file path.
 
 ## Comment
 
@@ -17,7 +17,7 @@ For `request_kind: merge_request`:
 ```text
 Draft MR: <request_url>
 
-Agent-Workflows-Plan: <plan_id>
+Agent-Workflows-Plan: <plan_reference>
 ```
 
 For `request_kind: pull_request`:
@@ -25,7 +25,7 @@ For `request_kind: pull_request`:
 ```text
 Draft PR: <request_url>
 
-Agent-Workflows-Plan: <plan_id>
+Agent-Workflows-Plan: <plan_reference>
 ```
 
 ## Steps

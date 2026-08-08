@@ -65,7 +65,7 @@ provider: resolved item provider
 item_id: official item ID
 request_kind: created request kind
 request_url: created request URL
-plan_id: stable plan ID
+plan_reference: project-relative authoritative plan file path
 ```
 
 Return the complete created request record to the caller.
