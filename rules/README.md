@@ -1,83 +1,17 @@
 # Rules
 
-Permanent project constraints and engineering conventions.
+This directory contains permanent constraints and engineering conventions
+installed under `.agents/rules/`.
 
-Unlike workflows, rules describe **what must be respected**, not how to execute
-a process.
+Keep one concise topic per file. Rules define what must be respected; procedures
+belong in `../workflows/`, history in `../memory/`, and output shapes in
+`../templates/`.
 
----
+## Loading
 
-## What does NOT belong here
-
-* business rules → `../domain/`
-* procedures → `../workflows/`
-* capabilities → `../skills/`
-* history → `../memory/`
-* output formats → `../templates/`
-
----
-
-## Organization
-
-One topic per file. Concise bullet lists.
-
-```text
-./
-├── README.md
-├── api.md
-└── frontend.md
-```
-
----
-
-## Rule Loading
-
-`./` is a library of contextual constraints. Rule files are **not**
-loaded by default and should not be treated as global background text.
+Rules are contextual and are not loaded by default.
 
 Load a rule only when the current task explicitly needs its constraint.
 
-Accepted loading paths:
-
-* direct reference from an agent, skill, workflow, or IDE rule projection;
-* matching file scope such as Cursor `globs`;
-* explicit user request.
-
-Avoid `alwaysApply` by default. It is only for rare invariants that must apply
-to
-every task, including non-development tasks.
-
-Reference specific rule files. Do not load the whole `./` directory unless
-the task is to audit the rules themselves.
-
----
-
-## Examples
-
-### Cursor (`.cursor/rules/`)
-
-```markdown
----
-globs: src/components/**/*.tsx
-alwaysApply: false
----
-
-- Use named exports, not default exports
-- Keep components under 200 lines
-```
-
----
-
-## Best Practices
-
-* Short, actionable bullets.
-* Scope with `paths`, `globs`, or explicit references.
-* Reserve `alwaysApply` for critical invariants only.
-
----
-
-## References
-
-* [Cursor – Rules](https://cursor.com/docs/rules)
-* [dotcursorrules](https://dotcursorrules.com/rules) — community templates
-* [cursorrules.org](https://cursorrules.org/) — community templates
+Reference specific files from an agent, Skill, workflow, scoped IDE rule, or
+explicit user request. Reserve global loading for genuine invariants.

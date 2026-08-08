@@ -1,32 +1,10 @@
 # Templates
 
-Templates define reusable output and interaction shapes.
+This directory contains reusable output and interaction shapes installed under
+`.agents/templates/`.
 
-A template describes how information should be presented in a consistent,
-portable way.
+Each template standardizes one recurring format. Keep templates small and
+composable.
 
-## Responsibilities
-
-Use templates to:
-
-- standardize recurring interaction patterns;
-- reduce duplicated formatting instructions;
-- keep outputs consistent across agents and tasks.
-
-## Boundaries
-
-Templates define shape, not timing. Workflows and agents decide when a template
-is needed.
-
-Do not hardcode business-specific wording unless the template is intentionally
-project-specific.
-
-## Structure
-
-A template should usually include:
-
-- Purpose
-- Format
-- Rules
-
-Keep templates small and composable.
+Templates define presentation, not timing or orchestration. Workflows and agents
+decide when to use them.
