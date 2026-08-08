@@ -1,7 +1,5 @@
 # create-request
 
-Create one draft merge request:
-
 ```text
 tool: create_merge_request
 arguments:
@@ -11,8 +9,7 @@ arguments:
   title: caller title beginning with "Draft:"
 ```
 
-Do not send a description because the available operation does not accept one.
-Normalize the result as:
+The operation accepts no description. Normalize:
 
 ```text
 request_id: merge request IID
@@ -25,4 +22,3 @@ target_branch: GitLab target branch
 body: GitLab description normalized to an empty string when absent
 url: merge request URL
 ```
-

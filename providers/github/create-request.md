@@ -1,10 +1,6 @@
 # create-request
 
-Create one native draft pull request:
-
-Require a writable `create_pull_request` operation. If the GitHub MCP server is
-read-only or the operation is unavailable, stop with the provider error and do
-not substitute another operation.
+Require writable `create_pull_request`; otherwise stop without substitution.
 
 ```text
 tool: create_pull_request
@@ -17,7 +13,7 @@ arguments:
   draft: true
 ```
 
-Do not send a body, reviewers, or maintainer settings. Normalize the result as:
+Send no body, reviewers, or maintainer settings. Normalize:
 
 ```text
 request_id: pull request number
@@ -31,6 +27,4 @@ body: pull request body, normalized to an empty string when null or absent
 url: pull request HTML URL
 ```
 
-The `Draft:` title follows the shared request-title convention. Native draft
-behavior depends on `draft: true`, not on the title prefix.
-
+Native draft behavior depends on `draft: true`, not the `Draft:` prefix.

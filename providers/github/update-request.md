@@ -1,7 +1,7 @@
 # update-request
 
-Require the writable `update_pull_request` operation. If it is unavailable,
-return the provider error and do not substitute an issue or file update.
+Require writable `update_pull_request`; otherwise return the provider error
+without substitution.
 
 For `replace-description`:
 
@@ -25,7 +25,5 @@ arguments:
   draft: false
 ```
 
-Send no omitted optional field. In particular, do not change title, base,
-state, reviewers, or maintainer settings, and do not combine description and
-draft mutations in one call.
-
+Send no omitted field. Do not change title, base, state, reviewers, or
+maintainer settings, or combine both actions.
