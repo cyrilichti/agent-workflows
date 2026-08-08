@@ -20,12 +20,10 @@ Format the branch name with `../templates/branch-name.md` using:
 plan_name: exact plan name
 plan_objective: exact plan Objective
 item_type: official item type, when available
-item_id: official item ID, when available
 ```
 
-Include the official item ID when one is present. Create and switch to the
-branch, create one empty initialization commit named from the plan, then push
-to the current push remote.
+Create and switch to the branch, create one empty initialization commit named
+from the plan, then push to the current push remote.
 
 ### 3. Create the Draft Request
 
