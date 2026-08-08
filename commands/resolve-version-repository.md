@@ -10,8 +10,9 @@ from one Git push remote.
 
 ## Steps
 
-1. Load `../providers/<provider>.md`.
-2. Use the provider operation named `resolve-repository` with `push_remote`.
+1. Load `../providers/<provider>/resolve-repository.md`. Stop when it is
+   missing.
+2. Run it with `push_remote`.
 3. Return the provider-specific repository identity without contacting the
    remote.
 
