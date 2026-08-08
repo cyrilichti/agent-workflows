@@ -14,9 +14,14 @@ clear evidence and limitations.
 
 ## Skills
 
-- ../skills/data-analysis-jupyter/SKILL.md
-- ../skills/scikit-learn-best-practices/SKILL.md
-- ../skills/test-driven-development/SKILL.md
+Work directly when no trigger applies. Load only:
+
+- `../skills/data-analysis-jupyter/SKILL.md` when performing exploratory
+  analysis in a notebook;
+- `../skills/scikit-learn-best-practices/SKILL.md` when building or evaluating
+  a scikit-learn model;
+- `../skills/test-driven-development/SKILL.md` when implementing pipeline or
+  application behavior through a test-first loop.
 
 ## Responsibilities
 

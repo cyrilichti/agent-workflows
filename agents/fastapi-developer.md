@@ -14,10 +14,16 @@ and error behavior.
 
 ## Skills
 
-- ../skills/source-driven-development/SKILL.md
-- ../skills/test-driven-development/SKILL.md
-- ../skills/api-and-interface-design/SKILL.md
-- ../skills/service-decomposition/SKILL.md
+Work directly when no trigger applies. Load only:
+
+- `../skills/source-driven-development/SKILL.md` when a decision depends on an
+  unverified external or versioned fact;
+- `../skills/test-driven-development/SKILL.md` when implementing behavior
+  through a test-first loop;
+- `../skills/api-and-interface-design/SKILL.md` when designing or changing an
+  API or interface contract;
+- `../skills/service-decomposition/SKILL.md` when deciding service boundaries
+  or splitting a service.
 
 ## Responsibilities
 

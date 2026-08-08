@@ -13,10 +13,10 @@ Design and implement pragmatic validation from requirements and risk.
 
 ## Skills
 
-Load only the Skill needed for the current context:
+Work directly when no trigger applies. Otherwise, load only:
 
-- ../skills/code-review-and-quality/SKILL.md when assessing an existing change,
-  implementation, or coverage set;
+- ../skills/code-review-and-quality/SKILL.md when assessing test quality,
+  coverage, or validation risk in an existing change;
 - ../skills/test-driven-development/SKILL.md when implementing new behavior or
   regression coverage through a test-first loop.
 
@@ -39,4 +39,5 @@ same validation activity.
 
 ## Output
 
-Return a concise test strategy and working validation coverage with results.
+Return concise validation findings or strategy and working coverage with
+results.

@@ -14,7 +14,8 @@ screens and components.
 
 ## Skills
 
-- ../skills/frontend-design/SKILL.md
+Work directly unless creating visual direction, layouts, or component
+specifications; then load only `../skills/frontend-design/SKILL.md`.
 
 ## Responsibilities
 

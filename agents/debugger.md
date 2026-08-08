@@ -13,7 +13,8 @@ Turn uncertain failures into reproducible, evidence-backed diagnoses.
 
 ## Skills
 
-- ../skills/systematic-debugging/SKILL.md
+Work directly unless diagnosing an unexplained or unreproduced failure; then
+load only `../skills/systematic-debugging/SKILL.md`.
 
 ## Responsibilities
 

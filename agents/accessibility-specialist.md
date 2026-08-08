@@ -14,7 +14,9 @@ inclusive digital experiences.
 
 ## Skills
 
-- ../skills/web-design-guidelines/SKILL.md
+Work directly unless auditing a web interface against accessibility,
+interaction, or responsive-design guidelines; then load only
+`../skills/web-design-guidelines/SKILL.md`.
 
 ## Responsibilities
 

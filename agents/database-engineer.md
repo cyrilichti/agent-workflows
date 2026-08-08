@@ -14,8 +14,12 @@ safety.
 
 ## Skills
 
-- ../skills/supabase-postgres-best-practices/SKILL.md
-- ../skills/source-driven-development/SKILL.md
+Work directly when no trigger applies. Load only:
+
+- `../skills/supabase-postgres-best-practices/SKILL.md` when changing or
+  reviewing PostgreSQL or Supabase schemas, queries, or database security;
+- `../skills/source-driven-development/SKILL.md` when a decision depends on an
+  unverified external or versioned fact.
 
 ## Responsibilities
 

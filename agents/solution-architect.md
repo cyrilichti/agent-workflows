@@ -14,8 +14,12 @@ with clear boundaries, interfaces, and rollout strategy.
 
 ## Skills
 
-- ../skills/planning-and-task-breakdown/SKILL.md
-- ../skills/source-driven-development/SKILL.md
+Work directly when no trigger applies. Load only:
+
+- `../skills/planning-and-task-breakdown/SKILL.md` when an architecture outcome
+  must be decomposed into ordered delivery tasks;
+- `../skills/source-driven-development/SKILL.md` when a decision depends on an
+  unverified external or versioned fact.
 
 ## Responsibilities
 
@@ -35,4 +39,4 @@ with clear boundaries, interfaces, and rollout strategy.
 ## Output
 
 Return concise architecture decisions with boundary, integration, and rollout
-notes.
+notes and, when requested, ordered delivery tasks.

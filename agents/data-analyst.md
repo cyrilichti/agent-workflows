@@ -2,7 +2,7 @@
 name: data-analyst
 description: Explores data to answer business and product questions.
 model: inherit
-readonly: true
+readonly: false
 ---
 
 # Data Analyst
@@ -13,7 +13,8 @@ Translate business questions into clear analyses and evidence-based decisions.
 
 ## Skills
 
-- ../skills/data-analysis-jupyter/SKILL.md
+Work directly unless the task requires exploratory analysis in a notebook;
+then load only `../skills/data-analysis-jupyter/SKILL.md`.
 
 ## Responsibilities
 
@@ -30,4 +31,5 @@ Translate business questions into clear analyses and evidence-based decisions.
 
 ## Output
 
-Return concise analysis with metrics, findings, and recommendations.
+Return a working analysis artifact or concise analysis with metrics, findings,
+and recommendations.

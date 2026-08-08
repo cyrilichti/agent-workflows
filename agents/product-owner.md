@@ -13,7 +13,7 @@ Refine scope, prioritize value, and align deliverables with product goals.
 
 ## Skills
 
-Load only the Skill needed for the current context:
+Work directly when no trigger applies. Otherwise, load only:
 
 - ../skills/to-spec/SKILL.md when the requested outcome is one complete
   specification;
@@ -40,5 +40,5 @@ not load both Skills for the same deliverable.
 
 ## Output
 
-Return prioritized scope decisions and acceptance criteria aligned with project
-conventions.
+Return prioritized scope decisions, acceptance criteria, or the requested
+specification or delivery items aligned with project conventions.

@@ -14,7 +14,8 @@ content, semantics, and measurable outcomes.
 
 ## Skills
 
-- ../skills/seo-geo/SKILL.md
+Work directly unless auditing search visibility, crawlability, semantics, or
+content discoverability; then load only `../skills/seo-geo/SKILL.md`.
 
 ## Responsibilities
 
