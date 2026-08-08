@@ -53,8 +53,8 @@ export const agentSkillCohorts = [
 `/work` turns an approved plan into confirmed commits. It can receive the plan
 from `/pick` with an active official item, or let you select from recent plans.
 After completing the todos, it lets you stop or continue with `/ready` using
-the same plan, optional item, and known request ID. `/ready` owns global
-validation and push confirmation.
+the same plan, optional item, and known request ID. `/ready` directly checks
+the branch and plan outcome before one promotion confirmation.
 
 ## Dispatching external skills
 
@@ -133,7 +133,7 @@ validation and push confirmation.
   </tbody>
 </table>
 
-`/work` never pushes todo commits. `/ready` performs global validation and owns
-the final push and request promotion. When resumed work no longer has its
+`/work` never pushes todo commits. `/ready` runs only the planned global
+validation and owns the final push and request promotion. When resumed work no longer has its
 initialized request record in context, `/ready` asks for the exact pull-request
 number or merge-request IID.

@@ -1,11 +1,11 @@
 ---
 title: /ready
-description: Verify completed work, confirm its push, and promote its request for human review.
+description: Check completed work against its plan, then offer and perform promotion.
 ---
 
-`/ready` receives completed work from `/work` or lets you select a recent plan.
-When the caller does not provide the request, it asks for the exact pull-request
-number or merge-request IID instead of searching for one.
+`/ready` has two entry paths: it receives the authoritative plan from `/work`,
+or in standalone mode lets you select a recent plan. When the request ID is not
+known, it asks for the exact pull-request number or merge-request IID.
 
 ## Dispatching workflows
 
@@ -13,7 +13,7 @@ number or merge-request IID instead of searching for one.
   <div className="dispatch-node dispatch-node--workflow">
     <span className="dispatch-node__label">Workflow</span>
     <strong>/ready</strong>
-    <span>Checks whether completed work can be promoted</span>
+    <span>Checks the branch and delivered work against the plan</span>
   </div>
 
   <span className="dispatch-arrow" aria-hidden="true">↓</span>
@@ -35,32 +35,27 @@ number or merge-request IID instead of searching for one.
     <tr>
       <td>1</td>
       <th scope="row">Context</th>
-      <td>Use caller context or select a completed plan and exact request.</td>
+      <td>Use caller context or select a completed plan.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Preflight</th>
-      <td>Check terminal todos, clean worktree, branch, upstream, and request.</td>
+      <th scope="row">Verify</th>
+      <td>Require terminal work and one clean, non-behind branch snapshot.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Validate</th>
-      <td>Rerun the plan validation at the current HEAD.</td>
+      <th scope="row">Match</th>
+      <td>Run only planned validation, then compare the complete branch diff with the Objective and Expected Outcome.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Assess</th>
-      <td>Have a read-only specialist compare the complete diff with the Objective and Expected Outcome.</td>
+      <th scope="row">Confirm</th>
+      <td>Show one concise promotion proposal and ask once.</td>
     </tr>
     <tr>
       <td>5</td>
-      <th scope="row">Confirm</th>
-      <td>Show the exact request body, linked official item when available, and mutations before asking once.</td>
-    </tr>
-    <tr>
-      <td>6</td>
       <th scope="row">Promote</th>
-      <td>Push, promote the request, attempt item review best-effort, report, and stop without invoking /review.</td>
+      <td>Push if needed, update and mark the request ready, attempt the item transition best-effort, and stop.</td>
     </tr>
   </tbody>
 </table>
