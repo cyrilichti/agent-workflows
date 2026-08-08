@@ -3,7 +3,7 @@
 ## Outcome
 
 One authoritative plan is initialized when needed, executed through approved
-todo commits, globally validated, and handed to `/ready`.
+todo commits, globally validated, and offered to `/ready`.
 
 ## Success Criteria
 
@@ -20,12 +20,13 @@ todo commits, globally validated, and handed to `/ready`.
   `completed` only after the commit succeeds.
 - Todo commits are not pushed by `/work`.
 - Global Validation runs after all todos become terminal.
-- Successful validation calls `/ready` with the same plan, optional official
-  item, and known request ID.
+- Successful validation offers `/ready`; accepting hands it the same plan,
+  optional official item, and known request ID.
 
 ## Stop Conditions
 
-- Stop successfully after handing validated completed work to `/ready`.
+- Stop successfully after handing validated completed work to `/ready` or when
+  the user chooses to stop after validation.
 - Stop without pushing when global validation fails.
 - Stop and report when a required operation fails or a precondition is not
   satisfied.
@@ -33,4 +34,5 @@ todo commits, globally validated, and handed to `/ready`.
 ## Human Validation
 
 Every todo commit requires the explicit approval defined by the workflow.
-`/ready` owns approval for the final push and request promotion.
+Entering `/ready` requires an explicit choice. `/ready` owns approval for the
+final push and request promotion.

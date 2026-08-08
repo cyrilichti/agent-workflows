@@ -47,9 +47,20 @@ Run every applicable check in the plan's global Validation, using inspection
 for an explicitly manual item. On failure, report actionable findings and stop
 without pushing.
 
-### 3. Start Ready
+### 3. Offer Ready
 
-On success, follow `./ready.md` in caller mode with:
+On success, ask using `../templates/select-option.md` with:
+
+```text
+question: What do you want to do with this validated work?
+options:
+- Prepare work for review
+- Stop here
+```
+
+On `Stop here`, report that validation succeeded and stop without mutation.
+
+On `Prepare work for review`, follow `./ready.md` in caller mode with:
 
 ```text
 plan: authoritative plan

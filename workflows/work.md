@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Execute one selected plan incrementally, then hand validated completed work to
-`/ready`.
+Execute one selected plan incrementally, then offer to hand validated completed
+work to `/ready`.
 
 ---
 
