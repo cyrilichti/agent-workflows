@@ -1,31 +1,13 @@
 # Commands
 
-Commands are reusable agent procedures.
+This directory contains reusable agent procedures installed under
+`.agents/commands/`.
 
-A command centralizes a repeated operation so workflows and agents do not
-duplicate the same instructions.
+Each command owns one repeated operation, such as resolving configuration,
+retrieving context, or preparing a provider call.
 
-## Responsibilities
+Commands do not orchestrate complete sessions or make task-specific decisions.
+The calling workflow decides when to run them and what follows.
 
-Use commands to:
-
-- resolve project configuration;
-- retrieve or prepare repeated context;
-- check whether a provider or tool is available;
-- keep common agent operations consistent.
-
-## Boundaries
-
-Commands are not full workflows. The caller decides when a command is needed and
-what happens after it runs.
-
-Keep commands focused, reusable, and free from task-specific decisions.
-
-## Structure
-
-A command should usually include:
-
-- Purpose
-- Input
-- Steps
-- Failure behavior when useful
+See the [documentation](https://cyrilichti.github.io/agent-workflows/) for
+project usage.

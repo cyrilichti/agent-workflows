@@ -1,36 +1,14 @@
 # Workflows
 
-Workflows define how agents should run repeatable work sessions.
+This directory contains repeatable agent sessions installed under
+`.agents/workflows/`.
 
-A workflow orchestrates steps. It does not define specialist behavior, provider
-API details, reusable commands, output formats, or project knowledge.
+A workflow owns sequencing, routing, approvals, and stopping boundaries. It
+references commands, provider operations, agents, rules, goals, and templates
+instead of duplicating them.
 
-## Responsibilities
+Keep specialist behavior in `../agents/`, reusable operations in
+`../commands/`, and provider-specific execution in `../providers/`.
 
-Use workflows to:
-
-- route or sequence a task;
-- call commands when an operation is reusable;
-- call providers through commands, not directly;
-- activate sub-agents when specialist behavior is needed;
-- stop at clear boundaries.
-
-## Boundaries
-
-Workflows should reference existing resources instead of duplicating their
-instructions.
-
-Keep project-specific knowledge in the consuming project documentation.
-
-## Structure
-
-A workflow should usually include:
-
-- Purpose
-- Entry condition
-- Steps
-- Safety
-- Success criteria when useful
-
-Keep workflows short, explicit, and stable. Reference existing resources instead
-of duplicating their instructions.
+See the [workflow documentation](https://cyrilichti.github.io/agent-workflows/workflows/)
+for behavior and usage.

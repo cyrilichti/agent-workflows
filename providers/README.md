@@ -1,16 +1,14 @@
 # Providers
 
-Providers are adapters for external work-item and version-control systems.
+This directory contains adapters installed under `.agents/providers/` for
+external work-item and version-control systems.
 
-They map generic workflow commands to concrete MCP tools and arguments so agents
-do not rediscover provider APIs on every run. Providers do not decide which work
-to select; callers supply criteria and providers document how to execute them.
+Provider operations live in `<provider>/<operation>.md`. Each operation file is
+the authoritative mapping from a generic command to concrete tools and
+arguments.
 
-## Layout
+Providers execute supplied criteria; they do not select work or orchestrate
+workflows. Commands load only the exact operation they require.
 
-- Provider operations live in `<provider>/<operation>.md`.
-- Each operation file is the unique authoritative definition for that provider
-  operation.
-
-Commands load only the exact operation file they require and stop when it is
-missing.
+See the [provider documentation](https://cyrilichti.github.io/agent-workflows/providers/)
+for configuration and supported integrations.
