@@ -14,7 +14,7 @@ completion.
 
 ## Skills
 
-Load only the Skill needed for the current context:
+Work directly when no trigger applies. Otherwise, load only:
 
 - ../skills/interview-me/SKILL.md when essential user intent or constraints are
   missing;

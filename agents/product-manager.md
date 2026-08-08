@@ -14,7 +14,8 @@ roadmap choices.
 
 ## Skills
 
-- ../skills/prioritization-advisor/SKILL.md
+Work directly unless comparing or ordering product investments; then load only
+`../skills/prioritization-advisor/SKILL.md`.
 
 ## Responsibilities
 

@@ -13,9 +13,14 @@ Operationalize ML systems with reproducible training and monitored serving.
 
 ## Skills
 
-- ../skills/scikit-learn-best-practices/SKILL.md
-- ../skills/test-driven-development/SKILL.md
-- ../skills/observability-and-instrumentation/SKILL.md
+Work directly when no trigger applies. Load only:
+
+- `../skills/scikit-learn-best-practices/SKILL.md` when building or evaluating
+  a scikit-learn model;
+- `../skills/test-driven-development/SKILL.md` when implementing pipeline or
+  serving behavior through a test-first loop;
+- `../skills/observability-and-instrumentation/SKILL.md` when designing or
+  reviewing production model telemetry and alerts.
 
 ## Responsibilities
 

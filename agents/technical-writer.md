@@ -2,7 +2,7 @@
 name: technical-writer
 description: Produces clear technical documentation and guidance.
 model: inherit
-readonly: true
+readonly: false
 ---
 
 # Technical Writer
@@ -14,8 +14,12 @@ the system.
 
 ## Skills
 
-- ../skills/technical-writing/SKILL.md
-- ../skills/source-driven-development/SKILL.md
+Work directly when no trigger applies. Load only:
+
+- `../skills/technical-writing/SKILL.md` when drafting or restructuring
+  developer-facing documentation;
+- `../skills/source-driven-development/SKILL.md` when documentation accuracy
+  depends on an unverified external or versioned fact.
 
 ## Responsibilities
 
@@ -32,4 +36,4 @@ the system.
 
 ## Output
 
-Return clear, structured documentation aligned with project conventions.
+Return working documentation changes with concise content and validation notes.

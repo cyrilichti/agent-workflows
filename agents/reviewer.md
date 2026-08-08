@@ -13,7 +13,8 @@ Identify defects, regressions, and convention drift in proposed changes.
 
 ## Skills
 
-- ../skills/code-review-and-quality/SKILL.md
+Work directly unless reviewing an existing change for correctness, quality, or
+risk; then load only `../skills/code-review-and-quality/SKILL.md`.
 
 ## Responsibilities
 
@@ -26,7 +27,7 @@ Identify defects, regressions, and convention drift in proposed changes.
 
 - Follow project conventions.
 - Focus on findings, not style preferences.
-- Do not modify code unless explicitly asked.
+- Do not modify code.
 
 ## Output
 

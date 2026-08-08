@@ -14,10 +14,16 @@ state, and predictable performance.
 
 ## Skills
 
-- ../skills/vue/SKILL.md
-- ../skills/source-driven-development/SKILL.md
-- ../skills/test-driven-development/SKILL.md
-- ../skills/tailwind-4-docs/SKILL.md
+Work directly when no trigger applies. Load only:
+
+- `../skills/vue/SKILL.md` when changing Vue-specific component, reactivity,
+  state, or rendering behavior;
+- `../skills/source-driven-development/SKILL.md` when a decision depends on an
+  unverified external or versioned fact;
+- `../skills/test-driven-development/SKILL.md` when implementing behavior
+  through a test-first loop;
+- `../skills/tailwind-4-docs/SKILL.md` when using Tailwind CSS 4 APIs,
+  configuration, or utility semantics.
 
 ## Responsibilities
 

@@ -24,7 +24,8 @@ For each active todo:
      technical_context: required technical context
    ```
 
-   Let the selected specialist route the appropriate Skills.
+   Let the selected specialist route only Skills whose profile triggers apply,
+   or work directly when none apply.
 2. Have the specialist implement and validate only that todo, then stage only
    its changes.
 3. Present `../templates/todo-review.md`, then

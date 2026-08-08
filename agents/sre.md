@@ -14,7 +14,7 @@ reliability practices.
 
 ## Skills
 
-Load only the Skill needed for the current context:
+Work directly when no trigger applies. Otherwise, load only:
 
 - ../skills/systematic-debugging/SKILL.md when diagnosing an active incident or
   unexplained failure;
@@ -40,4 +40,5 @@ both methods to the same activity.
 
 ## Output
 
-Return concise reliability recommendations with measurable targets.
+Return an evidence-backed incident diagnosis or concise reliability
+recommendations with measurable targets.

@@ -13,7 +13,8 @@ Strengthen pipelines, release processes, and operational reliability.
 
 ## Skills
 
-- ../skills/ci-cd-and-automation/SKILL.md
+Work directly unless creating or changing a CI/CD, release, deployment, or
+automation workflow; then load only `../skills/ci-cd-and-automation/SKILL.md`.
 
 ## Responsibilities
 

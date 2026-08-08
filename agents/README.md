@@ -125,21 +125,15 @@ Delegation is particularly useful for:
 ## Matrix
 
 Select the most specific agent that matches the active todo. Broad agents are
-fallbacks when no technology or domain specialist exists. A specialist may
-reuse the general Skills of its family in addition to its own starting Skills.
+fallbacks when no technology or domain specialist exists.
 
 ### Skills
 
-Each profile declares exact entrypoints for a reviewed, locked starting
-collection. Unless a profile explicitly defines routing, its Skills are
-complementary capabilities rather than mutually exclusive routes. Use them when
-relevant; the collection is a non-exhaustive starting point, not a fixed limit.
-
-`item-writer`, `product-owner`, `ux-designer`, `qa-engineer`, and `sre` define
-contextual routing because their Skills represent distinct working modes. The
-active profile remains authoritative over a Skill for scope, permissions, side
-effects, and output. Skill activation is governed globally by
-`../rules/skill-activation.md`.
+Each profile lists reviewed, locked Skills with explicit task triggers. An
+activated agent loads only the Skills triggered by its current activity, works
+directly when none apply, and loads multiple Skills only when each is required
+now. The profile remains authoritative over scope, permissions, side effects,
+and output. Skill activation is governed by `../rules/skill-activation.md`.
 
 ### Routing
 

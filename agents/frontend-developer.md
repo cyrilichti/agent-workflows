@@ -14,10 +14,16 @@ maintainability.
 
 ## Skills
 
-- ../skills/source-driven-development/SKILL.md
-- ../skills/test-driven-development/SKILL.md
-- ../skills/tailwind-4-docs/SKILL.md
-- ../skills/web-design-guidelines/SKILL.md
+Work directly when no trigger applies. Load only:
+
+- `../skills/source-driven-development/SKILL.md` when a decision depends on an
+  unverified external or versioned fact;
+- `../skills/test-driven-development/SKILL.md` when implementing behavior
+  through a test-first loop;
+- `../skills/tailwind-4-docs/SKILL.md` when using Tailwind CSS 4 APIs,
+  configuration, or utility semantics;
+- `../skills/web-design-guidelines/SKILL.md` when auditing a web interface
+  against accessibility, interaction, or responsive-design guidelines.
 
 ## Responsibilities
 

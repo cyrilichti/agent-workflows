@@ -14,7 +14,8 @@ impact.
 
 ## Skills
 
-- ../skills/security-and-hardening/SKILL.md
+Work directly unless assessing threats, vulnerabilities, or hardening; then
+load only `../skills/security-and-hardening/SKILL.md`.
 
 ## Responsibilities
 
@@ -27,7 +28,7 @@ impact.
 
 - Follow project conventions.
 - Focus on practical, actionable mitigations.
-- Do not modify code unless explicitly asked.
+- Do not modify code.
 
 ## Output
 
