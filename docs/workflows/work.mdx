@@ -1,6 +1,6 @@
 ---
 title: /work
-description: Execute one selected plan todo by todo, then hand validated work to /ready.
+description: Execute one selected plan through confirmed todo commits, then offer /ready.
 ---
 
 export const agentSkills = [
@@ -52,25 +52,17 @@ export const agentSkillCohorts = [
 
 `/work` turns an approved plan into confirmed commits. It can receive the plan
 from `/pick` with an active official item, or let you select from recent plans.
-After successful global validation, it continues with `/ready` using the same
-plan, optional item, and known request ID. `/ready` owns the push confirmation.
+After completing the todos, it lets you stop or continue with `/ready` using
+the same plan, optional item, and known request ID. `/ready` owns global
+validation and push confirmation.
 
 ## Dispatching external skills
-
-<br />
-<div className="skill-cohort-badges" aria-label="Skill cohorts">
-  {agentSkillCohorts.map((cohort) => (
-    <span className={`skill-cohort-badge dispatch-skill--cohort-${cohort.slug}`}>
-      {cohort.label}
-    </span>
-  ))}
-</div>
 
 <div className="dispatch-map dispatch-map--vertical dispatch-map--work">
   <div className="dispatch-node dispatch-node--workflow">
     <span className="dispatch-node__label">Workflow</span>
     <strong>/work</strong>
-    <span>Owns execution and selects the agent for each todo</span>
+    <span>Owns todo execution and agent routing</span>
   </div>
 
   <span className="dispatch-arrow" aria-hidden="true">↓</span>
@@ -78,7 +70,7 @@ plan, optional item, and known request ID. `/ready` owns the push confirmation.
   <div className="dispatch-node dispatch-node--agent">
     <span className="dispatch-node__label">Sub-agent</span>
     <strong>Most suitable agent</strong>
-    <span>The sub-agent profile selected for the active todo</span>
+    <span>Reused while suitable; replaced when the required cohort changes</span>
   </div>
 
   <span className="dispatch-arrow" aria-hidden="true">↓</span>
@@ -121,21 +113,27 @@ plan, optional item, and known request ID. `/ready` owns the push confirmation.
     <tr>
       <td>4</td>
       <th scope="row">Agent</th>
-      <td>Select the most suitable agent and execute one todo.</td>
+      <td>Select the most suitable agent, then reuse it while its cohort remains appropriate.</td>
     </tr>
     <tr>
       <td>5</td>
-      <th scope="row">Commit</th>
-      <td>Create the confirmed commit and complete the todo.</td>
+      <th scope="row">Todo</th>
+      <td>Persist the todo as in progress, implement and validate it, then stage only its changes.</td>
     </tr>
     <tr>
       <td>6</td>
+      <th scope="row">Commit</th>
+      <td>Confirm the proposal, create the commit, then persist the todo as completed and continue.</td>
+    </tr>
+    <tr>
+      <td>7</td>
       <th scope="row">Ready</th>
-      <td>Validate globally, then hand successful work to <code>/ready</code>.</td>
+      <td>When work is completed, choose whether to stop or continue with <code>/ready</code>.</td>
     </tr>
   </tbody>
 </table>
 
-If global validation fails, `/work` stops without pushing. When resumed work no
-longer has its initialized request record in context, `/ready` asks for the
-exact pull-request number or merge-request IID.
+`/work` never pushes todo commits. `/ready` performs global validation and owns
+the final push and request promotion. When resumed work no longer has its
+initialized request record in context, `/ready` asks for the exact pull-request
+number or merge-request IID.

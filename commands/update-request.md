@@ -27,16 +27,16 @@ Apply one provider-neutral promotion mutation to an existing open request.
 3. For `replace-description`:
    1. Return `succeeded` without mutation when the current `body` exactly
       equals `body`.
-   2. Load `../providers/<provider>.md` and use its `update-request` operation
-      with only `replace-description` and the exact replacement `body`.
+   2. Load `../providers/<provider>/update-request.md` and run it with only
+      `replace-description` and the exact replacement `body`.
    3. If the adapter reports that this operation is unavailable, return
       `unsupported` with its exact reason.
    4. Run `./read-request.md` again. Return `succeeded` when its `body` exactly
       equals `body`; otherwise return `failed` with the observed record.
 4. For `mark-ready`:
    1. Return `succeeded` without mutation when the current `draft` is `false`.
-   2. Load `../providers/<provider>.md` and use its `update-request` operation
-      with only `mark-ready`.
+   2. Load `../providers/<provider>/update-request.md` and run it with only
+      `mark-ready`.
    3. If the adapter reports that this operation is unavailable, return
       `unsupported` with its exact reason.
    4. Run `./read-request.md` again. Return `succeeded` when its `draft` is

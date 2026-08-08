@@ -4,14 +4,6 @@
 
 Resolve update-only context, then follow the shared execution.
 
----
-
-## Entry Condition
-
-Run only from `./write.md` after mode selection.
-
----
-
 ## Steps
 
 ### 1. Collect Item Expression

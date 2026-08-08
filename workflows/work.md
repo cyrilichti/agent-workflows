@@ -2,228 +2,38 @@
 
 ## Purpose
 
-Execute one selected plan incrementally on a dedicated branch and draft
-version-control request, then hand validated completed work to `/ready`.
-
-This workflow initializes new work once, resumes existing work without
-rediscovery, and does not itself push completed todo commits or change item
-status.
+Execute one selected plan incrementally, then offer completed work to `/ready`.
 
 ---
 
-## Entry Condition
+## Required Context
 
-Run this workflow in one of these modes:
+Load `../goals/work-complete.md` once as this workflow's completion contract.
 
-- **Caller mode**: another workflow provides an approved plan and, when
-  available, the active official item context.
-- **Standalone mode**: `./play-book.md` selects `work`, or the `work` Skill is
-  explicitly invoked without a calling workflow.
+Reuse these rules when already active from the caller; otherwise follow them:
 
-Caller mode from `./pick.md` is new work. `/pick` has already moved the official
-item to its active status before calling `/work`.
-
-Treat standalone execution as resumed work when the user explicitly asks to
-resume or the selected plan already contains an `in_progress` or `completed`
-todo. Otherwise, treat it as new work.
+- `../rules/user-facing-output.md`;
+- `../rules/mutation-response.md`.
 
 ---
 
 ## Steps
 
-### 1. Select the Plan
+### 1. Follow One Context Branch
 
-In caller mode, use the approved plan supplied by the caller. Preserve the
-official item context when provided.
+Follow exactly one branch:
 
-In standalone mode, select only files under `../plans/` whose names end with
-`.plan.md`. Sort them by modification time from newest to oldest, keep at most
-the first 10, and ask using `../templates/select-option.md` with:
+- follow `./work-item.md` when the caller supplies an approved plan and its
+  complete official item context;
+- otherwise, follow `./work-standalone.md`.
 
-```text
-question: Which plan do you want to execute?
-options:
-- label: <readable plan name>
-  value: <plan file path>
-```
-
-When no matching plan exists, report that no executable plan is
-available and stop.
-
-Read the selected plan and require its existing `planId` and todo states. Do not
-create, rewrite, or approve a plan in this workflow.
-
-### 2. Resume Existing Work
-
-For resumed work, trust that the current branch is the correct work branch and
-that its draft request already exists.
-
-Do not:
-
-- switch or create a branch;
-- search for, read, recover, or recreate the request;
-- create another initialization commit;
-- push for initialization;
-- add another item backlink.
-
-Continue directly with todo execution using the states stored in the selected
-plan. Do not infer or update todo states from Git history or local changes.
-
-### 3. Require the Default Branch for New Work
-
-For new work, read the current branch and the locally known remote default
-branch. Do not fetch or contact the remote merely to verify them.
-
-If the current branch is not the locally known default branch, ask the user to
-switch to the default branch and ensure it is up to date, then stop.
-
-Compare the default branch with its locally known upstream. If it is known to
-be behind or diverged, ask the user to update it, then stop. If local Git cannot
-identify the default branch or its upstream state, ask the user to confirm the
-default branch and that it is up to date before continuing.
-
-Do not run a general repository, provider, MCP capability, or
-backlink preflight.
-
-### 4. Initialize New Work
-
-After the user is on the locally known default branch and it is up to date:
-
-1. Build the work branch name:
-   - format it with `../templates/branch-name.md`;
-   - use the official item type when available, otherwise derive the branch
-     type from the plan objective;
-   - include the official item ID when one is present.
-2. Create and switch to that branch.
-3. Create one empty initialization commit with a concise title derived from the
-   plan name.
-4. Push the branch to the current push remote.
-5. Resolve the configured version provider by running
-   `../commands/resolve-version-provider.md`.
-6. Resolve the version-control repository by running
-   `../commands/resolve-version-repository.md` with the configured provider and
-   push remote only when preparing request creation.
-7. Format the title with `../templates/request-title.md`.
-8. Create the draft request by running `../commands/create-request.md`
-   with:
-
-   ```text
-   provider: resolved version provider
-   repository: repository derived from the push remote
-   source_branch: created work branch
-   target_branch: default branch used for initialization
-   title: formatted draft request title
-   ```
-
-9. Keep the complete created request record in the current execution context
-   for the later `/ready` call. Do not persist it in the plan.
-10. When caller mode supplied an official item, resolve its configured item
-   provider and run `../commands/link-request-to-item.md` with the initialized
-   request kind and URL, plus the stable plan ID. Do not update the item status.
-
-Resolve each provider or repository only when the corresponding operation
-needs it. Do not persist the branch, remote, repository, provider, or merge
-request in the plan.
-
-### 5. Execute the Todo Loop
-
-Treat the todo states stored in the plan as authoritative.
-
-Repeat the following steps:
-
-1. Skip todos already marked `completed` or `cancelled`. Select the single
-   `in_progress` todo when one exists. Otherwise, select the first `pending`
-   todo and mark it `in_progress`.
-2. Select the most appropriate specialist for that todo by following
-   `./sub-agent.md`. Reevaluate the selection for every todo, even when the
-   previous specialist may still be suitable.
-3. Give the specialist the active todo, relevant plan constraints, and required
-   technical context. Let the specialist route the Skills appropriate to that
-   todo.
-4. Let the specialist implement and validate only the active todo.
-5. Stage only the changes belonging to the active todo.
-6. Present the todo with `../templates/todo-review.md`.
-7. Immediately present one title and description with
-   `../templates/commit-proposal.md`.
-8. Ask the user through `../templates/select-option.md` with:
-
-   ```text
-   question: What do you want to do with this commit proposal?
-   options:
-   - Commit these changes
-   - Request an adjustment
-   ```
-
-9. On `Request an adjustment`, ask what should change and wait for the user's
-   free-form response. Give that requested adjustment to the same specialist,
-   then repeat implementation, validation, staging, todo review, and commit
-   proposal.
-10. On `Commit these changes`, create the commit with the approved title and
-    description and no trailers.
-11. Only after the commit succeeds, mark the active todo `completed`.
-12. Do not push the todo commit. Pushing remains the user's responsibility.
-13. Select the next todo and repeat. Leave the loop when no `in_progress` or
-    `pending` todo remains.
-
-### 6. Run Global Validation and Start Ready
-
-When no todo remains `pending` or `in_progress`, run the global validation
-defined in the selected plan.
-
-On validation failure, report the actionable findings and stop without pushing.
-
-On validation success, follow `./ready.md` in caller mode with:
-
-```text
-plan: authoritative selected plan
-item: active official item context, when available
-request_id: request ID from the created request record, when available
-```
-
-For resumed work, the request record may be unavailable; `/ready` asks for the
-request number or IID. `/work` does not push the todo commits itself. `/ready`
-owns the confirmation boundary and any resulting push or provider mutation.
+Preserve complete official item context when the caller supplies it. Fail an
+explicit but incomplete caller handoff instead of switching it to standalone
+mode.
 
 ---
 
 ## Safety
 
 - Do not change item status.
-- Do not fetch, pull, or update the default branch for the user.
-- Do not initialize work until the user is on the default branch and it is up
-  to date.
-- Do not perform new-work initialization during resumed work.
-- Add an item backlink only after creating one new request.
-- Do not persist execution metadata in the plan.
-- Stage only changes belonging to the active todo.
-- Do not mark a todo `completed` before its approved commit succeeds.
-- Do not push todo commits.
-- Do not push completed todo commits directly; delegate any confirmed push to
-  `/ready`.
-- Do not invoke `/review`.
-
----
-
-## Success Criteria
-
-This workflow entry, initialization, and todo loop satisfy their contracts
-when:
-
-- one existing plan has been selected or supplied;
-- resumed work has continued without branch or request recovery; or
-- new work has created and pushed its branch and empty initialization commit,
-  created one draft request, and added its URL to the supplied official item
-  when present;
-- item status has not been changed;
-- no execution metadata has been added to the plan;
-- each processed todo used a freshly evaluated specialist and its routed
-  Skills;
-- adjustment returned to the same todo and specialist;
-- every created todo commit was explicitly approved before creation;
-- each successful todo commit immediately marked its todo `completed`;
-- no todo commit was pushed by `/work`;
-- when no todo remained `pending` or `in_progress`, the global validation
-  defined in the plan ran;
-- failed validation stopped without pushing; or successful validation called
-  `/ready` with the same plan, optional official item, and known request ID;
-- `/work` did not push completed todo commits or invoke `/review` itself.
+- Do not push completed todo commits or invoke `/review`.

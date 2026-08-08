@@ -20,8 +20,9 @@ A caller may provide an already known `request_id`.
 ## Steps
 
 1. When `request_id` is absent and `request_backlinks` are available, load
-   `../providers/<provider>.md` and use `resolve-request-backlinks` to keep only
-   request IDs belonging to that provider and exact repository.
+   `../providers/<provider>/resolve-request-backlinks.md` and use it to keep
+   only request IDs belonging to that provider and exact repository. Stop when
+   it is missing.
 2. Use the backlink result only when it contains one unique request ID.
    Otherwise, ask the user for the exact pull-request number or merge-request
    IID. Do not list or search requests.

@@ -20,8 +20,8 @@ An operation succeeds only when matching provider state is observed.
 
 1. Run `./read-request.md` with `fields: review_activity`, require the request
    to remain open and non-draft, and require its head SHA to equal `head_sha`.
-2. Load `../providers/<provider>.md` and use `publish-review` for the operations
-   in their supplied order.
+2. Load `../providers/<provider>/publish-review.md` and run it for the
+   operations in their supplied order. Stop when it is missing.
 3. Read complete review activity after each operation and require the exact
    body, anchor, or verdict to be observed.
 4. On a failed, ambiguous, or unobserved result, report it and stop dependent

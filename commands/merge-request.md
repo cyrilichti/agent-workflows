@@ -12,10 +12,9 @@ return the observed result.
 
 ## Steps
 
-1. Load `../providers/<provider>.md`.
-2. Use the provider operation named `merge-request` with the exact repository,
-   request ID, and optional merge method.
-3. After an attempted merge, use the provider's `read-request` operation with
+1. Load `../providers/<provider>/merge-request.md`. Stop when it is missing.
+2. Run it with the exact repository, request ID, and optional merge method.
+3. After an attempted merge, run `./read-request.md` with
    `fields: delivery_state`.
 4. Return exactly one normalized result:
    - `merged` only when the observed request state is `merged`;
