@@ -8,7 +8,7 @@ Use immediately before `/ready` asks for its single mutation confirmation.
 ## Promotion Proposal
 
 Plan: <name and planId> — validation passed; delivered work matches the plan
-Branch: <branch> → <upstream ref> (<ahead count> commits to push)
+Branch: <branch> — <push required or already current>
 Request: <kind, ID and URL> — <description action>; <draft action>
 Item: <best-effort review transition, when available>
 ```

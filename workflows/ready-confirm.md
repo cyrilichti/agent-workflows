@@ -17,10 +17,10 @@ the current branch with `../commands/resolve-version-provider.md`,
 `../commands/resolve-request.md`. Use the supplied request ID or ask for it;
 never search for or substitute another request.
 
-Run only the plan's global Validation, then require the same branch and `HEAD`
-with a clean worktree. Compare the complete diff against the request target
-with the Objective and Expected Outcome. Check only that the planned outcome
-was delivered: do not select a specialist or perform a code review.
+Run only the plan's global Validation. Compare the complete committed diff
+against the request target with the Objective and Expected Outcome. Check only
+that the planned outcome was delivered: do not select a specialist or perform
+a code review.
 
 Return validation failures or concrete gaps to `/work`; otherwise continue.
 
@@ -41,8 +41,9 @@ On `Stop without changes`, stop without mutation.
 
 ### 3. Promote
 
-Require the same branch and `HEAD` with a clean worktree. If they changed,
-restart verification and require a new confirmation.
+Require the same branch and `HEAD` with a clean worktree. This single final
+guard also catches state changed by validation. If it fails, restart
+verification and require a new confirmation.
 
 Push normally to the configured upstream only when ahead. Update the exact
 request description, then mark it ready using
