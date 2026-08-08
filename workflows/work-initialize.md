@@ -80,4 +80,4 @@ Return the complete created request record to the caller.
 - Do not run a general repository, provider, MCP capability, or backlink
   preflight.
 - Link only the newly created request and do not change item status.
-- Do not persist execution metadata in the plan.
+- Do not persist Git, provider, or request metadata in the plan.

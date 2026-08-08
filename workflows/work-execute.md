@@ -5,12 +5,17 @@
 ### 1. Execute Todos
 
 Treat plan todo states as authoritative. Skip `completed` and `cancelled`, then
-select the single `in_progress` todo or mark the first `pending` todo
+select the first `in_progress` todo or mark the first `pending` todo
 `in_progress`. Continue to Step 2 when neither exists.
+
+Persist every state transition immediately in the authoritative plan file. Do
+not keep todo state only in execution context.
 
 For each active todo:
 
-1. Follow `./sub-agent.md` with:
+1. Reuse the active specialist while it remains appropriate. When none is
+   active or the todo requires a different agent cohort, follow
+   `./sub-agent.md` with:
 
    ```text
    task_context:
@@ -19,8 +24,7 @@ For each active todo:
      technical_context: required technical context
    ```
 
-   Reevaluate the specialist for every todo and let it route the appropriate
-   Skills.
+   Let the selected specialist route the appropriate Skills.
 2. Have the specialist implement and validate only that todo, then stage only
    its changes.
 3. Present `../templates/todo-review.md`, then
@@ -38,27 +42,25 @@ For each active todo:
    to the same specialist. Repeat implementation, validation, staging, review,
    and proposal.
 6. On `Commit these changes`, create the approved commit without trailers.
-   After it succeeds, mark the todo `completed` without pushing, then continue
-   with the next todo.
+   After it succeeds, persist the todo as `completed` without pushing, then
+   continue with the next todo.
 
-### 2. Run Global Validation
+### 2. Offer Ready
 
-Run every applicable check in the plan's global Validation, using inspection
-for an explicitly manual item. On failure, report actionable findings and stop
-without pushing.
+When no todo remains `pending` or `in_progress`, require at least one
+`completed` todo. When all todos are `cancelled`, report that no work was
+completed and stop without calling `/ready`.
 
-### 3. Offer Ready
-
-On success, ask using `../templates/select-option.md` with:
+Otherwise, ask using `../templates/select-option.md` with:
 
 ```text
-question: What do you want to do with this validated work?
+question: What do you want to do with this completed work?
 options:
 - Prepare work for review
 - Stop here
 ```
 
-On `Stop here`, report that validation succeeded and stop without mutation.
+On `Stop here`, stop without mutation.
 
 On `Prepare work for review`, follow `./ready.md` in caller mode with:
 

@@ -33,8 +33,8 @@ that its draft request already exists. Do not:
 - push for initialization;
 - add another item backlink.
 
-Continue without a request record. Do not persist execution metadata in the
-plan.
+Continue without a request record. Do not persist Git, provider, or request
+metadata in the plan.
 
 ### 3. Execute the Plan
 
