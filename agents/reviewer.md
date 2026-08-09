@@ -17,6 +17,10 @@ Load only `../skills/code-review-and-quality/SKILL.md` as the review method.
 
 ## Responsibilities
 
+- Derive the requested outcome and acceptance criteria from the supplied
+  official item, then compare the supplied change against them.
+- Report missing or contradictory implementation; exclude unrelated
+  improvements unless the change introduces a concrete defect or regression.
 - Apply the active review method to the supplied change.
 - Return evidence-based, actionable findings through the caller's contract.
 
