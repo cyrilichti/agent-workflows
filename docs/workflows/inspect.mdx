@@ -11,6 +11,28 @@ No delivery workflow invokes `/inspect`. After an `approve` verdict is observed
 as successfully published on the unchanged frozen SHA, `/inspect` offers to
 hand its compact completion context directly to `/done`.
 
+## Dispatching workflows
+
+<div className="dispatch-map dispatch-map--vertical">
+<div className="dispatch-node dispatch-node--workflow" data-workflow="inspect">
+    <span className="dispatch-node__label">Workflow</span>
+    <strong>/inspect</strong>
+    <span>Inspects and publishes a confirmed review on one frozen snapshot</span>
+  </div>
+
+  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+
+  <a
+    className="dispatch-node dispatch-node--workflow dispatch-node--link"
+    data-workflow="done"
+    href="/agent-workflows/workflows/done/"
+  >
+    <span className="dispatch-node__label">Workflow</span>
+    <strong>/done</strong>
+    <span>Rechecks the request, confirms the mutations, and completes the work</span>
+  </a>
+</div>
+
 ## How this workflow is structured
 
 <table className="workflow-steps">
@@ -57,8 +79,3 @@ hand its compact completion context directly to `/done`.
     </tr>
   </tbody>
 </table>
-
-Throughout the inspection cycle, `/inspect` never modifies code, items, commits,
-branches, or existing comments. It never invokes `/work`, and never pushes,
-merges, deploys, or releases itself. `/done` retains its separate preflight and
-mutation confirmation after an eligible handoff.

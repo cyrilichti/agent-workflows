@@ -10,7 +10,7 @@ known, it asks for the exact pull-request number or merge-request IID.
 ## Dispatching workflows
 
 <div className="dispatch-map dispatch-map--vertical">
-  <div className="dispatch-node dispatch-node--workflow">
+<div className="dispatch-node dispatch-node--workflow" data-workflow="ready">
     <span className="dispatch-node__label">Workflow</span>
     <strong>/ready</strong>
     <span>Checks the branch and delivered work against the plan</span>
@@ -20,6 +20,7 @@ known, it asks for the exact pull-request number or merge-request IID.
 
   <a
     className="dispatch-node dispatch-node--workflow dispatch-node--link"
+    data-workflow="work"
     href="/agent-workflows/workflows/work/"
   >
     <span className="dispatch-node__label">Workflow</span>
