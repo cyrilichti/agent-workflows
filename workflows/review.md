@@ -10,6 +10,12 @@ never called by another workflow.
 
 ---
 
+## Required Context
+
+Load `../goals/review-complete.md` once as this workflow's completion contract.
+
+---
+
 ## Entry Condition
 
 Run only when the user explicitly invokes the local `review` Skill. Do not run
@@ -218,13 +224,3 @@ Stop after this report.
   finding is fixed.
 - Never push, merge, deploy, release, invoke `/work`, or invoke `/done`.
 - Never use REST, CLI, or another provider as an undocumented fallback.
-
----
-
-## Success Criteria
-
-`/review` succeeds when one complete official item and request snapshot were
-reviewed, every finding received a user decision, the exact final payload was
-confirmed against the same head SHA, every attempted operation was observed
-and reported accurately, and the workflow stopped without delivery mutations
-or downstream workflow invocation.
