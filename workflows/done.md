@@ -36,9 +36,8 @@ standalone mode.
 ## Safety
 
 - Never mutate before the single explicit confirmation.
-- Never merge a Draft, blocked, unknown, changed-head, or substituted request.
-- Never transition the item before the request is observed as merged.
-- Never retry automatically or roll back a successful merge.
-- Never modify code, commits, branches, request content, reviews, or item
-  fields other than the resolved state.
-- Never deploy, release, tag, or invoke another workflow.
+- Merge only the exact unchanged, non-draft, mergeable request using `squash`.
+- Transition only the item status and only after observing the merge; never
+  retry or roll back automatically.
+- Never modify work or request content, deploy, release, tag, or invoke another
+  workflow.

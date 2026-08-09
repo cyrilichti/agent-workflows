@@ -10,8 +10,7 @@ Run `../commands/resolve-item-provider.md` with:
 context: item
 ```
 
-Preserve any exact item ID or title phrase available with the invocation as the
-item hint. Run `../commands/select-review-item.md` with:
+Run `../commands/select-review-item.md` with:
 
 ```text
 provider: resolved item provider
@@ -27,7 +26,7 @@ item_id: selected provider item ID
 fields: request_backlinks
 ```
 
-Keep the returned item and provider ID as the complete official item context.
+Keep the complete official item.
 
 ### 2. Resolve the Exact Request
 
@@ -52,11 +51,7 @@ allowed_states:
 fields: delivery_state
 ```
 
-When no unique backlink resolves the request, let the command ask for the exact
-pull-request number or merge-request IID. Never list, search for, or substitute
-another request.
-
-Keep the returned complete request record as the exact request context.
+Keep the exact returned request.
 
 ### 3. Follow Shared Completion
 

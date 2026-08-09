@@ -1,64 +1,41 @@
 ---
 title: /done
-description: Merge one exact request, then complete its official item from observed provider states.
+description: Squash-merge one exact request, then complete its official item.
 ---
 
-`/done` has two context paths. Standalone mode resolves one official item and
-its exact non-draft pull request or merge request. Caller mode reuses the
-compact item identity and request delivery context projected by `/inspect`;
-review findings, activity, and diff are not carried. Both paths join the same
-preview and ask once before making any change.
+`/done` accepts either a compact caller packet from `/inspect` or standalone
+item and request resolution. Both paths join the same preflight.
 
-An open request must be reported as mergeable by its provider. An already
-merged request skips the merge. Before previewing an open request, `/done`
-verifies read-only that its provider supports squash merge. In both cases,
-`/done` moves the official item to its resolved completed state only after the
-request is observed as merged.
+An open request must be non-draft, mergeable at the unchanged head SHA, and
+support squash merge. The item moves to its resolved completed state only after
+the request is observed as merged.
 
-## How this workflow is structured
+## Flow
 
 <table className="workflow-steps">
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Item</th>
-      <td>Use the same review-item selection as <code>/inspect</code>, including exact ID and title search.</td>
+      <th scope="row">Context</th>
+      <td>Reuse the caller packet or resolve one review item and its exact request.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Request</th>
-      <td>Resolve its exact open or already merged request.</td>
+      <th scope="row">Preflight</th>
+      <td>Resolve the item target and verify merge eligibility and squash support.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Preflight</th>
-      <td>Resolve merge eligibility and the item's exact completed state.</td>
+      <th scope="row">Confirm</th>
+      <td>Confirm the exact remaining mutations once.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Confirm</th>
-      <td>Preview the remaining mutations and ask once before changing anything.</td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <th scope="row">Merge</th>
-      <td>Recheck the request head and squash-merge an eligible open request.</td>
-    </tr>
-    <tr>
-      <td>6</td>
       <th scope="row">Complete</th>
-      <td>Transition only the official item state after observing the merge.</td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <th scope="row">Report</th>
-      <td>Report completed, blocked, unsupported, failed, or partial outcomes.</td>
+      <td>Recheck, squash-merge, transition the item, and report observed results.</td>
     </tr>
   </tbody>
 </table>
 
-When a merge is observed but the item transition fails, `/done` keeps the
-partial result explicit. A rerun rereads the provider states, skips the
-completed merge, and presents only the remaining item transition. `/done`
-never deploys, releases, tags, retries automatically, or invokes another
-workflow.
+A stale confirmation returns to preflight. A failed item transition never
+retries or rolls back an observed merge; a rerun offers only that transition.

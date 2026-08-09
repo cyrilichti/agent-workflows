@@ -7,7 +7,7 @@ Use before `/done` asks for its one mutation confirmation.
 ```markdown
 ## Ready to Complete
 
-Request: <kind, ID, URL, source branch, target branch>
+Request: <provider, repository, ID, source branch, target branch>
 Request state: <open and mergeable at head SHA, or already merged>
 Item: <ID and current state → resolved done state, or already done>
 
@@ -19,8 +19,7 @@ Item: <ID and current state → resolved done state, or already done>
 
 ## Rules
 
-- Show the exact request and item identities plus their observed states.
-- Show `squash` as the merge method for an open request.
-- Show the exact resolved item target state.
-- Omit already completed mutations.
+- Show exact identities, observed states, `squash`, and the resolved item
+  target.
+- Omit completed mutations.
 - Leave confirmation to the workflow's following `select-option.md` call.

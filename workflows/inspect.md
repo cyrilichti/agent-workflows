@@ -73,9 +73,7 @@ Run `../commands/read-request.md` with:
 provider: resolved version provider
 repository: resolved repository
 request_id: exact request ID
-fields:
-  - review_snapshot
-  - delivery_state
+fields: review_snapshot
 ```
 
 Stop with the exact missing context when the provider cannot return a complete
@@ -163,9 +161,11 @@ Otherwise, report the grouped provider review, accepted finding counts, and
 semantic verdict. Identify failed or unobserved findings by ID without
 repeating their bodies. Do not retry automatically.
 
-Only when the semantic verdict is `approve`, the grouped provider review is
-observed as `succeeded`, and its returned delivery-state head SHA still equals
-the frozen SHA, ask using `../templates/select-option.md` with:
+Stop without offering `/done` unless the semantic verdict is `approve`, the
+grouped provider review is observed as `succeeded`, and its returned delivery
+state has the frozen head SHA.
+
+When all three conditions hold, ask using `../templates/select-option.md` with:
 
 ```text
 question: What do you want to do next?
@@ -183,14 +183,6 @@ request identity, and returned post-publication delivery state through
 ```text
 completion_context: compact projected Done Context
 ```
-
-Do not include the frozen review snapshot, findings, review activity, or diff.
-`/done` reuses the projected delivery context without resolution or another
-preflight read and owns the merge confirmation.
-
-For verdict `none` or `request_changes`, when the `approve` publication is not
-observed as `succeeded`, or when its returned delivery state is unavailable or
-has another head SHA, stop after the report without offering `/done`.
 
 ---
 

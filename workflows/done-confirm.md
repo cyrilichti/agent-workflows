@@ -2,62 +2,53 @@
 
 ## Entry Condition
 
-Run with one complete `completion_context` following
+Run with one `completion_context` following
 `../templates/done-context.md`.
 
 ---
 
 ## Steps
 
-### 1. Require the Completion Context
+### 1. Validate Context
 
-Require every non-optional Done Context field. Preserve the supplied item and
-request completion fields unchanged. Do not resolve, search, select, or reread
-them before the preview.
+Require every non-optional field, then set `item` and `request` to the packet's
+two sections. Require an exact non-draft request whose state is `open` or
+`merged`, with a head SHA and normalized merge status. Fail incomplete context;
+do not recover, resolve, or reread the request before preflight.
 
-Require `completion_context.request` to be open or merged and non-draft, with
-an exact head SHA and normalized merge status. Fail incomplete caller context
-instead of recovering it.
-
-### 2. Resolve the Remaining Operations
+### 2. Prepare and Confirm
 
 Run `../commands/transition-item-status.md` with:
 
 ```text
-provider: completion_context.item.provider
-item_id: completion_context.item.item_id
+provider: item.provider
+item_id: item.item_id
 target_status: done
 mode: resolve
 ```
 
-Stop before mutation when the next `done` state cannot be resolved uniquely.
+On failed or ambiguous resolution, present `../templates/done-result.md` with
+the item reason and stop.
 
-For an open request, require `merge_status: mergeable` and a head SHA. Report
-the provider's blocker and stop when the request is blocked or its eligibility
-is unknown. Then run `../commands/merge-request.md` with:
+For an open request, require a head SHA and `merge_status: mergeable`, then run
+`../commands/merge-request.md` with:
 
 ```text
-provider: completion_context.request.provider
-repository: completion_context.request.repository
-request_id: completion_context.request.request_id
+provider: request.provider
+repository: request.repository
+request_id: request.request_id
 merge_method: squash
 mode: resolve
 ```
 
-Continue only when it returns `supported`; otherwise report `unsupported` and
-stop before the preview.
+On blocked, unknown, or unsupported merge eligibility, present
+`../templates/done-result.md` with `Item: not attempted` and stop.
 
-For a merged request, omit the merge from the remaining operations. When the
-item is also already done, present `../templates/done-result.md` with the
-observed completed state and finish according to `../goals/done-complete.md`
-without asking for confirmation.
+For a merged request, omit the merge. When the item is already done, present
+`../templates/done-result.md` and stop without confirmation.
 
-### 3. Preview and Confirm
-
-Present the exact request state, item transition, and remaining mutations using
-`../templates/done-preflight.md`.
-
-Ask once through `../templates/select-option.md`:
+Present `../templates/done-preflight.md`, then ask once through
+`../templates/select-option.md`:
 
 ```text
 question: Complete this request and its item?
@@ -66,64 +57,46 @@ options:
 - Stop without changes
 ```
 
-On `Stop without changes`, finish according to `../goals/done-complete.md`
-without mutation.
+On `Stop without changes`, stop without mutation.
 
-### 4. Merge the Open Request
+### 3. Guard and Merge
 
 Skip this step when the request was already merged.
 
-After confirmation, run `../commands/read-request.md` with:
+Read the exact request once with `../commands/read-request.md` and:
 
 ```text
-provider: completion_context.request.provider
-repository: completion_context.request.repository
-request_id: completion_context.request.request_id
+provider: request.provider
+repository: request.repository
+request_id: request.request_id
 fields: delivery_state
 ```
 
-Require the same request identity, source branch, target branch, open state,
-exact previewed head SHA, and `merge_status: mergeable`. When any delivery
-field changed, replace only those fields in `completion_context.request`,
-discard the stale confirmation, and return to Step 2 for a new preview. Never
-merge under the stale confirmation.
+Require the previewed request identity, branches, open non-draft state, head
+SHA, and `merge_status: mergeable`. On any change, replace only returned
+request fields, discard the confirmation, and return to Step 1.
 
-Run `../commands/merge-request.md` with:
+Run `../commands/merge-request.md` with the same provider, repository, request
+ID, `merge_method: squash`, and `mode: apply`.
 
-```text
-provider: completion_context.request.provider
-repository: completion_context.request.repository
-request_id: completion_context.request.request_id
-merge_method: squash
-mode: apply
-```
+Continue only on `merged`. Otherwise present `../templates/done-result.md` with
+the observed request result and `Item: not attempted`, then stop.
 
-Continue only when the normalized result is `merged`. For `blocked`,
-`unsupported`, `failed`, or `unobserved`, present
-`../templates/done-result.md` with the request result and
-`Item: not attempted`, then stop.
+### 4. Complete the Item
 
-### 5. Complete the Official Item
-
-When the item was not already done, run
-`../commands/transition-item-status.md` with:
+Unless already done, run `../commands/transition-item-status.md` with:
 
 ```text
-provider: completion_context.item.provider
-item_id: completion_context.item.item_id
+provider: item.provider
+item_id: item.item_id
 target_status: done
 mode: apply
-resolved_target_status: exact target shown in the confirmed preview
+resolved_target_status: exact confirmed target
 ```
 
-Record the best-effort result. Do not retry or roll back an observed merge when
-the item transition fails.
+Keep the best-effort result. Never retry or roll back an observed merge.
 
-### 6. Report and Stop
+### 5. Report
 
-Present the observed request and item outcomes through
-`../templates/done-result.md`. On a partial result, identify only the item
-transition as the remaining action for an explicit rerun.
-
-Finish according to `../goals/done-complete.md` without invoking another
-workflow.
+Present `../templates/done-result.md`. After a partial result, identify only
+the item transition as remaining. Stop without invoking another workflow.
