@@ -20,9 +20,9 @@ when its complete matching provider state is observed.
 
 ## Steps
 
-1. Run `./read-request.md` with `fields: review_activity` and require the
-   request to remain open and non-draft. When its head SHA differs from
-   `head_sha`, return `stale` without mutation.
+1. Run `./read-request.md` with `fields: delivery_state` and require the request
+   to remain open and non-draft. When its head SHA differs from `head_sha`,
+   return `stale` without mutation.
 2. Load `../providers/<provider>/publish-review.md` and run it once with the
    exact findings, verdict, and head SHA. Stop when it is missing.
 3. When the provider reports that no mutation was attempted, return its
