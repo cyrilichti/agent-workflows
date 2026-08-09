@@ -11,51 +11,26 @@ resolved `done` state.
 
 Load `../goals/done-complete.md` once as this workflow's completion contract.
 
-Follow `../rules/user-facing-output.md`.
+Reuse these rules when already active from the caller; otherwise follow them:
 
-Follow `../rules/mutation-response.md`.
+- `../rules/user-facing-output.md`;
+- `../rules/mutation-response.md`.
 
 ---
 
 ## Steps
 
-### 1. Resolve the Official Item
+### 1. Follow One Context Branch
 
-Run `../commands/resolve-item-provider.md` with:
+Follow exactly one branch:
 
-```text
-context: item
-```
+- follow `./done-confirm.md` when the caller supplies the resolved item
+  provider, complete official item, resolved version provider, repository, and
+  exact request with complete delivery state;
+- otherwise, follow `./done-standalone.md`.
 
-Preserve any exact item ID or title phrase available with the invocation as the
-item hint. Run `../commands/select-review-item.md` with:
-
-```text
-provider: resolved item provider
-reference: supplied exact provider item ID, when available
-query: supplied title phrase, when no exact ID is available
-```
-
-### 2. Read the Official Item
-
-Run `../commands/read-item.md` with:
-
-```text
-provider: resolved item provider
-item_id: selected provider item ID
-fields: request_backlinks
-```
-
-Use the returned item and provider ID as the complete official item context.
-
-### 3. Follow Completion
-
-Follow `./done-confirm.md` with:
-
-```text
-provider: resolved item provider
-item: complete official item context
-```
+Fail an explicit but incomplete caller handoff instead of switching it to
+standalone mode.
 
 ---
 

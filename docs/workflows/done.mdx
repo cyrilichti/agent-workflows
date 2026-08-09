@@ -3,10 +3,11 @@ title: /done
 description: Merge one exact request, then complete its official item from observed provider states.
 ---
 
-`/done` follows one standalone resolution path whether explicitly invoked or
-offered after `/inspect`. It resolves one official item and its exact non-draft
-pull request or merge request, previews the remaining mutations, and asks once
-before making any change.
+`/done` has two context paths. Standalone mode resolves one official item and
+its exact non-draft pull request or merge request. Caller mode reuses the
+complete item, provider, repository, request, and delivery state preserved by
+`/inspect`. Both paths join the same preview and ask once before making any
+change.
 
 An open request must be reported as mergeable by its provider. An already
 merged request skips the merge. In both cases, `/done` moves the official item

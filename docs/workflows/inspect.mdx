@@ -8,8 +8,8 @@ item and its pull or merge request, inspects a frozen snapshot, and lets you
 accept, reject, or modify every finding before anything is published.
 
 No delivery workflow invokes `/inspect`. After reporting a review publication
-attempt with no accepted blocking finding, `/inspect` can offer an explicit
-handoff to `/done`.
+attempt with no accepted blocking finding, `/inspect` hands its complete
+request context directly to `/done`.
 
 ## How this workflow is structured
 
@@ -53,7 +53,7 @@ handoff to `/done`.
     <tr>
       <td>8</td>
       <th scope="row">Complete</th>
-      <td>After a non-blocking review result, optionally continue to <code>/done</code>.</td>
+      <td>After a non-blocking review result, continue to <code>/done</code> with the preserved context.</td>
     </tr>
   </tbody>
 </table>

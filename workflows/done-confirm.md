@@ -2,47 +2,35 @@
 
 ## Entry Condition
 
-Run with a resolved item provider and complete official item context including
-all request backlinks.
+Run with:
+
+- `item_provider`: resolved item provider;
+- `item`: complete official item context;
+- `version_provider`: resolved version provider;
+- `repository`: resolved repository;
+- `request`: exact non-draft request in that repository with complete delivery
+  state.
 
 ---
 
 ## Steps
 
-### 1. Resolve the Exact Request
+### 1. Require the Completion Context
 
-Run `../commands/resolve-version-provider.md`. Read the current Git push remote
-without fetching, then run `../commands/resolve-version-repository.md` with:
+Require every entry-condition field. Preserve the supplied official item,
+provider identities, repository, and exact request unchanged. Do not resolve,
+search, select, or reread them before the preview.
 
-```text
-provider: resolved version provider
-push_remote: current push remote
-```
-
-Run `../commands/resolve-request.md` with:
-
-```text
-provider: resolved version provider
-repository: resolved repository
-request_backlinks: official item request backlinks
-require_non_draft: true
-allowed_states:
-  - open
-  - merged
-```
-
-When no unique backlink resolves the request, let the command ask for the exact
-pull-request number or merge-request IID. Never list, search for, or substitute
-another request.
-
-Keep the returned complete request record as the exact request context.
+Require the request to be open or merged, non-draft, and to contain its exact
+head SHA and normalized merge status. Fail incomplete caller context instead of
+recovering it.
 
 ### 2. Resolve the Remaining Operations
 
 Run `../commands/transition-item-status.md` with:
 
 ```text
-provider: resolved item provider
+provider: item_provider
 item_id: official item ID
 target_status: done
 mode: resolve
@@ -84,7 +72,7 @@ Skip this step when the request was already merged.
 After confirmation, run `../commands/read-request.md` with:
 
 ```text
-provider: resolved version provider
+provider: version_provider
 repository: resolved repository
 request_id: exact request ID
 fields: delivery_state
@@ -97,7 +85,7 @@ confirmation.
 Run `../commands/merge-request.md` with:
 
 ```text
-provider: resolved version provider
+provider: version_provider
 repository: resolved repository
 request_id: exact request ID
 merge_method: squash
@@ -114,7 +102,7 @@ When the item was not already done, run
 `../commands/transition-item-status.md` with:
 
 ```text
-provider: resolved item provider
+provider: item_provider
 item_id: official item ID
 target_status: done
 mode: apply

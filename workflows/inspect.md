@@ -67,7 +67,16 @@ resolved repository.
 
 ### 3. Read and Freeze the Inspection Snapshot
 
-Run `../commands/read-request.md` with `fields: review_snapshot`.
+Run `../commands/read-request.md` with:
+
+```text
+provider: resolved version provider
+repository: resolved repository
+request_id: exact request ID
+fields:
+  - review_snapshot
+  - delivery_state
+```
 
 Stop with the exact missing context when the provider cannot return a complete
 snapshot. Keep its head SHA frozen for analysis, curation, and confirmation.
@@ -154,19 +163,19 @@ Otherwise, report the grouped provider review, accepted finding counts, and
 semantic verdict. Identify failed or unobserved findings by ID without
 repeating their bodies. Do not retry automatically.
 
-When the accepted blocking finding count is zero, ask using
-`../templates/select-option.md` with:
+When the accepted blocking finding count is zero, follow `./done.md` in caller
+mode with:
 
 ```text
-question: What do you want to do next?
-options:
-- Complete the request
-- Stop here
+item_provider: resolved item provider
+item: complete official item context
+version_provider: resolved version provider
+repository: resolved repository
+request: complete exact request with frozen review snapshot and delivery state
 ```
 
-On `Complete the request`, follow `./done.md` with the exact official item ID.
-`/done` re-resolves the complete official item and request and owns its merge
-confirmation. On `Stop here`, stop.
+`/done` reuses this context without resolution or another preflight read and
+owns the single merge confirmation.
 
 When at least one accepted blocking finding remains, stop after the report
 without offering `/done`.
@@ -178,6 +187,6 @@ without offering `/done`.
 - Never modify code, items, commits, branches, or existing comments.
 - Publish only the confirmed payload from its unchanged frozen SHA.
 - Never push, merge, deploy, release, or invoke `/work`.
-- Invoke `/done` only after the publication result is reported, no accepted
-  blocking finding remains, and the user explicitly chooses the handoff.
+- Invoke `/done` only after the publication result is reported and no accepted
+  blocking finding remains.
 - Never use REST, CLI, or another provider as an undocumented fallback.

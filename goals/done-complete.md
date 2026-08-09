@@ -8,8 +8,8 @@ the uniquely resolved `done` state after one explicit completion confirmation.
 ## Success Criteria
 
 - The request belongs to the configured version provider and repository and is
-  resolved only from the official item's backlinks or an exact user-supplied
-  request ID.
+  either resolved from the official item's backlinks or an exact user-supplied
+  request ID in standalone mode, or preserved from complete caller context.
 - An open request is mergeable at the exact confirmed head SHA before the
   merge is attempted.
 - An open request is merged using `squash`.
