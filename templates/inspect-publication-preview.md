@@ -1,11 +1,11 @@
-# Review Publication Preview
+# Inspect Publication Preview
 
-Present the exact complete review payload before publication.
+Present the exact complete inspection payload before publication.
 
 ## Format
 
 ```markdown
-## Review Publication Preview
+## Inspect Publication Preview
 
 Request: <request ID and URL>
 Head SHA: <frozen head SHA>

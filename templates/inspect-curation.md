@@ -1,11 +1,11 @@
-# Review Curation
+# Inspect Curation
 
 Present one or more complete findings for grouped explicit decisions.
 
 ## Format
 
 ```markdown
-## Review Curation
+## Inspect Curation
 
 <every complete current finding in stable order>
 

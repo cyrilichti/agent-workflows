@@ -36,4 +36,4 @@ mode.
 ## Safety
 
 - Do not change item status.
-- Do not push completed todo commits or invoke `/review`.
+- Do not push completed todo commits or invoke `/inspect`.

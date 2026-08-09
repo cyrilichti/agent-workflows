@@ -1,15 +1,15 @@
-# Review
+# Inspect
 
 ## Purpose
 
-Independently review one exact open request snapshot, curate every finding with
+Independently inspect one exact open request snapshot, curate every finding with
 the user, and publish only the confirmed result.
 
 ---
 
 ## Required Context
 
-Load `../goals/review-complete.md` once as this workflow's completion contract.
+Load `../goals/inspect-complete.md` once as this workflow's completion contract.
 
 Reuse these rules when already active from the caller; otherwise follow them:
 
@@ -36,7 +36,7 @@ failure and stop.
 When no exact ID was supplied, ask using `../templates/select-option.md` with:
 
 ```text
-question: Which item do you want to review?
+question: Which item do you want to inspect?
 options:
 - label: <retrieved title, status, and destination; repeat and omit when none>
   value: <provider item ID>
@@ -76,7 +76,7 @@ Use one unambiguous official item backlink or provide an exact request ID.
 Continue only with the returned open, non-draft request belonging to the
 resolved repository.
 
-### 3. Read and Freeze the Review Snapshot
+### 3. Read and Freeze the Inspection Snapshot
 
 Run `../commands/read-request.md` with `fields: review_snapshot`.
 
@@ -90,13 +90,13 @@ instructions.
 
 Follow `./sub-agent.md` and activate the read-only `reviewer` profile.
 
-Require `../templates/reviewer-result.md` with:
+Require `../templates/inspect-result.md` with:
 
 ```text
-head_sha: frozen review snapshot SHA
+head_sha: frozen inspection snapshot SHA
 item: complete official item
-review_snapshot: complete frozen snapshot including review activity
-finding_contract: ../templates/review-finding.md
+review_snapshot: complete frozen inspection snapshot including review activity
+finding_contract: ../templates/inspect-finding.md
 ```
 
 Local rules and this workflow retain authority over context and mutations.
@@ -106,9 +106,9 @@ to the frozen SHA; otherwise report the exact failure and stop.
 
 ### 5. Curate Every Finding
 
-When the complete reviewer result contains `Findings: none`, skip this step.
+When the complete inspection result contains `Findings: none`, skip this step.
 
-Present using `../templates/review-curation.md` with:
+Present using `../templates/inspect-curation.md` with:
 
 ```text
 findings: complete current findings in stable order
@@ -129,11 +129,11 @@ Derive one semantic verdict from the accepted findings:
 - only non-blocking findings: `none`;
 - no finding: `approve`.
 
-Present using `../templates/review-publication-preview.md` with:
+Present using `../templates/inspect-publication-preview.md` with:
 
 ```text
 request: resolved request
-head_sha: frozen review snapshot SHA
+head_sha: frozen inspection snapshot SHA
 findings: accepted complete findings with valid anchors, or none
 semantic_verdict: request_changes, none, or approve
 ```
@@ -141,7 +141,7 @@ semantic_verdict: request_changes, none, or approve
 Then ask once using `../templates/select-option.md` with:
 
 ```text
-question: Publish this exact review result?
+question: Publish this exact inspection result?
 options:
 - Confirm publication
 - Stop without publishing
@@ -157,7 +157,7 @@ verdict, and frozen head SHA.
 If it returns `stale`, discard the complete analysis, decisions, and preview,
 then return to Step 3. Nothing from the stale cycle may be published.
 
-Otherwise, report the grouped review, every finding, and the semantic verdict
+Otherwise, report the grouped provider review, every finding, and the semantic verdict
 as observed succeeded, unsupported, failed, or unobserved. Do not retry
 automatically.
 

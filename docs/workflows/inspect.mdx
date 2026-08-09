@@ -1,13 +1,13 @@
 ---
-title: /review
-description: Independently review one exact request snapshot and publish only the confirmed result.
+title: /inspect
+description: Independently inspect one exact request snapshot and publish only the confirmed result.
 ---
 
-`/review` is a standalone, manually invoked workflow. It resolves one official
-item and its pull or merge request, reviews a frozen snapshot, and lets you
+`/inspect` is a standalone, manually invoked workflow. It resolves one official
+item and its pull or merge request, inspects a frozen snapshot, and lets you
 accept, reject, or modify every finding before anything is published.
 
-No delivery workflow invokes `/review`, and `/review` never enters a delivery
+No delivery workflow invokes `/inspect`, and `/inspect` never enters a delivery
 workflow.
 
 ## How this workflow is structured
@@ -31,7 +31,7 @@ workflow.
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Review</th>
+      <th scope="row">Inspect</th>
       <td>Produce a complete SHA-bound result with persistent finding IDs.</td>
     </tr>
     <tr>
@@ -52,6 +52,6 @@ workflow.
   </tbody>
 </table>
 
-Throughout the review cycle, `/review` never modifies code, items, commits,
+Throughout the inspection cycle, `/inspect` never modifies code, items, commits,
 branches, or existing comments. It never invokes `/work` or `/done`, and never
 pushes, merges, deploys, or releases.

@@ -1,16 +1,16 @@
-# Review Complete
+# Inspect Complete
 
 ## Outcome
 
-One exact request snapshot reaches an accurately reported review end. Workflow
+One exact request snapshot reaches an accurately reported inspection end. Workflow
 completion does not imply provider publication success.
 
 ## Success Criteria
 
 - One complete official item and open, non-draft request snapshot are bound to
   one frozen head SHA.
-- One complete reviewer result has explicit coverage and either persistent,
-  valid findings with final decisions or explicit no findings.
+- One complete inspection result contains either persistent, valid findings with
+  final decisions or explicit no findings.
 - The exact final publication payload is confirmed against the same head SHA.
 - Every attempted publication result is observed and reported without delivery
   mutation or downstream workflow invocation.

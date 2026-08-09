@@ -1,4 +1,4 @@
-# Review Finding
+# Inspect Finding
 
 ## Format
 
