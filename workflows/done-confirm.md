@@ -2,8 +2,8 @@
 
 ## Entry Condition
 
-Run with one `completion_context` following
-`../templates/done-context.md`.
+Run with one `completion_context` following `../templates/done-context.md` and
+`entry_mode: caller` or `standalone` set by `/done`.
 
 ---
 
@@ -14,7 +14,8 @@ Run with one `completion_context` following
 Require every non-optional field, then set `item` and `request` to the packet's
 two sections. Require an exact non-draft request whose state is `open` or
 `merged`, with a head SHA and normalized merge status. Fail incomplete context;
-do not recover, resolve, or reread the request before preflight.
+do not recover, resolve, or reread the request before preflight. Require a valid
+`entry_mode`.
 
 ### 2. Prepare and Confirm
 
@@ -73,14 +74,17 @@ fields: delivery_state
 ```
 
 Require the previewed request identity, branches, open non-draft state, head
-SHA, and `merge_status: mergeable`. On any change, replace only returned
-request fields, discard the confirmation, and return to Step 1.
+SHA, and `merge_status: mergeable`. Discard the confirmation on any change.
+When the head SHA changed in `caller` mode, stop and require a new `/inspect`.
+Otherwise replace only returned request fields and return to Step 1.
 
 Run `../commands/merge-request.md` with the same provider, repository, request
 ID, `merge_method: squash`, and `mode: apply`.
 
 Continue only on `merged`. Otherwise present `../templates/done-result.md` with
-the observed request result and `Item: not attempted`, then stop.
+the observed request result and `Item: not attempted`. For `failed`, identify
+the exact request operation still required; for `unobserved`, require observing
+the request state before any rerun or item transition. Then stop.
 
 ### 4. Complete the Item
 

@@ -11,7 +11,7 @@ partial result.
 Request <provider/repository#ID>: <observed request result>
 Item <ID>: <observed item result>
 
-Remaining: <exact item transition; omit when none or merely blocked>
+Remaining: <exact request or item action; omit when none or merely blocked>
 ```
 
 ## Rules
@@ -19,3 +19,4 @@ Remaining: <exact item transition; omit when none or merely blocked>
 - Report observed states rather than intended states.
 - Keep both identities visible.
 - Never report the item as transitioned after an unobserved merge.
+- After an observed merge, only the item transition may remain.

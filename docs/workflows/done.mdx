@@ -37,5 +37,6 @@ the request is observed as merged.
   </tbody>
 </table>
 
-A stale confirmation returns to preflight. A failed item transition never
-retries or rolls back an observed merge; a rerun offers only that transition.
+A stale standalone confirmation returns to preflight. A changed caller SHA
+returns to `/inspect` for a new approval. A failed item transition never retries
+or rolls back an observed merge; a rerun offers only that transition.

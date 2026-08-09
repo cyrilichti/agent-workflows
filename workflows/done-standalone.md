@@ -60,4 +60,5 @@ follow `./done-confirm.md` with:
 
 ```text
 completion_context: compact projected Done Context
+entry_mode: standalone
 ```
