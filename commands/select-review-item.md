@@ -13,10 +13,10 @@ Select one provider item ID for work awaiting review.
 1. Validate and return `reference` when present. For a URL, ask for an exact ID
    or narrow title phrase instead.
 2. When `query` is present, continue at Step 4. Otherwise, resolve
-   `semantic_status: review` with
-   `./resolve-item-status.md`, then retrieve at most 10 candidates with
-   `./retrieve-items.md` using its exact criteria, no assignee criterion, all
-   display fields, and `allow_empty: true`.
+   `semantic_status: review` with `./resolve-item-status.md`. When criteria are
+   available, retrieve at most 10 candidates with `./retrieve-items.md` using
+   those exact criteria, no assignee criterion, all display fields, and
+   `allow_empty: true`. Otherwise continue with no candidates.
 3. Ask from the retrieved candidates with `../templates/select-option.md`:
 
    ```text

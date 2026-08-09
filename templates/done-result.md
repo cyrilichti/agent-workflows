@@ -8,8 +8,8 @@ partial result.
 ```markdown
 ## Done Result
 
-Request <provider, repository, and ID>: <merged, already merged, blocked, unsupported, failed, or unobserved>
-Item <ID>: <transitioned, already done, not attempted, or failed with reason>
+Request <provider/repository#ID>: <observed request result>
+Item <ID>: <observed item result>
 
 Remaining: <exact item transition; omit when none or merely blocked>
 ```
