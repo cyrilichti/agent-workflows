@@ -22,9 +22,10 @@ Resolve the configured item provider with
 
 Run `../commands/resolve-item-status.md` with `semantic_status: review`.
 When it returns criteria, run `../commands/retrieve-items.md` with those exact
-criteria and no assignee criterion. On retrieval failure or partial results,
-report the exact provider failure and stop. When status resolution is
-unavailable, continue to Step 2.
+criteria, no assignee criterion, fields `provider_id`, `title`, `status`, and
+`destination`, and `limit: 5`. Never retrieve more than 5 items. On retrieval
+failure or partial results, report the exact provider failure and stop. When
+status resolution is unavailable, continue to Step 2.
 
 ### 2. Select One Official Item
 
