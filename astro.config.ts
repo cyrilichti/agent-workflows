@@ -10,7 +10,7 @@ export default defineConfig({
     starlight({
       title: 'agent-workflows',
       description:
-        'Install controlled workflows that select and sequence the right skills, keep approvals explicit, and connect work items to providers.',
+        'Move from work item to merged request with workflows that select the right skills, keep mutations explicit, and synchronize your providers.',
       customCss: ['./docs/styles/custom.css'],
       editLink: {
         baseUrl:

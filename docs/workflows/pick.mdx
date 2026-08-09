@@ -11,7 +11,7 @@ refinement, `/pick` offers `/refine` or stops without changing it.
 ## Dispatching workflows
 
 <div className="dispatch-map dispatch-map--vertical">
-  <div className="dispatch-node dispatch-node--workflow">
+<div className="dispatch-node dispatch-node--workflow" data-workflow="pick">
     <span className="dispatch-node__label">Workflow</span>
     <strong>/pick</strong>
     <span>Selects one item and owns the workflow sequence</span>
@@ -21,6 +21,7 @@ refinement, `/pick` offers `/refine` or stops without changing it.
 
   <a
     className="dispatch-node dispatch-node--workflow dispatch-node--link"
+    data-workflow="plan"
     href="/agent-workflows/workflows/plan/"
   >
     <span className="dispatch-node__label">Workflow</span>
@@ -33,17 +34,19 @@ refinement, `/pick` offers `/refine` or stops without changing it.
   <div className="dispatch-skills dispatch-skills--conditional">
     <a
       className="dispatch-node dispatch-node--workflow dispatch-node--link"
+      data-workflow="work"
       href="/agent-workflows/workflows/work/"
     >
-      <span className="dispatch-node__label">Approved plan</span>
+      <span className="dispatch-node__label">Workflow</span>
       <strong>/work</strong>
       <span>Executes the plan</span>
     </a>
     <a
       className="dispatch-node dispatch-node--workflow dispatch-node--link"
+      data-workflow="refine"
       href="/agent-workflows/workflows/refine/"
     >
-      <span className="dispatch-node__label">Needs refinement</span>
+      <span className="dispatch-node__label">Workflow</span>
       <strong>/refine</strong>
       <span>Splits the item after confirmation</span>
     </a>

@@ -59,7 +59,7 @@ the branch and plan outcome before one promotion confirmation.
 ## Dispatching external skills
 
 <div className="dispatch-map dispatch-map--vertical dispatch-map--work">
-  <div className="dispatch-node dispatch-node--workflow">
+<div className="dispatch-node dispatch-node--workflow" data-workflow="work">
     <span className="dispatch-node__label">Workflow</span>
     <strong>/work</strong>
     <span>Owns todo execution and agent routing</span>
@@ -132,8 +132,3 @@ the branch and plan outcome before one promotion confirmation.
     </tr>
   </tbody>
 </table>
-
-`/work` never pushes todo commits. `/ready` runs only the planned global
-validation and owns the final push and request promotion. When resumed work no longer has its
-initialized request record in context, `/ready` asks for the exact pull-request
-number or merge-request IID.
