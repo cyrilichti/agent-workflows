@@ -102,6 +102,12 @@ Explore the [installation guide](https://cyrilichti.github.io/agent-workflows/in
 [provider setup](https://cyrilichti.github.io/agent-workflows/providers/), and
 [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
 
+## Contributing
+
+New workflows and skill integrations are welcome. See
+[CONTRIBUTING.md](./CONTRIBUTING.md) to propose a workflow, declare its external
+skill dependencies, and prepare a pull request.
+
 ## License
 
 [MIT](./LICENSE)
