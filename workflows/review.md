@@ -120,6 +120,10 @@ Require every finding to satisfy the complete schema in
 incomplete, or duplicate findings. The reviewer must not modify code, Git,
 items, requests, or comments.
 
+Apply the finding template's severity normalization before validating the
+global result. Only normalized `blocking` and `non-blocking` severities may
+reach curation or determine the semantic verdict.
+
 Continue only when the result is `complete`, its head SHA equals the frozen
 SHA, its coverage is complete, and it contains either `Findings: none` or one
 or more valid findings. On `incomplete`, missing, empty, truncated, or
