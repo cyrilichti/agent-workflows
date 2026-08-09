@@ -141,14 +141,18 @@ Present using `../templates/inspect-publication-preview.md` with:
 ```text
 request: resolved request
 head_sha: frozen inspection snapshot SHA
-findings: accepted complete findings with valid anchors, or none
+blocking_findings: count of accepted blocking findings
+non_blocking_findings: count of accepted non-blocking findings
 semantic_verdict: request_changes, none, or approve
 ```
+
+Keep the exact accepted findings as the locked publication payload without
+displaying their bodies again.
 
 Then ask once using `../templates/select-option.md` with:
 
 ```text
-question: Publish this exact inspection result?
+question: Publish this curated inspection result?
 options:
 - Confirm publication
 - Stop without publishing
@@ -164,9 +168,9 @@ verdict, and frozen head SHA.
 If it returns `stale`, discard the complete analysis, decisions, and preview,
 then return to Step 3. Nothing from the stale cycle may be published.
 
-Otherwise, report the grouped provider review, every finding, and the semantic verdict
-as observed succeeded, unsupported, failed, or unobserved. Do not retry
-automatically.
+Otherwise, report the grouped provider review, accepted finding counts, and
+semantic verdict. Identify failed or unobserved findings by ID without
+repeating their bodies. Do not retry automatically.
 
 Stop after this report.
 

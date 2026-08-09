@@ -1,6 +1,7 @@
 # Inspect Publication Preview
 
-Present the exact complete inspection payload before publication.
+Summarize the curated inspection result before publication without repeating
+findings already decided by the user.
 
 ## Format
 
@@ -12,12 +13,15 @@ Head SHA: <frozen head SHA>
 Semantic verdict: <request_changes, approve, or none>
 Delivery: one grouped provider review
 
-Findings: <none or each exact finding body with its inline anchor or grouped-body target>
+Findings:
+- Blocking: <count>
+- Non-blocking: <count>
 ```
 
 ## Rules
 
-- Show findings in stable order with every exact body and target.
+- Derive both counts from the accepted findings in the locked publication
+  payload; never display their bodies again.
 - A provider may use a required transport event, such as GitHub `COMMENT` for
   `none`, without changing the confirmed semantic verdict.
 - Do not imply publication or support partial confirmation.

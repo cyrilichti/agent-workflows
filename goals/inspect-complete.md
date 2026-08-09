@@ -11,7 +11,8 @@ completion does not imply provider publication success.
   one frozen head SHA.
 - One complete inspection result contains either persistent, valid findings with
   final decisions or explicit no findings.
-- The exact final publication payload is confirmed against the same head SHA.
+- The accepted findings are locked against the same head SHA, then their counts
+  and semantic verdict are confirmed for publication.
 - Every attempted publication result is observed and reported without delivery
   mutation or downstream workflow invocation.
 
@@ -24,4 +25,4 @@ completion does not imply provider publication success.
 ## Human Validation
 
 Grouped curation requires one explicit final decision per finding. Publishing
-requires explicit confirmation of the complete exact payload.
+requires explicit confirmation of the locked payload's summary and verdict.
