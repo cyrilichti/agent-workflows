@@ -10,17 +10,15 @@ your work tracker and repository.
 [Installation](https://cyrilichti.github.io/agent-workflows/installation/) ·  
 [Explore the workflows](https://cyrilichti.github.io/agent-workflows/workflows/)
 
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./public/workflow-routing-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="./public/workflow-routing-light.png">
-    <img
-      alt="The write workflow selecting the idea-refine skill and routing provider operations to Linear"
-      src="./public/workflow-routing-light.png"
-      width="720"
-    >
-  </picture>
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./public/workflow-routing-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="./public/workflow-routing-light.png">
+  <img
+    alt="The write workflow selecting the idea-refine skill and routing provider operations to Linear"
+    src="./public/workflow-routing-light.png"
+    width="480"
+  >
+</picture>
 
 ## One install.
 
