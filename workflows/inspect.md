@@ -26,42 +26,24 @@ Resolve the configured item provider with
 `../commands/resolve-item-provider.md` using `context: item`.
 
 Preserve any exact item ID or title phrase supplied with the invocation as the
-item hint. An exact ID resolves the item. A title phrase becomes the initial
-title query for the search branch below.
-
-When neither is available, resolve `semantic_status: review` with
-`../commands/resolve-item-status.md`. When it returns criteria, run
-`../commands/retrieve-items.md` with those exact criteria, no assignee
-criterion, fields `provider_id`, `title`, `status`, and `destination`, and
-`limit: 10`. Then ask using `../templates/select-option.md` with:
+item hint. Run `../commands/select-review-item.md` with:
 
 ```text
-question: Which item do you want to inspect?
-options:
-- label: <retrieved title, status, and destination; repeat and omit when none>
-  value: <provider item ID>
-- Enter an exact item ID
-- Search by title
+provider: resolved item provider
+reference: supplied exact provider item ID, when available
+query: supplied title phrase, when no exact ID is available
 ```
 
-- A selected list value is the provider item ID.
-- On `Enter an exact item ID`, ask for that ID.
-- On `Search by title`, ask for a narrow phrase and keep it as the title query.
+Run `../commands/read-item.md` with:
 
-When a title query is available, run `../commands/search-items.md` once. Resolve
-a single exact title match. Otherwise, ask with the same template using only
-the returned matches, `Enter an exact item ID`, and `Refine title search`.
-Refinement replaces the preserved title query and repeats this search branch.
+```text
+provider: resolved item provider
+item_id: selected provider item ID
+fields: request_backlinks
+```
 
-Never select an approximate match implicitly, including when only one is
-available.
-
-On any retrieval or search failure or partial result, report the exact provider
-failure and stop.
-
-Search and retrieval results are not official context. Run
-`../commands/read-item.md` with the resolved provider item ID and
-`fields: request_backlinks`. Continue only from that complete official item.
+Continue only from that complete official item; selection candidates are not
+official context.
 
 ### 2. Resolve One Exact Request
 

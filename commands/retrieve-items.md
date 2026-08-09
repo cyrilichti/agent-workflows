@@ -9,6 +9,7 @@ Retrieve items from a resolved provider.
 - `fields`: optional subset of `provider_id`, `title`, `status`, and
   `destination`; defaults to all four.
 - `limit`: optional maximum number of items to return.
+- `allow_empty`: optional boolean, default `false`.
 
 ## Steps
 
@@ -19,7 +20,8 @@ Retrieve items from a resolved provider.
 3. Return the first matching normalized records in provider order, capped at
    `limit` when supplied. Return only the requested fields and no raw provider
    payload.
-4. If no item matches, tell the user and stop without broadening the search.
+4. If no item matches, return an empty result when `allow_empty` is `true`;
+   otherwise tell the user and stop without broadening the search.
 
 Do not inspect provider documentation when the provider adapter defines the
 operation.
