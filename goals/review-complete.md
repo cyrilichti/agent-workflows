@@ -30,5 +30,5 @@ curated, and either left unpublished or published exactly as confirmed.
 ## Human Validation
 
 Every finding requires an explicit `Accept`, `Reject`, or completed `Modify`
-decision. Publishing requires explicit confirmation of the complete exact
-payload.
+decision, which may be collected in grouped curation. Publishing requires
+explicit confirmation of the complete exact payload.

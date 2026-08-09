@@ -137,18 +137,26 @@ correction.
 
 ### 6. Curate Every Finding
 
-For each finding in stable order, present the complete finding using
-`../templates/review-finding.md`, then ask for exactly one decision: `Accept`,
-`Reject`, or `Modify`.
+When the complete reviewer result contains `Findings: none`, skip this step.
+
+Present every current finding together using
+`../templates/review-curation.md`. Collect exactly one decision for every
+finding ID in the grouped response.
 
 - `Accept`: retain the complete finding in the current publication set.
 - `Reject`: remove it from the current publication set.
-- `Modify`: ask what should change, then give the requested revision and
-  complete current finding to the same reviewer.
+- `Modify`: retain the requested change with the current finding for revision.
 
-After `Modify`, require the reviewer to revalidate the complete schema,
-evidence, severity, and anchor. Present the complete revised finding again and
-repeat until the user accepts or rejects it.
+Preserve every valid decision. When a response omits an ID or contains a
+duplicate, unknown, or invalid decision, ask only for the unresolved IDs; never
+infer a decision.
+
+Give every requested modification and its complete current finding to the same
+reviewer in one batch. Require each revised finding to keep its stable ID and
+revalidate the complete schema, evidence, normalized severity, and anchor.
+Present all revised findings together through the same curation template and
+repeat only for those findings until each is accepted or rejected. Previously
+final decisions remain unchanged.
 
 Do not continue until every current finding has one final decision.
 
