@@ -12,6 +12,7 @@ head SHA.
    `REQUEST_CHANGES`, `approve` to `APPROVE`, and `none` to transport-only
    `COMMENT`.
 
-Return the publication response for caller observation. On a failed or
-ambiguous create, comment, or submit result, stop without retrying, deleting,
-or reusing the pending review. Do not create issue comments.
+Return the submitted review's provider identity with the publication response
+for caller observation. On a failed or ambiguous create, comment, or submit
+result, stop without retrying, deleting, or reusing the pending review. Do not
+create issue comments.

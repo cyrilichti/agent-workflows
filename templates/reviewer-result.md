@@ -18,12 +18,21 @@ For a complete review:
 Head SHA: <exact frozen head SHA>
 Status: complete
 Coverage: intent, tests, correctness, readability, architecture, security, performance
+Prior findings: none
 
 Findings: none
 ```
 
 Replace `Findings: none` with every complete finding in stable order when
-findings exist.
+findings exist. On a rerun, replace `Prior findings: none` with:
+
+```markdown
+Prior findings:
+
+- <persistent ID>: open
+- <persistent ID>: resolved — <snapshot evidence>
+- <persistent ID>: obsolete — <reason>
+```
 
 For an incomplete review:
 
@@ -42,6 +51,11 @@ Missing context: <exact missing, partial, stale, or unreadable context>
 - Use `Findings: none` explicitly when the complete review found no issue.
 - Never represent an empty, omitted, partial, or truncated response as no
   findings.
+- Reconcile every prior `RF-` finding ID from review activity exactly once.
+- An `open` prior finding must appear once in `Findings` with the same ID.
+- A `resolved` or `obsolete` prior finding must not appear in `Findings`.
+- A reply, resolved thread, or prior verdict is not snapshot evidence that a
+  finding is resolved.
 - An `incomplete` result is not publishable; do not include provisional
   findings in it.
 - Every returned finding must satisfy `./review-finding.md`.

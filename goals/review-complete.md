@@ -11,6 +11,8 @@ curated, and either left unpublished or published exactly as confirmed.
   frozen at an exact head SHA.
 - The reviewer returns one complete result bound to that SHA with explicit
   coverage and either valid findings or an explicit no-findings outcome.
+- Every finding has one persistent identity, and every prior finding is
+  reconciled exactly once on a rerun.
 - Every finding receives a final user decision.
 - The exact final publication payload is confirmed against the same head SHA.
 - Every attempted grouped review and included finding is observed and reported

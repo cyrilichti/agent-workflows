@@ -28,8 +28,10 @@ when its complete matching provider state is observed.
 3. When the provider reports that no mutation was attempted, return its
    unsupported results without another read.
 4. Read complete review activity once after the publication attempt. Require
-   every finding body and destination and any supported semantic verdict to be
-   observed together.
+   the new provider review or note identity returned by the mutation, every
+   finding body and destination, and any supported semantic verdict to be
+   observed together. Never use an older matching body as proof of this
+   publication.
 5. Return the observed grouped-review, finding, and verdict results. Preserve
    failed, ambiguous, unsupported, and unobserved outcomes without retrying.
 

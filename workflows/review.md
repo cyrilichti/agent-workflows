@@ -126,15 +126,17 @@ global result. Only normalized `blocking` and `non-blocking` severities may
 reach curation or determine the semantic verdict.
 
 Continue only when the result is `complete`, its head SHA equals the frozen
-SHA, its coverage is complete, and it contains either `Findings: none` or one
-or more valid findings. On `incomplete`, missing, empty, truncated, or
-mismatched output, report the exact invalid or missing context and stop. Never
-infer a clean review from absent findings.
+SHA, its coverage is complete, every finding has a valid persistent ID, every
+prior ID is reconciled, and it contains either `Findings: none` or one or more
+valid findings. On `incomplete`, missing, empty, truncated, or mismatched
+output, report the exact invalid or missing context and stop. Never infer a
+clean review from absent findings.
 
 On a rerun, give prior review activity to the reviewer. Require a new complete
-result bound to the new SHA, reevaluate every still-relevant prior finding, and
-review new changes. Replies and resolved threads are context, never proof of
-correction.
+result bound to the new SHA. Reuse each prior `RF-` ID for the same open
+problem, explicitly classify every prior ID as `open`, `resolved`, or
+`obsolete`, then review new changes using only new higher IDs. Replies and
+resolved threads are context, never proof of correction.
 
 ### 6. Curate Every Finding
 
@@ -153,8 +155,8 @@ duplicate, unknown, or invalid decision, ask only for the unresolved IDs; never
 infer a decision.
 
 Give every requested modification and its complete current finding to the same
-reviewer in one batch. Require each revised finding to keep its stable ID and
-revalidate the complete schema, evidence, normalized severity, and anchor.
+reviewer in one batch. Require each revised finding to keep its persistent ID
+and revalidate the complete schema, evidence, normalized severity, and anchor.
 Present all revised findings together through the same curation template and
 repeat only for those findings until each is accepted or rejected. Previously
 final decisions remain unchanged.

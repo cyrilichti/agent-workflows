@@ -19,7 +19,7 @@ Head SHA: <frozen head SHA>
 Semantic verdict: <request_changes, approve, or none>
 Delivery: one grouped provider review
 
-### Finding <stable local ID>
+### Finding <persistent ID>
 
 Target: <inline anchor when valid or grouped review body>
 

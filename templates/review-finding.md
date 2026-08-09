@@ -4,7 +4,8 @@ Define one complete review finding.
 
 ## Input
 
-- stable local ID;
+- persistent finding ID in the form `RF-<positive integer padded to at least
+  three digits>`, such as `RF-001`;
 - severity: `blocking` or `non-blocking`;
 - file and line only when supported by valid snapshot anchor data;
 - concrete problem;
@@ -15,7 +16,7 @@ Define one complete review finding.
 ## Format
 
 ```markdown
-## Finding <stable local ID>
+## Finding <persistent ID>
 
 Severity: <blocking or non-blocking>
 Location: <file:line, only when anchored>
@@ -33,6 +34,10 @@ Direction: <recommended direction without a code correction>
 
 - Show every schema field and preserve its complete current value.
 - Omit `Location` when no valid snapshot anchor exists.
+- Keep the same ID across snapshots while the underlying problem and impact
+  remain the same, even when its wording, evidence, anchor, or line changes.
+- Assign a new finding the next integer after the highest prior `RF-` ID in
+  review activity. Never reuse an old ID for a different problem.
 - Normalize reviewer classifications before returning a finding:
   - `Critical` and `Required`, including an unprefixed required change, become
     `blocking`;

@@ -3,7 +3,7 @@
 When findings exist, call `create_merge_request_note` once with the repository,
 merge-request IID, and every finding in stable order using each exact finding
 body separated only by a blank line. Return the mutation response for caller
-observation.
+observation, including the created note's provider identity.
 
 Return `request_changes` and `approve` as unsupported; native verdicts are
 unavailable through the verified GitLab MCP. When there is no finding, perform
