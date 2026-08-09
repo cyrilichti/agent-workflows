@@ -1,9 +1,9 @@
 ---
 title: Installation
-description: Add agent-workflows to a project.
+description: Add Agent Workflows to a project.
 ---
 
-From the project root, install the `agent-workflows` Skill:
+From the project root, install the Agent Workflows bootstrap Skill:
 
 ```bash
 npx skills add cyrilichti/agent-workflows --skill agent-workflows

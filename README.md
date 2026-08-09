@@ -1,10 +1,12 @@
-# agent-workflows
+# Agent Workflows
+
+**Turn specialized agent skills into one controlled delivery system.**
 
 Skills are good at individual jobs. They do not decide which specialist should
 run next, how context moves between steps, or when an agent is allowed to change
 your work tracker and repository.
 
-`agent-workflows` is the workflow that connects them. One install adds a complete delivery system to your coding agent—from rough intent to merged request—with the right skill at each step and approval before every consequential action.
+**Agent Workflows** is the workflow that connects them. One install adds a complete delivery system to your coding agent—from rough intent to merged request—with the right skill at each step and approval before every consequential action.
 
 <p>
   <picture>
@@ -84,6 +86,14 @@ the approved result to the next workflow.
 
 You can also enter the lifecycle at any workflow—for example `/pick` to select
 an existing item before planning it.
+
+<p align="center">
+  <img
+    alt="The Agent Workflows lifecycle from shaped intent to completed work"
+    src="./public/workflow-lifecycle.png"
+    width="900"
+  >
+</p>
 
 ## Works with
 

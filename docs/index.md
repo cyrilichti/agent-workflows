@@ -3,7 +3,7 @@ title: Turn coding agents into a controlled delivery workflow.
 description: Move from work item to merged request with workflows that select the right skills, keep mutations explicit, and synchronize your providers.
 head:
   - tag: title
-    content: agent-workflows - controlled delivery workflows for coding agents
+    content: Agent Workflows - controlled delivery workflows for coding agents
   - tag: meta
     attrs:
       property: og:image
@@ -25,7 +25,7 @@ editUrl: false
 hero:
   layout: media-left
   title: Turn coding agents into a controlled delivery workflow.
-  tagline: From work item to merged request, agent-workflows selects and sequences the right skills, keeps every mutation explicit, and synchronizes your providers.
+  tagline: From work item to merged request, Agent Workflows selects and sequences the right skills, keeps every mutation explicit, and synchronizes your providers.
   image:
     html: |-
       <div class="workflow-hero-media" role="img" aria-label="The write workflow dispatching to the idea-refine skill with Linear as the active provider">
@@ -55,7 +55,7 @@ hero:
         </div>
       </div>
   actions:
-    - text: Install agent-workflows
+    - text: Install Agent Workflows
       link: /agent-workflows/installation/
       icon: right-arrow
     - text: See the workflow
@@ -78,7 +78,7 @@ hero:
     </div>
     <div>
       <p>Skills can shape ideas, plan changes, write code, and review requests. On their own, they do not decide what happens next, who may change an external system, or when you should approve the work.</p>
-      <p><code>agent-workflows</code> gives those skills one controlled lifecycle. Each command owns a clear outcome, carries context forward, and stops at the right boundary.</p>
+      <p><strong>Agent Workflows</strong> gives those skills one controlled lifecycle. Each command owns a clear outcome, carries context forward, and stops at the right boundary.</p>
     </div>
   </section>
 
