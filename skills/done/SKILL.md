@@ -3,7 +3,8 @@ name: done
 description: >-
   Finalize one exact pull or merge request through its configured provider,
   then complete its official work item. Use when explicitly invoked with
-  /done or $done.
+  `/done` or `$done`, or when `/inspect` hands off a reviewed request with no
+  accepted blocking finding and complete caller context.
 disable-model-invocation: true
 ---
 
