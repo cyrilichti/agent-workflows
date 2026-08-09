@@ -2,36 +2,26 @@
 
 ## Outcome
 
-One complete official item and exact open request snapshot have been reviewed
-and curated, then the workflow reached one accurately reported terminal end.
-Workflow completion does not imply that provider publication succeeded.
+One exact request snapshot reaches an accurately reported review end. Workflow
+completion does not imply provider publication success.
 
 ## Success Criteria
 
-- The review uses one complete official item and one complete request snapshot
-  frozen at an exact head SHA.
-- The reviewer returns one complete result bound to that SHA with explicit
-  coverage and either valid findings or an explicit no-findings outcome.
-- Every finding has one persistent identity, and every prior finding is
-  reconciled exactly once on a rerun.
-- Every finding receives a final user decision.
+- One complete official item and open, non-draft request snapshot are bound to
+  one frozen head SHA.
+- One complete reviewer result has explicit coverage and either persistent,
+  valid findings with final decisions or explicit no findings.
 - The exact final publication payload is confirmed against the same head SHA.
-- Every attempted grouped review and included finding is observed and reported
-  accurately.
-- The workflow stops without delivery mutations or downstream workflow
-  invocation.
+- Every attempted publication result is observed and reported without delivery
+  mutation or downstream workflow invocation.
 
 ## Stop Conditions
 
-- Complete the workflow when the user declines publication or after every
-  attempted publication result has been observed and reported.
-- Discard a stale review cycle and restart from a fresh snapshot when the head
-  SHA changes before publication.
-- Stop and report when required official context is incomplete or a required
-  provider operation fails.
+- Complete after publication is declined or its attempted result is reported.
+- Restart from a fresh snapshot after a stale confirmation.
+- Stop and report incomplete context or a required-operation failure.
 
 ## Human Validation
 
-Every finding requires an explicit `Accept`, `Reject`, or completed `Modify`
-decision, which may be collected in grouped curation. Publishing requires
-explicit confirmation of the complete exact payload.
+Grouped curation requires one explicit final decision per finding. Publishing
+requires explicit confirmation of the complete exact payload.

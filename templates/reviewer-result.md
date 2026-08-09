@@ -1,61 +1,23 @@
 # Reviewer Result
 
-Return one complete review result bound to the frozen request snapshot.
-
-## Input
-
-- frozen head SHA;
-- complete official item and review snapshot;
-- zero or more findings following `./review-finding.md`.
+Bind one explicit review result to the frozen request snapshot.
 
 ## Format
 
-For a complete review:
-
 ```markdown
 ## Reviewer Result
 
-Head SHA: <exact frozen head SHA>
-Status: complete
-Coverage: intent, tests, correctness, readability, architecture, security, performance
-Prior findings: none
+Head SHA: <observed SHA or unavailable>
+Status: <complete or incomplete>
+Coverage: <intent, tests, correctness, readability, architecture, security, performance; complete only>
+Missing context: <exact reason; incomplete only>
 
-Findings: none
-```
-
-Replace `Findings: none` with every complete finding in stable order when
-findings exist. On a rerun, replace `Prior findings: none` with:
-
-```markdown
-Prior findings:
-
-- <persistent ID>: open
-- <persistent ID>: resolved — <snapshot evidence>
-- <persistent ID>: obsolete — <reason>
-```
-
-For an incomplete review:
-
-```markdown
-## Reviewer Result
-
-Head SHA: <observed head SHA or unavailable>
-Status: incomplete
-Missing context: <exact missing, partial, stale, or unreadable context>
+Findings: <none or every complete finding in stable order; complete only>
 ```
 
 ## Rules
 
-- Use `complete` only after examining every named coverage area against the
-  supplied snapshot.
-- Use `Findings: none` explicitly when the complete review found no issue.
-- Never represent an empty, omitted, partial, or truncated response as no
-  findings.
-- Reconcile every prior `RF-` finding ID from review activity exactly once.
-- An `open` prior finding must appear once in `Findings` with the same ID.
-- A `resolved` or `obsolete` prior finding must not appear in `Findings`.
-- A reply, resolved thread, or prior verdict is not snapshot evidence that a
-  finding is resolved.
-- An `incomplete` result is not publishable; do not include provisional
-  findings in it.
-- Every returned finding must satisfy `./review-finding.md`.
+- `complete` requires the exact frozen SHA, every named coverage area, and
+  explicit `Findings: none` or findings following `./review-finding.md`.
+- `incomplete` requires `Missing context` and contains no findings.
+- Never infer `Findings: none` from empty, missing, partial, or truncated output.

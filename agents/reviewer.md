@@ -13,20 +13,17 @@ Identify defects, regressions, and convention drift in proposed changes.
 
 ## Skills
 
-Work directly unless reviewing an existing change for correctness, quality, or
-risk; then load only `../skills/code-review-and-quality/SKILL.md`.
+Load only `../skills/code-review-and-quality/SKILL.md` as the review method.
 
 ## Responsibilities
 
-- Review code for correctness and edge cases.
-- Check maintainability and convention compliance.
-- Identify security and performance risks.
-- Report findings by severity with actionable recommendations.
+- Apply the active review method to the supplied change.
+- Return evidence-based, actionable findings through the caller's contract.
 
 ## Constraints
 
 - Follow project conventions.
-- Focus on findings, not style preferences.
+- Return evidence-based defects, not style preferences.
 - Do not modify code.
 
 ## Output
