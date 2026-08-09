@@ -60,5 +60,5 @@ Present `../templates/ready-result.md` from the mutation results and stop.
 ## Safety
 
 - Do not mutate before confirmation.
-- Do not modify work, force-push, merge, add checks, or invoke `/review`.
+- Do not modify work, force-push, merge, add checks, or invoke `/inspect`.
 - Keep work gaps in `/work` and operational failures in `/ready`.

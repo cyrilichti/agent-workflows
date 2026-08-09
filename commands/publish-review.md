@@ -1,6 +1,6 @@
 # Publish Review
 
-Publish one confirmed review and observe its provider result.
+Publish confirmed findings as one provider review and observe its result.
 
 ## Input
 
@@ -8,27 +8,27 @@ Publish one confirmed review and observe its provider result.
 - `repository`: resolved provider repository.
 - `request_id`: exact pull-request number or merge-request IID.
 - `head_sha`: confirmed review snapshot SHA.
-- `operations`: ordered confirmed comments and optional terminal verdict. Each
-  operation contains its kind, exact body, and optional anchor.
+- `findings`: confirmed complete findings in stable order, including valid
+  anchors when available.
+- `verdict`: exactly `request_changes`, `approve`, or `none`.
 
 ## Result
 
-Return every operation as `succeeded`, `unsupported`, `failed`, or `unobserved`.
-An operation succeeds only when matching provider state is observed.
+Return the grouped review, every finding, and the semantic verdict as
+`succeeded`, `unsupported`, `failed`, or `unobserved`.
 
 ## Steps
 
-1. Run `./read-request.md` with `fields: review_activity`, require the request
-   to remain open and non-draft, and require its head SHA to equal `head_sha`.
-2. Load `../providers/<provider>/publish-review.md` and run it for the
-   operations in their supplied order. Stop when it is missing.
-3. Read complete review activity after each operation and require the exact
-   body, anchor, or verdict to be observed.
-4. On a failed, ambiguous, or unobserved result, report it and stop dependent
-   writes.
-5. Return the observed result of every attempted operation, including partial
-   failure and unsupported kinds.
+1. Run `./read-request.md` with `fields: delivery_state` and require the request
+   to remain open and non-draft. When its head SHA differs from `head_sha`,
+   return `stale` without mutation.
+2. Load `../providers/<provider>/publish-review.md` and run it once with the
+   exact findings, verdict, and head SHA. Stop when it is missing.
+3. When the provider reports that no mutation was attempted, return its
+   unsupported results without another read.
+4. Otherwise, read complete review activity once and match the mutation's new
+   provider identity, every finding body and destination, and any supported
+   verdict. Return their observed results; an older matching body is not proof.
 
-Do not create operation markers. Do not retry automatically, edit existing
-comments, change code or request content, merge, push, or infer an alternate
-provider operation.
+Do not retry, create markers, edit existing comments or request content, or
+infer another provider operation.

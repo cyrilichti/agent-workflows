@@ -1,0 +1,57 @@
+---
+title: /inspect
+description: Independently inspect one exact request snapshot and publish only the confirmed result.
+---
+
+`/inspect` is a standalone, manually invoked workflow. It resolves one official
+item and its pull or merge request, inspects a frozen snapshot, and lets you
+accept, reject, or modify every finding before anything is published.
+
+No delivery workflow invokes `/inspect`, and `/inspect` never enters a delivery
+workflow.
+
+## How this workflow is structured
+
+<table className="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Item</th>
+      <td>Resolve an exact ID or supplied title immediately; otherwise select among at most five review items.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Request</th>
+      <td>Resolve one open, non-draft request from its backlink or exact ID.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Snapshot</th>
+      <td>Freeze the complete request state and head SHA.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Inspect</th>
+      <td>Produce a complete SHA-bound result with persistent finding IDs.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Curate</th>
+      <td>Accept, reject, or modify every finding in grouped decision passes.</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <th scope="row">Confirm</th>
+      <td>Confirm the SHA, verdict, and accepted finding counts without repeating their bodies.</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <th scope="row">Publish</th>
+      <td>Reject a stale SHA or publish and observe the confirmed grouped review.</td>
+    </tr>
+  </tbody>
+</table>
+
+Throughout the inspection cycle, `/inspect` never modifies code, items, commits,
+branches, or existing comments. It never invokes `/work` or `/done`, and never
+pushes, merges, deploys, or releases.

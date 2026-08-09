@@ -79,4 +79,4 @@ owns the direct plan check, one confirmation, and the resulting promotion.
 ## Safety
 
 - Do not mark a todo `completed` before its approved commit succeeds.
-- Do not push todo commits or invoke `/review`.
+- Do not push todo commits or invoke `/inspect`.

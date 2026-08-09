@@ -37,4 +37,4 @@ it to standalone mode.
 
 - Do not modify the plan, code, commits, or item content.
 - Do not force-push, merge, deploy, release, run extra checks, or invoke
-  `/review`.
+  `/inspect`.

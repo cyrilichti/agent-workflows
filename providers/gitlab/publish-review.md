@@ -1,11 +1,13 @@
 # publish-review
 
-For a request comment, call `create_merge_request_note` with the repository,
-merge-request IID, and exact body. Follow every `after` cursor with
-`get_merge_request_notes` to verify the comment after the write. If the result
-is ambiguous or unobserved, stop without retrying. If either notes operation is
-unavailable, return `unsupported`.
+When findings exist, call `create_merge_request_note` once with the repository,
+merge-request IID, and every finding in stable order using each exact finding
+body separated only by a blank line. Return the mutation response for caller
+observation, including the created note's provider identity.
 
-Return `unsupported` for inline comments and native verdicts. Do not substitute
-REST, CLI, quick actions, or request-level notes for those operations.
-
+Return `request_changes` and `approve` as unsupported; native verdicts are
+unavailable through the verified GitLab MCP. When there is no finding, perform
+no mutation. If the notes operation is unavailable, return every finding as
+`unsupported`. On a failed or ambiguous result, stop without retrying. Do not
+substitute REST, CLI, quick actions, inline discussions, or another provider
+operation.

@@ -408,7 +408,7 @@
   background: rgba(6, 182, 212, 0.12);
 }
 
-.workflow-badge--review {
+.workflow-badge--inspect {
   color: #fda4af;
   background: rgba(244, 63, 94, 0.12);
 }
@@ -449,7 +449,7 @@
   color: #155e75;
 }
 
-:root[data-theme="light"] .workflow-badge--review {
+:root[data-theme="light"] .workflow-badge--inspect {
   border-color: #fb7185;
   background: #ffe4e6;
   color: #9f1239;

@@ -16,7 +16,7 @@ unchanged or promoted for human review after one explicit confirmation.
 - Confirmed promotion pushes only when needed, removes the leading `Draft:`
   title prefix, applies the exact request body, removes draft state, and
   reports the best-effort item review transition.
-- The workflow stops without invoking `/review`.
+- The workflow stops without invoking `/inspect`.
 
 ## Stop Conditions
 
