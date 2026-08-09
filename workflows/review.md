@@ -2,11 +2,8 @@
 
 ## Purpose
 
-Independently review one exact open request snapshot, let the user decide the
-fate of every finding, and publish only the final confirmed result.
-
-This workflow is standalone and manual-only. It stops after publication, and
-no delivery workflow calls it.
+Independently review one exact open request snapshot, curate every finding with
+the user, and publish only the confirmed result.
 
 ---
 
@@ -16,34 +13,18 @@ Load `../goals/review-complete.md` once as this workflow's completion contract.
 
 ---
 
-## Entry Condition
-
-Run only when the user selects `Review a request` through the playbook or
-explicitly invokes the local `review` Skill. Do not run from `/work`, `/ready`,
-or another delivery workflow.
-
----
-
 ## Steps
 
 ### 1. Resolve the Item Provider and Review Statuses
 
-Run `../commands/resolve-item-provider.md` with `context: item`.
+Resolve the configured item provider with
+`../commands/resolve-item-provider.md` using `context: item`.
 
-Run `../commands/resolve-item-status.md` with:
-
-```text
-provider: resolved item provider
-semantic_status: review
-```
-
-When status resolution returns one or more criteria, run
-`../commands/retrieve-items.md` with those exact criteria and no assignee
-criterion. Do not call it with an empty criterion set.
-
-If retrieval fails or is partial, report the exact provider failure and stop.
-If status resolution is unavailable, continue to Step 2 without treating it as
-a failure.
+Run `../commands/resolve-item-status.md` with `semantic_status: review`.
+When it returns criteria, run `../commands/retrieve-items.md` with those exact
+criteria and no assignee criterion. On retrieval failure or partial results,
+report the exact provider failure and stop. When status resolution is
+unavailable, continue to Step 2.
 
 ### 2. Select One Official Item
 
