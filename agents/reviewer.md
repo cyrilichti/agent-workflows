@@ -31,5 +31,5 @@ risk; then load only `../skills/code-review-and-quality/SKILL.md`.
 
 ## Output
 
-Return a structured review with findings by severity and actionable
-recommendations.
+Follow the caller's complete result contract when supplied. Otherwise, return a
+structured review with findings by severity and actionable recommendations.

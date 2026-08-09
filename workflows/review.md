@@ -110,7 +110,8 @@ reviewer loads `../skills/code-review-and-quality/SKILL.md` and uses it only as
 the review method. The reviewer announces that Skill once through
 `../templates/skill-activation.md` before applying it.
 
-Give the reviewer the complete official item and frozen review snapshot. Local
+Give the reviewer the complete official item and frozen review snapshot.
+Require one global result following `../templates/reviewer-result.md`. Local
 rules and this workflow retain authority over context, sequencing, curation,
 publication, and mutations.
 
@@ -119,9 +120,16 @@ Require every finding to satisfy the complete schema in
 incomplete, or duplicate findings. The reviewer must not modify code, Git,
 items, requests, or comments.
 
-On a rerun, give prior review activity to the reviewer. Require it to verify the
-new snapshot, reevaluate every still-relevant prior finding, and review new
-changes. Replies and resolved threads are context, never proof of correction.
+Continue only when the result is `complete`, its head SHA equals the frozen
+SHA, its coverage is complete, and it contains either `Findings: none` or one
+or more valid findings. On `incomplete`, missing, empty, truncated, or
+mismatched output, report the exact invalid or missing context and stop. Never
+infer a clean review from absent findings.
+
+On a rerun, give prior review activity to the reviewer. Require a new complete
+result bound to the new SHA, reevaluate every still-relevant prior finding, and
+review new changes. Replies and resolved threads are context, never proof of
+correction.
 
 ### 6. Curate Every Finding
 

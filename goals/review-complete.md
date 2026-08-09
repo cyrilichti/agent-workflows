@@ -9,6 +9,8 @@ curated, and either left unpublished or published exactly as confirmed.
 
 - The review uses one complete official item and one complete request snapshot
   frozen at an exact head SHA.
+- The reviewer returns one complete result bound to that SHA with explicit
+  coverage and either valid findings or an explicit no-findings outcome.
 - Every finding receives a final user decision.
 - The exact final publication payload is confirmed against the same head SHA.
 - Every attempted grouped review and included finding is observed and reported
