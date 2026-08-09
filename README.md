@@ -6,19 +6,22 @@ your work tracker and repository.
 
 `agent-workflows` is the workflow that connects them. One install adds a complete delivery system to your coding agent—from rough intent to merged request—with the right skill at each step and approval before every consequential action.
 
-[Documentation](https://cyrilichti.github.io/agent-workflows/) ·  
-[Installation](https://cyrilichti.github.io/agent-workflows/installation/) ·  
-[Explore the workflows](https://cyrilichti.github.io/agent-workflows/workflows/)
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./public/workflow-routing-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="./public/workflow-routing-light.png">
-  <img
-    alt="The write workflow selecting the idea-refine skill and routing provider operations to Linear"
-    src="./public/workflow-routing-light.png"
-    width="480"
-  >
-</picture>
+<p>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./public/workflow-routing-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="./public/workflow-routing-light.png">
+    <img
+      align="right"
+      alt="The write workflow selecting the idea-refine skill and routing provider operations to Linear"
+      src="./public/workflow-routing-light.png"
+      width="300"
+    >
+  </picture>
+  <a href="https://cyrilichti.github.io/agent-workflows/">Documentation</a><br>
+  <a href="https://cyrilichti.github.io/agent-workflows/installation/">Installation</a><br>
+  <a href="https://cyrilichti.github.io/agent-workflows/workflows/">Explore the workflows</a>
+  <br clear="right">
+</p>
 
 ## One install.
 
