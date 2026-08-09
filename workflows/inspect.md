@@ -25,15 +25,15 @@ Reuse these rules when already active from the caller; otherwise follow them:
 Resolve the configured item provider with
 `../commands/resolve-item-provider.md` using `context: item`.
 
-When the user supplied an exact provider item ID, keep it and skip discovery.
-Otherwise, resolve `semantic_status: review` with
+Preserve any exact item ID or title phrase supplied with the invocation as the
+item hint. An exact ID resolves the item. A title phrase becomes the initial
+title query for the search branch below.
+
+When neither is available, resolve `semantic_status: review` with
 `../commands/resolve-item-status.md`. When it returns criteria, run
 `../commands/retrieve-items.md` with those exact criteria, no assignee
 criterion, fields `provider_id`, `title`, `status`, and `destination`, and
-`limit: 5`. On retrieval failure or partial results, report the exact provider
-failure and stop.
-
-When no exact ID was supplied, ask using `../templates/select-option.md` with:
+`limit: 10`. Then ask using `../templates/select-option.md` with:
 
 ```text
 question: Which item do you want to inspect?
@@ -46,11 +46,18 @@ options:
 
 - A selected list value is the provider item ID.
 - On `Enter an exact item ID`, ask for that ID.
-- On `Search by title`, ask for a narrow phrase, run
-  `../commands/search-items.md`, then ask using the same template with only the
-  returned items.
+- On `Search by title`, ask for a narrow phrase and keep it as the title query.
 
-Never preselect an item, including when only one item is available.
+When a title query is available, run `../commands/search-items.md` once. Resolve
+a single exact title match. Otherwise, ask with the same template using only
+the returned matches, `Enter an exact item ID`, and `Refine title search`.
+Refinement replaces the preserved title query and repeats this search branch.
+
+Never select an approximate match implicitly, including when only one is
+available.
+
+On any retrieval or search failure or partial result, report the exact provider
+failure and stop.
 
 Search and retrieval results are not official context. Run
 `../commands/read-item.md` with the resolved provider item ID and
