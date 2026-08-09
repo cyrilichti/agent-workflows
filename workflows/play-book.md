@@ -17,6 +17,7 @@ after delegating.
    - Refine an item
    - Execute a plan
    - Prepare work for review
+   - Review a request
    - Complete a request
    - Other
    ```
@@ -31,6 +32,7 @@ after delegating.
    * Refine an item → `./refine.md`
    * Execute a plan → `./work.md`
    * Prepare work for review → `./ready.md`
+   * Review a request → `./review.md`
    * Complete a request → `./done.md`
 
 ## Safety

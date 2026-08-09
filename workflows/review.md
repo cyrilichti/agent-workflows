@@ -5,8 +5,8 @@
 Independently review one exact open request snapshot, let the user decide the
 fate of every finding, and publish only the final confirmed result.
 
-This workflow is standalone and manual-only. It stops after publication and is
-never called by another workflow.
+This workflow is standalone and manual-only. It stops after publication, and
+no delivery workflow calls it.
 
 ---
 
@@ -18,8 +18,9 @@ Load `../goals/review-complete.md` once as this workflow's completion contract.
 
 ## Entry Condition
 
-Run only when the user explicitly invokes the local `review` Skill. Do not run
-from the playbook, `/work`, `/ready`, or another delivery workflow.
+Run only when the user selects `Review a request` through the playbook or
+explicitly invokes the local `review` Skill. Do not run from `/work`, `/ready`,
+or another delivery workflow.
 
 ---
 
