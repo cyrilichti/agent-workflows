@@ -8,15 +8,21 @@ return the observed result.
 - `provider`: resolved version-control provider.
 - `repository`: provider-specific repository identity.
 - `request_id`: exact provider-native pull-request number or merge-request IID.
-- `merge_method`: optional provider-supported method selected by the caller.
+- `merge_method`: required provider-supported merge method.
+- `mode`: `resolve` or `apply`, default `apply`.
 
 ## Steps
 
-1. Load `../providers/<provider>/merge-request.md`. Stop when it is missing.
-2. Run it with the exact repository, request ID, and optional merge method.
-3. After an attempted merge, run `./read-request.md` with
+1. Load `../providers/<provider>/merge-request.md`. Return `unsupported` when
+   it is missing.
+2. In `resolve` mode, verify without mutation that the adapter exposes a
+   writable merge operation supporting `merge_method`. Return `supported` or
+   `unsupported` with a concise reason, then stop.
+3. In `apply` mode, run the adapter with the exact repository, request ID, and
+   merge method.
+4. After an attempted merge, run `./read-request.md` with
    `fields: delivery_state`.
-4. Return exactly one normalized result:
+5. Return exactly one normalized apply result:
    - `merged` only when the observed request state is `merged`;
    - `blocked` when the provider rejects the merge because the request is not
      currently eligible;
@@ -28,6 +34,6 @@ return the observed result.
 Include the observed request record when available and a concise provider
 reason for every result other than `merged`.
 
-Do not retry, select another request, use another provider operation, or infer
-that a successful tool call means the request was merged without observing its
-state.
+Never mutate in `resolve` mode. Do not retry, select another request, use
+another provider operation, or infer that a successful tool call means the
+request was merged without observing its state.

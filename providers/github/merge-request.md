@@ -9,9 +9,8 @@ arguments:
   owner: caller repository owner
   repo: caller repository name
   pullNumber: caller request ID
-  merge_method: caller merge method, when provided
+  merge_method: caller merge method
 ```
 
-Omit `merge_method` when absent. Return the provider result without reading the
-pull request or normalizing its delivery state. Do not retry an ambiguous
-operation.
+Return the provider result without reading the pull request or normalizing its
+delivery state. Do not retry an ambiguous operation.

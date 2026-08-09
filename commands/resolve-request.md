@@ -14,6 +14,8 @@ Resolve one exact request.
 - `require_non_draft`: optional boolean, default `false`.
 - `allowed_states`: optional normalized states accepted by the caller, default
   `open`.
+- `fields`: optional caller-requested fields forwarded to the exact request
+  read.
 
 A caller may provide an already known `request_id`.
 
@@ -26,7 +28,8 @@ A caller may provide an already known `request_id`.
 2. Use the backlink result only when it contains one unique request ID.
    Otherwise, ask the user for the exact pull-request number or merge-request
    IID. Do not list or search requests.
-3. Run `./read-request.md` with that exact request ID.
+3. Run `./read-request.md` with that exact request ID and caller-requested
+   `fields`.
 4. Require the normalized request `state` to be one of `allowed_states`.
 5. When `source_branch` is supplied, require an exact match.
 6. When `require_non_draft` is `true`, require `draft: false`.

@@ -15,7 +15,8 @@ Publish confirmed findings as one provider review and observe its result.
 ## Result
 
 Return the grouped review, every finding, and the semantic verdict as
-`succeeded`, `unsupported`, `failed`, or `unobserved`.
+`succeeded`, `unsupported`, `failed`, or `unobserved`. After an attempted
+publication, also return the observed request `delivery_state` when available.
 
 ## Steps
 
@@ -26,9 +27,10 @@ Return the grouped review, every finding, and the semantic verdict as
    exact findings, verdict, and head SHA. Stop when it is missing.
 3. When the provider reports that no mutation was attempted, return its
    unsupported results without another read.
-4. Otherwise, read complete review activity once and match the mutation's new
-   provider identity, every finding body and destination, and any supported
-   verdict. Return their observed results; an older matching body is not proof.
+4. Otherwise, read once with both `review_activity` and `delivery_state`.
+   Match the mutation's new provider identity, every finding body and
+   destination, and any supported verdict. Return their observed results plus
+   the request delivery state; an older matching body is not proof.
 
 Do not retry, create markers, edit existing comments or request content, or
 infer another provider operation.

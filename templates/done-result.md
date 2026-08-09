@@ -8,16 +8,15 @@ partial result.
 ```markdown
 ## Done Result
 
-Request: <merged, already merged, blocked, unsupported, failed, or unobserved>
-Item: <transitioned, already done, not attempted, or failed with reason>
+Request <provider/repository#ID>: <observed request result>
+Item <ID>: <observed item result>
 
-Remaining action:
-
-- <only the action still required; omit when complete or merely blocked>
+Remaining: <exact request or item action; omit when none or merely blocked>
 ```
 
 ## Rules
 
 - Report observed states rather than intended states.
+- Keep both identities visible.
 - Never report the item as transitioned after an unobserved merge.
-- Keep recovery to the action remaining on an explicit rerun.
+- After an observed merge, only the item transition may remain.
