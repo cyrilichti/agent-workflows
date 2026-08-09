@@ -28,6 +28,8 @@ unavailable, continue to Step 2.
 
 ### 2. Select One Official Item
 
+Resolve one provider item ID, then read it once.
+
 When review-status retrieval returned items, ask using
 `../templates/select-option.md` with:
 
@@ -39,16 +41,8 @@ options:
 - Select another item
 ```
 
-Never preselect an item, including when only one item is available.
-
-For a selected provider item, run `../commands/read-item.md` with:
-
-```text
-provider: resolved item provider
-item_id: selected provider ID
-fields:
-  - request_backlinks
-```
+Never preselect an item, including when only one item is available. Keep a
+selected list value as the provider item ID.
 
 When no review status exists, status resolution is unavailable, or the user
 selects `Select another item`, ask using `../templates/select-option.md` with:
@@ -60,8 +54,8 @@ options:
 - Search by title
 ```
 
-- On `Enter an exact item ID`, ask for the exact ID, then run
-  `../commands/read-item.md` with it and `fields: request_backlinks`.
+- On `Enter an exact item ID`, ask for the exact ID and keep it as the provider
+  item ID.
 - On `Search by title`, ask for a narrow title phrase and run
   `../commands/search-items.md`. When results are returned, ask using
   `../templates/select-option.md` with:
@@ -73,11 +67,11 @@ options:
     value: <provider item ID>
   ```
 
-  Then run `../commands/read-item.md` with the selected ID and
-  `fields: request_backlinks`.
+  Keep the selected value as the provider item ID.
 
-Search and retrieval results are not official context. Continue only from the
-complete official item returned by `read-item`.
+Search and retrieval results are not official context. Run
+`../commands/read-item.md` with the resolved provider item ID and
+`fields: request_backlinks`. Continue only from that complete official item.
 
 ### 3. Resolve One Exact Request
 
