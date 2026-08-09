@@ -142,23 +142,15 @@ Do not continue until every current finding has one final decision.
 
 ### 7. Prepare the Publication Preview
 
-For each accepted finding:
+Derive one semantic verdict from the complete current analysis:
 
-- use an inline comment only when the provider supports it and the frozen
-  anchor is valid;
-- otherwise use a request-level comment;
-
-Derive the terminal operation from the complete current analysis:
-
-- at least one blocking finding: `request changes`;
-- only non-blocking findings: no terminal verdict;
+- at least one blocking finding: `request_changes`;
+- only non-blocking findings: `none`;
 - no finding: `approve`.
 
-When the provider does not support a planned operation, keep it in the preview
-as `unsupported`; do not invent a substitute verdict or provider operation.
-
-Present the complete payload with
-`../templates/review-publication-preview.md`, then ask once using
+Present the accepted complete findings, their anchors, and semantic verdict as
+one grouped review using `../templates/review-publication-preview.md`, then ask
+once using
 `../templates/select-option.md`:
 
 ```text
@@ -170,22 +162,17 @@ options:
 
 On `Stop without publishing`, perform no provider mutation and stop.
 
-### 8. Reject a Stale Confirmation
+### 8. Publish and Report
 
-After confirmation, run `../commands/read-request.md` with
-`fields: review_activity` and require its head SHA to equal the frozen SHA.
+Run `../commands/publish-review.md` with the exact confirmed findings, semantic
+verdict, and frozen head SHA.
 
-If it changed, discard the complete analysis, decisions, and preview. Return to
-Step 4 for a fresh snapshot; nothing from the stale cycle may be published.
+If it returns `stale`, discard the complete analysis, decisions, and preview,
+then return to Step 4. Nothing from the stale cycle may be published.
 
-### 9. Publish and Report
-
-Run `../commands/publish-review.md` with the exact confirmed operations and
-frozen head SHA.
-
-Report every operation as observed succeeded, unsupported, failed, or
-unobserved. On partial failure, report achieved and remaining operations
-without retrying automatically.
+Otherwise, report the grouped review, every finding, and the semantic verdict
+as observed succeeded, unsupported, failed, or unobserved. Do not retry
+automatically.
 
 Stop after this report.
 

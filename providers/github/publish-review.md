@@ -1,14 +1,17 @@
 # publish-review
 
-- For a request comment, call `add_issue_comment` with the exact body.
-- For inline comments, create one pending review at the caller's `head_sha`,
-  then call `add_comment_to_pending_review` with each exact body and
-  validated path, line, side, range, and subject type.
-- Submit the pending review with `pull_request_review_write`, method
-  `submit_pending`, using `REQUEST_CHANGES`, `APPROVE`, or `COMMENT` from the
-  terminal operation and its exact body. Use `COMMENT` when inline comments
-  exist without a terminal verdict.
+Publish all supplied findings as one pull-request review at the caller's frozen
+head SHA.
 
-After each operation, return the observed request activity. On an ambiguous or
-unobserved result, stop without retrying, deleting, or reusing a pending review.
+1. Create one pending review. Put every finding without a valid inline anchor
+   in its body, in stable order, using each exact finding body separated only
+   by a blank line.
+2. Add every finding with a valid inline anchor to that pending review with its
+   exact body, finding ID, path, line, side, range, and subject type.
+3. Submit that same pending review once. Map `request_changes` to
+   `REQUEST_CHANGES`, `approve` to `APPROVE`, and `none` to transport-only
+   `COMMENT`.
 
+Return the publication response for caller observation. On a failed or
+ambiguous create, comment, or submit result, stop without retrying, deleting,
+or reusing the pending review. Do not create issue comments.

@@ -11,14 +11,15 @@ curated, and either left unpublished or published exactly as confirmed.
   frozen at an exact head SHA.
 - Every finding receives a final user decision.
 - The exact final publication payload is confirmed against the same head SHA.
-- Every attempted publication operation is observed and reported accurately.
+- Every attempted grouped review and included finding is observed and reported
+  accurately.
 - The workflow stops without delivery mutations or downstream workflow
   invocation.
 
 ## Stop Conditions
 
 - Stop successfully when the user declines publication or publication has
-  been attempted and every operation reported.
+  been attempted and its review, findings, and semantic result reported.
 - Discard a stale review cycle and restart from a fresh snapshot when the head
   SHA changes before publication.
 - Stop and report when required official context is incomplete or a required

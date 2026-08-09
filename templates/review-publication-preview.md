@@ -6,9 +6,8 @@ Present the exact complete review payload before publication.
 
 - resolved request and frozen head SHA;
 - accepted current findings;
-- ordered publication operations;
-- optional terminal verdict;
-- unsupported operations.
+- valid anchors when available;
+- semantic verdict.
 
 ## Format
 
@@ -17,29 +16,22 @@ Present the exact complete review payload before publication.
 
 Request: <request ID and URL>
 Head SHA: <frozen head SHA>
+Semantic verdict: <request_changes, approve, or none>
+Delivery: one grouped provider review
 
 ### Finding <stable local ID>
 
-Target: <inline file:line or request comment>
-Operation: <publish or unsupported>
+Target: <inline anchor when valid or grouped review body>
 
-<exact comment body>
-
-### Terminal Verdict
-
-Verdict: <request changes, approve, or none>
-Operation: <publish or unsupported>
-
-### Unsupported Operations
-
-- <exact unsupported operation and reason>
+<exact complete finding body>
 ```
 
 Repeat the finding section in stable publication order.
 
 ## Rules
 
-- Show the exact complete payload, targets, and verdict.
-- Omit `Unsupported Operations` when empty.
+- Show every exact finding body, target, and the semantic verdict.
+- A provider may use a required transport event, such as GitHub `COMMENT` for
+  `none`, without changing the confirmed semantic verdict.
 - Do not imply that any operation has occurred.
 - Do not publish or ask for partial confirmation from this template.
