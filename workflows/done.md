@@ -27,7 +27,7 @@ Run `../commands/resolve-item-provider.md` with:
 context: item
 ```
 
-Preserve any exact item ID or title phrase supplied with the invocation as the
+Preserve any exact item ID or title phrase available with the invocation as the
 item hint. Run `../commands/select-review-item.md` with:
 
 ```text

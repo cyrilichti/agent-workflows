@@ -94,9 +94,14 @@ Require the same open request, exact previewed head SHA, and
 `merge_status: mergeable`. On any change, stop and require a new preview and
 confirmation.
 
-Run `../commands/merge-request.md` with the resolved provider, repository, and
-request ID. Include a merge method only when the provider required the user to
-select one.
+Run `../commands/merge-request.md` with:
+
+```text
+provider: resolved version provider
+repository: resolved repository
+request_id: exact request ID
+merge_method: squash
+```
 
 Continue only when the normalized result is `merged`. For `blocked`,
 `unsupported`, `failed`, or `unobserved`, present

@@ -154,7 +154,22 @@ Otherwise, report the grouped provider review, accepted finding counts, and
 semantic verdict. Identify failed or unobserved findings by ID without
 repeating their bodies. Do not retry automatically.
 
-Stop after this report.
+When the accepted blocking finding count is zero, ask using
+`../templates/select-option.md` with:
+
+```text
+question: What do you want to do next?
+options:
+- Complete the request
+- Stop here
+```
+
+On `Complete the request`, follow `./done.md` with the exact official item ID.
+`/done` re-resolves the complete official item and request and owns its merge
+confirmation. On `Stop here`, stop.
+
+When at least one accepted blocking finding remains, stop after the report
+without offering `/done`.
 
 ---
 
@@ -162,5 +177,7 @@ Stop after this report.
 
 - Never modify code, items, commits, branches, or existing comments.
 - Publish only the confirmed payload from its unchanged frozen SHA.
-- Never push, merge, deploy, release, invoke `/work`, or invoke `/done`.
+- Never push, merge, deploy, release, or invoke `/work`.
+- Invoke `/done` only after the publication result is reported, no accepted
+  blocking finding remains, and the user explicitly chooses the handoff.
 - Never use REST, CLI, or another provider as an undocumented fallback.

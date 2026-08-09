@@ -12,6 +12,7 @@ the uniquely resolved `done` state after one explicit completion confirmation.
   request ID.
 - An open request is mergeable at the exact confirmed head SHA before the
   merge is attempted.
+- An open request is merged using `squash`.
 - The request is observed as merged before the official item transition is
   attempted.
 - The official item is transitioned or already in its uniquely resolved

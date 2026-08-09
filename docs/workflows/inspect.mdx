@@ -7,8 +7,9 @@ description: Independently inspect one exact request snapshot and publish only t
 item and its pull or merge request, inspects a frozen snapshot, and lets you
 accept, reject, or modify every finding before anything is published.
 
-No delivery workflow invokes `/inspect`, and `/inspect` never enters a delivery
-workflow.
+No delivery workflow invokes `/inspect`. After reporting a review publication
+attempt with no accepted blocking finding, `/inspect` can offer an explicit
+handoff to `/done`.
 
 ## How this workflow is structured
 
@@ -17,7 +18,7 @@ workflow.
     <tr>
       <td>1</td>
       <th scope="row">Item</th>
-      <td>Resolve an exact ID or supplied title immediately; otherwise select among at most five review items.</td>
+      <td>Resolve an exact ID or title search; otherwise select among at most ten review items.</td>
     </tr>
     <tr>
       <td>2</td>
@@ -49,9 +50,15 @@ workflow.
       <th scope="row">Publish</th>
       <td>Reject a stale SHA or publish and observe the confirmed grouped review.</td>
     </tr>
+    <tr>
+      <td>8</td>
+      <th scope="row">Complete</th>
+      <td>After a non-blocking review result, optionally continue to <code>/done</code>.</td>
+    </tr>
   </tbody>
 </table>
 
 Throughout the inspection cycle, `/inspect` never modifies code, items, commits,
-branches, or existing comments. It never invokes `/work` or `/done`, and never
-pushes, merges, deploys, or releases.
+branches, or existing comments. It never invokes `/work`, and never pushes,
+merges, deploys, or releases itself. `/done` retains its separate preflight and
+mutation confirmation after an eligible handoff.
