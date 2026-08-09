@@ -68,12 +68,9 @@ Keep the returned complete request record as the exact request context.
 
 ### 3. Follow Shared Completion
 
-Follow `./done-confirm.md` with:
+Project the resolved records through `../templates/done-context.md`, then
+follow `./done-confirm.md` with:
 
 ```text
-item_provider: resolved item provider
-item: complete official item context
-version_provider: resolved version provider
-repository: resolved repository
-request: exact request with complete delivery state
+completion_context: compact projected Done Context
 ```

@@ -5,9 +5,9 @@ description: Merge one exact request, then complete its official item from obser
 
 `/done` has two context paths. Standalone mode resolves one official item and
 its exact non-draft pull request or merge request. Caller mode reuses the
-complete item, provider, repository, request, and delivery state preserved by
-`/inspect`. Both paths join the same preview and ask once before making any
-change.
+compact item identity and request delivery context projected by `/inspect`;
+review findings, activity, and diff are not carried. Both paths join the same
+preview and ask once before making any change.
 
 An open request must be reported as mergeable by its provider. An already
 merged request skips the merge. In both cases, `/done` moves the official item

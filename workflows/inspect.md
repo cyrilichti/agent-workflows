@@ -163,22 +163,31 @@ Otherwise, report the grouped provider review, accepted finding counts, and
 semantic verdict. Identify failed or unobserved findings by ID without
 repeating their bodies. Do not retry automatically.
 
-When the accepted blocking finding count is zero, follow `./done.md` in caller
-mode with:
+Only when the semantic verdict is `approve` and the grouped provider review is
+observed as `succeeded`, ask using `../templates/select-option.md` with:
 
 ```text
-item_provider: resolved item provider
-item: complete official item context
-version_provider: resolved version provider
-repository: resolved repository
-request: complete exact request with frozen review snapshot and delivery state
+question: What do you want to do next?
+options:
+- Continue to completion
+- Stop here
 ```
 
-`/done` reuses this context without resolution or another preflight read and
-owns the single merge confirmation.
+On `Stop here`, stop without entering `/done`.
 
-When at least one accepted blocking finding remains, stop after the report
-without offering `/done`.
+On `Continue to completion`, project the official item and exact request through
+`../templates/done-context.md`. Follow `./done.md` in caller mode with:
+
+```text
+completion_context: compact projected Done Context
+```
+
+Do not include the frozen review snapshot, findings, review activity, or diff.
+`/done` reuses the projected delivery context without resolution or another
+preflight read and owns the merge confirmation.
+
+For verdict `none` or `request_changes`, or when the `approve` publication is
+not observed as `succeeded`, stop after the report without offering `/done`.
 
 ---
 
@@ -187,6 +196,6 @@ without offering `/done`.
 - Never modify code, items, commits, branches, or existing comments.
 - Publish only the confirmed payload from its unchanged frozen SHA.
 - Never push, merge, deploy, release, or invoke `/work`.
-- Invoke `/done` only after the publication result is reported and no accepted
-  blocking finding remains.
+- Invoke `/done` only after an `approve` verdict is observed as successfully
+  published and the user explicitly chooses the handoff.
 - Never use REST, CLI, or another provider as an undocumented fallback.

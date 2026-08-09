@@ -24,9 +24,8 @@ Reuse these rules when already active from the caller; otherwise follow them:
 
 Follow exactly one branch:
 
-- follow `./done-confirm.md` when the caller supplies the resolved item
-  provider, complete official item, resolved version provider, repository, and
-  exact request with complete delivery state;
+- follow `./done-confirm.md` when the caller supplies one complete
+  `completion_context` following `../templates/done-context.md`;
 - otherwise, follow `./done-standalone.md`.
 
 Fail an explicit but incomplete caller handoff instead of switching it to

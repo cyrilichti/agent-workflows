@@ -2,14 +2,8 @@
 
 ## Entry Condition
 
-Run with:
-
-- `item_provider`: resolved item provider;
-- `item`: complete official item context;
-- `version_provider`: resolved version provider;
-- `repository`: resolved repository;
-- `request`: exact non-draft request in that repository with complete delivery
-  state.
+Run with one complete `completion_context` following
+`../templates/done-context.md`.
 
 ---
 
@@ -17,21 +11,21 @@ Run with:
 
 ### 1. Require the Completion Context
 
-Require every entry-condition field. Preserve the supplied official item,
-provider identities, repository, and exact request unchanged. Do not resolve,
-search, select, or reread them before the preview.
+Require every non-optional Done Context field. Preserve the supplied item and
+request completion fields unchanged. Do not resolve, search, select, or reread
+them before the preview.
 
-Require the request to be open or merged, non-draft, and to contain its exact
-head SHA and normalized merge status. Fail incomplete caller context instead of
-recovering it.
+Require `completion_context.request` to be open or merged and non-draft, with
+an exact head SHA and normalized merge status. Fail incomplete caller context
+instead of recovering it.
 
 ### 2. Resolve the Remaining Operations
 
 Run `../commands/transition-item-status.md` with:
 
 ```text
-provider: item_provider
-item_id: official item ID
+provider: completion_context.item.provider
+item_id: completion_context.item.id
 target_status: done
 mode: resolve
 ```
@@ -72,9 +66,9 @@ Skip this step when the request was already merged.
 After confirmation, run `../commands/read-request.md` with:
 
 ```text
-provider: version_provider
-repository: resolved repository
-request_id: exact request ID
+provider: completion_context.request.provider
+repository: completion_context.request.repository
+request_id: completion_context.request.id
 fields: delivery_state
 ```
 
@@ -85,9 +79,9 @@ confirmation.
 Run `../commands/merge-request.md` with:
 
 ```text
-provider: version_provider
-repository: resolved repository
-request_id: exact request ID
+provider: completion_context.request.provider
+repository: completion_context.request.repository
+request_id: completion_context.request.id
 merge_method: squash
 ```
 
@@ -102,8 +96,8 @@ When the item was not already done, run
 `../commands/transition-item-status.md` with:
 
 ```text
-provider: item_provider
-item_id: official item ID
+provider: completion_context.item.provider
+item_id: completion_context.item.id
 target_status: done
 mode: apply
 resolved_target_status: exact target shown in the confirmed preview
