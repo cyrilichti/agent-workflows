@@ -2,8 +2,9 @@
 
 ## Outcome
 
-One complete official item and exact open request snapshot have been reviewed,
-curated, and either left unpublished or published exactly as confirmed.
+One complete official item and exact open request snapshot have been reviewed
+and curated, then the workflow reached one accurately reported terminal end.
+Workflow completion does not imply that provider publication succeeded.
 
 ## Success Criteria
 
@@ -22,8 +23,8 @@ curated, and either left unpublished or published exactly as confirmed.
 
 ## Stop Conditions
 
-- Stop successfully when the user declines publication or publication has
-  been attempted and its review, findings, and semantic result reported.
+- Complete the workflow when the user declines publication or after every
+  attempted publication result has been observed and reported.
 - Discard a stale review cycle and restart from a fresh snapshot when the head
   SHA changes before publication.
 - Stop and report when required official context is incomplete or a required
