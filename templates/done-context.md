@@ -7,14 +7,11 @@ Compact caller packet for `/done`.
 ```text
 item:
   provider: <resolved item provider>
-  id: <official provider item ID>
-  title: <official item title>
-  status: <observed item status>
-  link: <official item link, when available>
+  item_id: <official provider item ID>
 request:
   provider: <resolved version provider>
   repository: <resolved repository>
-  id: <exact request ID>
+  request_id: <exact request ID>
   kind: <pull_request or merge_request>
   url: <exact request URL>
   source_branch: <exact source branch>
@@ -33,5 +30,5 @@ request:
   inspection-only content.
 - Preserve provider-native repository identity and request ID without
   reformatting them.
-- Omit only optional `link` and `merge_blocker`. Treat every other missing
-  field as incomplete caller context.
+- Omit only optional `merge_blocker`. Treat every other missing field as
+  incomplete caller context.

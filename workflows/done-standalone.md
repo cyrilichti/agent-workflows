@@ -49,20 +49,12 @@ require_non_draft: true
 allowed_states:
   - open
   - merged
+fields: delivery_state
 ```
 
 When no unique backlink resolves the request, let the command ask for the exact
 pull-request number or merge-request IID. Never list, search for, or substitute
 another request.
-
-Run `../commands/read-request.md` with:
-
-```text
-provider: resolved version provider
-repository: resolved repository
-request_id: exact resolved request ID
-fields: delivery_state
-```
 
 Keep the returned complete request record as the exact request context.
 

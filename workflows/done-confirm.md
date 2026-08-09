@@ -25,7 +25,7 @@ Run `../commands/transition-item-status.md` with:
 
 ```text
 provider: completion_context.item.provider
-item_id: completion_context.item.id
+item_id: completion_context.item.item_id
 target_status: done
 mode: resolve
 ```
@@ -34,8 +34,18 @@ Stop before mutation when the next `done` state cannot be resolved uniquely.
 
 For an open request, require `merge_status: mergeable` and a head SHA. Report
 the provider's blocker and stop when the request is blocked or its eligibility
-is unknown. Stop as unsupported when the configured version adapter exposes no
-merge operation.
+is unknown. Then run `../commands/merge-request.md` with:
+
+```text
+provider: completion_context.request.provider
+repository: completion_context.request.repository
+request_id: completion_context.request.request_id
+merge_method: squash
+mode: resolve
+```
+
+Continue only when it returns `supported`; otherwise report `unsupported` and
+stop before the preview.
 
 For a merged request, omit the merge from the remaining operations. When the
 item is also already done, present `../templates/done-result.md` with the
@@ -68,21 +78,24 @@ After confirmation, run `../commands/read-request.md` with:
 ```text
 provider: completion_context.request.provider
 repository: completion_context.request.repository
-request_id: completion_context.request.id
+request_id: completion_context.request.request_id
 fields: delivery_state
 ```
 
-Require the same open request, exact previewed head SHA, and
-`merge_status: mergeable`. On any change, stop and require a new preview and
-confirmation.
+Require the same request identity, source branch, target branch, open state,
+exact previewed head SHA, and `merge_status: mergeable`. When any delivery
+field changed, replace only those fields in `completion_context.request`,
+discard the stale confirmation, and return to Step 2 for a new preview. Never
+merge under the stale confirmation.
 
 Run `../commands/merge-request.md` with:
 
 ```text
 provider: completion_context.request.provider
 repository: completion_context.request.repository
-request_id: completion_context.request.id
+request_id: completion_context.request.request_id
 merge_method: squash
+mode: apply
 ```
 
 Continue only when the normalized result is `merged`. For `blocked`,
@@ -97,7 +110,7 @@ When the item was not already done, run
 
 ```text
 provider: completion_context.item.provider
-item_id: completion_context.item.id
+item_id: completion_context.item.item_id
 target_status: done
 mode: apply
 resolved_target_status: exact target shown in the confirmed preview

@@ -3,7 +3,8 @@
 ## Outcome
 
 One exact non-draft request is observed as merged and its official item is in
-the uniquely resolved `done` state after one explicit completion confirmation.
+the uniquely resolved `done` state after one explicit completion confirmation
+when mutations remain.
 
 ## Success Criteria
 

@@ -10,8 +10,10 @@ review findings, activity, and diff are not carried. Both paths join the same
 preview and ask once before making any change.
 
 An open request must be reported as mergeable by its provider. An already
-merged request skips the merge. In both cases, `/done` moves the official item
-to its resolved completed state only after the request is observed as merged.
+merged request skips the merge. Before previewing an open request, `/done`
+verifies read-only that its provider supports squash merge. In both cases,
+`/done` moves the official item to its resolved completed state only after the
+request is observed as merged.
 
 ## How this workflow is structured
 

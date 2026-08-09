@@ -17,7 +17,8 @@ does not imply provider publication success.
   and semantic verdict are confirmed for publication.
 - Every attempted publication result is observed and reported without delivery
   mutation by `/inspect`.
-- A successfully published `approve` verdict offers a `/done` handoff.
+- A successfully published `approve` verdict on the unchanged frozen SHA and
+  with observed post-publication delivery state offers a `/done` handoff.
   Accepting passes one compact completion context without inspection-only
   content; declining stops. Every other verdict or publication result stops
   without offering the handoff.

@@ -8,8 +8,8 @@ item and its pull or merge request, inspects a frozen snapshot, and lets you
 accept, reject, or modify every finding before anything is published.
 
 No delivery workflow invokes `/inspect`. After an `approve` verdict is observed
-as successfully published, `/inspect` offers to hand its compact completion
-context directly to `/done`.
+as successfully published on the unchanged frozen SHA, `/inspect` offers to
+hand its compact completion context directly to `/done`.
 
 ## How this workflow is structured
 

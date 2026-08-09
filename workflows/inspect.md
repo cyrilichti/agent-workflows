@@ -163,8 +163,9 @@ Otherwise, report the grouped provider review, accepted finding counts, and
 semantic verdict. Identify failed or unobserved findings by ID without
 repeating their bodies. Do not retry automatically.
 
-Only when the semantic verdict is `approve` and the grouped provider review is
-observed as `succeeded`, ask using `../templates/select-option.md` with:
+Only when the semantic verdict is `approve`, the grouped provider review is
+observed as `succeeded`, and its returned delivery-state head SHA still equals
+the frozen SHA, ask using `../templates/select-option.md` with:
 
 ```text
 question: What do you want to do next?
@@ -175,7 +176,8 @@ options:
 
 On `Stop here`, stop without entering `/done`.
 
-On `Continue to completion`, project the official item and exact request through
+On `Continue to completion`, project the official item identity, carried exact
+request identity, and returned post-publication delivery state through
 `../templates/done-context.md`. Follow `./done.md` in caller mode with:
 
 ```text
@@ -186,8 +188,9 @@ Do not include the frozen review snapshot, findings, review activity, or diff.
 `/done` reuses the projected delivery context without resolution or another
 preflight read and owns the merge confirmation.
 
-For verdict `none` or `request_changes`, or when the `approve` publication is
-not observed as `succeeded`, stop after the report without offering `/done`.
+For verdict `none` or `request_changes`, when the `approve` publication is not
+observed as `succeeded`, or when its returned delivery state is unavailable or
+has another head SHA, stop after the report without offering `/done`.
 
 ---
 
@@ -197,5 +200,6 @@ not observed as `succeeded`, stop after the report without offering `/done`.
 - Publish only the confirmed payload from its unchanged frozen SHA.
 - Never push, merge, deploy, release, or invoke `/work`.
 - Invoke `/done` only after an `approve` verdict is observed as successfully
-  published and the user explicitly chooses the handoff.
+  published on the unchanged frozen SHA and the user explicitly chooses the
+  handoff.
 - Never use REST, CLI, or another provider as an undocumented fallback.
