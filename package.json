@@ -1,7 +1,9 @@
 {
-  "name": "agent-workflows-docs",
-  "version": "0.1.0",
-  "private": true,
+  "name": "agent-workflows",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Agent Workflows, a controlled delivery system for coding agents.",
+  "author": "Cyril Ichti",
   "type": "module",
   "engines": {
     "node": ">=22.12.0"
