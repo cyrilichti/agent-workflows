@@ -2,25 +2,32 @@
 
 Use this template when the user must choose exactly one option.
 
-Follow `../rules/default-language.md` for all user-facing output.
-
 ## Input
+
+Callers pass a question and one option list. Use plain labels by default:
 
 ```text
 question: <question>
 options:
 - <option label>
+```
+
+Use `label` and `value` only when the returned selection must carry hidden
+data distinct from the displayed text:
+
+```text
+question: <question>
+options:
 - label: <option label>
   value: <internal value>
 ```
 
-Use labels directly by default. Add a value only when the caller needs hidden
-data distinct from the label.
+A single list may mix both shapes. Omit `value` when it would equal the
+label.
 
 ## Behavior
 
-Use a native single-selection control only when it can present every option
-without changing the choice or adding a recommendation.
+Prefer a native single-selection control whenever one is available.
 
 Otherwise use this text fallback:
 

@@ -10,6 +10,8 @@ Follow `.agents/rules/git-authorization.md`.
 
 Follow `.agents/rules/skill-activation.md`.
 
+Follow `.agents/rules/inclusive-wording.md`.
+
 ## Session Bootstrap
 
 At the beginning of a new conversation or a new unrelated task, follow
