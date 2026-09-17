@@ -1,17 +1,11 @@
 # Skill Activation
 
-Use when one or more Skills are selected for the current task.
+When one or more Skills are selected and loaded for the current task, output
+the announcement to the user as one Markdown blockquote:
 
-## Format
-
-```markdown
-`<skill-name>` [`<other-skill-name>`] — <short reason>
-```
+> `<skill-name>` [`<other-skill-name>`] — <short reason>
 
 ## Rules
 
-* Use the exact Skill names.
-* Keep the announcement on one concise user-facing line.
-* Group Skills only when they are selected by the same routing decision.
-* Do not announce a conditional Skill before it is selected.
-* Keep the announcement outside generated artifacts.
+- Use exact Skill names and group Skills selected together on the same concise
+  line.
