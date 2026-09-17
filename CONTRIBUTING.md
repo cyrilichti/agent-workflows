@@ -47,7 +47,7 @@ control workflow behavior.
 
 When the workflow belongs in the main playbook, also update:
 
-- `workflows/play-book.md` with its selection and delegation;
+- `workflows/play-book.md` with its routing situation;
 - `.gitignore` so its local skill bridge is tracked;
 - `docs/workflows/index.mdx` with its workflow card;
 - `astro.config.ts` with its documentation page;

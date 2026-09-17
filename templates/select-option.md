@@ -22,7 +22,8 @@ options:
   value: <internal value>
 ```
 
-Do not mix the two option shapes in the same list.
+A single list may mix both shapes. Omit `value` when it would equal the
+label.
 
 ## Behavior
 
