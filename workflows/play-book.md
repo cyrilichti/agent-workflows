@@ -1,42 +1,36 @@
 # Playbook
 
-Route non-trivial project work to one playbook workflow. Run at the start of a
-new IDE conversation or unrelated task when no playbook is selected yet. Stop
-after delegating.
+Route every user request to one playbook workflow when its situation matches.
+Routing means loading and following the workflow file in the current agent.
 
-## Steps
+## Routes
 
-1. Ask which task type to start using `../templates/select-option.md` with:
+| Situation | Workflow |
+| --- | --- |
+| Create or reformulate one item | `./write.md` |
+| Select an item, plan it, and start its implementation | `./pick.md` |
+| Create an implementation plan | `./plan.md` |
+| Decompose one oversized item into child items | `./refine.md` |
+| Execute a plan | `./work.md` |
+| Prepare work for review | `./ready.md` |
+| Review a pull or merge request | `./inspect.md` |
+| Complete a pull or merge request | `./done.md` |
+
+## Routing
+
+Evaluate every user request against the routes above.
+
+1. Identify every matching route.
+2. When several routes match, reduce them to one by asking with
+   `../templates/select-option.md`:
 
    ```text
-   question: Which type of task do you want to start?
+   question: Which workflow do you want to use?
    options:
-   - Write an item
-   - Pick an item
-   - Create a plan
-   - Refine an item
-   - Execute a plan
-   - Prepare work for review
-   - Inspect a request
-   - Complete a request
-   - Other
+   - label: <matching situation>
+     value: <workflow file>
    ```
 
-2. Wait for exactly one selection.
-
-3. Delegate to the matching workflow, then stop:
-
-   * Write an item → `./write.md`
-   * Pick an item → `./pick.md`
-   * Create a plan → `./plan.md`
-   * Refine an item → `./refine.md`
-   * Execute a plan → `./work.md`
-   * Prepare work for review → `./ready.md`
-   * Inspect a request → `./inspect.md`
-   * Complete a request → `./done.md`
-
-## Safety
-
-* If the task clearly matches one playbook, select it without asking.
-* If several could match, ask for clarification.
-* If none match, stop and explain that no playbook is available.
+3. When one route remains, read its workflow file completely and follow it.
+4. When no route matches, the playbook does nothing. Continue handling the
+   request normally.
