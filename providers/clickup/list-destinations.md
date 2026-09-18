@@ -1,7 +1,5 @@
 # list-destinations
 
-Require the caller `query` as a List URL, ID, name, or path.
-
 For a native ClickUp URL, extract candidate IDs from the URL and resolve them
 with `clickup_get_list` using `list_id`. Mark the result `native_url` only when
 the resolved List ID matches an ID extracted from the supplied URL.

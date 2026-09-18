@@ -1,7 +1,5 @@
 # list-destinations
 
-Require the caller `query` as a team or project URL, identifier, or name.
-
 For a native Linear project URL, extract its project slug and resolve it with:
 
 ```text
