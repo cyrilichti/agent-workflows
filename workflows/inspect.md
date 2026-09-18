@@ -85,7 +85,7 @@ instructions.
 
 ### 4. Produce Structured Findings
 
-Follow `./sub-agent.md` and activate the read-only `reviewer` profile.
+Follow `./specialist.md` and activate the read-only `reviewer` profile.
 
 Require `../templates/inspect-result.md` with:
 

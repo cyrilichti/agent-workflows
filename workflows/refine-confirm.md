@@ -11,7 +11,7 @@ Run with a resolved provider, complete official parent item, and preserved
 
 ### 1. Draft the Decomposition
 
-Follow `./sub-agent.md` with:
+Follow `./specialist.md` with:
 
 ```text
 task_context:

@@ -12,7 +12,7 @@ Read one official item from a configured provider.
 
 1. Load `../providers/<provider>/read-item.md`. If the file is missing, stop.
 2. Follow the loaded operation to retrieve the core item fields: title,
-   description, status, destination, assignees, and link when available.
+   description, status, destination, and link when available.
 3. Retrieve the caller-requested fields when the provider supports them.
 4. Return the official item and its provider ID to the caller.
 

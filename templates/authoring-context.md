@@ -1,13 +1,14 @@
 # Authoring Context
 
-Write→`item-writer` packet. Other callers may use their own field lists.
+Write→`item-writer` working context. Other callers may use their own field
+lists.
 
 ## Format
 
 ```text
 intention: <confirmed intention>
 facts_constraints: <when known>
-open_questions: <when known>
+open_questions: <unresolved questions, including blockers explicitly left open>
 official_title: <update only>
 official_body: <update only>
 sources: <user-identified code, specs, files, URLs>
@@ -21,4 +22,8 @@ last_adjustment: <Adjust only>
 - Exclude orchestration, destination, status, assignees, links, provider IDs,
   and other provider results. Official title and body are the only provider
   content allowed, and only for update.
-- Exclude obsolete history.
+- Keep a compact working context by updating applicable fields incrementally
+  with meaningful answers, sources, and revisions.
+- Remove obsolete content and resolved questions.
+- Retain an unresolved blocker in `open_questions` until the proposal reflects
+  it visibly.

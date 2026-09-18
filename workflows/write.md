@@ -2,8 +2,7 @@
 
 ## Purpose
 
-Create or reformulate exactly one provider-backed item, then optionally
-assign it.
+Create or reformulate exactly one provider-backed item.
 
 ---
 

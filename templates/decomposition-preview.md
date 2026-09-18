@@ -45,4 +45,4 @@ Repeat the child section for every proposal.
 - Do not display provider IDs, destinations, status, labels, assignees, or
   provider-specific parent fields.
 - Do not imply that any child has been created.
-- Keep any Skill or sub-agent announcement outside the preview.
+- Keep any Skill or specialist announcement outside the preview.

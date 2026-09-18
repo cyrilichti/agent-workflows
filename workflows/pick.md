@@ -67,6 +67,7 @@ Run `../commands/read-item.md` with:
 ```text
 provider: resolved item provider
 item_id: resolved item ID
+fields: assignment
 ```
 
 Require the returned item to match the Step 2 assignee and status criteria.

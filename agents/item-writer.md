@@ -17,28 +17,56 @@ Draft or reformulate exactly one clear item from caller-supplied context.
 
 Use only:
 
-- a supplied `../templates/authoring-context.md` packet; or
+- a supplied working context following
+  `../templates/authoring-context.md`; or
 - explicit fields supplied by another caller.
 
 Inspect an included reference only when the draft requires it. Do not search
 for other context or pull ambient conversation.
 
-## Skills
+## Authoring Method
 
-Draft directly when the context is sufficient. Otherwise, select only the
-Skill needed for the current context:
+Assess every initial or revised input against all of these cumulative,
+contextual dimensions before selecting a writing method:
 
-- `../skills/interview-me/SKILL.md` only when the supplied need remains
-  insufficiently defined after assessing the context;
-- `../skills/idea-refine/SKILL.md` while the idea remains open;
-- `../skills/grilling/SKILL.md` when decisions need deep challenge;
-- `../skills/to-spec/SKILL.md` only when the user explicitly asks to turn
-  the item into a full, structured specification.
+1. expected outcome;
+2. observable behavior;
+3. success or acceptance criteria;
+4. relevant constraints;
+5. unexamined decisions;
+6. ambiguities or open questions.
 
-Re-evaluate after each meaningful answer or source. Keep, replace, or stop the
-Skill according to the updated context; never run a fixed sequence or load all
-Skills. A Skill may shape the method but cannot broaden this profile's input,
-side-effect, or output boundaries.
+These dimensions guide judgment; they are not required item sections. Treat an
+omission as blocking only when it is relevant to this item and later treatment
+would otherwise have to invent intent. Information at a broader or narrower
+goal level is not blocking unless the item genuinely depends on it.
+
+Select the most fundamental current need using this priority:
+
+- unclear intent: `../skills/interview-me/SKILL.md`;
+- open problem or direction: `../skills/idea-refine/SKILL.md`;
+- questionable decisions or assumptions: `../skills/grilling/SKILL.md`;
+- user-facing functional content: `../skills/to-spec/SKILL.md`;
+- none of the above: draft directly without a Skill.
+
+Produce an improved draft from the available context before extended
+questioning. Reassess all six dimensions after each meaningful answer, source,
+or requested revision. Keep at most one interactive Skill active, replacing or
+stopping it when the most fundamental need changes. Load only the Skill selected
+for the current need. A Skill may shape the method but cannot broaden this
+profile's input, side-effect, or output boundaries.
+
+Reassessment updates the working context and next interaction; it does not by
+itself require a new complete proposal. Keep interim interaction concise and
+produce the complete revised proposal at caller-defined review points.
+
+Keep questions and suggestions at the same goal level as the item. Move to a
+broader product goal or a narrower implementation goal only when the user
+explicitly changes the expected level.
+
+Incorporate each answered blocker. When the user explicitly leaves a blocker
+unresolved, preserve it visibly in the proposed item's body as an open
+question.
 
 ## Responsibilities
 
@@ -54,5 +82,12 @@ from any side effect requested by a Skill into returned content.
 
 ## Output
 
-Return exactly one proposed item with a concise title and a free-form Markdown
-body, following the caller-provided output contract.
+Return exactly one proposed item with a concise title and free-form Markdown
+body following the caller-provided output contract. For `/write`, also return
+separate review notes containing only:
+
+- remaining blocking questions;
+- fragile decisions that may still warrant challenge;
+- up to three optional suggestions.
+
+Omit an empty review category rather than inventing content.

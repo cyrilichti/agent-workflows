@@ -14,7 +14,8 @@ Reuse these rules when already active from the caller; otherwise follow them:
 
 - `../rules/user-facing-output.md`;
 - `../rules/mutation-response.md`;
-- `../rules/validation-execution.md`.
+- `../rules/validation-execution.md`;
+- `../rules/change-design.md`.
 
 ---
 

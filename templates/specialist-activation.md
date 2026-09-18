@@ -1,11 +1,11 @@
-# Sub-agent Activation
+# Specialist Activation
 
-Use when reporting an activated sub-agent profile.
+Use when reporting an activated specialist profile.
 
 ## Format
 
 ```markdown
-## Sub-agent Activated
+## Specialist Activated
 
 ### <readable agent name>
 
