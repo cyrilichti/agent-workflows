@@ -3,10 +3,11 @@ title: /write
 description: Create or improve one work item with the right writing skill for the current need.
 ---
 
-`/write` turns an idea or an existing item into one clear work item. For a new item, it
-starts from your need. For a reformulation, it first reads the selected item, then asks
-what should change. It drafts with the external writing skill that best matches that
-need—clarification, product exploration, challenge, or specification.
+`/write` drafts one new or existing item, checks its outcome, observable behavior,
+success criteria, constraints, decisions, and open questions, then asks only what
+blocks later treatment at the same level of abstraction. After confirmation, it saves
+the item and applies `agent-shaped`; a missing ClickUp tag is reported without failing
+the save. The label records use of `/write`, not readiness, feasibility, or size.
 
 ## Dispatching external skills
 
@@ -25,7 +26,7 @@ need—clarification, product exploration, challenge, or specification.
       href="https://github.com/addyosmani/agent-skills/tree/main/skills/interview-me"
     >
       <span class="dispatch-skill__label">Skill</span>
-      <span>Missing context</span>
+      <span>Intent is unclear</span>
       <strong>interview-me ↗</strong>
       <small>Addy Osmani</small>
     </a>
@@ -34,7 +35,7 @@ need—clarification, product exploration, challenge, or specification.
       href="https://github.com/addyosmani/agent-skills/tree/main/skills/idea-refine"
     >
       <span class="dispatch-skill__label">Skill</span>
-      <span>Open product decisions</span>
+      <span>Direction is open</span>
       <strong>idea-refine ↗</strong>
       <small>Addy Osmani</small>
     </a>
@@ -43,7 +44,7 @@ need—clarification, product exploration, challenge, or specification.
       href="https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling"
     >
       <span class="dispatch-skill__label">Skill</span>
-      <span>Direction needs challenging</span>
+      <span>Decisions need challenging</span>
       <strong>grilling ↗</strong>
       <small>Matt Pocock</small>
     </a>
@@ -52,7 +53,7 @@ need—clarification, product exploration, challenge, or specification.
       href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec"
     >
       <span class="dispatch-skill__label">Skill</span>
-      <span>Full specification explicitly requested</span>
+      <span>User-facing functional behavior</span>
       <strong>to-spec ↗</strong>
       <small>Matt Pocock</small>
     </a>
@@ -71,32 +72,27 @@ need—clarification, product exploration, challenge, or specification.
     <tr>
       <td>2</td>
       <th scope="row">Context</th>
-      <td>Create from a described need, or select and read the item to reformulate before describing the change.</td>
+      <td>Describe a new need and resolve its destination, or select an existing item and describe the intended reformulation.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Destination</th>
-      <td>When creating, select where to create the item.</td>
+      <th scope="row">Draft</th>
+      <td>Present an improved proposal early and identify the most fundamental authoring need.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Draft</th>
-      <td>Use the best-fit external skill for that need to draft one item.</td>
+      <th scope="row">Guidance</th>
+      <td>Use at most one best-fit writing skill and reassess after meaningful input.</td>
     </tr>
     <tr>
       <td>5</td>
       <th scope="row">Review</th>
-      <td>Approve the item or return it for another writing pass.</td>
+      <td>Resolve or preserve blockers, review fragile decisions and optional suggestions, then confirm the item.</td>
     </tr>
     <tr>
       <td>6</td>
-      <th scope="row">Assignment</th>
-      <td>Choose the assignment behavior.</td>
-    </tr>
-    <tr>
-      <td>7</td>
       <th scope="row">Save</th>
-      <td>Save the confirmed item and apply the assignment choice.</td>
+      <td>Save the confirmed content, apply `agent-shaped`, and report the result.</td>
     </tr>
   </tbody>
 </table>

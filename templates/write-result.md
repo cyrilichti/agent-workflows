@@ -22,5 +22,3 @@ Use when `/write` finishes after a successful save.
 - When the item URL is available, show one `Open in <provider> ↗` link on its
   own line. Never show a raw URL.
 - Omit the link when the item URL is unavailable.
-- Present status and label as separate list items so Markdown renderers do not
-  collapse them onto one line.
