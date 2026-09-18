@@ -12,6 +12,8 @@ Follow `.agents/rules/skill-activation.md`.
 
 Follow `.agents/rules/inclusive-wording.md`.
 
+Follow `.agents/rules/instruction-authoring.md`.
+
 ## Session Bootstrap
 
 At the beginning of a new conversation or a new unrelated task, follow

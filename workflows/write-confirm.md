@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Draft, confirm, optionally assign, and save one item.
+Guide authoring, confirm, optionally assign, and save one item.
 
 ---
 
@@ -20,32 +20,42 @@ Run only from a mode branch with:
 
 ## Steps
 
-### 1. Draft One Item
+### 1. Build Authoring Context and Load the Specialist
 
-Build the first `../templates/authoring-context.md` packet from the collected
-`intention` before activating `item-writer`. Include only applicable fields:
+Build the working context according to `../templates/authoring-context.md` from
+the collected intention and, for updates, the official item content.
 
-- `intention` from the collected need description;
-- `facts_constraints` / `open_questions` / `sources` when known;
-- `official_title` and `official_body` when mode is `update`.
+Read the complete `../agents/item-writer.md` profile and apply it directly to
+the working context with `../templates/item.md` as its output contract.
 
-Keep destination, item ID, status, assignees, links, and other provider results
-in this workflow only. Do not put them in the packet.
+### 2. Draft and Present Early
 
-Activate `../agents/item-writer.md` and give it:
+Present the improved first proposal using `../templates/item-preview.md` before
+collecting further authoring input, followed by its current review notes.
 
-- the authoring-context packet;
-- `../templates/item.md` as its output contract.
+### 3. Collect Authoring Input
 
-Continue until it returns one sufficiently defined proposal.
+Collect the answers or sources requested by `item-writer`. If the user leaves a
+blocking question unanswered, ask whether to preserve it as an open question.
 
-During those exchanges, rebuild and resend the packet after each answer or new
-source. Integrate only useful information; remove resolved `open_questions` and
-superseded content.
+After each meaningful answer, new source, or requested revision, update the
+same authoring context incrementally and have the active `item-writer` reassess
+the current need and Skill. Continue the focused interaction without rendering
+the complete proposal again.
 
-### 2. Confirm Item
+Produce and present a new complete proposal with its review notes when:
 
-Present the proposal using `../templates/item-preview.md`, then ask using
+- every blocker is answered or visibly preserved and the content reaches a
+  review point;
+- the user asks to see or revise the draft.
+
+Continue until every blocking question is answered or visibly preserved in the
+proposal.
+
+### 4. Confirm Item
+
+Present the latest complete proposal and review notes unless they already
+reflect the current authoring context. Then ask using
 `../templates/select-option.md` with:
 
 ```text
@@ -55,14 +65,13 @@ options:
 - Adjust item
 ```
 
-If the user selects `Adjust item`, reassemble the packet with
-`current_proposal` and `last_adjustment`, give it to the active `item-writer`,
-and repeat this step with its revised proposal.
+If the user selects `Adjust item`, update the working context with
+`current_proposal` and `last_adjustment`, then resume step 3.
 
 Do not continue until the user explicitly selects `Save item`.
 If confirmation is refused or unavailable, stop without mutation.
 
-### 3. Resolve Optional Assignment
+### 5. Resolve Optional Assignment
 
 Ask using `../templates/select-option.md` with:
 
@@ -90,7 +99,7 @@ options:
   value: <internal provider assignee value>
 ```
 
-### 4. Save Item and Apply Assignment Choice
+### 6. Save Item and Apply Assignment Choice
 
 Run `../commands/save-item.md` with:
 

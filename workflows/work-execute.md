@@ -15,7 +15,7 @@ For each active todo:
 
 1. Reuse the active specialist while it remains appropriate. When none is
    active or the todo requires a different agent cohort, follow
-   `./sub-agent.md` with:
+   `./specialist.md` with:
 
    ```text
    task_context:

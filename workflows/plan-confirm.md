@@ -33,7 +33,7 @@ Continue on `refinement-not-needed`. On `needs-refinement`:
 
 ### 2. Resolve Planning Author
 
-Follow `./sub-agent.md` with `task_context` to activate one plan author. The
+Follow `./specialist.md` with `task_context` to activate one plan author. The
 author may inspect technical context read-only. If that reveals autonomous
 delivery units, reassess the expanded context with Step 1.
 
