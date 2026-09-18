@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Guide authoring, confirm, optionally assign, and save one item.
+Guide authoring, confirm, save, and label one item.
 
 ---
 
@@ -14,7 +14,7 @@ Run only from a mode branch with:
 - `intention`: light need description collected for this run.
 - `create`: `mode` and resolved `destination`.
 - `update`: `mode`, official `item_id`, `item_title`,
-  `item_description`, `current_assignment`, and `item_link` when available.
+  `item_description`, and `item_link` when available.
 
 ---
 
@@ -71,35 +71,7 @@ If the user selects `Adjust item`, update the working context with
 Do not continue until the user explicitly selects `Save item`.
 If confirmation is refused or unavailable, stop without mutation.
 
-### 5. Resolve Optional Assignment
-
-Ask using `../templates/select-option.md` with:
-
-```text
-question: What should happen to assignment?
-options:
-- Choose an assignee
-- Skip assignment
-```
-
-If the user selects `Skip assignment`, leave a new item unassigned or preserve
-an existing item's current assignment. Do not run an assignment command.
-
-Otherwise, ask for `me`, a name, or an email, then run
-`../commands/resolve-item-assignee.md` with the provider and that query.
-Run that resolution only after the user selects `Choose an assignee`.
-
-Select the single match. When several match, ask using
-`../templates/select-option.md` with:
-
-```text
-question: Who should be assigned?
-options:
-- label: <readable name and email when available>
-  value: <internal provider assignee value>
-```
-
-### 6. Save Item and Apply Assignment Choice
+### 5. Save and Label Item
 
 Run `../commands/save-item.md` with:
 
@@ -108,11 +80,14 @@ Run `../commands/save-item.md` with:
 - destination when mode is `create`;
 - existing item ID when mode is `update`.
 
-Use the `save-item` result for subsequent assignment and reporting.
+Use the `save-item` result for subsequent labeling and reporting, then run
+`../commands/apply-item-label.md` with:
 
-If assignment choice is `Choose an assignee`, run
-`../commands/assign-item.md` with the saved item ID and selected assignee.
-Otherwise, leave assignment untouched.
+```text
+provider: resolved item provider
+item_id: saved item ID
+label: agent-shaped
+```
 
 Finish according to `../goals/write-complete.md`. Present the outcome using
 `../templates/write-result.md` with:
@@ -122,5 +97,6 @@ Provider: resolved provider display name
 Item title: returned or carried item title, or Item unavailable
 Item URL: returned or carried item URL, when available
 Status: returned or carried provider status, or Unavailable
-Assignment: observed assignee names, Unassigned, or Unavailable
+Label applied: returned label result
+Label reason: returned reason when the label was not applied
 ```

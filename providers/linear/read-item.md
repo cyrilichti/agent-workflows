@@ -6,7 +6,8 @@ arguments:
   id: item ID or identifier
 ```
 
-Return the issue's title, description, state, team, project, assignee, and URL.
+Return the issue's title, description, state, team, project, and URL. Return its
+assignee only when `assignment` is requested.
 
 Set `includeRelations: true` when linked resources are requested. For comments
 or `request_backlinks`, call `list_comments` once, follow every cursor, and

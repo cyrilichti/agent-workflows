@@ -26,7 +26,6 @@ Then run `../commands/resolve-existing-item.md` with:
 provider: resolved item provider
 reference: user-provided provider item ID, when available
 query: collected title query, when no item ID is available
-fields: assignment
 ```
 
 Load only that official-item read path for this step. Identify the resolved
@@ -47,7 +46,6 @@ mode: update
 item_id: resolved official item ID
 item_title: resolved official item title
 item_description: resolved official item description
-current_assignment: assignee names, Unassigned, or Unavailable
 item_link: official item link, when available
 intention: collected need description
 ```

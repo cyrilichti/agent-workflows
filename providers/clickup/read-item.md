@@ -8,8 +8,8 @@ arguments:
     - description
 ```
 
-Return the task's core fields, full description, list hierarchy, assignees, and
-URL.
+Return the task's core fields, full description, list hierarchy, and URL. Return
+its assignees only when `assignment` is requested.
 
 Add supported `include` values such as `attachments` or `linked_tasks` when the
 caller requests them. For comments or `request_backlinks`, call
