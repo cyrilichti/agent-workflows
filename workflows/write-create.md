@@ -16,8 +16,10 @@ Keep the result as this run's `intention`.
 
 ### 2. Collect Destination Reference
 
-Reuse an available destination reference. Otherwise ask where the item should
-be created.
+Keep an explicit destination reference from the activation context when one is
+available. Otherwise keep the current project name from the active execution
+context when available. Do not ask for a destination before attempting either
+source.
 
 ### 3. Resolve Provider and Destination
 
@@ -27,8 +29,16 @@ Run `../commands/resolve-item-provider.md` with:
 context: item
 ```
 
-Run `../commands/resolve-item-destination.md` with the provider and the
-collected reference. Use the returned destination.
+Run `../commands/resolve-item-destination.md` with:
+
+```text
+provider: resolved item provider
+reference: explicit destination reference, when supplied
+current_project_name: current project name from the active execution context,
+  when available
+```
+
+Use the returned destination.
 
 ### 4. Follow Shared Execution
 

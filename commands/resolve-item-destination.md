@@ -5,22 +5,27 @@ Resolve the provider-specific destination for a new item.
 ## Input
 
 - `provider`: resolved item provider.
-- `query`: destination reference supplied by the user.
+- `reference`: optional destination reference supplied by the user.
+- `current_project_name`: optional project name from the active execution
+  context.
 
 ## Steps
 
-1. Load `../providers/<provider>/list-destinations.md`. If the file is missing,
+1. Use `reference` as the destination query when supplied. Otherwise use
+   `current_project_name`. When neither is available, ask for a more precise
+   destination reference and use the response as the query.
+2. Load `../providers/<provider>/list-destinations.md`. If the file is missing,
    stop.
-2. Follow the loaded operation with the query. The provider operation resolves
+3. Follow the loaded operation with the query. The provider operation resolves
    its native URLs, identifiers, and names and returns creatable candidates
    with:
    - a readable `label`;
    - the provider-specific internal `value`;
    - `match`: `native_url`, `exact_id`, `normalized_exact_name`,
      `strong_unique_approximate`, or `possible`.
-3. Treat every match except `possible` as reliable. If exactly one reliable
+4. Treat every match except `possible` as reliable. If exactly one reliable
    candidate is returned, return it without confirmation.
-4. If several reliable candidates are returned, ask with
+5. If several reliable candidates are returned, ask with
    `../templates/select-option.md`:
 
    ```text
@@ -31,7 +36,7 @@ Resolve the provider-specific destination for a new item.
    ```
 
    Return the selected destination.
-5. If no reliable candidate is returned but possible candidates exist, ask
+6. If no reliable candidate is returned but possible candidates exist, ask
    with `../templates/select-option.md`:
 
    ```text
@@ -43,9 +48,9 @@ Resolve the provider-specific destination for a new item.
    ```
 
    Return the selected destination. On refinement, collect a new reference and
-   repeat from Step 2.
-6. If no candidate is returned, ask for a more precise reference and repeat
-   from Step 2.
+   repeat from Step 3 with that reference as the query.
+7. If no candidate is returned, ask for a more precise reference and repeat
+   from Step 3 with the response as the query.
 
 Normalize names for comparison by trimming, case-folding, and collapsing
 whitespace and common separators. A strong approximate match must differ only
