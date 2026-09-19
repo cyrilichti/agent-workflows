@@ -7,7 +7,9 @@ description: Create or improve one work item with the right writing skill for th
 success criteria, constraints, decisions, and open questions, then asks only what
 blocks later treatment at the same level of abstraction. After confirmation, it saves
 the item and applies `agent-shaped`; a missing ClickUp tag is reported without failing
-the save. The label records use of `/write`, not readiness, feasibility, or size.
+the save. It reuses the available conversation and project context to avoid mode,
+intention, provider, and destination questions that are already answered. The label
+records use of `/write`, not readiness, feasibility, or size.
 
 ## Dispatching external skills
 
@@ -67,12 +69,12 @@ the save. The label records use of `/write`, not readiness, feasibility, or size
     <tr>
       <td>1</td>
       <th scope="row">Mode</th>
-      <td>Choose create or reformulate.</td>
+      <td>Infer create or reformulate from explicit intent, and ask only when the request is bare or ambiguous.</td>
     </tr>
     <tr>
       <td>2</td>
       <th scope="row">Context</th>
-      <td>Describe a new need and resolve its destination, or select an existing item and describe the intended reformulation.</td>
+      <td>Reuse the available intention and item reference, resolve the configured provider through the active MCP runtime, and try an explicit destination or the current project name before asking.</td>
     </tr>
     <tr>
       <td>3</td>
@@ -87,7 +89,7 @@ the save. The label records use of `/write`, not readiness, feasibility, or size
     <tr>
       <td>5</td>
       <th scope="row">Review</th>
-      <td>Resolve or preserve blockers, review fragile decisions and optional suggestions, then confirm the item.</td>
+      <td>Resolve or preserve blockers, show only localized changes after minor revisions, and repeat the complete proposal for structural changes or on request before confirmation.</td>
     </tr>
     <tr>
       <td>6</td>
