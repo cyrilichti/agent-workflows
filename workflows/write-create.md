@@ -10,8 +10,9 @@ Resolve create-only context, then follow the shared execution.
 
 ### 1. Collect Need Description
 
-Ask for a light free-form description of the need. Keep it as this run's
-`intention`.
+Reuse the initial intention from the workflow activation context when it
+contains the need to author. Otherwise ask for a light free-form description.
+Keep the result as this run's `intention`.
 
 ### 2. Collect Destination Reference
 
