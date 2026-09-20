@@ -1,46 +1,73 @@
 # read-request
 
 ```text
-tool: get_merge_request
+command: glab
 arguments:
-  id: caller project ID or URL-encoded path
-  merge_request_iid: caller merge request IID
+  - api
+  - --hostname
+  - caller repository host
+  - projects/<caller repository encoded_path>/merge_requests/<caller request ID>
 ```
 
-Map the IID to `request_id`, set `kind: merge_request`, normalize `opened`,
-`merged`, and other terminal states, then return title, Draft state, source and
-target branches, author, URL, and description normalized to an empty string.
+Run the command once and parse its JSON response. Map `iid` to `request_id`, set
+`kind: merge_request`, normalize `opened`, `merged`, and other terminal states,
+then return title, native Draft state, source and target branches, author, web
+URL, and description normalized to an empty string.
 
 For `delivery_state`, also return the exact head SHA and normalize the native
-merge-status fields to `merge_status: mergeable`, `blocked`, `unknown`, or
-`merged`. Preserve the provider's concise blocker reason when available.
+`detailed_merge_status`, merge-status fields, Draft state, conflicts, pipeline,
+approval, and discussion state to `merge_status: mergeable`, `blocked`,
+`unknown`, or `merged`. Preserve the native detailed status as the concise
+blocker when it identifies one. Treat transient, unchecked, or unrecognized
+statuses as `unknown`.
 
 When commits are requested:
 
 ```text
-tool: get_merge_request_commits
+command: glab
 arguments:
-  id: caller project ID or URL-encoded path
-  merge_request_iid: caller merge request IID
+  - api
+  - --hostname
+  - caller repository host
+  - --paginate
+  - projects/<caller repository encoded_path>/merge_requests/<caller request ID>/commits
 ```
 
 When diffs are requested:
 
 ```text
-tool: get_merge_request_diffs
+command: glab
 arguments:
-  id: caller project ID or URL-encoded path
-  merge_request_iid: caller merge request IID
+  - api
+  - --hostname
+  - caller repository host
+  - --method
+  - GET
+  - --raw-field
+  - unidiff=true
+  - --paginate
+  - projects/<caller repository encoded_path>/merge_requests/<caller request ID>/diffs
 ```
 
-Paginate only when the caller requires more than the first page.
+Use the JSON array returned by `glab api --paginate`. Stop when a command exits
+non-zero, its output is not valid JSON, or GitLab marks a diff as `collapsed`
+or `too_large`; do not return a partial collection.
 
-For `review_activity`, call `get_merge_request_notes` and follow every `after`
-cursor. Return all notes and their discussion IDs. Native verdicts are
-unsupported by the verified GitLab MCP.
+For `review_activity`, use `glab api --hostname <host> --paginate` for
+`projects/<encoded_path>/merge_requests/<iid>/discussions`, and use `glab api`
+for `projects/<encoded_path>/merge_requests/<iid>/approvals`. Return the exact
+head SHA, every discussion and nested note or reply, and every approval verdict
+available in the approvals response. Stop instead of returning partial activity
+when either command fails or returns invalid JSON.
 
-For `review_snapshot`, also return the merge request head SHA and exhaust
-`get_merge_request_diffs` with `page` and `per_page`. Derive the complete
-changed-file set and available anchor data from those diffs. Read the merge
-request again and require the same head SHA before returning the snapshot.
-Stop when diffs or notes are partial or truncated.
+For `review_snapshot`, also read
+`projects/<encoded_path>/merge_requests/<iid>/versions`, require its latest
+version to match the initial head SHA, and collect all diffs with the paginated
+diff command above. Derive the complete changed-file set and inline-anchor data
+from each diff's paths and the latest version's base, start, and head SHAs. Read
+the merge request again and require the same head SHA before returning the
+snapshot. Stop when activity, versions, or diffs are missing, partial,
+truncated, collapsed, too large, or stale.
+
+Pass every value as a separate process argument. Do not invoke a shell, retry a
+failed command, or recover with another provider or transport.
