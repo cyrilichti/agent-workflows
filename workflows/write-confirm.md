@@ -40,22 +40,25 @@ blocking question unanswered, ask whether to preserve it as an open question.
 
 After each meaningful answer, new source, or requested revision, update the
 same authoring context incrementally and have the active `item-writer` reassess
-the current need and Skill. Continue the focused interaction without rendering
-the complete proposal again.
+the current need and Skill. Compare the resulting proposal with the last
+presented proposal.
 
-Produce and present a new complete proposal with its review notes when:
+Present only the changed content with `../templates/item-change-summary.md`
+when the revision is localized. Present a new complete proposal with its
+review notes when:
 
-- every blocker is answered or visibly preserved and the content reaches a
-  review point;
-- the user asks to see or revise the draft.
+- its title or overall structure changes;
+- several sections change materially;
+- the user explicitly asks to see the complete proposal.
 
 Continue until every blocking question is answered or visibly preserved in the
 proposal.
 
 ### 4. Confirm Item
 
-Present the latest complete proposal and review notes unless they already
-reflect the current authoring context. Then ask using
+Require the latest complete preview or localized change summary to reflect the
+current authoring context. Do not repeat a complete preview solely because a
+localized revision is ready for confirmation. Then ask using
 `../templates/select-option.md` with:
 
 ```text

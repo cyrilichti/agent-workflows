@@ -8,9 +8,9 @@ Resolve update-only context, then follow the shared execution.
 
 ### 1. Collect Item Expression
 
-Reuse an available provider item ID or title query. Otherwise ask for the item
-title or a short title search phrase. Do not resolve the provider before this
-input exists.
+Reuse an available provider item ID or title query from the workflow activation
+context. Otherwise ask for the item title or a short title search phrase. Do
+not resolve the provider before this input exists.
 
 ### 2. Resolve Provider and Item
 
@@ -33,8 +33,10 @@ item to the user using its title, status, and link when available.
 
 ### 3. Collect Need Description
 
-After identifying the official item, ask what should be reformulated and in
-which direction. Keep the light free-form response as this run's `intention`.
+After identifying the official item, reuse the intention from the workflow
+activation context when it already says what should change and in which
+direction. Otherwise ask only for that missing reformulation context. Keep the
+result as this run's `intention`.
 
 ### 4. Follow Shared Execution
 

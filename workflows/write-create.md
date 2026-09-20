@@ -8,17 +8,7 @@ Resolve create-only context, then follow the shared execution.
 
 ## Steps
 
-### 1. Collect Need Description
-
-Ask for a light free-form description of the need. Keep it as this run's
-`intention`.
-
-### 2. Collect Destination Reference
-
-Reuse an available destination reference. Otherwise ask where the item should
-be created.
-
-### 3. Resolve Provider and Destination
+### 1. Resolve Provider
 
 Run `../commands/resolve-item-provider.md` with:
 
@@ -26,8 +16,28 @@ Run `../commands/resolve-item-provider.md` with:
 context: item
 ```
 
-Run `../commands/resolve-item-destination.md` with the provider and the
-collected reference. Use the returned destination.
+### 2. Resolve Destination
+
+Keep an explicit destination reference from the activation context when one is
+available. Otherwise keep the current project name from the active execution
+context when available.
+
+Run `../commands/resolve-item-destination.md` with:
+
+```text
+provider: resolved item provider
+reference: explicit destination reference, when supplied
+current_project_name: current project name from the active execution context,
+  when available
+```
+
+Use the returned destination.
+
+### 3. Collect Need Description
+
+Reuse the initial intention from the workflow activation context when it
+contains the need to author. Otherwise ask for a light free-form description.
+Keep the result as this run's `intention`.
 
 ### 4. Follow Shared Execution
 
