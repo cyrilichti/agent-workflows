@@ -1,15 +1,31 @@
 # create-request
 
 ```text
-tool: create_merge_request
+command: glab
 arguments:
-  id: caller repository as a GitLab project ID or URL-encoded path
-  source_branch: caller source branch
-  target_branch: caller target branch
-  title: caller title beginning with "Draft:"
+  - mr
+  - create
+  - --repo
+  - caller repository URL
+  - --source-branch
+  - caller source branch
+  - --target-branch
+  - caller target branch
+  - --title
+  - caller title beginning with "Draft:"
+  - --description
+  - empty string
+  - --draft
+  - --yes
 ```
 
-The operation accepts no description. Normalize:
+Require the command to exit successfully and return exactly one merge-request
+URL matching the caller repository. Extract its IID, then observe it once with
+`glab mr view <iid> --repo <repository URL> --output json`. Stop when creation
+fails or the created request cannot be identified or observed; do not retry or
+search.
+
+Normalize the observed request:
 
 ```text
 request_id: merge request IID
@@ -22,3 +38,6 @@ target_branch: GitLab target branch
 body: GitLab description normalized to an empty string when absent
 url: merge request URL
 ```
+
+Pass every value as a separate process argument. Do not invoke a shell, open an
+editor, push a branch, assign reviewers, or recover with another transport.
