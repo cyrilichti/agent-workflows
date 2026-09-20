@@ -55,10 +55,11 @@ or `too_large`; do not return a partial collection.
 
 For `review_activity`, use `glab api --hostname <host> --paginate` for
 `projects/<encoded_path>/merge_requests/<iid>/discussions`, and use `glab api`
-for `projects/<encoded_path>/merge_requests/<iid>/approvals`. Return the exact
-head SHA, every discussion and nested note or reply, and every approval verdict
-available in the approvals response. Stop instead of returning partial activity
-when either command fails or returns invalid JSON.
+for both `projects/<encoded_path>/merge_requests/<iid>/approvals` and
+`projects/<encoded_path>/merge_requests/<iid>/reviewers`. Return the exact head
+SHA, every discussion and nested note or reply, every approval verdict, and
+every reviewer state, including `requested_changes`. Stop instead of returning
+partial activity when any command fails or returns invalid JSON.
 
 For `review_snapshot`, also read
 `projects/<encoded_path>/merge_requests/<iid>/versions`, require its latest
