@@ -93,8 +93,10 @@ an existing item before planning it.
 | Linear · ClickUp | GitHub · GitLab |
 
 
-The corresponding MCP servers must be connected to the AI client running the
-workflows. See the [provider setup](https://cyrilichti.github.io/agent-workflows/providers/).
+Linear, ClickUp, and GitHub require their corresponding MCP integrations.
+GitLab instead requires the official `glab` CLI to be installed and
+authenticated for the repository host. See the
+[provider setup](https://cyrilichti.github.io/agent-workflows/providers/).
 
 ## Documentation
 

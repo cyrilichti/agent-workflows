@@ -32,13 +32,23 @@ mcp:
     provider: github # or gitlab
 ```
 
-## Connect the MCP servers
+## Configure provider access
 
-As a prerequisite, enable the official MCP servers matching the configured
-item and version providers in the AI client running the workflows. Setup and
-credentials depend on that client and remain outside Agent Workflows:
+ClickUp, Linear, and GitHub use their official MCP integrations. Enable the
+integrations selected by the project in the AI client running the workflows:
 
 - [Connect ClickUp's MCP server](https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server)
 - [Connect Linear's MCP server](https://linear.app/docs/mcp)
 - [Connect GitHub's MCP server](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp-in-your-ide)
-- [Connect GitLab's MCP server](https://docs.gitlab.com/user/gitlab_duo/model_context_protocol/mcp_server/)
+
+GitLab operations use the official `glab` CLI instead of an MCP server. Install
+[`glab`](https://docs.gitlab.com/cli/installation/), then authenticate it for
+the repository's host before selecting GitLab:
+
+```bash
+glab auth login --hostname gitlab.example.com
+```
+
+For GitLab.com, run `glab auth login`. See GitLab's
+[authentication guide](https://docs.gitlab.com/cli/authentication/) for OAuth,
+personal access token, CI, and self-managed instance options.
