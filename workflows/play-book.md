@@ -32,5 +32,10 @@ Evaluate every user request against the routes above.
    ```
 
 3. When one route remains, read its workflow file completely and follow it.
-4. When no route matches, the playbook does nothing. Continue handling the
-   request normally.
+4. When no route matches, follow `./specialist.md` with:
+
+   ```text
+   task_context: available request context
+   ```
+
+   Then continue handling the original request.

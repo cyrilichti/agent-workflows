@@ -7,7 +7,9 @@ Define one role per Markdown file with focused responsibilities, constraints,
 and output expectations. Agents may reference Skills and project context.
 
 Use `../workflows/specialist.md` to route and activate a profile when the current
-activity has not already selected one.
+activity has not already selected one. Routing is optional: when the available
+context matches no theme, the workflow continues without activating or
+announcing a profile.
 
 See the [documentation](https://cyrilichti.github.io/agent-workflows/) for
 project usage.

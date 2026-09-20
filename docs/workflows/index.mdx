@@ -8,6 +8,11 @@ import { CardGrid, LinkCard } from '@astrojs/starlight/components'
 Each workflow puts the right skills in the right order, guides your coding agent step
 by step, and keeps approvals and work tracker updates under control.
 
+The playbook checks these explicit lifecycle routes first. When none matches,
+it passes the request context to optional specialist routing. A matching theme
+retains or activates the appropriate profile; otherwise, the original request
+continues without a profile or activation announcement.
+
 <CardGrid>
   <LinkCard
     title={'<span class="workflow-badge workflow-badge--write">/write</span>'}

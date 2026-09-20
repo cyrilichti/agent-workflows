@@ -8,7 +8,9 @@ Route and activate one specialized profile for an activity.
 
 ## Input
 
-- `task_context`: available context for the activity.
+- `task_context`: context already available to the caller for the activity, in
+  its existing shape. Do not require the caller to collect or reshape context
+  for this workflow.
 
 ---
 
@@ -17,7 +19,11 @@ Route and activate one specialized profile for an activity.
 ### 1. Select Profile
 
 Keep the active profile when appropriate. Otherwise, load
-`../data/agent-routing.md` and select one theme, then its most-specific profile.
+`../data/agent-routing.md` and determine whether `task_context` maps to one of
+its themes. When no theme matches, end this workflow silently without choosing
+a placement, activating a profile, or reporting an activation. When a theme
+matches, select its most-specific profile.
+
 Re-evaluate this selection when the activity changes enough to make the active
 profile potentially unsuitable.
 
