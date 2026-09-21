@@ -21,7 +21,23 @@ stop.
 Read the selected plan. Do not create, rewrite, or approve a plan in this
 workflow.
 
-### 2. Resolve Work Mode
+### 2. Resolve the Official Item
+
+Resolve the configured item provider, then run
+`../commands/resolve-existing-item.md` with any supplied item reference or title
+query and:
+
+```text
+candidate_criteria:
+  status: open
+  label: agent-shaped
+fields: request_backlinks
+```
+
+Use the final read result as the complete official item context. This selection
+is part of standalone initialization; do not ask again later.
+
+### 3. Resolve Work Mode
 
 Set `work_mode` to `resumed` when the user explicitly asks to resume or the
 selected plan contains an `in_progress` or `completed` todo. Otherwise, set it
@@ -29,11 +45,14 @@ to `new`.
 
 Do not infer or update todo states from Git history or local changes.
 
-### 3. Follow Shared Execution
+### 4. Follow Shared Execution
+
+After plan selection, execution is autonomous.
 
 Follow `./work-confirm.md` with:
 
 ```text
 plan: selected plan
+item: selected complete official item context
 work_mode: resolved work mode
 ```

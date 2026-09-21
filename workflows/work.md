@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Execute one selected plan incrementally, then offer completed work to `/ready`.
+Execute one selected plan autonomously, then continue through `/ready`.
 
 ---
 
@@ -29,13 +29,13 @@ Follow exactly one branch:
   complete official item context;
 - otherwise, follow `./work-standalone.md`.
 
-Preserve complete official item context when the caller supplies it. Fail an
-explicit but incomplete caller handoff instead of switching it to standalone
-mode.
+Preserve complete official item context when the caller supplies it. Both
+branches create or preserve `../templates/delivery-context.md`. Fail an
+incomplete caller handoff instead of switching it to standalone mode.
 
 ---
 
 ## Safety
 
 - Do not change item status.
-- Do not push completed todo commits or invoke `/inspect`.
+- Do not push todo commits or invoke `/inspect` before `/ready` passes.

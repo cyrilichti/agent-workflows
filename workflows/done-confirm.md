@@ -75,7 +75,8 @@ fields: delivery_state
 
 Require the previewed request identity, branches, open non-draft state, head
 SHA, and `merge_status: mergeable`. Discard the confirmation on any change.
-When the head SHA changed in `caller` mode, stop and require a new `/inspect`.
+When the head SHA changed in `caller` mode, stop and require the user to invoke
+`/inspect` again.
 Otherwise replace only returned request fields and return to Step 1.
 
 Run `../commands/merge-request.md` with the same provider, repository, request

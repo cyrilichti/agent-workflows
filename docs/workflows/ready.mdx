@@ -1,11 +1,11 @@
 ---
 title: /ready
-description: Check completed work against its plan, then offer and perform promotion.
+description: Validate completed work, promote it, and continue to inspection autonomously.
 ---
 
-`/ready` has two entry paths: it receives the authoritative plan from `/work`,
-or in standalone mode lets you select a recent plan. When the request ID is not
-known, it asks for the exact pull-request number or merge-request IID.
+`/ready` receives a delivery context from `/work`, or in standalone mode asks
+for the plan and item before resolving the exact request. Gaps return to
+`/work`; passing work is promoted and handed to `/inspect` automatically.
 
 ## Dispatching workflows
 
@@ -18,15 +18,26 @@ known, it asks for the exact pull-request number or merge-request IID.
 
   <span className="dispatch-arrow" aria-hidden="true">↓</span>
 
-  <a
-    className="dispatch-node dispatch-node--workflow dispatch-node--link"
-    data-workflow="work"
-    href="/agent-workflows/workflows/work/"
-  >
-    <span className="dispatch-node__label">Workflow</span>
-    <strong>/work</strong>
-    <span>Returns actionable findings when work is not ready</span>
-  </a>
+  <div className="dispatch-skills dispatch-skills--conditional">
+    <a
+      className="dispatch-node dispatch-node--workflow dispatch-node--link"
+      data-workflow="work"
+      href="/agent-workflows/workflows/work/"
+    >
+      <span className="dispatch-node__label">Gaps</span>
+      <strong>/work</strong>
+      <span>Executes corrective todos</span>
+    </a>
+    <a
+      className="dispatch-node dispatch-node--workflow dispatch-node--link"
+      data-workflow="inspect"
+      href="/agent-workflows/workflows/inspect/"
+    >
+      <span className="dispatch-node__label">Passing work</span>
+      <strong>/inspect</strong>
+      <span>Inspects the promoted request</span>
+    </a>
+  </div>
 </div>
 
 ## How this workflow is structured
@@ -36,7 +47,7 @@ known, it asks for the exact pull-request number or merge-request IID.
     <tr>
       <td>1</td>
       <th scope="row">Context</th>
-      <td>Use caller context or select a completed plan.</td>
+      <td>Use caller context or select a local plan, item, and exact request.</td>
     </tr>
     <tr>
       <td>2</td>
@@ -50,13 +61,13 @@ known, it asks for the exact pull-request number or merge-request IID.
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Confirm</th>
-      <td>Show one concise promotion proposal and ask once.</td>
+      <th scope="row">Plan comment</th>
+      <td>Create or update the request's single complete plan comment.</td>
     </tr>
     <tr>
       <td>5</td>
       <th scope="row">Promote</th>
-      <td>Push if needed, update and mark the request ready, attempt the item transition best-effort, and stop.</td>
+      <td>Push if needed, update and mark the request ready, transition the item when possible, then invoke <code>/inspect</code>.</td>
     </tr>
   </tbody>
 </table>

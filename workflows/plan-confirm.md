@@ -68,9 +68,16 @@ gaps to `Validation`, and unresolved decisions to `Open Questions`. Ignore
 multi-cycle and cross-model procedures, discard review commentary, and report
 remaining substantive uncertainty. Run no further review unless requested.
 
-### 4. Confirm Plan
+### 4. Resolve Material Questions
 
-Present using `../templates/plan-summary.md` with:
+Before presenting the final plan, collect every question whose answer could
+materially change its Objective, Expected Outcome, todos, order, or Validation.
+Return the answers to the same specialist and require a revised complete plan.
+Repeat until no material question remains.
+
+### 5. Confirm Plan
+
+Present the complete final plan, then use `../templates/plan-summary.md` with:
 
 ```text
 name: created plan name
@@ -83,16 +90,21 @@ Then ask using `../templates/select-option.md` with:
 ```text
 question: What do you want to do with this plan?
 options:
-- Approve plan
+- Approve plan and autonomous delivery
 - Adjust plan
 ```
 
 On `Adjust plan`, give the adjustment to the active specialist, then repeat
 this step with the revised plan.
 
-Continue only on `Approve plan`.
+State that approval authorizes non-empty commits, normal pushes, request
+creation and promotion, request comments, item transitions and labels, review
+publication, and corrective loops through successful `/inspect`. It never
+authorizes merge, completion, or `/done`.
 
-### 5. Finish
+Continue only on `Approve plan and autonomous delivery`.
+
+### 6. Finish
 
 Finish according to `../goals/plan-complete.md`: return the approved plan in
 `workflow` mode; otherwise stop.

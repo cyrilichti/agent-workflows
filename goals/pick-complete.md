@@ -7,7 +7,9 @@ its planning result.
 
 ## Success Criteria
 
-- The selected item is an official provider item and its summary was shown.
+- The selected item was resolved exclusively through the configured provider
+  from an exact ID, native URL, tolerant title match, or open `agent-shaped`
+  selection, and its official summary was shown without assignment criteria.
 - An approved plan caused the item to move to `in progress` before `/work`
   received the plan and updated official item context.
 - A `needs-refinement` result left the parent item unchanged by `/pick`,
@@ -24,5 +26,5 @@ its planning result.
 
 ## Human Validation
 
-Item selection, plan approval, and any refinement choice require the explicit
-user decisions defined by their owning workflows.
+Ambiguous item selection, plan approval, and any refinement choice require the
+explicit user decisions defined by their owning workflows.

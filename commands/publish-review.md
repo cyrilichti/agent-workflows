@@ -1,14 +1,14 @@
 # Publish Review
 
-Publish confirmed findings as one provider review and observe its result.
+Publish validated findings as one provider review and observe its result.
 
 ## Input
 
 - `provider`: resolved version-control provider.
 - `repository`: resolved provider repository.
 - `request_id`: exact pull-request number or merge-request IID.
-- `head_sha`: confirmed review snapshot SHA.
-- `findings`: confirmed complete findings in stable order, including valid
+- `head_sha`: frozen review snapshot SHA.
+- `findings`: validated complete findings in stable order, including valid
   anchors when available.
 - `verdict`: exactly `request_changes`, `approve`, or `none`.
 

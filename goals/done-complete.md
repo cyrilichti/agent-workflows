@@ -13,8 +13,8 @@ stops with the exact observed blocker or declined mutation.
 - The item is transitioned only after the merge is observed, or is already
   done.
 - Results identify both records and any remaining request or item action.
-- A changed caller SHA returns to `/inspect`; no approval transfers to the new
-  head.
+- A changed caller SHA requires a new explicit `/inspect`; no approval transfers
+  to the new head.
 - No unrelated mutation or downstream workflow occurs.
 
 ## Stop Conditions

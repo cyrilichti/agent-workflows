@@ -5,6 +5,8 @@
 ```markdown
 ## Finding <RF-###>
 
+<!-- agent-workflows-finding id="<RF-###>" head="<frozen SHA>" -->
+
 Severity: <blocking or non-blocking>
 Location: <file:line; omit without a valid snapshot anchor>
 
@@ -19,7 +21,8 @@ Direction: <recommended direction without a code correction>
 
 ## Rules
 
-- Require every field except conditional `Location`.
+- Require every field except conditional `Location`. Keep the marker and bind
+  its `head` to the frozen inspection snapshot SHA.
 - Tie the problem to the official item's requested outcome or acceptance
   criteria, unless the inspected change introduces a concrete defect or
   regression outside that scope.

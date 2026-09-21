@@ -1,6 +1,6 @@
 ---
 title: /work
-description: Execute one selected plan through confirmed todo commits, then offer /ready.
+description: Execute one selected plan and continue autonomously through review preparation.
 ---
 
 export const agentSkills = [
@@ -27,7 +27,6 @@ export const agentSkills = [
   { name: "shadcn", source: "shadcn/ui", cohort: "specialized", cohortLabel: "Specialized delivery" },
   { name: "source-driven-development", source: "addyosmani/agent-skills", cohort: "delivery", cohortLabel: "Application delivery" },
   { name: "supabase-postgres-best-practices", source: "supabase/agent-skills", cohort: "data-ai", cohortLabel: "Data and AI" },
-  { name: "symfony:tdd-with-phpunit", source: "makfly/superpowers-symfony", cohort: "specialized", cohortLabel: "Specialized delivery" },
   { name: "systematic-debugging", source: "obra/superpowers", cohort: "quality", cohortLabel: "Quality and diagnosis" },
   { name: "tailwind-4-docs", source: "lombiq/tailwind-agent-skills", cohort: "specialized", cohortLabel: "Specialized delivery" },
   { name: "technical-writing", source: "proffesor-for-testing/agentic-qe", cohort: "product", cohortLabel: "Product and content" },
@@ -50,11 +49,10 @@ export const agentSkillCohorts = [
   { slug: "operations", label: "Operations" },
 ];
 
-`/work` turns an approved plan into confirmed commits. It can receive the plan
-from `/pick` with an active official item, or let you select from recent plans.
-After completing the todos, it lets you stop or continue with `/ready` using
-the same plan, optional item, and known request ID. `/ready` directly checks
-the branch and plan outcome before one promotion confirmation.
+`/work` executes an approved plan without per-todo confirmation. Caller mode
+preserves the delivery context; standalone mode selects a local plan and item.
+It commits non-empty todo changes, persists corrective findings, and continues
+to `/ready` automatically.
 
 ## Dispatching external skills
 
@@ -98,7 +96,7 @@ the branch and plan outcome before one promotion confirmation.
     <tr>
       <td>1</td>
       <th scope="row">Plan</th>
-      <td>Use the supplied plan or select one in standalone mode.</td>
+      <td>Use caller context or select a local plan and official item.</td>
     </tr>
     <tr>
       <td>2</td>
@@ -123,12 +121,12 @@ the branch and plan outcome before one promotion confirmation.
     <tr>
       <td>6</td>
       <th scope="row">Commit</th>
-      <td>Confirm the proposal, create the commit, then persist the todo as completed and continue.</td>
+      <td>Create one non-empty commit when the todo changed tracked content, then continue.</td>
     </tr>
     <tr>
       <td>7</td>
       <th scope="row">Ready</th>
-      <td>When work is completed, choose whether to stop or continue with <code>/ready</code>.</td>
+      <td>When work is completed, continue automatically with <code>/ready</code>.</td>
     </tr>
   </tbody>
 </table>

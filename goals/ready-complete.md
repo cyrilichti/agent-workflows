@@ -2,8 +2,8 @@
 
 ## Outcome
 
-Completed work is checked directly against its plan, then either left
-unchanged or promoted for human review after one explicit confirmation.
+Completed work is checked directly against its plan, repaired through `/work`
+when necessary, then promoted and handed to `/inspect` autonomously.
 
 ## Success Criteria
 
@@ -12,18 +12,20 @@ unchanged or promoted for human review after one explicit confirmation.
   unchanged through its planned global validation.
 - The complete branch diff is coherent with the plan's Objective and Expected
   Outcome without performing an independent code review.
-- The user sees one concise promotion proposal before any mutation.
-- Confirmed promotion pushes only when needed, removes the leading `Draft:`
-  title prefix, applies the exact request body, removes draft state, and
-  reports the best-effort item review transition.
-- The workflow stops without invoking `/inspect`.
+- Concrete delivery gaps return to resumed `/work` with stable finding IDs,
+  exact explanations, and the verified HEAD SHA.
+- Passing work pushes only when needed, creates or updates one complete plan
+  comment, removes the leading `Draft:` title prefix, applies the exact request
+  body, removes draft state, and attempts the item review transition.
+- Every required request mutation is observed before `/inspect` receives the
+  same delivery context.
 
 ## Stop Conditions
 
-- Stop successfully when the user declines promotion or promotion completes.
-- Stop and report concrete `/work` findings or an exact operational blocker.
+- Stop only for an exact operational blocker. Delivery gaps continue through
+  `/work`; successful promotion continues through `/inspect`.
 
 ## Human Validation
 
-Require one explicit confirmation of the complete promotion proposal before
-the push or any provider mutation.
+The standalone plan, item, and exact-request selections, or a complete caller
+handoff, authorize readiness. No promotion confirmation is required.

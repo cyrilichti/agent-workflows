@@ -59,6 +59,7 @@ isProject: false
 | `todos[].id` | yes | Unique kebab-case slug within the plan |
 | `todos[].content` | yes | Exact corresponding step text |
 | `todos[].status` | yes | `pending`, `in_progress`, `completed`, or `cancelled` |
+| `todos[].source` | corrective only | Exact source metadata from `corrective-todo.md` |
 | `isProject` | yes | `false` for one delivery unit |
 
 ## Rules
@@ -74,3 +75,5 @@ isProject: false
   estimates, file lists, or checkpoints.
 - Do not duplicate provider metadata in the plan; resolve it at runtime.
 - Add `## Open Questions` only for unresolved decisions.
+- Only `/work` appends corrective todos after approval. Initial todos omit
+  `source`.

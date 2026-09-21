@@ -15,7 +15,9 @@ Skills are good at individual jobs. They do not decide which specialist should
 run next, how context moves between steps, or when an agent is allowed to change
 your work tracker and repository.
 
-**Agent Workflows** is the workflow that connects them. One install adds a complete delivery system to your coding agent—from rough intent to merged request—with the right skill at each step and approval before every consequential action.
+**Agent Workflows** connects them. One install adds a complete delivery system
+to your coding agent—from rough intent to merged request—with the right skill
+at each step and explicit authority boundaries.
 
 <p>
   <a href="https://cyrilichti.github.io/agent-workflows/">Documentation</a><br>
@@ -34,7 +36,7 @@ Then run `/agent-workflows` once to install or update the system in your project
 It brings together:
 
 - **8 connected workflows** that own the delivery lifecycle;
-- **34 curated skills** selected from specialized upstream packages;
+- **33 curated skills** selected from specialized upstream packages;
 - **specialist agent profiles** for implementation, product, design, data,
 infrastructure, quality, and review;
 - **reusable commands and rules** for repeatable execution;
@@ -50,8 +52,8 @@ dependencies recorded in `skills-lock.json`.
 | ----------- | ---------------------------------------------------------- | -------------------- |
 | **Shape**   | Turn intent into a clear, right-sized work item            | `/write` · `/refine` |
 | **Plan**    | Select the work and approve how it will be delivered       | `/pick` · `/plan`    |
-| **Deliver** | Execute the plan, validate the result, and prepare review  | `/work` · `/ready`   |
-| **Review**  | Inspect an exact snapshot, merge it, and complete the item | `/inspect` · `/done` |
+| **Deliver** | Execute, repair, validate, and prepare the request         | `/work` · `/ready`   |
+| **Review**  | Inspect autonomously, then complete only when requested    | `/inspect` · `/done` |
 
 
 
@@ -64,8 +66,8 @@ delivery outcome.
 context is preserved, and where execution stops.
 - **Context gets lost between prompts.** Approved outputs are handed to the next
 workflow instead of being reconstructed.
-- **Tool calls hide side effects.** Commits, pushes, reviews, merges, and provider
-updates stay behind explicit approval boundaries.
+- **Tool calls hide side effects.** One informed plan approval authorizes the
+delivery loop; merge and completion remain separate.
 - **Tickets and code drift apart.** Item and version providers are updated as one
 connected lifecycle.
 
@@ -79,7 +81,8 @@ the required skills and specialists, controls their sequence, and can dispatch
 the approved result to the next workflow.
 
 ```text
-/write → /refine → /plan → /work → /ready → /inspect → /done
+/pick → /plan → /work → /ready → /inspect ↺ /work on blocking findings
+/done remains explicit and separate
 ```
 
 You can also enter the lifecycle at any workflow—for example `/pick` to select
@@ -94,8 +97,7 @@ an existing item before planning it.
 
 
 Linear, ClickUp, and GitHub require their corresponding MCP integrations.
-GitLab instead requires the official `glab` CLI to be installed and
-authenticated for the repository host. See the
+GitLab requires the authenticated official `glab` CLI. See the
 [provider setup](https://cyrilichti.github.io/agent-workflows/providers/).
 
 ## Documentation

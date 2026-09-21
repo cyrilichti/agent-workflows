@@ -20,4 +20,3 @@ Findings: <none or every complete finding in stable order; complete only>
   findings following `./inspect-finding.md` after applying the active method.
 - `incomplete` requires `Missing context` and contains no findings.
 - Never infer `Findings: none` from empty, missing, partial, or truncated output.
-- Keep this validation envelope internal; only findings enter user curation.

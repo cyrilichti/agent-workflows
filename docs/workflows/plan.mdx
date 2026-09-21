@@ -6,7 +6,8 @@ description: Turn one task into a clear, approved implementation plan before wor
 `/plan` turns a task into an implementation plan before work begins.
 It first checks that the task can be delivered as one coherent unit. If the
 task is too broad, standalone mode reports why and stops; caller mode returns
-the findings so the caller can offer `/refine`.
+the findings so the caller can offer `/refine`. The final approval covers the
+complete plan and autonomous delivery through `/inspect`, but never `/done`.
 
 ## Dispatching external skills
 
@@ -80,7 +81,7 @@ the findings so the caller can offer `/refine`.
     <tr>
       <td>5</td>
       <th scope="row">Review</th>
-      <td>Show only the plan name, link, and todo count, then approve or adjust it.</td>
+      <td>Resolve material questions, show the complete plan and autonomous-delivery scope, then approve or adjust it.</td>
     </tr>
     <tr>
       <td>6</td>

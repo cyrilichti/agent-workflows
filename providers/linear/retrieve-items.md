@@ -34,3 +34,10 @@ Use `list_issues` with the caller's resolved `team` and `state`. Do not pass
 `assignee` unless the caller requested it. Never follow the returned cursor.
 
 Use the same fields, plus `team` and `project` only for destination.
+
+## Open Labeled Candidate Criteria
+
+For `status: open` with a supplied `label`, call `list_issues` with the exact
+label name, `includeArchived: false`, the requested display fields, and the
+caller limit. Exclude issues whose `statusType` is `completed` or `canceled`.
+Also exclude `duplicate`. Do not pass `assignee` and do not follow a cursor.

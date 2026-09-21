@@ -5,22 +5,29 @@ Resolve one existing official item from a configured provider.
 ## Input
 
 - `provider`: resolved item provider.
-- `reference`: optional user-provided provider item ID.
+- `reference`: optional user-provided provider item ID or native item URL.
 - `query`: optional caller-provided item title or short title search phrase.
+- `candidate_criteria`: optional criteria used only when neither reference nor
+  query is supplied.
 - `fields`: optional caller-requested fields in addition to the core item.
 
 ## Steps
 
-1. When `reference` is available, require a provider item ID. If it is a URL,
-   ask for an item ID or a narrow title phrase instead. Run `./read-item.md`
-   with the resolved provider, item ID, and caller-requested fields. Return the
-   official item and its provider ID, then stop this command.
-2. Otherwise, reuse `query` or ask for an item title or short title phrase,
-   then run `./search-items.md`.
-3. Handle the search result:
+1. When `reference` is available, load
+   `../providers/<provider>/resolve-item-reference.md` and normalize the exact
+   provider ID or native URL. Stop when the URL belongs to another provider.
+   Run `./read-item.md` with the normalized ID and caller-requested fields.
+   Return the official item and its provider ID, then stop this command.
+2. When neither `reference` nor `query` is available, run
+   `./retrieve-items.md` with `candidate_criteria`, all display fields, a limit
+   of 5, and `allow_empty: true`. Ask using
+   `../templates/select-option.md` with every returned candidate plus `Search
+   by title`. Return the selected candidate through Step 4, or continue with
+   the supplied title phrase as `query`.
+3. Run `./search-items.md` once with `query`, then handle the tolerant result:
    - If no item matches, ask the user to refine the search or stop. Repeat the
      search only when the user provides a refined phrase.
-   - If exactly one item matches, select it.
+   - If exactly one item matches, select it without requiring an exact title.
    - If multiple items match, ask using `../templates/select-option.md` with:
 
      ```text
@@ -32,3 +39,6 @@ Resolve one existing official item from a configured provider.
 4. Run `./read-item.md` with the resolved provider, selected provider ID, and
    caller-requested fields.
 5. Return the official item and its provider ID to the caller.
+
+All candidates are hints only. Only the final `read-item` result is official
+context. Never filter, validate, or rank by assignment.
