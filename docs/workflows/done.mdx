@@ -3,8 +3,9 @@ title: /done
 description: Squash-merge one exact request, then complete its official item.
 ---
 
-`/done` accepts either a compact caller packet from `/inspect` or standalone
-item and request resolution. Both paths join the same preflight.
+`/done` is a separate, explicitly invoked completion workflow. It resolves the
+item and request in standalone mode, or accepts a complete caller packet from
+another authorized workflow.
 
 An open request must be non-draft, mergeable at the unchanged head SHA, and
 support squash merge. The item moves to its resolved completed state only after

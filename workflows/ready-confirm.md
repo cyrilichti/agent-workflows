@@ -50,9 +50,8 @@ unobserved required mutation.
 Read the exact request with `fields: delivery_state`. Require it to be open,
 non-draft, and still at the verified HEAD before continuing.
 
-When official item context is available, resolve its provider and run
-`../commands/transition-item-status.md` with `target_status: review`
-best-effort; this never blocks request promotion.
+Resolve the item provider and run `../commands/transition-item-status.md` with
+`target_status: review` best-effort; this never blocks request promotion.
 
 ### 4. Continue to Inspect
 

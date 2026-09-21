@@ -1,9 +1,9 @@
 ---
 name: ready
 description: >-
-  Validate completed plan work, request confirmation, push the work branch,
-  and promote its pull or merge request for human review. Use when explicitly
-  invoked with `/ready` or `$ready`.
+  Validate completed plan work, repair gaps through work, publish the plan,
+  promote the request, and continue to inspection autonomously. Use when
+  explicitly invoked with `/ready` or `$ready`, or when `/work` hands off.
 disable-model-invocation: true
 ---
 

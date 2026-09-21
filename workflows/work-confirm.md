@@ -6,7 +6,7 @@ Run with:
 
 - `plan`: authoritative selected or supplied plan;
 - `work_mode`: `new` or `resumed`;
-- `item`: complete official item context, when available.
+- `item`: complete official item context.
 
 ---
 
@@ -23,9 +23,9 @@ path as its only plan authority.
 
 ### 2. Resolve Initialization
 
-For `new`, follow `./work-initialize.md` with the authoritative plan and
-optional official item. Keep the complete created request record returned by
-that branch with its exact branch identity in the delivery context.
+For `new`, follow `./work-initialize.md` with the authoritative plan and item.
+Keep the complete created request record returned by that branch with its exact
+branch identity in the delivery context.
 
 For `resumed`, trust that the current branch is the correct work branch and
 that its draft request already exists. Do not:
@@ -46,7 +46,7 @@ Follow `./work-execute.md` with:
 
 ```text
 plan: authoritative plan
-item: complete official item context, when available
+item: complete official item context
 request: created request record, when available
 delivery_context: current autonomous delivery context
 ```

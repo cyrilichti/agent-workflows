@@ -1,35 +1,34 @@
 ---
 title: /inspect
-description: Independently inspect one exact request snapshot and publish only the confirmed result.
+description: Inspect and publish one exact request snapshot autonomously.
 ---
 
-`/inspect` is a standalone, manually invoked workflow. It resolves one official
-item and its pull or merge request, inspects a frozen snapshot, and lets you
-accept, reject, or modify every finding before anything is published.
+`/inspect` receives the delivery context from `/ready`, or in standalone mode
+asks for the local plan, item, and exact request. It freezes one snapshot,
+publishes every valid finding without manual curation, and observes the result.
 
-No delivery workflow invokes `/inspect`. After an `approve` verdict is observed
-as successfully published on the unchanged frozen SHA, `/inspect` offers to
-hand its compact completion context directly to `/done`.
+Blocking findings return to `/work` as corrective todos. When none is blocking,
+`/inspect` applies `agent-inspected` and stops. It never invokes `/done`.
 
 ## Dispatching workflows
 
 <div className="dispatch-map dispatch-map--vertical">
-<div className="dispatch-node dispatch-node--workflow" data-workflow="inspect">
+  <div className="dispatch-node dispatch-node--workflow" data-workflow="inspect">
     <span className="dispatch-node__label">Workflow</span>
     <strong>/inspect</strong>
-    <span>Inspects and publishes a confirmed review on one frozen snapshot</span>
+    <span>Publishes findings from one frozen snapshot</span>
   </div>
 
   <span className="dispatch-arrow" aria-hidden="true">↓</span>
 
   <a
     className="dispatch-node dispatch-node--workflow dispatch-node--link"
-    data-workflow="done"
-    href="/agent-workflows/workflows/done/"
+    data-workflow="work"
+    href="/agent-workflows/workflows/work/"
   >
-    <span className="dispatch-node__label">Workflow</span>
-    <strong>/done</strong>
-    <span>Rechecks the request, confirms the mutations, and completes the work</span>
+    <span className="dispatch-node__label">Blocking findings</span>
+    <strong>/work</strong>
+    <span>Persists and executes corrective todos</span>
   </a>
 </div>
 
@@ -39,43 +38,28 @@ hand its compact completion context directly to `/done`.
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Item</th>
-      <td>Resolve an exact ID or title search; otherwise select among at most ten review items.</td>
+      <th scope="row">Context</th>
+      <td>Use caller context or select the local plan, official item, and exact request.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Request</th>
-      <td>Resolve one open, non-draft request from its backlink or exact ID.</td>
+      <th scope="row">Snapshot</th>
+      <td>Freeze the complete open, non-draft request state and head SHA.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Snapshot</th>
-      <td>Freeze the complete request state and head SHA.</td>
-    </tr>
-    <tr>
-      <td>4</td>
       <th scope="row">Inspect</th>
       <td>Produce a complete SHA-bound result with persistent finding IDs.</td>
     </tr>
     <tr>
-      <td>5</td>
-      <th scope="row">Curate</th>
-      <td>Accept, reject, or modify every finding in grouped decision passes.</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <th scope="row">Confirm</th>
-      <td>Confirm the SHA, verdict, and accepted finding counts without repeating their bodies.</td>
-    </tr>
-    <tr>
-      <td>7</td>
+      <td>4</td>
       <th scope="row">Publish</th>
-      <td>Reject a stale SHA or publish and observe the confirmed grouped review.</td>
+      <td>Publish unseen findings once for the unchanged SHA and observe the result.</td>
     </tr>
     <tr>
-      <td>8</td>
-      <th scope="row">Complete</th>
-      <td>After a successfully published approval, choose whether to continue to <code>/done</code> with the preserved context.</td>
+      <td>5</td>
+      <th scope="row">Continue</th>
+      <td>Return blocking findings to <code>/work</code>, or apply <code>agent-inspected</code> and stop.</td>
     </tr>
   </tbody>
 </table>

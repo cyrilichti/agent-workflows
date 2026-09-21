@@ -1,26 +1,26 @@
 # sync-request-plan-comment
 
-Use the authenticated GitHub CLI because the configured GitHub MCP operations
-do not support editing an existing issue comment.
-
 For `create`:
 
 ```text
-command: gh
+tool: add_issue_comment
 arguments:
-  - api
-  - --hostname
-  - caller repository host
-  - --method
-  - POST
-  - --raw-field
-  - body=caller exact body
-  - repos/<caller owner>/<caller repo>/issues/<caller request ID>/comments
+  owner: caller repository owner
+  repo: caller repository name
+  issue_number: caller request ID
+  body: caller exact body
 ```
 
-For `update`, use the same command with method `PATCH` and endpoint
-`repos/<caller owner>/<caller repo>/issues/comments/<caller comment ID>`.
+For `update`:
 
-Parse and return the comment ID and body. Pass every value as a separate
-process argument. Do not invoke a shell, retry, or change another request
-field.
+```text
+tool: update_issue_comment
+arguments:
+  owner: caller repository owner
+  repo: caller repository name
+  comment_id: caller comment ID
+  body: caller exact body
+```
+
+Return the provider comment ID and body. Do not add a reaction, change the
+request, retry, or substitute another transport.

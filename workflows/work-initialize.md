@@ -38,7 +38,7 @@ Format the title with `../templates/request-title.md` using:
 
 ```text
 plan_name: exact plan name
-item_id: official item ID, when available
+item_id: official item ID
 ```
 
 Run `../commands/create-request.md` with:
@@ -55,8 +55,7 @@ Keep the complete created request record in the current execution context.
 
 ### 4. Link the Official Item
 
-When an official item is available, run
-`../commands/resolve-item-provider.md` with `context: item`, then run
+Run `../commands/resolve-item-provider.md` with `context: item`, then run
 `../commands/link-request-to-item.md` with:
 
 ```text

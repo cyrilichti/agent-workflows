@@ -5,8 +5,8 @@ description: Controlled sequences of skills that move work forward.
 
 import { CardGrid, LinkCard } from '@astrojs/starlight/components'
 
-Each workflow puts the right skills in the right order, guides your coding agent step
-by step, and keeps approvals and work tracker updates under control.
+Each workflow puts the right skills in order, carries context forward, and
+keeps approval and provider boundaries explicit.
 
 The playbook checks these explicit lifecycle routes first. When none matches,
 it passes the request context to optional specialist routing. A matching theme
@@ -37,17 +37,17 @@ continues without a profile or activation announcement.
   <LinkCard
     title={'<span class="workflow-badge workflow-badge--work">/work</span>'}
     href="/agent-workflows/workflows/work/"
-    description="Execute a selected plan todo by todo, create confirmed commits, and hand validated work to /ready."
+    description="Execute a selected plan and corrective todos, then continue automatically to /ready."
   />
   <LinkCard
     title={'<span class="workflow-badge workflow-badge--ready">/ready</span>'}
     href="/agent-workflows/workflows/ready/"
-    description="Verify completed work, confirm its push, and promote the request for human review."
+    description="Verify completed work, publish its plan, promote the request, and continue to /inspect."
   />
   <LinkCard
     title={'<span class="workflow-badge workflow-badge--inspect">/inspect</span>'}
     href="/agent-workflows/workflows/inspect/"
-    description="Manually inspect one exact request snapshot, curate every finding, and publish only the confirmed result."
+    description="Inspect one frozen request snapshot, publish every finding, and return blocking work automatically."
   />
   <LinkCard
     title={'<span class="workflow-badge workflow-badge--done">/done</span>'}

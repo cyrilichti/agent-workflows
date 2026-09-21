@@ -1,9 +1,9 @@
 ---
 name: work
 description: >-
-  Activate and execute the repository plan implementation workflow. Use when
-  the user invokes `/work` or `$work`, or explicitly asks to execute a selected
-  plan todo by todo.
+  Execute a selected plan and corrective findings autonomously, then continue
+  through readiness and inspection. Use when explicitly invoked with `/work`
+  or `$work`, or when `/ready` or `/inspect` returns findings.
 disable-model-invocation: true
 ---
 

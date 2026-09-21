@@ -1,9 +1,9 @@
 ---
 name: inspect
 description: >-
-  Independently inspect one exact pull or merge request snapshot, curate every
-  finding with the user, and publish only the confirmed result. Use only when
-  explicitly invoked.
+  Independently inspect and publish one exact request snapshot, return blocking
+  findings to work, or apply `agent-inspected`. Use when explicitly invoked
+  with `/inspect` or `$inspect`, or when `/ready` hands off.
 disable-model-invocation: true
 ---
 

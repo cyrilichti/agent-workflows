@@ -23,8 +23,8 @@ Agent-Workflows-Plan: <project-relative plan file path>
 - Keep the summary concise and describe the delivered outcome, not the agent's
   process.
 - Include every global validation check that was actually completed.
-- Include the linked `Item` line only when the official item URL is available;
-  otherwise omit it.
+- Include the linked `Item` line. Use the item ID as plain text only when its
+  provider returned no URL.
 - Preserve the exact canonical plan reference.
 - Do not add a requirement matrix, review verdict, smoke test, reviewer,
   deployment claim, or unchecked assertion.

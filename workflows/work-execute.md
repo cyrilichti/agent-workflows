@@ -51,7 +51,7 @@ Otherwise, follow `./ready.md` in caller mode without another choice:
 
 ```text
 plan: authoritative plan
-item: complete official item context, when available
+item: complete official item context
 request_id: created request ID, when available
 delivery_context: current delivery context
 ```

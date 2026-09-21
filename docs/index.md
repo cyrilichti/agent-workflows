@@ -1,6 +1,6 @@
 ---
 title: Turn coding agents into a controlled delivery workflow.
-description: Move from work item to merged request with workflows that select the right skills, keep mutations explicit, and synchronize your providers.
+description: Move from work item to merged request with autonomous delivery, explicit authority boundaries, and synchronized providers.
 head:
   - tag: title
     content: Agent Workflows - controlled delivery workflows for coding agents
@@ -25,7 +25,7 @@ editUrl: false
 hero:
   layout: media-left
   title: Turn coding agents into a controlled delivery workflow.
-  tagline: From work item to merged request, Agent Workflows selects and sequences the right skills, keeps every mutation explicit, and synchronizes your providers.
+  tagline: From work item to merged request, Agent Workflows selects the right skills, automates delivery, and keeps authority boundaries explicit.
   image:
     html: |-
       <div class="workflow-hero-media" role="img" aria-label="The write workflow dispatching to the idea-refine skill with Linear as the active provider">
@@ -68,7 +68,7 @@ hero:
   <section class="landing-proof" aria-label="Product facts">
     <div><strong>8</strong><span>workflows</span></div>
     <div><strong>4</strong><span>provider integrations</span></div>
-    <div><strong>34</strong><span>specialized skills</span></div>
+    <div><strong>33</strong><span>specialized skills</span></div>
   </section>
 
   <section class="landing-section landing-intro">
@@ -101,13 +101,13 @@ hero:
       <article>
         <span>03</span>
         <h3>Deliver</h3>
-        <p>Execute the plan, validate the result, and prepare review.</p>
+        <p>Execute, repair, validate, and prepare the request.</p>
         <code>/work · /ready</code>
       </article>
       <article>
         <span>04</span>
         <h3>Review</h3>
-        <p>Inspect an exact snapshot, merge it, and complete the item.</p>
+        <p>Inspect autonomously, then complete only when requested.</p>
         <code>/inspect · /done</code>
       </article>
     </div>
@@ -126,9 +126,9 @@ hero:
         <p>The workflow selects only the specialist skills the current activity needs.</p>
       </article>
       <article>
-        <span>Confirm</span>
-        <h3>Explicit mutations</h3>
-        <p>Commits, pushes, reviews, merges, and provider updates stay behind clear approval boundaries.</p>
+        <span>Authorize</span>
+        <h3>One delivery approval</h3>
+        <p>The approved plan drives work through inspection; merge and completion remain separate.</p>
       </article>
       <article>
         <span>Sync</span>

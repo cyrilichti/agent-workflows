@@ -1,8 +1,8 @@
 ---
 name: pick
 description: >-
-  Select an item and create a
-  plan for it. Use when explicitly invoked with `/pick` or `$pick`.
+  Select an item, approve its plan, and run autonomous delivery through
+  inspection. Use when explicitly invoked with `/pick` or `$pick`.
 disable-model-invocation: true
 ---
 
