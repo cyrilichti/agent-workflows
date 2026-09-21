@@ -59,6 +59,18 @@ item: complete official item context
 
 ### 4. Create Plan
 
+Resolve the exact `in progress` status before the final plan confirmation:
+
+```text
+provider: resolved item provider
+item_id: resolved item ID
+target_status: in progress
+mode: resolve
+```
+
+Keep the returned `resolved_target_status`; any ambiguity is resolved before
+plan approval.
+
 Follow `./plan.md` with:
 
 ```text
@@ -97,6 +109,7 @@ Run `../commands/transition-item-status.md` with:
 provider: resolved item provider
 item_id: resolved item ID
 target_status: in progress
+resolved_target_status: exact status resolved before plan approval
 ```
 
 Report the updated item status.

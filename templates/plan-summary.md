@@ -19,3 +19,4 @@ content.
 
 - Use the frontmatter `name` and todo count, link to
   `.agents/plans/<filename>`, and include no other plan content.
+- Present this summary only after the complete final plan.

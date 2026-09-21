@@ -7,10 +7,10 @@ Move one official item to `in progress`, `review`, or `done`.
 - `provider`: resolved item provider.
 - `item_id`: official provider item ID.
 - `target_status`: `in progress`, `review`, or `done`.
-- `mode`: `resolve` or `apply`, default `apply`; `resolve` is only valid for
-  `done`.
-- `resolved_target_status`: exact status returned by a prior `done` resolution,
-  required when applying that transition.
+- `mode`: `resolve` or `apply`, default `apply`; `resolve` is valid for
+  `in progress` and `done`.
+- `resolved_target_status`: exact status returned by a prior resolution,
+  required when applying a pre-resolved transition.
 
 ## Steps
 
@@ -25,17 +25,18 @@ Move one official item to `in progress`, `review`, or `done`.
    - `done`: use `completed` statuses.
 4. Apply the target policy:
    - `in progress`: stop on no match; on multiple matches, ask the user to
-     select one with `../templates/select-option.md`;
+     select one during resolution;
    - `review`: require one match, otherwise return a non-transitioned result;
    - `done`: return a successful no-op when already completed; otherwise
      require one match without asking the user.
-5. For `done` in `resolve` mode, return the current and resolved statuses
-   without mutation.
-6. For `done` in `apply` mode, require `resolved_target_status` to still match
-   the single candidate.
+5. For `in progress` or `done` in `resolve` mode, return the current and exact
+   resolved statuses without mutation.
+6. In `apply` mode with `resolved_target_status`, require it to still match an
+   available candidate and do not ask another question. For `done`, the prior
+   resolved target remains required.
 7. Use the adapter's apply operation to update only the status.
 
-For ambiguous `in progress` candidates, ask:
+For ambiguous `in progress` candidates in resolve mode, ask:
 
 ```text
 question: Which status should be used for in progress?
