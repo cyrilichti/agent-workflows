@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Verify completed work against its plan, then offer and perform promotion for
-human review.
+Verify completed work against its plan, repair gaps through `/work`, then
+promote it and continue through `/inspect` autonomously.
 
 ---
 
@@ -25,17 +25,17 @@ Reuse these rules when already active from the caller; otherwise follow them:
 
 Follow exactly one branch:
 
-- follow `./ready-confirm.md` when the caller supplies an authoritative plan;
+- follow `./ready-confirm.md` when the caller supplies a complete delivery
+  context with an authoritative plan;
 - otherwise, follow `./ready-standalone.md`.
 
-Preserve the optional complete official item context and request ID supplied by
-the caller. Fail an explicit but incomplete caller handoff instead of switching
-it to standalone mode.
+Preserve every identity supplied by the caller. Fail an incomplete caller
+handoff instead of switching it to standalone mode.
 
 ---
 
 ## Safety
 
-- Do not modify the plan, code, commits, or item content.
-- Do not force-push, merge, deploy, release, run extra checks, or invoke
-  `/inspect`.
+- Only `/work` may modify the plan, code, or commits.
+- Do not force-push, merge, deploy, release, or run unplanned checks.
+- Invoke `/inspect` only after every required promotion mutation is observed.

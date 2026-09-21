@@ -1,8 +1,8 @@
-# Ready Confirm Branch
+# Ready Execution Branch
 
 ## Steps
 
-### 1. Verify
+### 1. Verify the Delivery
 
 Require the authoritative plan file, Objective, Expected Outcome, todos, and
 global Validation. Derive its canonical reference from its project-relative
@@ -15,50 +15,52 @@ push remote, upstream, and ahead count.
 Resolve the configured version provider, repository, and exact open request for
 the current branch with `../commands/resolve-version-provider.md`,
 `../commands/resolve-version-repository.md`, and
-`../commands/resolve-request.md`. Use the supplied request ID or ask for it;
-never search for or substitute another request.
+`../commands/resolve-request.md`. Reuse the request identity or official item
+backlinks from the delivery context; ask for its number or IID only when neither
+is available. Never search for or substitute another request.
 
 Run only the plan's global Validation. Compare the complete committed diff
 against the request target with the Objective and Expected Outcome. Check only
 that the planned outcome was delivered: do not select a specialist or perform
 a code review.
 
-Return validation failures or concrete gaps to `/work`; otherwise continue.
+For every validation failure or concrete delivery gap, create one stable
+finding ID and preserve its exact explanation with the verified local HEAD SHA.
+Return all findings in `delivery_context.source_findings`, then follow
+`./work.md` in resumed caller mode. Do not modify the plan in `/ready`.
 
-### 2. Propose
+### 2. Recheck and Push
 
-Prepare the request body internally with
-`../templates/request-description.md`. Present
-`../templates/ready-preflight.md`, then ask once:
+Require the same branch and HEAD with a clean worktree. Restart verification if
+they changed. Push normally to the configured upstream only when ahead, then
+read the exact request with `fields: delivery_state` and require its head SHA to
+equal the verified local HEAD.
 
-```text
-question: Promote this work for review?
-options:
-- Confirm promotion
-- Stop without changes
-```
+### 3. Publish the Plan and Promote
 
-On `Stop without changes`, stop without mutation.
+Prepare the exact request body with `../templates/request-description.md` and
+the exact plan comment with `../templates/request-plan-comment.md`.
 
-### 3. Promote
+Create or update the single plan comment through
+`../commands/sync-request-plan-comment.md`, preserving its returned identity in
+the delivery context. Update the exact request description, then mark it ready
+through `../commands/update-request.md`. Stop on any failed, unsupported, or
+unobserved required mutation.
 
-Require the same branch and `HEAD` with a clean worktree. This single final
-guard also catches state changed by validation. If it fails, restart
-verification and require a new confirmation.
-
-Push normally to the configured upstream only when ahead. Update the exact
-request description, then mark it ready using
-`../commands/update-request.md`. Stop on failure with achieved and remaining
-actions.
+Read the exact request with `fields: delivery_state`. Require it to be open,
+non-draft, and still at the verified HEAD before continuing.
 
 When official item context is available, resolve its provider and run
 `../commands/transition-item-status.md` with `target_status: review`
 best-effort; this never blocks request promotion.
 
-Present `../templates/ready-result.md` from the mutation results and stop.
+### 4. Continue to Inspect
+
+Follow `./inspect.md` in caller mode with the complete delivery context and the
+observed non-draft request. Do not ask another question.
 
 ## Safety
 
-- Do not mutate before confirmation.
-- Do not modify work, force-push, merge, add checks, or invoke `/inspect`.
+- Do not modify work, force-push, merge, or add checks.
 - Keep work gaps in `/work` and operational failures in `/ready`.
+- Do not promote or inspect an unpushed or unobserved HEAD.

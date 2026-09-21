@@ -7,10 +7,11 @@ continued through `/ready`.
 
 ## Success Criteria
 
+- Standalone work selects one authoritative plan and complete official item
+  before autonomous execution.
 - New work starts from a clean `main` or `master`, runs `git pull --ff-only`,
   then creates and pushes one work branch and empty initialization commit,
-  creates one draft request, and adds its URL to the supplied official item
-  when available.
+  creates one draft request, and adds its URL to the official item.
 - Resumed work continues without branch or request recovery, another
   initialization commit, or another item backlink.
 - Item status remains unchanged and no Git, provider, or request metadata is
@@ -38,5 +39,5 @@ continued through `/ready`.
 
 ## Human Validation
 
-The selected or caller-supplied plan authorizes autonomous execution. No todo
-commit or `/ready` handoff requires another choice.
+The selected plan and item, or caller-supplied context, authorize autonomous
+execution. No todo commit or `/ready` handoff requires another choice.
