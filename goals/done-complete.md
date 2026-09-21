@@ -8,6 +8,8 @@ stops with the exact observed blocker or declined mutation.
 ## Success Criteria
 
 - Context comes from standalone resolution or one valid caller packet.
+- The current official item has the exact `agent-inspected` label before any
+  completion preflight or mutation.
 - An open request is non-draft, mergeable at the confirmed SHA, supports
   `squash`, and is observed as merged after the attempt.
 - The item is transitioned only after the merge is observed, or is already
@@ -19,8 +21,9 @@ stops with the exact observed blocker or declined mutation.
 
 ## Stop Conditions
 
-Stop after completion, declined confirmation, or an exact blocker. Never retry
-or roll back automatically.
+Stop after completion, declined confirmation, or an exact blocker. A missing
+`agent-inspected` label stops without confirmation or mutation and identifies
+`/inspect` as the required next action. Never retry or roll back automatically.
 
 ## Human Validation
 

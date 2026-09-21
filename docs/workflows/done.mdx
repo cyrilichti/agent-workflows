@@ -11,6 +11,11 @@ An open request must be non-draft, mergeable at the unchanged head SHA, and
 support squash merge. The item moves to its resolved completed state only after
 the request is observed as merged.
 
+Before preparing that completion, `/done` reads the official item again and
+requires the exact `agent-inspected` label applied by a successful `/inspect`.
+When the label is missing or cannot be verified, both entry modes stop without
+confirmation or mutation and identify `/inspect` as the required next action.
+
 ## Flow
 
 <table className="workflow-steps">
@@ -22,16 +27,21 @@ the request is observed as merged.
     </tr>
     <tr>
       <td>2</td>
+      <th scope="row">Eligibility</th>
+      <td>Require the current official item to carry <code>agent-inspected</code>.</td>
+    </tr>
+    <tr>
+      <td>3</td>
       <th scope="row">Preflight</th>
       <td>Resolve the item target and verify merge eligibility and squash support.</td>
     </tr>
     <tr>
-      <td>3</td>
+      <td>4</td>
       <th scope="row">Confirm</th>
       <td>Confirm the exact remaining mutations once.</td>
     </tr>
     <tr>
-      <td>4</td>
+      <td>5</td>
       <th scope="row">Complete</th>
       <td>Recheck, squash-merge, transition the item, and report observed results.</td>
     </tr>
