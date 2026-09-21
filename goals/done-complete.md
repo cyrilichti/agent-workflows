@@ -22,8 +22,10 @@ stops with the exact observed blocker or declined mutation.
 ## Stop Conditions
 
 Stop after completion, declined confirmation, or an exact blocker. A missing
-`agent-inspected` label stops without confirmation or mutation and identifies
-`/inspect` as the required next action. Never retry or roll back automatically.
+`agent-inspected` label stops without confirmation or mutation and reports
+whether the request is still awaiting inspection or was already merged without
+inspection evidence. Never retry, roll back, or invoke another workflow
+automatically.
 
 ## Human Validation
 

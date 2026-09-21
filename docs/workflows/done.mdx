@@ -14,7 +14,9 @@ the request is observed as merged.
 Before preparing that completion, `/done` reads the official item again and
 requires the exact `agent-inspected` label applied by a successful `/inspect`.
 When the label is missing or cannot be verified, both entry modes stop without
-confirmation or mutation and identify `/inspect` as the required next action.
+confirmation or mutation. An open request remains waiting for the existing
+`/ready` to `/inspect` delivery path; a merged request reports that inspection
+evidence is unavailable. `/done` never invokes or prescribes another workflow.
 
 ## Flow
 
