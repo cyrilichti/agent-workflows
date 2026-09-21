@@ -44,20 +44,15 @@ to the frozen SHA; otherwise report the exact failure and stop.
 
 ### 3. Reconcile and Publish
 
-Derive one semantic verdict from every valid finding:
-
-- at least one blocking finding: `request_changes`;
-- only non-blocking findings: `none`;
-- no finding: `approve`.
-
 Run `../commands/reconcile-inspection-publication.md` against the frozen review
-activity. Publish only the returned unseen findings through
-`../commands/publish-review.md` with the semantic verdict.
+activity. When it returns unseen findings, publish only those findings through
+`../commands/publish-review.md` with `verdict: none`. Finding severity controls
+the delivery loop, not the provider review verdict.
 
 When the command reports that the same-head publication is already complete,
-do not publish again. Stop on an inconsistent partial prior publication. When
-publication returns `stale`, discard the result and restart from Step 1. Stop
-on `unsupported`, `failed`, or `unobserved`; do not retry automatically.
+do not publish again. When publication returns `stale`, discard the result and
+restart from Step 1. Stop on `unsupported`, `failed`, or `unobserved`; do not
+retry automatically.
 
 ### 4. Continue or Complete
 
