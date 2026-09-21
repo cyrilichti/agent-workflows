@@ -24,8 +24,17 @@ item-identified technical context read-only.
 
 Have it load `../skills/to-tickets/SKILL.md` completely and run only Steps 1–3
 through `Draft vertical slices`. Require at least two provider-neutral children
-with stable references, meaningful titles, Markdown bodies, and genuine
-blocking edges when applicable.
+with stable references, meaningful titles, free-form Markdown bodies, and
+genuine blocking edges when applicable. Require every child body to
+communicate:
+
+- the observable outcome it delivers;
+- the verifiable conditions under which it is complete;
+- every parent constraint or exclusion that materially applies to it;
+- every unresolved question that prevents an implementation decision, when
+  applicable.
+
+These are content requirements, not required Markdown headings.
 
 Tracker setup is not required for this draft-only invocation. Return every
 blocking edge as:
@@ -41,9 +50,11 @@ exactly once. Return the draft to `/refine` before Step 4 of `to-tickets`;
 
 ### 2. Review the Decomposition
 
-Verify the Step 1 contract and an acyclic blocking graph containing only valid,
-non-self references and genuine blockers. Return failures with the complete
-draft to the same specialist, then repeat this step.
+Verify the complete Step 1 contract, including that every child is independently
+actionable, and an acyclic blocking graph containing only valid, non-self
+references and genuine blockers. Return every deficient child and the complete
+draft to the same specialist for revision, then repeat this step before any
+preview.
 
 ### 3. Confirm the Decomposition
 
