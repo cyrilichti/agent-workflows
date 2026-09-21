@@ -2,18 +2,26 @@
 
 ## Steps
 
-### 1. Execute Todos
+### 1. Persist Corrective Todos
+
+When the delivery context contains `source_findings`, translate each finding
+through `../templates/corrective-todo.md` and append it to the authoritative
+plan. Persist the plan before clearing the carried findings. `/ready` and
+`/inspect` never modify the plan.
+
+### 2. Execute Todos
 
 Treat plan todo states as authoritative. Skip `completed` and `cancelled`, then
 select the first `in_progress` todo or mark the first `pending` todo
-`in_progress`. Continue to Step 2 when neither exists.
+`in_progress`. Continue to Step 3 when neither exists.
 
 Persist every state transition immediately in the authoritative plan file. Do
 not keep todo state only in execution context.
 
 For each active todo:
 
-1. Reuse the active specialist while it remains appropriate. When none is
+1. Require a clean worktree and index before implementation.
+2. Reuse the active specialist while it remains appropriate. When none is
    active or the todo requires a different agent cohort, follow
    `./specialist.md` with:
 
@@ -26,57 +34,35 @@ For each active todo:
 
    Let the selected specialist route only Skills whose profile triggers apply,
    or work directly when none apply.
-2. Have the specialist implement and validate only that todo, then stage only
+3. Have the specialist implement and validate only that todo, then stage only
    its changes.
-3. Present `../templates/todo-review.md`, then
-   `../templates/commit-proposal.md` with one proposed title and description.
-4. Ask using `../templates/select-option.md` with:
+4. When the index has no staged tracked change, persist the todo as `completed`
+   without a commit and continue.
+5. Otherwise, create one non-empty Conventional Commit without trailers. After
+   success, persist the todo as `completed` without pushing and continue.
 
-   ```text
-   question: What do you want to do with this commit proposal?
-   options:
-   - Commit these changes
-   - Request an adjustment
-   ```
-
-5. On `Request an adjustment`, collect the free-form adjustment and return it
-   to the same specialist. Repeat implementation, validation, staging, review,
-   and proposal.
-6. On `Commit these changes`, create the approved commit without trailers.
-   After it succeeds, persist the todo as `completed` without pushing, then
-   continue with the next todo.
-
-### 2. Offer Ready
+### 3. Continue to Ready
 
 When no todo remains `pending` or `in_progress`, require at least one
 `completed` todo. When all todos are `cancelled`, report that no work was
 completed and stop without calling `/ready`.
 
-Otherwise, ask using `../templates/select-option.md` with:
-
-```text
-question: What do you want to do with this completed work?
-options:
-- Prepare work for review
-- Stop here
-```
-
-On `Stop here`, stop without mutation.
-
-On `Prepare work for review`, follow `./ready.md` in caller mode with:
+Otherwise, follow `./ready.md` in caller mode without another choice:
 
 ```text
 plan: authoritative plan
 item: complete official item context, when available
 request_id: created request ID, when available
+delivery_context: current delivery context
 ```
 
-When resumed work has no request ID, `/ready` asks for its number or IID. It
-owns the direct plan check, one confirmation, and the resulting promotion.
+When resumed standalone work has no request ID, `/ready` owns its exact initial
+context selection and then continues autonomously.
 
 ---
 
 ## Safety
 
-- Do not mark a todo `completed` before its approved commit succeeds.
-- Do not push todo commits or invoke `/inspect`.
+- Do not mark a todo with staged changes `completed` before its commit succeeds.
+- Never use `--allow-empty` for a todo commit.
+- Do not push todo commits or invoke `/inspect` before `/ready` passes.

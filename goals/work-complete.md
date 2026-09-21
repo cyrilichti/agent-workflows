@@ -19,8 +19,11 @@ continued through `/ready`.
   plan file.
 - Every processed todo uses the active appropriate specialist and its routed
   Skills; selection runs again only when the required agent cohort changes.
-- Every todo commit is explicitly approved before creation and marks its todo
-  `completed` only after the commit succeeds.
+- Initial and corrective todos execute without individual confirmation. A todo
+  with staged tracked changes creates one non-empty commit; a todo without them
+  completes without a commit.
+- `/work` alone translates readiness gaps and blocking inspection findings into
+  corrective todos with their source ID, HEAD SHA, and exact finding.
 - Todo commits are not pushed by `/work`.
 - A terminal plan with completed work hands `/ready` the same delivery context
   without another choice.
@@ -35,5 +38,5 @@ continued through `/ready`.
 
 ## Human Validation
 
-The selected or caller-supplied plan authorizes autonomous execution. No choice
-is required before `/ready`.
+The selected or caller-supplied plan authorizes autonomous execution. No todo
+commit or `/ready` handoff requires another choice.
