@@ -39,3 +39,9 @@ retrieve the requested tasks.
 
 Use `clickup_filter_tasks` with the caller's resolved `statuses`. Do not pass
 `assignees` unless requested.
+
+### Open Labeled Candidate Criteria
+
+For `status: open` with a supplied `label`, use `clickup_filter_tasks` with the
+exact tag and `include_closed: false`. Do not pass `assignees`. Keep the first
+caller-limited results without requesting another page.

@@ -30,47 +30,24 @@ context: item
 
 ### 2. Resolve Item
 
-When the user supplies a provider item ID, set `resolved item ID` to that ID
-and continue at Step 4.
-
-Otherwise run `../commands/retrieve-items.md` with:
-
-```text
-provider: resolved item provider
-criteria:
-  assigned_to: current user
-  status: open or ready to start
-fields:
-  - provider_id
-  - title
-  - status
-limit: 5
-```
-
-### 3. Select Item
-
-Ask using `../templates/select-option.md` with:
-
-```text
-question: Which item do you want to start?
-options:
-- label: <title> — <status>
-  value: <provider id>
-```
-
-Set `resolved item ID` to the selected provider ID.
-
-### 4. Summarize Item
-
-Run `../commands/read-item.md` with:
+Preserve a supplied exact provider ID or native item URL as `reference`.
+Preserve any supplied approximate title as `query`. Run
+`../commands/resolve-existing-item.md` once as the only item-resolution path:
 
 ```text
 provider: resolved item provider
-item_id: resolved item ID
-fields: assignment
+reference: supplied exact provider ID or native URL, when available
+query: supplied approximate title, when available
+candidate_criteria:
+  status: open
+  label: agent-shaped
 ```
 
-Require the returned item to match the Step 2 assignee and status criteria.
+When neither reference nor query is supplied, the command owns selection among
+the returned open `agent-shaped` candidates. Do not add an assignee criterion
+or validate assignment after resolution.
+
+### 3. Summarize Item
 
 Use the returned item and provider ID as the complete official item context.
 
@@ -80,7 +57,7 @@ Present with `../templates/ticket-summary.md`:
 item: complete official item context
 ```
 
-### 5. Create Plan
+### 4. Create Plan
 
 Follow `./plan.md` with:
 
@@ -88,7 +65,7 @@ Follow `./plan.md` with:
 item: complete official item context
 ```
 
-On an approved plan, continue to Step 6.
+On an approved plan, continue to Step 5.
 
 On `needs-refinement`, report the findings and explain that no plan can be
 created yet, then ask using
@@ -112,7 +89,7 @@ options:
 
   Then stop `/pick`.
 
-### 6. Start Item
+### 5. Start Item
 
 Run `../commands/transition-item-status.md` with:
 
@@ -124,7 +101,7 @@ target_status: in progress
 
 Report the updated item status.
 
-### 7. Continue with Work
+### 6. Continue with Work
 
 Follow `./work.md` in caller mode with:
 
