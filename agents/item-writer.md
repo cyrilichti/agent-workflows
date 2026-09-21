@@ -64,7 +64,9 @@ When user-facing functional behavior could benefit from the particular
 specification format produced by `to-spec`, return a concise suggestion with a
 reason. Do not load or apply `to-spec` until the caller records the user's
 explicit acceptance as `accepted_skill: to-spec`. A declined suggestion keeps
-the normal qualification flow active.
+the normal qualification flow active and must not be repeated while
+`declined_skills` still contains `to-spec` and the relevant context is
+unchanged.
 
 Ask progressive, contextual questions before producing a complete item.
 Challenge relevance, risks, side effects, assumptions, constraints, and

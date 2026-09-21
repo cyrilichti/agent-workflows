@@ -31,12 +31,13 @@ query: collected title query, when no item ID is available
 Load only that official-item read path for this step. Identify the resolved
 item to the user using its title, status, and link when available.
 
-### 3. Collect Need Description
+### 3. Collect Initial Reformulation Context
 
 After identifying the official item, reuse the intention from the workflow
 activation context when it already says what should change and in which
-direction. Otherwise ask only for that missing reformulation context. Keep the
-result as this run's `intention`.
+direction. Otherwise ask only for that missing reformulation context. Do not
+treat detail or internal consistency as confirmation that the reformulation is
+ready to draft. Keep the result as this run's `intention`.
 
 ### 4. Follow Shared Execution
 

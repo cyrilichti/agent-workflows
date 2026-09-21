@@ -33,11 +33,12 @@ current_project_name: current project name from the active execution context,
 
 Use the returned destination.
 
-### 3. Collect Need Description
+### 3. Collect Initial Need Context
 
 Reuse the initial intention from the workflow activation context when it
-contains the need to author. Otherwise ask for a light free-form description.
-Keep the result as this run's `intention`.
+contains the need to author. Otherwise ask for a light free-form starting
+context. Do not treat detail or internal consistency as confirmation that the
+need is ready to draft. Keep the result as this run's `intention`.
 
 ### 4. Follow Shared Execution
 
