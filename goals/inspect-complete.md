@@ -2,37 +2,34 @@
 
 ## Outcome
 
-One exact request snapshot reaches an accurately reported inspection end, then
-may continue to `/done` after an `approve` verdict is observed as successfully
-published and the user explicitly chooses the handoff. Workflow completion
-does not imply provider publication success.
+One exact request snapshot is inspected and published autonomously. Blocking
+findings return to `/work`; a passing inspection applies `agent-inspected` and
+stops without invoking `/done`.
 
 ## Success Criteria
 
-- One complete official item and open, non-draft request snapshot are bound to
-  one frozen head SHA.
-- One complete inspection result contains either persistent, valid findings with
-  final decisions or explicit no findings.
-- The accepted findings are locked against the same head SHA, then their counts
-  and semantic verdict are confirmed for publication.
-- Every attempted publication result is observed and reported without delivery
-  mutation by `/inspect`.
-- A successfully published `approve` verdict on the unchanged frozen SHA and
-  with observed post-publication delivery state offers a `/done` handoff.
-  Accepting passes one compact completion context without inspection-only
-  content; declining stops. Every other verdict or publication result stops
-  without offering the handoff.
+- Caller context is preserved, while standalone inspection selects one local
+  authoritative plan, complete official item, and exact open, non-draft request
+  before autonomous execution.
+- One complete inspection result is bound to one frozen head SHA.
+- Every valid finding is published once for that SHA; prior same-SHA
+  publications are observed instead of duplicated.
+- Blocking findings return to `/work` with their IDs, exact content, and source
+  SHA only after publication is complete.
+- With no blocking finding, `agent-inspected` is applied only after publication
+  is complete, then the workflow stops.
 
 ## Stop Conditions
 
-- Complete after publication is declined, its attempted result is reported and
-  no `/done` handoff is eligible or selected, or the selected handoff begins.
-- Restart from a fresh snapshot after a stale confirmation.
-- Stop and report incomplete context or a required-operation failure.
+- Continue through `/work` after complete publication of blocking findings.
+- Complete after the final label is applied with no blocking finding.
+- Restart from a fresh snapshot after a stale publication boundary.
+- Stop on incomplete context, inconsistent prior publication, publication
+  failure, or label failure.
 
 ## Human Validation
 
-Grouped curation requires one explicit final decision per finding. Publishing
-requires explicit confirmation of the locked payload's summary and verdict.
-An eligible `/done` handoff requires a separate explicit choice. `/done` then
-owns its mutation confirmation.
+The standalone plan, item, and request selections, or complete caller handoff,
+authorize inspection and publication. A standalone caller must already possess
+the ignored plan file. No finding curation, publication confirmation, or
+`/done` choice is requested.
