@@ -16,6 +16,10 @@ Read one official item from a configured provider.
 3. Retrieve the caller-requested fields when the provider supports them.
 4. Return the official item and its provider ID to the caller.
 
+When `labels` are requested, return every current item label normalized to its
+exact provider name. Stop without returning the item when the provider cannot
+read the complete current label set.
+
 When comments or `request_backlinks` are requested, retrieve all comments once
 and return the requested comments and backlink URLs. Stop without returning the
 item when the comments are incomplete.
