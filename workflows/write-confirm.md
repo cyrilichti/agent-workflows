@@ -31,16 +31,16 @@ the working context. Use `../templates/item-understanding.md` and
 
 When the activation context explicitly requests immediate drafting, record
 `direct_drafting: true`. When it explicitly requests `to-spec` or a
-specification format, record `accepted_skill: to-spec`. Do not infer either
-field from detailed or internally consistent input.
+specification format, record `to_spec: accepted`. Do not infer either field
+from detailed or internally consistent input.
 
 ### 2. Qualify the Need
 
 Apply `item-writer` to the working context and follow exactly one returned
 phase:
 
-- focused question: present it, collect one answer or source, update the same
-  working context incrementally, and reassess;
+- focused question: collect one answer or source, update the working context,
+  and repeat this step;
 - `to-spec` suggestion: present its reason, then ask using
   `../templates/select-option.md` with:
 
@@ -51,18 +51,14 @@ phase:
   - Continue without specification format
   ```
 
-  Record `accepted_skill: to-spec` only after `Use specification format`.
-  Record `declined_skills: to-spec` after `Continue without specification
-  format` so the unchanged context does not trigger the same suggestion again.
-  Reassess the working context after either choice;
+  Record `to_spec: accepted` after acceptance or `to_spec: declined` after
+  refusal, then repeat this step;
 - understanding summary: continue to Step 3;
 - complete item proposal: allow this only for `direct_drafting: true` or a
   purely mechanical request, then continue to Step 4.
 
 If the user leaves a blocking question unanswered, ask whether to preserve it
-as an open question. Continue qualification until the need is sufficiently
-understood or the direct path applies. Never present a complete item merely
-because the initial context appears internally consistent.
+as an open question. Never use apparent completeness to bypass qualification.
 
 ### 3. Confirm Understanding
 
@@ -77,17 +73,13 @@ options:
 - Adjust understanding
 ```
 
-On `Adjust understanding`, collect one adjustment, update the working context,
-and return to Step 2.
+- `Adjust understanding`: collect one adjustment, update the working context,
+  and return to Step 2;
+- `Confirm understanding`: replace `intention` with the exact summary, record
+  `understanding_confirmed: true`, and continue to Step 4.
 
-If confirmation is refused or unavailable, stop without drafting or mutation.
-
-On `Confirm understanding`, preserve the exact summary in
-`understanding_summary` and record `understanding_confirmed: true`. Do not treat
-an implicit continuation or the apparent completeness of the summary as
-confirmation. When the selected Skill requires a terminal turn after intent
-confirmation, finish that turn with the confirmed understanding and resume
-Step 4 only after the next user message.
+Stop without drafting or mutation when confirmation is refused or unavailable.
+Honor a selected Skill's terminal-turn rule before continuing to Step 4.
 
 ### 4. Draft and Present the Item
 
@@ -112,16 +104,9 @@ options:
 If the user selects `Adjust item`, update the working context with
 `current_proposal` and `last_adjustment`, then have `item-writer` reassess all
 authoring dimensions. When the adjustment materially changes the confirmed
-need, remove `understanding_confirmed` and return to Step 2. Otherwise revise
-the same proposal and:
-
-- present only the changed content with
-  `../templates/item-change-summary.md` for a localized revision;
-- present a new complete proposal with its review notes when its title or
-  overall structure changes, several sections change materially, or the user
-  explicitly asks to see it.
-
-Then repeat this step without showing an unchanged complete preview.
+need, remove `understanding_confirmed` and return to Step 2. Otherwise present
+the revision according to `../templates/item-change-summary.md` and repeat this
+step.
 
 Do not continue until the user explicitly selects `Save item`.
 If confirmation is refused or unavailable, stop without mutation.

@@ -10,9 +10,7 @@ intention: <initial working context or confirmed intention>
 facts_constraints: <when known>
 open_questions: <unresolved questions, including blockers explicitly left open>
 direct_drafting: true <only when explicitly requested or purely mechanical>
-accepted_skill: to-spec <only after explicit request or accepted suggestion>
-declined_skills: to-spec <after an explicit suggestion decline>
-understanding_summary: <latest concise summary awaiting or carrying confirmation>
+to_spec: accepted | declined <only after an explicit user decision>
 understanding_confirmed: true <only after explicit confirmation>
 official_title: <update only>
 official_body: <update only>
@@ -29,9 +27,8 @@ last_adjustment: <Adjust only>
   content allowed, and only for update.
 - Treat `intention` as unconfirmed working context until
   `understanding_confirmed: true`; never infer confirmation from completeness.
-- Record `direct_drafting`, `accepted_skill`, `declined_skills`, and
-  `understanding_confirmed` only from explicit user input or the workflow's
-  purely mechanical determination.
+- Record `direct_drafting`, `to_spec`, and `understanding_confirmed` only from
+  explicit user input or the workflow's purely mechanical determination.
 - Keep a compact working context by updating applicable fields incrementally
   with meaningful answers, sources, and revisions.
 - Remove obsolete content and resolved questions.
