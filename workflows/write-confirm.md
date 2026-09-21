@@ -29,15 +29,17 @@ Read the complete `../agents/item-writer.md` profile and apply it directly to
 the working context. Use `../templates/item-understanding.md` and
 `../templates/item.md` as its phase-specific output contracts.
 
-When the activation context explicitly requests immediate drafting, record
-`direct_drafting: true`. When it explicitly requests `to-spec` or a
-specification format, record `to_spec: accepted`. Do not infer either field
-from detailed or internally consistent input.
+When the activation context explicitly requests `to-spec` or a specification
+format, record `to_spec: accepted`. Do not infer this field from detailed or
+internally consistent input.
 
 ### 2. Qualify the Need
 
-Apply `item-writer` to the working context and follow exactly one returned
-phase:
+When the activation context explicitly requests immediate drafting, or the
+request is purely mechanical and requires no substantive decision, invoke the
+direct path in `item-writer` and continue to Step 4 with its complete item.
+Otherwise, apply `item-writer` to the working context and follow exactly one
+returned phase:
 
 - focused question: collect one answer or source, update the working context,
   and repeat this step;
@@ -54,8 +56,8 @@ phase:
   Record `to_spec: accepted` after acceptance or `to_spec: declined` after
   refusal, then repeat this step;
 - understanding summary: continue to Step 3;
-- complete item proposal: allow this only for `direct_drafting: true` or a
-  purely mechanical request, then continue to Step 4.
+- complete item proposal: reject it and repeat this step because only the
+  direct path may return a complete item before understanding is confirmed.
 
 If the user leaves a blocking question unanswered, ask whether to preserve it
 as an open question. Never use apparent completeness to bypass qualification.

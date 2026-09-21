@@ -45,9 +45,10 @@ would otherwise have to invent intent. Information at a broader or narrower
 goal level is not blocking unless the item genuinely depends on it.
 
 Treat non-trivial initial input as working context and qualify it before
-drafting. Skip qualification only for `direct_drafting: true` or a purely
-mechanical request with no substantive decision. Select the most fundamental
-current need using this priority:
+drafting. When the caller explicitly invokes the direct path because the user
+requested immediate drafting or the request is purely mechanical with no
+substantive decision, return one complete item instead. Select the most
+fundamental current need using this priority:
 
 - unclear intent: `../skills/interview-me/SKILL.md`;
 - open problem or direction: `../skills/idea-refine/SKILL.md`;
