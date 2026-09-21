@@ -25,7 +25,24 @@ content:
 Map results to local references. Record failures and continue without
 replacement or rollback.
 
-### 2. Create Blocking Relations
+### 2. Apply Required Child Labels
+
+Check whether the official parent item contains the exact `agent-shaped`
+label. When it does, run `../commands/apply-item-label.md` once for every
+successfully created child in preview order with:
+
+```text
+provider: resolved item provider
+item_id: created child provider ID
+label: agent-shaped
+```
+
+Record the label result against each child. Record failures and continue
+without deleting, recreating, or otherwise changing the created child. When
+the parent does not contain `agent-shaped`, do not run a label operation.
+Never apply or inherit another parent label.
+
+### 3. Create Blocking Relations
 
 Group every confirmed `blocking_ref` by its `blocked_ref`, then resolve both
 only through successful Step 1 results. For each group whose blocked child and
@@ -43,7 +60,7 @@ Record every edge with a missing endpoint without a provider call. Do not call
 the command when no blocker in the group was created. Record operation failures
 and continue without removing successful relations.
 
-### 3. Finish
+### 4. Finish
 
-Finish according to `../goals/refine-complete.md` using observed child and
-relation results.
+Finish according to `../goals/refine-complete.md` using observed child, required
+label, and relation results.
