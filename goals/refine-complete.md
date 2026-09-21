@@ -11,12 +11,14 @@ Report exactly one outcome:
 
 - `refinement-not-needed`: one coherent unit; no mutation;
 - `cancelled`: confirmation cancelled; no child created;
-- `complete`: every confirmed child and relation created; report each child
-  title, provider ID, link when available, and each created relation;
+- `complete`: every confirmed child and relation was created and every required
+  `agent-shaped` label was applied; report each child title, provider ID, link
+  when available, its required label result, and each created relation;
 - `failed`: no child created; report every failed child title and failure;
-- `partially-failed`: some creation succeeded; report created child titles,
-  provider IDs, and links when available, failed child titles and failures, and
-  created and failed relations separately.
+- `partially-failed`: at least one child was created but a child creation,
+  required label, or relation failed; report created child titles, provider
+  IDs, links when available, and required label results, failed child titles
+  and failures, and created and failed relations separately.
 
 ## Stop Conditions
 
