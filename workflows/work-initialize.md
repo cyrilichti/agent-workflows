@@ -2,15 +2,14 @@
 
 ## Steps
 
-### 1. Require the Default Branch
+### 1. Prepare the Base Branch
 
-Read the current branch, locally known remote default branch, and upstream
-state without fetching.
+Require a clean worktree and index and a current branch named exactly `main` or
+`master`. Otherwise, ask the user to switch branches and stop.
 
-Require the current branch to be that default branch and not behind or
-diverged from its upstream. Otherwise, ask the user to switch or update it,
-then stop. When Git cannot determine the default branch or upstream state, ask
-the user to confirm both before continuing.
+Run `git pull --ff-only`. Continue only when it succeeds and the checkout stays
+clean. Stop with the observed error; do not ask whether the branch is the
+repository default or already current.
 
 ### 2. Initialize the Branch
 
@@ -68,13 +67,13 @@ request_url: created request URL
 plan_reference: project-relative authoritative plan file path
 ```
 
-Return the complete created request record to the caller.
+Return the created branch and complete request record for the delivery context.
 
 ---
 
 ## Safety
 
-- Do not fetch, pull, or update the default branch for the user.
+- Do not fetch separately, merge, rebase, or use another pull mode.
 - Do not run a general repository, provider, MCP capability, or backlink
   preflight.
 - Link only the newly created request and do not change item status.
