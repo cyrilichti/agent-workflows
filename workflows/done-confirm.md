@@ -19,6 +19,24 @@ do not recover, resolve, or reread the request before preflight. Require a valid
 
 ### 2. Prepare and Confirm
 
+Run `../commands/read-item.md` with:
+
+```text
+provider: item.provider
+item_id: item.item_id
+fields:
+  - labels
+```
+
+Require the complete current label set from the official item and require the
+exact `agent-inspected` label. On a failed or incomplete label read, present
+`../templates/done-result.md` with the observed item reason and
+`Request: not attempted`, then stop. When the exact label is absent, present
+the result with the item waiting for `agent-inspected`. Report an open request
+as still awaiting inspection completion and a merged request as lacking
+inspection evidence. Omit a remaining action and stop without confirmation,
+mutation, or invoking or prescribing another workflow.
+
 Run `../commands/transition-item-status.md` with:
 
 ```text

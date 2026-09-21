@@ -9,7 +9,8 @@ arguments:
 ```
 
 Return the task's core fields, full description, list hierarchy, and URL. Return
-its assignees only when `assignment` is requested.
+its assignees only when `assignment` is requested. When `labels` are requested,
+return every current task tag name from the same task response as exact labels.
 
 Add supported `include` values such as `attachments` or `linked_tasks` when the
 caller requests them. For comments or `request_backlinks`, call
