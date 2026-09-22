@@ -19,5 +19,5 @@ Follow `./plan-confirm.md` with:
 
 ```text
 task_context: official item context plus supplied planning context
-entry_mode: caller
+entry_mode: workflow
 ```

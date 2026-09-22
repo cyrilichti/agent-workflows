@@ -1,19 +1,17 @@
 # Plan
 
-Use for a Plan UI-compatible implementation plan proposal and its approved
-persisted form.
+Use for a Plan UI-compatible implementation plan.
 
 ## File
 
-After approval, the workflow writes to:
+Write to:
 
 ```text
 ../plans/{YYYY-MM-DD}-{objective-slug}.plan.md
 ```
 
-The workflow uses a lowercase kebab-case slug of at most 40 characters and
-appends `-2`, `-3`, etc. when the filename exists. The author returns complete
-content without creating a file; only the workflow persists the approved form.
+Use a lowercase kebab-case slug of at most 40 characters. Append `-2`, `-3`,
+etc. when the filename exists.
 
 ## Format
 
@@ -68,8 +66,6 @@ isProject: false
 
 - Treat the project-relative `.plan.md` file path as the canonical plan
   reference. Do not store a separate identity in frontmatter.
-- Do not persist a proposal before approval. Refinement, adjustment,
-  abandonment, and failure create no executable plan file.
 - Start every todo as `pending`. Later allow only `pending`, `in_progress`,
   `completed`, or `cancelled`, with at most one `in_progress`; cancellation
   requires explicit user confirmation.
@@ -78,7 +74,6 @@ isProject: false
 - Use only supplied or inspected context. Do not add Skill-specific formats,
   estimates, file lists, or checkpoints.
 - Do not duplicate provider metadata in the plan; resolve it at runtime.
-- Add `## Open Questions` only for unresolved non-material decisions. A
-  material question blocks approval.
+- Add `## Open Questions` only for unresolved decisions.
 - Only `/work` appends corrective todos after approval. Initial todos omit
   `source`.

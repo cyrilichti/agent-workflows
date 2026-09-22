@@ -19,12 +19,18 @@ Follow `../rules/user-facing-output.md`.
 Use the current request and conversation when the objective, problem, and
 expected outcome are known.
 
-Otherwise, activate `../agents/item-writer.md` in `qualify` mode with the
-current request, relevant conversation context, and only code, specifications,
-files, or URLs identified by the user. Follow its qualification output until
-it returns an understanding with the intended outcome, success conditions, and
-no unresolved material question. Keep that understanding as transient task
-context. Do not ask it to draft or persist a provider item.
+Otherwise, activate `../agents/item-writer.md`. Give it the current request,
+relevant conversation context, and only code, specifications, files, or URLs
+identified by the user.
+
+Have it return one lightweight item using `../templates/item.md` with:
+
+```text
+title: meaningful item title
+body: free-form Markdown containing the objective, problem, and expected outcome
+```
+
+Keep the returned item as transient task context.
 
 ### 2. Follow Shared Execution
 

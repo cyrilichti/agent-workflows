@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Create and approve one executable plan, or return `needs-refinement` for
-multiple delivery units.
+Create and approve one plan, or return `needs-refinement` for multiple delivery
+units.
 
 ---
 
