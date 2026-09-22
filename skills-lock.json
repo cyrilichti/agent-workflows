@@ -145,6 +145,12 @@
       "skillPath": "skills/supabase-postgres-best-practices/SKILL.md",
       "computedHash": "e14e276241805c97dbcfe40dcbea1a3035269cc7293cac4b1832dda41a835e60"
     },
+    "symfony": {
+      "source": "recranet/symfony-skills",
+      "sourceType": "github",
+      "skillPath": "symfony/SKILL.md",
+      "computedHash": "4478d54280ad530e9a77b9ad4f5b2a4711cbb11a71637d74b1559630c68f1f4a"
+    },
     "systematic-debugging": {
       "source": "obra/superpowers",
       "sourceType": "github",
