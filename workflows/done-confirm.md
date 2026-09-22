@@ -11,11 +11,9 @@ Run with one `completion_context` following `../templates/done-context.md` and
 
 ### 1. Validate Context
 
-Require every non-optional field, then set `item` and `request` to the packet's
-two sections. Require an exact non-draft request whose state is `open` or
-`merged`, with a head SHA and normalized merge status. Fail incomplete context;
-do not recover, resolve, or reread the request before preflight. Require a valid
-`entry_mode`.
+Require a complete Done Context and a valid `entry_mode`, then set `item` and
+`request` to the packet's two sections. Fail invalid context without switching
+entry mode or resolving a substitute.
 
 ### 2. Prepare and Confirm
 
@@ -28,14 +26,10 @@ fields:
   - labels
 ```
 
-Require the complete current label set from the official item and require the
-exact `agent-inspected` label. On a failed or incomplete label read, present
-`../templates/done-result.md` with the observed item reason and
-`Request: not attempted`, then stop. When the exact label is absent, present
-the result with the item waiting for `agent-inspected`. Report an open request
-as still awaiting inspection completion and a merged request as lacking
-inspection evidence. Omit a remaining action and stop without confirmation,
-mutation, or invoking or prescribing another workflow.
+Require the complete current label set. On a failed or incomplete read,
+present `../templates/done-result.md` with the observed item reason and
+`Request: not attempted`, then stop. When `agent-inspected` is absent, report
+the item as waiting for that label and the request as not attempted, then stop.
 
 Run `../commands/transition-item-status.md` with:
 
@@ -46,11 +40,12 @@ target_status: done
 mode: resolve
 ```
 
-On failed or ambiguous resolution, present `../templates/done-result.md` with
-the item reason and stop.
+On failed or ambiguous resolution, present `../templates/done-result.md` and
+stop.
 
-For an open request, require a head SHA and `merge_status: mergeable`, then run
-`../commands/merge-request.md` with:
+When an open request is not mergeable, present
+`../templates/done-result.md` with its blocker and `Item: not attempted`, then
+stop. Otherwise run `../commands/merge-request.md` with:
 
 ```text
 provider: request.provider
@@ -60,8 +55,8 @@ merge_method: squash
 mode: resolve
 ```
 
-On blocked, unknown, or unsupported merge eligibility, present
-`../templates/done-result.md` with `Item: not attempted` and stop.
+On any result other than `supported`, present `../templates/done-result.md`
+with `Item: not attempted` and stop.
 
 For a merged request, omit the merge. When the item is already done, present
 `../templates/done-result.md` and stop without confirmation.
@@ -78,7 +73,7 @@ options:
 
 On `Stop without changes`, stop without mutation.
 
-### 3. Guard and Merge
+### 3. Recheck and Merge
 
 Skip this step when the request was already merged.
 
@@ -91,19 +86,18 @@ request_id: request.request_id
 fields: delivery_state
 ```
 
-Require the previewed request identity, branches, open non-draft state, head
-SHA, and `merge_status: mergeable`. Discard the confirmation on any change.
-When the head SHA changed in `caller` mode, stop and require the user to invoke
-`/inspect` again.
-Otherwise replace only returned request fields and return to Step 1.
+Require the confirmed identity, branches, open non-draft state, and head SHA.
+On any change, discard the confirmation. In `caller` mode, stop with the
+observed stale-context result. In `standalone` mode, replace the request fields
+and return to Step 1. When only mergeability changed, present
+`../templates/done-result.md` with the observed blocker and
+`Item: not attempted`, then stop.
 
 Run `../commands/merge-request.md` with the same provider, repository, request
 ID, `merge_method: squash`, and `mode: apply`.
 
 Continue only on `merged`. Otherwise present `../templates/done-result.md` with
-the observed request result and `Item: not attempted`. For `failed`, identify
-the exact request operation still required; for `unobserved`, require observing
-the request state before any rerun or item transition. Then stop.
+the observed request result and `Item: not attempted`, then stop.
 
 ### 4. Complete the Item
 
@@ -117,9 +111,7 @@ mode: apply
 resolved_target_status: exact confirmed target
 ```
 
-Keep the best-effort result. Never retry or roll back an observed merge.
-
 ### 5. Report
 
-Present `../templates/done-result.md`. After a partial result, identify only
-the item transition as remaining. Stop without invoking another workflow.
+Present `../templates/done-result.md`. After an observed merge, only the item
+transition may remain.

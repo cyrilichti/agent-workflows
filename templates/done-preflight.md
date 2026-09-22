@@ -8,19 +8,19 @@ Use before `/done` asks for its one mutation confirmation.
 **Ready to complete**
 
 Request: <provider, repository, ID, source branch, target branch>
-Request state: <open and mergeable at head SHA, or already merged>
-Item: <ID and current state → resolved done state, or already done>
+Request state: <observed state at head SHA>
+Item: <ID and observed or resolved state>
 
 **After confirmation**
 
-- <squash-merge the request, only when still open>
-- <transition the item, only when not already done>
+- <first remaining mutation>
+- <second remaining mutation, when applicable>
 ```
 
 ## Rules
 
-- Show exact identities, observed states, `squash`, and the resolved item
-  target.
+- Show exact identities, observed states, merge method, and resolved item
+  target supplied by the workflow.
 - Use bold inline labels rather than section headings.
-- Omit completed mutations.
+- List only remaining mutations.
 - Leave confirmation to the workflow's following `select-option.md` call.
