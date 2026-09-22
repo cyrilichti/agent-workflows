@@ -43,9 +43,12 @@ mode: resolve
 On failed or ambiguous resolution, present `../templates/done-result.md` and
 stop.
 
-When an open request is not mergeable, present
-`../templates/done-result.md` with its blocker and `Item: not attempted`, then
-stop. Otherwise run `../commands/merge-request.md` with:
+For an open request with any `merge_status` other than `mergeable`, present
+`../templates/done-result.md` with the observed status, its blocker when
+available, and `Item: not attempted`, then stop.
+
+For an open request with `merge_status: mergeable`, run
+`../commands/merge-request.md` with:
 
 ```text
 provider: request.provider
