@@ -9,6 +9,6 @@ arguments:
   limit: 5
 ```
 
-Prefer title matches. Return issue ID or identifier, title, state, team,
-project,
-and URL. Do not paginate unless the user refines the search.
+Filter the provider results to title matches, return at most five with their
+issue ID or identifier, title, state, team, project, and URL, and do not
+paginate unless the user refines the search.

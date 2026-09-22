@@ -32,5 +32,6 @@ arguments:
     - resolved label ID
 ```
 
-Return `applied: true` when the label is applied. Return `applied: false` with
-`reason: provider_failure` on lookup, creation, or application failure.
+Return `applied: true` only after a successful `save_issue` response. Return
+`applied: false` with `reason: provider_failure` on lookup, creation, or
+application failure.
