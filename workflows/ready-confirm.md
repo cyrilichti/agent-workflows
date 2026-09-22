@@ -38,14 +38,11 @@ equal the verified local HEAD.
 
 ### 3. Publish the Plan and Promote
 
-Prepare the exact request body with `../templates/request-description.md` and
-the exact plan comment with `../templates/request-plan-comment.md`.
-
-Create or update the single plan comment through
-`../commands/sync-request-plan-comment.md`, preserving its returned identity in
-the delivery context. Update the exact request description, then mark it ready
-through `../commands/update-request.md`. Stop on any failed, unsupported, or
-unobserved required mutation.
+Use the exact complete authoritative plan file content as the request body,
+without adding a wrapper, heading, marker, summary, or metadata. Update the
+exact request description, then mark it ready through
+`../commands/update-request.md`. Stop on any failed, unsupported, or unobserved
+required mutation.
 
 Read the exact request with `fields: delivery_state`. Require it to be open,
 non-draft, and still at the verified HEAD before continuing.

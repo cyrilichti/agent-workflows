@@ -8,7 +8,6 @@ plan: project-relative authoritative plan path
 item: complete official item context
 branch: exact work branch
 request: exact request record, when available
-plan_comment: exact plan-comment identity, when available
 source_findings: exact corrective findings, when available
 ```
 

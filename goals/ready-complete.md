@@ -14,9 +14,9 @@ when necessary, then promoted and handed to `/inspect` autonomously.
   Outcome without performing an independent code review.
 - Concrete delivery gaps return to resumed `/work` with stable finding IDs,
   exact explanations, and the verified HEAD SHA.
-- Passing work pushes only when needed, creates or updates one complete plan
-  comment, removes the leading `Draft:` title prefix, applies the exact request
-  body, removes draft state, and attempts the item review transition.
+- Passing work pushes only when needed, applies the complete authoritative plan
+  as the exact request body, removes the leading `Draft:` title prefix and
+  draft state, and attempts the item review transition.
 - Every required request mutation is observed before `/inspect` receives the
   same delivery context.
 
