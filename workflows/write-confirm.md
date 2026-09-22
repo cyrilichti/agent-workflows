@@ -101,10 +101,10 @@ options:
 ```
 
 If the user selects `Adjust item`, update the working context with
-`current_proposal` and `last_adjustment`, then have `item-writer` determine
-whether the adjustment materially changes the confirmed need. Return to Step 2
-when it does. Otherwise ask `item-writer` for the revised item, present it
-according to `../templates/item-change-summary.md`, and repeat this step.
+`current_proposal` and `last_adjustment`, then ask `item-writer` to draft the
+revision. Return to Step 2 when it returns `qualification required`. Otherwise
+present the revised item according to `../templates/item-change-summary.md` and
+repeat this step.
 
 Do not continue until the user explicitly selects `Save item`.
 If confirmation is refused or unavailable, stop without mutation.

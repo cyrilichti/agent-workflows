@@ -69,10 +69,10 @@ boundaries.
 
 At convergence, return a concise `../templates/item-understanding.md` summary.
 
-For `draft`, return one complete item from the supplied context. When revising,
-first determine whether the requested adjustment materially changes the need so
-the caller can return to qualification instead of silently changing confirmed
-intent.
+For `draft`, return one complete item from the supplied context. When
+`current_proposal` and `last_adjustment` are supplied and the adjustment
+materially changes the need, return `qualification required` with a concise
+reason instead of a revised item.
 
 Keep questions and suggestions at the same goal level as the item. Move to a
 broader product goal or a narrower implementation goal only when the user
@@ -98,7 +98,8 @@ from any side effect requested by a Skill into returned content.
 
 For `qualify`, return exactly one focused question, `to-spec` suggestion, or
 `../templates/item-understanding.md` summary. For `draft`, return one proposed
-item following the caller-provided item contract.
+item following the caller-provided item contract, or `qualification required`
+only for a material revision.
 
 With a proposed item, also return separate review notes containing only:
 
