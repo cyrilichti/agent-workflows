@@ -15,8 +15,9 @@ Publish validated findings as one provider review and observe its result.
 ## Result
 
 Return the grouped review, every finding, and the semantic verdict as
-`succeeded`, `unsupported`, `failed`, or `unobserved`. After an attempted
-publication, also return the observed request `delivery_state` when available.
+`succeeded`, `stale`, `unsupported`, `failed`, or `unobserved`. After an
+attempted publication, also return the observed request `delivery_state` when
+available.
 
 ## Steps
 
