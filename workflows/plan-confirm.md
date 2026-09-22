@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Assess, author, and confirm one plan.
+Assess, author, approve, and persist one executable plan.
 
 ---
 
@@ -11,7 +11,7 @@ Assess, author, and confirm one plan.
 Run from a context branch with:
 
 - `task_context`: objective, problem, and expected outcome;
-- `entry_mode`: `workflow` or `standalone`.
+- `entry_mode`: `caller` or `standalone`.
 
 ---
 
@@ -27,7 +27,7 @@ context: task_context
 
 Continue on `refinement-not-needed`. On `needs-refinement`:
 
-- in `workflow` mode, return the findings to the caller, which owns any
+- in `caller` mode, return the findings to the caller, which owns any
   refinement offer;
 - in `standalone` mode, report the findings and stop.
 
@@ -37,7 +37,7 @@ Follow `./specialist.md` with `task_context` to activate one plan author. The
 author may inspect technical context read-only. If that reveals autonomous
 delivery units, reassess the expanded context with Step 1.
 
-### 3. Draft and Review the Plan
+### 3. Draft and Review the Proposal
 
 The specialist is the sole plan author. It may load and apply:
 
@@ -46,11 +46,15 @@ The specialist is the sole plan author. It may load and apply:
 | `planning-and-task-breakdown` | Always; reuse the Step 1 load | Order dependencies, prefer vertical slices, and create the fewest small, verifiable todos. Ignore its formats, paths, estimates, file lists, checkpoints, and templates. |
 | `source-driven-development` | A decision depends on an unverified external versioned fact | Verify and cite only that fact. Ignore its implementation process. |
 
-Have the specialist write using `../templates/plan.md` with:
+Have the specialist return one complete proposal using `../templates/plan.md`
+with:
 
 ```text
 task_context: resolved task context
 ```
+
+Keep the proposal in the execution context. Do not create its plan file before
+approval.
 
 For high-risk or unfamiliar decisions, the workflow—not the author—loads
 `doubt-driven-development` and invokes one fresh-context reviewer while keeping
@@ -70,22 +74,17 @@ remaining substantive uncertainty. Run no further review unless requested.
 
 ### 4. Resolve Material Questions
 
-Before presenting the final plan, collect every question whose answer could
+Before presenting the final proposal, collect every question whose answer could
 materially change its Objective, Expected Outcome, todos, order, or Validation.
-Return the answers to the same specialist and require a revised complete plan.
-Repeat until no material question remains.
+Return the answers to the same specialist and require a revised complete
+proposal.
+Repeat until no material question remains. Only non-material notes may remain
+under `Open Questions`.
 
-### 5. Confirm Plan
+### 5. Confirm and Persist Plan
 
-Present the complete final plan, then use `../templates/plan-summary.md` with:
-
-```text
-name: created plan name
-file: created plan path
-todo_count: number of created plan todos
-```
-
-Then ask using `../templates/select-option.md` with:
+Present the complete final proposal, then ask using
+`../templates/select-option.md` with:
 
 ```text
 question: What do you want to do with this plan?
@@ -95,7 +94,7 @@ options:
 ```
 
 On `Adjust plan`, give the adjustment to the active specialist, then repeat
-this step with the revised plan.
+this step with the revised proposal.
 
 State that approval authorizes non-empty commits, normal pushes, request
 creation and promotion, request comments, item transitions and labels, review
@@ -104,7 +103,17 @@ authorizes merge, completion, or `/done`.
 
 Continue only on `Approve plan and autonomous delivery`.
 
+After approval, resolve one unused file path and persist the exact approved
+proposal according to `../templates/plan.md`. Stop if persistence fails. Then
+present `../templates/plan-summary.md` with:
+
+```text
+name: persisted plan name
+file: persisted plan path
+todo_count: number of persisted plan todos
+```
+
 ### 6. Finish
 
 Finish according to `../goals/plan-complete.md`: return the approved plan in
-`workflow` mode; otherwise stop.
+`caller` mode; otherwise stop.
