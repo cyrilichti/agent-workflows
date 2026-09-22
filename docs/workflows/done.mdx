@@ -12,11 +12,9 @@ support squash merge. The item moves to its resolved completed state only after
 the request is observed as merged.
 
 Before preparing that completion, `/done` reads the official item again and
-requires the exact `agent-inspected` label applied by a successful `/inspect`.
-When the label is missing or cannot be verified, both entry modes stop without
-confirmation or mutation. An open request remains waiting for the existing
-`/ready` to `/inspect` delivery path; a merged request reports that inspection
-evidence is unavailable. `/done` never invokes or prescribes another workflow.
+requires the exact `agent-inspected` label. When the label is missing or cannot
+be verified, it stops without confirmation or mutation. `/done` never invokes
+another workflow.
 
 ## Flow
 

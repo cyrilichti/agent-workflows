@@ -25,4 +25,4 @@ request:
 
 - Project only these fields from official records. Never carry review content.
 - Keep provider-native identities unchanged.
-- Only `merge_blocker` is optional; fail incomplete context.
+- All fields except `merge_blocker` are required.
