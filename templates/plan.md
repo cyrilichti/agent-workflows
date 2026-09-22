@@ -74,6 +74,6 @@ isProject: false
 - Use only supplied or inspected context. Do not add Skill-specific formats,
   estimates, file lists, or checkpoints.
 - Do not duplicate provider metadata in the plan; resolve it at runtime.
-- Add `## Open Questions` only for unresolved decisions.
+- Add `## Open Questions` only for unresolved non-material decisions.
 - Only `/work` appends corrective todos after approval. Initial todos omit
   `source`.

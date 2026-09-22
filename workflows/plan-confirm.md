@@ -64,9 +64,10 @@ contract: task_context and local plan contract
 
 Do not pass planning history or author reasoning. Reconcile findings and ask the
 same author for one revision: implementation gaps go to todos, verification
-gaps to `Validation`, and unresolved decisions to `Open Questions`. Ignore
-multi-cycle and cross-model procedures, discard review commentary, and report
-remaining substantive uncertainty. Run no further review unless requested.
+gaps to `Validation`, and unresolved non-material decisions to `Open Questions`.
+Ignore multi-cycle and cross-model procedures, discard review commentary, and
+report remaining substantive uncertainty. Run no further review unless
+requested.
 
 ### 4. Resolve Material Questions
 
