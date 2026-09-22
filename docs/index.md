@@ -91,8 +91,7 @@ hero:
         <span class="delivery-connector" aria-hidden="true">→</span>
         <div class="delivery-map__start">
           <span class="delivery-map__human-mark" aria-hidden="true"></span>
-          <small>Human</small>
-          <strong>Start</strong>
+          <div><small>Human</small><strong>Start</strong></div>
         </div>
         <span class="delivery-connector" aria-hidden="true">→</span>
         <div class="delivery-loop">
@@ -101,7 +100,6 @@ hero:
             <header><span>03</span><small>Autonomous</small></header>
             <h3>Deliver</h3>
             <code>/work · /ready</code>
-            <strong class="delivery-stage__action">Commit</strong>
           </article>
           <article class="delivery-stage delivery-stage--autonomous delivery-stage--review">
             <header><span>04</span><small>Autonomous</small></header>
