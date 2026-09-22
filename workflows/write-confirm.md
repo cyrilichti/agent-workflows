@@ -102,7 +102,9 @@ options:
 
 If the user selects `Adjust item`, update the working context with
 `current_proposal` and `last_adjustment`, then ask `item-writer` to draft the
-revision. Return to Step 2 when it returns `qualification required`. Otherwise
+revision. When it returns `qualification required`, update `intention` with the
+confirmed understanding, `last_adjustment`, and the returned reason, remove
+`current_proposal` and `last_adjustment`, then return to Step 2. Otherwise
 present the revised item according to `../templates/item-change-summary.md` and
 repeat this step.
 
