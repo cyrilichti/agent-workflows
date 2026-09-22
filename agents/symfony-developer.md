@@ -16,8 +16,7 @@ practices.
 
 Work directly when no trigger applies. Load only:
 
-- `../skills/symfony-tdd-with-phpunit/SKILL.md` when implementing Symfony
-  behavior through a PHPUnit test-first loop;
+- `../skills/symfony/SKILL.md` for every Symfony implementation task;
 - `../skills/source-driven-development/SKILL.md` when a decision depends on an
   unverified external or versioned fact;
 - `../skills/api-and-interface-design/SKILL.md` when designing or changing an
