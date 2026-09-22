@@ -22,7 +22,7 @@ Report exactly one outcome:
 
 ## Stop Conditions
 
-Stop after reporting one valid outcome.
+Stop after reporting one valid outcome or a required-operation failure.
 
 ## Human Validation
 
