@@ -58,10 +58,11 @@ run `../commands/resolve-request.md` for the same request ID and carried source
 branch with `require_non_draft: true` and `fields: delivery_state`. If the
 observed request head no longer equals the frozen SHA, restart from Step 1.
 
-When any blocking finding exists, place every current blocking finding in
-`delivery_context.source_findings` with `workflow: inspect`, its exact finding
-ID, and the frozen head SHA. Follow `./work.md` in resumed caller mode without
-another question.
+When any blocking finding exists, create one
+`delivery_context.source_findings` record defined by
+`../templates/delivery-context.md` for every current blocking finding, using
+`workflow: inspect`, its exact finding ID and content, and the frozen head SHA.
+Follow `./work.md` in resumed caller mode without another question.
 
 Otherwise, resolve the item provider and run
 `../commands/apply-item-label.md` with:

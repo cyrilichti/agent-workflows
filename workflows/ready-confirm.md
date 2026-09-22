@@ -24,10 +24,11 @@ against the request target with the Objective and Expected Outcome. Check only
 that the planned outcome was delivered: do not select a specialist or perform
 a code review.
 
-For every validation failure or concrete delivery gap, create one stable
-finding ID and preserve its exact explanation with the verified local HEAD SHA.
-Return all findings in `delivery_context.source_findings`, then follow
-`./work.md` in resumed caller mode. Do not modify the plan in `/ready`.
+For every validation failure or concrete delivery gap, create one
+`delivery_context.source_findings` record defined by
+`../templates/delivery-context.md` with `workflow: ready`, a stable finding ID,
+its exact explanation, and the verified local HEAD SHA. Then follow `./work.md`
+in resumed caller mode. Do not modify the plan in `/ready`.
 
 ### 2. Recheck and Push
 
@@ -54,9 +55,3 @@ Resolve the item provider and run `../commands/transition-item-status.md` with
 
 Follow `./inspect.md` in caller mode with the complete delivery context and the
 observed non-draft request. Do not ask another question.
-
-## Safety
-
-- Do not modify work, force-push, merge, or add checks.
-- Keep work gaps in `/work` and operational failures in `/ready`.
-- Do not promote or inspect an unpushed or unobserved HEAD.
