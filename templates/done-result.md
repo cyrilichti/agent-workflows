@@ -6,17 +6,18 @@ partial result.
 ## Format
 
 ```markdown
-## Done Result
+## Done result
 
-Request <provider/repository#ID>: <observed request result>
-Item <ID>: <observed item result>
+**Request <provider/repository#ID>:** <observed request result>
+**Item <ID>:** <observed item result>
 
-Remaining: <exact request or item action; omit when none or no actionable next step is known>
+**Remaining:** <exact request or item action; omit when none or no actionable next step is known>
 ```
 
 ## Rules
 
 - Report observed states rather than intended states.
+- Lead with the observed request and item results without another subheading.
 - Keep both identities visible.
 - When `agent-inspected` is missing, report an open request as not attempted
   and still awaiting inspection, or preserve the observed merged state while

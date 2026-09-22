@@ -5,7 +5,7 @@ Use after qualification converges and before drafting a complete item.
 ## Format (Markdown)
 
 ```markdown
-## Understanding
+**Understanding**
 
 - **Outcome:** <result actually sought>
 - **User and reason:** <beneficiary and problem, when relevant>
@@ -17,6 +17,7 @@ Use after qualification converges and before drafting a complete item.
 ## Rules
 
 - Keep `Outcome`, `Success`, and `Out of scope`; omit other irrelevant lines.
+- Use one bold inline lead-in rather than a section heading.
 - State unresolved material questions instead of inventing answers.
 - Do not include an item title, item body, provider metadata, implementation
   plan, or save choice.

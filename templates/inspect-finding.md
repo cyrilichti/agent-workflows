@@ -3,7 +3,7 @@
 ## Format
 
 ```markdown
-## Finding <RF-###>
+### Finding <RF-###>
 
 <!-- agent-workflows-finding id="<RF-###>" head="<frozen SHA>" -->
 
@@ -23,6 +23,7 @@ Direction: <recommended direction without a code correction>
 
 - Require every field except conditional `Location`. Keep the marker and bind
   its `head` to the frozen inspection snapshot SHA.
+- Use an H3 so the finding remains subordinate to its inspection result.
 - Tie the problem to the official item's requested outcome or acceptance
   criteria, unless the inspected change introduces a concrete defect or
   regression outside that scope.
