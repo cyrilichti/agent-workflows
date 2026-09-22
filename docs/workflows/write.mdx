@@ -3,13 +3,19 @@ title: /write
 description: Create or improve one work item with the right writing skill for the current need.
 ---
 
-`/write` drafts one new or existing item, checks its outcome, observable behavior,
-success criteria, constraints, decisions, and open questions, then asks only what
-blocks later treatment at the same level of abstraction. After confirmation, it saves
-the item and applies `agent-shaped`; a missing ClickUp tag is reported without failing
-the save. It reuses the available conversation and project context to avoid mode,
-intention, provider, and destination questions that are already answered. The label
-records use of `/write`, not readiness, feasibility, or size.
+`/write` qualifies one new or existing item before drafting it. For non-trivial
+needs, it treats the initial description as working context, asks progressive
+questions, challenges relevance, risks, assumptions, constraints, and success
+criteria, then confirms a concise understanding summary. Only then does it
+produce one complete item proposal. Purely mechanical work or an explicit
+request for immediate drafting may take the direct path, but the title and body
+still require confirmation before save.
+
+The workflow reuses available conversation and project context to avoid mode,
+intention, provider, and destination questions that are already answered. After
+confirmation, it saves the item and applies `agent-shaped`; a label failure is
+reported without failing the save. The label records use of `/write`, not
+readiness, feasibility, or size.
 
 ## Dispatching external skills
 
@@ -55,7 +61,7 @@ records use of `/write`, not readiness, feasibility, or size.
       href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec"
     >
       <span class="dispatch-skill__label">Skill</span>
-      <span>User-facing functional behavior</span>
+      <span>Specification format suggested and accepted</span>
       <strong>to-spec ↗</strong>
       <small>Matt Pocock</small>
     </a>
@@ -78,18 +84,18 @@ records use of `/write`, not readiness, feasibility, or size.
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Draft</th>
-      <td>Present an improved proposal early and identify the most fundamental authoring need.</td>
+      <th scope="row">Qualification</th>
+      <td>For non-trivial needs, ask progressive contextual questions and challenge relevance, risks, assumptions, constraints, and success criteria before drafting.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Guidance</th>
-      <td>Use at most one best-fit writing skill and reassess after meaningful input.</td>
+      <th scope="row">Understanding</th>
+      <td>Confirm one concise understanding summary. Suggest <code>to-spec</code> when its format would help, and activate it only after explicit acceptance.</td>
     </tr>
     <tr>
       <td>5</td>
-      <th scope="row">Review</th>
-      <td>Resolve or preserve blockers, show only localized changes after minor revisions, and repeat the complete proposal for structural changes or on request before confirmation.</td>
+      <th scope="row">Draft and review</th>
+      <td>Produce one complete proposal after confirmed understanding, then adjust it or confirm its title and body for saving.</td>
     </tr>
     <tr>
       <td>6</td>

@@ -11,7 +11,7 @@ Guide authoring, confirm, save, and label one item.
 Run only from a mode branch with:
 
 - `provider`: resolved item provider.
-- `intention`: light need description collected for this run.
+- `intention`: initial working context collected for this run.
 - `create`: `mode` and resolved `destination`.
 - `update`: `mode`, official `item_id`, `item_title`,
   `item_description`, and `item_link` when available.
@@ -26,39 +26,74 @@ Build the working context according to `../templates/authoring-context.md` from
 the collected intention and, for updates, the official item content.
 
 Read the complete `../agents/item-writer.md` profile and apply it directly to
-the working context with `../templates/item.md` as its output contract.
+the working context. Use `../templates/item-understanding.md` and
+`../templates/item.md` as its phase-specific output contracts.
 
-### 2. Draft and Present Early
+When the activation context explicitly requests `to-spec` or a specification
+format, record `to_spec: accepted`. Do not infer this field from detailed or
+internally consistent input.
 
-Present the improved first proposal using `../templates/item-preview.md` before
-collecting further authoring input, followed by its current review notes.
+### 2. Qualify the Need
 
-### 3. Collect Authoring Input
+When the activation context explicitly requests immediate drafting, or the
+request is purely mechanical and requires no substantive decision, invoke the
+direct path in `item-writer` and continue to Step 4 with its complete item.
+Otherwise, apply `item-writer` to the working context and follow exactly one
+returned phase:
 
-Collect the answers or sources requested by `item-writer`. If the user leaves a
-blocking question unanswered, ask whether to preserve it as an open question.
+- focused question: collect one answer or source, update the working context,
+  and repeat this step;
+- `to-spec` suggestion: present its reason, then ask using
+  `../templates/select-option.md` with:
 
-After each meaningful answer, new source, or requested revision, update the
-same authoring context incrementally and have the active `item-writer` reassess
-the current need and Skill. Compare the resulting proposal with the last
-presented proposal.
+  ```text
+  question: Do you want to use the suggested specification format?
+  options:
+  - Use specification format
+  - Continue without specification format
+  ```
 
-Present only the changed content with `../templates/item-change-summary.md`
-when the revision is localized. Present a new complete proposal with its
-review notes when:
+  Record `to_spec: accepted` after acceptance or `to_spec: declined` after
+  refusal, then repeat this step;
+- understanding summary: continue to Step 3;
+- complete item proposal: reject it and repeat this step because only the
+  direct path may return a complete item before understanding is confirmed.
 
-- its title or overall structure changes;
-- several sections change materially;
-- the user explicitly asks to see the complete proposal.
+If the user leaves a blocking question unanswered, ask whether to preserve it
+as an open question. Never use apparent completeness to bypass qualification.
 
-Continue until every blocking question is answered or visibly preserved in the
-proposal.
+### 3. Confirm Understanding
 
-### 4. Confirm Item
+Present the returned understanding summary using
+`../templates/item-understanding.md`, then ask using
+`../templates/select-option.md` with:
+
+```text
+question: What do you want to do with this understanding?
+options:
+- Confirm understanding
+- Adjust understanding
+```
+
+- `Adjust understanding`: collect one adjustment, update the working context,
+  and return to Step 2;
+- `Confirm understanding`: replace `intention` with the exact summary, record
+  `understanding_confirmed: true`, and continue to Step 4.
+
+Stop without drafting or mutation when confirmation is refused or unavailable.
+Honor a selected Skill's terminal-turn rule before continuing to Step 4.
+
+### 4. Draft and Present the Item
+
+Use the complete item already returned on the direct path. Otherwise apply
+`item-writer` to the confirmed understanding. Require exactly one complete
+proposed item following `../templates/item.md`, then present it using
+`../templates/item-preview.md` followed by its current review notes.
+
+### 5. Confirm or Adjust the Item
 
 Require the latest complete preview or localized change summary to reflect the
-current authoring context. Do not repeat a complete preview solely because a
-localized revision is ready for confirmation. Then ask using
+current authoring context. Then ask using
 `../templates/select-option.md` with:
 
 ```text
@@ -69,12 +104,16 @@ options:
 ```
 
 If the user selects `Adjust item`, update the working context with
-`current_proposal` and `last_adjustment`, then resume step 3.
+`current_proposal` and `last_adjustment`, then have `item-writer` reassess all
+authoring dimensions. When the adjustment materially changes the confirmed
+need, remove `understanding_confirmed` and return to Step 2. Otherwise present
+the revision according to `../templates/item-change-summary.md` and repeat this
+step.
 
 Do not continue until the user explicitly selects `Save item`.
 If confirmation is refused or unavailable, stop without mutation.
 
-### 5. Save and Label Item
+### 6. Save and Label Item
 
 Run `../commands/save-item.md` with:
 

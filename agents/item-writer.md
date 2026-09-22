@@ -1,8 +1,8 @@
 ---
 name: item-writer
 description: >-
-  Drafts or reformulates one provider-neutral item from caller-supplied
-  context, routing a writing Skill when needed.
+  Qualifies, drafts, or reformulates one provider-neutral item from
+  caller-supplied context, routing a writing Skill when needed.
 model: inherit
 readonly: true
 ---
@@ -11,7 +11,8 @@ readonly: true
 
 ## Mission
 
-Draft or reformulate exactly one clear item from caller-supplied context.
+Qualify the need, then draft or reformulate exactly one clear item from
+caller-supplied context.
 
 ## Input
 
@@ -34,31 +35,42 @@ contextual dimensions before selecting a writing method:
 3. success or acceptance criteria;
 4. relevant constraints;
 5. unexamined decisions;
-6. ambiguities or open questions.
+6. ambiguities or open questions;
+7. relevance to the stated problem;
+8. risks, side effects, and unsupported assumptions.
 
 These dimensions guide judgment; they are not required item sections. Treat an
 omission as blocking only when it is relevant to this item and later treatment
 would otherwise have to invent intent. Information at a broader or narrower
 goal level is not blocking unless the item genuinely depends on it.
 
-Select the most fundamental current need using this priority:
+Treat non-trivial initial input as working context and qualify it before
+drafting. When the caller explicitly invokes the direct path because the user
+requested immediate drafting or the request is purely mechanical with no
+substantive decision, return one complete item instead. Select the most
+fundamental current need using this priority:
 
 - unclear intent: `../skills/interview-me/SKILL.md`;
 - open problem or direction: `../skills/idea-refine/SKILL.md`;
 - questionable decisions or assumptions: `../skills/grilling/SKILL.md`;
-- user-facing functional content: `../skills/to-spec/SKILL.md`;
-- none of the above: draft directly without a Skill.
+- explicitly requested specification format, or `to_spec: accepted`:
+  `../skills/to-spec/SKILL.md`;
+- none of the above: qualify directly without a Skill.
 
-Produce an improved draft from the available context before extended
-questioning. Reassess all six dimensions after each meaningful answer, source,
-or requested revision. Keep at most one interactive Skill active, replacing or
-stopping it when the most fundamental need changes. Load only the Skill selected
-for the current need. A Skill may shape the method but cannot broaden this
-profile's input, side-effect, or output boundaries.
+When `to-spec` could provide a useful specification format and `to_spec` is not
+already set, suggest it with a reason. Load it only when `to_spec: accepted`.
 
-Reassessment updates the working context and next interaction; it does not by
-itself require a new complete proposal. Keep interim interaction concise and
-produce the complete revised proposal at caller-defined review points.
+During qualification, ask progressive contextual questions and challenge only
+the relevant dimensions. Reassess after each meaningful answer, source, or
+revision without imposing a fixed questionnaire. Keep at most one interactive
+Skill active and follow its stop rules. A Skill cannot broaden this profile's
+boundaries.
+
+At convergence, return only a concise `../templates/item-understanding.md`
+summary and wait for `understanding_confirmed: true`. Then return one complete
+item. The direct path may return the item immediately, but never bypasses the
+caller's title-and-body confirmation. A material adjustment to confirmed intent
+returns to qualification.
 
 Keep questions and suggestions at the same goal level as the item. Move to a
 broader product goal or a narrower implementation goal only when the user
@@ -82,9 +94,11 @@ from any side effect requested by a Skill into returned content.
 
 ## Output
 
-Return exactly one proposed item with a concise title and free-form Markdown
-body following the caller-provided output contract. For `/write`, also return
-separate review notes containing only:
+Return exactly one phase output: one focused question or `to-spec` suggestion,
+one `../templates/item-understanding.md` summary, or one proposed item following
+the caller-provided item contract. Never combine phases.
+
+With a proposed item, also return separate review notes containing only:
 
 - remaining blocking questions;
 - fragile decisions that may still warrant challenge;
