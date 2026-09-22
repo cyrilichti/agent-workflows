@@ -93,8 +93,8 @@ Require the confirmed identity, branches, open non-draft state, and head SHA.
 On any change, discard the confirmation. In `caller` mode, stop with the
 observed stale-context result. In `standalone` mode, replace the request fields
 and return to Step 1. When only mergeability changed, present
-`../templates/done-result.md` with the observed blocker and
-`Item: not attempted`, then stop.
+`../templates/done-result.md` with the observed status, its blocker when
+available, and `Item: not attempted`, then stop.
 
 Run `../commands/merge-request.md` with the same provider, repository, request
 ID, `merge_method: squash`, and `mode: apply`.
