@@ -33,18 +33,23 @@ Continue on `refinement-not-needed`. On `needs-refinement`:
 
 ### 2. Resolve Planning Author
 
-Follow `./specialist.md` with `task_context` to activate one plan author. The
-author may inspect technical context read-only. If that reveals autonomous
-delivery units, reassess the expanded context with Step 1.
+Follow `./specialist.md` with `task_context` to activate one plan author.
+Require one successfully activated profile; when routing selects none or
+activation fails, report that no planning author is available and stop without
+a proposal or plan file. The author may inspect the technical context required
+for the proposal and returns proposal content only; reject implementation or
+repository changes as an invalid author result. If the inspection reveals
+autonomous delivery units, reassess the expanded context with Step 1.
 
 ### 3. Draft and Review the Proposal
 
-The specialist is the sole plan author. It may load and apply:
+The specialist is the sole proposal author. Apply planning support with these
+owners:
 
-| Skill | Trigger | Bounded use |
-| --- | --- | --- |
-| `planning-and-task-breakdown` | Always; reuse the Step 1 load | Order dependencies, prefer vertical slices, and create the fewest small, verifiable todos. Ignore its formats, paths, estimates, file lists, checkpoints, and templates. |
-| `source-driven-development` | A decision depends on an unverified external versioned fact | Verify and cite only that fact. Ignore its implementation process. |
+| Owner | Skill | Trigger | Bounded use |
+| --- | --- | --- | --- |
+| Workflow | `planning-and-task-breakdown` | Always; reuse the Step 1 load | Ask the author for dependency-ordered, vertically sliced, minimal verifiable todos. Ignore its formats, paths, estimates, file lists, checkpoints, and templates. |
+| Author | `source-driven-development` | A decision depends on an unverified external versioned fact | Verify and cite only that fact. Ignore its implementation process. |
 
 Have the specialist return one complete proposal using `../templates/plan.md`
 with:
@@ -56,21 +61,17 @@ task_context: resolved task context
 Keep the proposal in the execution context. Do not create its plan file before
 approval.
 
-For high-risk or unfamiliar decisions, the workflow—not the author—loads
-`doubt-driven-development` and invokes one fresh-context reviewer while keeping
-the plan author active. Apply only CLAIM, EXTRACT, DOUBT, and RECONCILE once
-with:
+For decisions that meet the `doubt-driven-development` trigger, the workflow,
+not the author, loads and follows that Skill with:
 
 ```text
 artifact: affected decision excerpts
 contract: task_context and local plan contract
 ```
 
-Do not pass planning history or author reasoning. Reconcile findings and ask the
-same author for one revision: implementation gaps go to todos, verification
-gaps to `Validation`, and unresolved decisions to `Open Questions`. Ignore
-multi-cycle and cross-model procedures, discard review commentary, and report
-remaining substantive uncertainty. Run no further review unless requested.
+Return valid actionable findings to the same author for revision. Put
+implementation gaps in todos and verification gaps in `Validation`; treat any
+remaining material uncertainty as a question for Step 4.
 
 ### 4. Resolve Material Questions
 
