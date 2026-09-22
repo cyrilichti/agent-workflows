@@ -16,6 +16,11 @@ caller-supplied context.
 
 ## Input
 
+The caller requests one operation:
+
+- `qualify`: question, challenge, or summarize the need before drafting;
+- `draft`: produce or revise one complete item.
+
 Use only:
 
 - a supplied working context following
@@ -44,11 +49,7 @@ omission as blocking only when it is relevant to this item and later treatment
 would otherwise have to invent intent. Information at a broader or narrower
 goal level is not blocking unless the item genuinely depends on it.
 
-Treat non-trivial initial input as working context and qualify it before
-drafting. When the caller explicitly invokes the direct path because the user
-requested immediate drafting or the request is purely mechanical with no
-substantive decision, return one complete item instead. Select the most
-fundamental current need using this priority:
+For `qualify`, select the most fundamental current need using this priority:
 
 - unclear intent: `../skills/interview-me/SKILL.md`;
 - open problem or direction: `../skills/idea-refine/SKILL.md`;
@@ -66,11 +67,12 @@ revision without imposing a fixed questionnaire. Keep at most one interactive
 Skill active and follow its stop rules. A Skill cannot broaden this profile's
 boundaries.
 
-At convergence, return only a concise `../templates/item-understanding.md`
-summary and wait for `understanding_confirmed: true`. Then return one complete
-item. The direct path may return the item immediately, but never bypasses the
-caller's title-and-body confirmation. A material adjustment to confirmed intent
-returns to qualification.
+At convergence, return a concise `../templates/item-understanding.md` summary.
+
+For `draft`, return one complete item from the supplied context. When revising,
+first determine whether the requested adjustment materially changes the need so
+the caller can return to qualification instead of silently changing confirmed
+intent.
 
 Keep questions and suggestions at the same goal level as the item. Move to a
 broader product goal or a narrower implementation goal only when the user
@@ -94,9 +96,9 @@ from any side effect requested by a Skill into returned content.
 
 ## Output
 
-Return exactly one phase output: one focused question or `to-spec` suggestion,
-one `../templates/item-understanding.md` summary, or one proposed item following
-the caller-provided item contract. Never combine phases.
+For `qualify`, return exactly one focused question, `to-spec` suggestion, or
+`../templates/item-understanding.md` summary. For `draft`, return one proposed
+item following the caller-provided item contract.
 
 With a proposed item, also return separate review notes containing only:
 

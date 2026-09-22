@@ -15,12 +15,12 @@ to the calling workflow.
 <free-form Markdown adapted to the nature of the item>
 ```
 
-## Persisted Content
+## Fields
 
-Only the following fields belong to the provider-backed item:
+The proposed item contains only:
 
-- `Title`: the provider title;
-- `Body`: the provider description, preserved as Markdown.
+- `Title`: a concise item title;
+- `Body`: a free-form Markdown description.
 
 The body has no mandatory internal sections. Structure it according to the
 actual item rather than forcing a bug, improvement, debt item, epic, idea, or

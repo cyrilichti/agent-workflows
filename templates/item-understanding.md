@@ -20,5 +20,3 @@ Use after qualification converges and before drafting a complete item.
 - State unresolved material questions instead of inventing answers.
 - Do not include an item title, item body, provider metadata, implementation
   plan, or save choice.
-- The summary is working understanding for explicit confirmation, not a draft
-  item and not persisted provider content.

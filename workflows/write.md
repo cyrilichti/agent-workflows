@@ -39,10 +39,6 @@ options:
 - Reformulate an existing item
 ```
 
-Do not resolve the item provider before the mode is resolved. Keep the prefix
-through playbook entry and any required mode choice free of provider
-resolution.
-
 ### 2. Follow One Mode Branch
 
 Follow exactly one branch:
@@ -52,9 +48,3 @@ Follow exactly one branch:
   `./write-update.md`.
 
 Pass the preserved initial intention to the selected branch when available.
-
----
-
-## Safety
-
-- Do not create a plan, change item status, or start implementation.
