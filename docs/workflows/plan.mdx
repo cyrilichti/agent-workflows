@@ -8,6 +8,9 @@ It first checks that the task can be delivered as one coherent unit. If the
 task is too broad, standalone mode reports why and stops; caller mode returns
 the findings so the caller can offer `/refine`. The final approval covers the
 complete plan and autonomous delivery through `/inspect`, but never `/done`.
+The proposal stays in the conversation until approval, so adjustment,
+abandonment, missing-specialist, and failure paths do not leave an executable
+plan file behind.
 
 ## Dispatching external skills
 
@@ -71,7 +74,7 @@ complete plan and autonomous delivery through `/inspect`, but never `/done`.
     <tr>
       <td>3</td>
       <th scope="row">Specialist</th>
-      <td>Select the right specialist to inspect the technical context and author the plan.</td>
+      <td>Require the right specialist to inspect the technical context and author the proposal.</td>
     </tr>
     <tr>
       <td>4</td>
@@ -81,12 +84,12 @@ complete plan and autonomous delivery through `/inspect`, but never `/done`.
     <tr>
       <td>5</td>
       <th scope="row">Review</th>
-      <td>Resolve material questions, show the complete plan and autonomous-delivery scope, then approve or adjust it.</td>
+      <td>Resolve material questions, show the complete proposal and autonomous-delivery scope, then approve or adjust it.</td>
     </tr>
     <tr>
       <td>6</td>
       <th scope="row">Return</th>
-      <td>Return the approved plan or refinement findings to the caller; standalone mode stops.</td>
+      <td>Persist and return the approved plan, or return refinement findings to the caller; standalone mode stops.</td>
     </tr>
   </tbody>
 </table>

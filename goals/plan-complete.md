@@ -13,8 +13,8 @@ One task context produces an approved plan or `needs-refinement`.
   complete content and autonomous-delivery scope were shown.
 - A `needs-refinement` result contains concise findings and creates no plan
   file.
-- Adjustment, abandonment, missing-author, and failure outcomes create no plan
-  file.
+- Adjustment before a later approval, abandonment, missing-author, and failure
+  outcomes create no plan file.
 
 ## Stop Conditions
 

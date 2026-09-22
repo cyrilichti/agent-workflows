@@ -33,9 +33,9 @@ Continue on `refinement-not-needed`. On `needs-refinement`:
 
 ### 2. Resolve Planning Author
 
-Follow `./specialist.md` with `task_context` to activate one plan author.
+Follow `./specialist.md` with `task_context` to activate one proposal author.
 Require one successfully activated profile; when routing selects none or
-activation fails, report that no planning author is available and stop without
+activation fails, report that no proposal author is available and stop without
 a proposal or plan file. The author may inspect the technical context required
 for the proposal and returns proposal content only; reject implementation or
 repository changes as an invalid author result. If the inspection reveals
