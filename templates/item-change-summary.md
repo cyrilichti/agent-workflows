@@ -6,17 +6,17 @@ been presented completely.
 ## Format (Markdown)
 
 ```markdown
-## Changes
+**Changes**
 
-### Added
+**Added**
 
 - <concise addition>
 
-### Modified
+**Modified**
 
 - <concise before-to-after change>
 
-### Removed
+**Removed**
 
 - <concise removal>
 ```
@@ -24,6 +24,7 @@ been presented completely.
 ## Rules
 
 - Compare the revised proposal with the last proposal shown to the user.
+- Use bold inline labels instead of section headings.
 - Include only additions, modifications, and removals that affect item
   content.
 - Omit every empty category.

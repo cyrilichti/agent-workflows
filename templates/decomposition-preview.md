@@ -14,7 +14,7 @@ official parent item into multiple child items.
 ## Format (Markdown)
 
 ```markdown
-## Proposed Decomposition
+**Proposed decomposition**
 
 ### 1. <child title>
 
@@ -34,6 +34,7 @@ Repeat the child section for every proposal.
 ## Rules
 
 - Present the complete decomposition in one preview.
+- Use one concise lead-in and H3 headings only to separate the proposed children.
 - Preserve every child title and Markdown body without synthesizing or
   restructuring them.
 - Number children in a stable order and resolve blocking edges to those

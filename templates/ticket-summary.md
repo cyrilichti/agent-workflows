@@ -8,24 +8,26 @@ dump the raw content unless the user asks for it.
 ## Format (Markdown)
 
 ```markdown
-## <Item title>
+### <Item title>
 
-### Objective
+**Objective**
 
 <summary of what must be achieved>
 
-### Business Context
+**Business context**
 
 <summary of the why and functional context>
 
-### Acceptance Criteria
+**Acceptance criteria**
 
 <summary of verifiable conditions, or "Not specified in the item">
 ```
 
 ## Rules
 
-* Use the item title as the title.
+* Use the item title as an H3 heading so the summary remains subordinate to
+  the surrounding workflow.
+* Use bold inline labels for the summary fields.
 * Synthesize only from the item content.
 * Do not display raw provider content or metadata by default.
 * State when required information is missing.
