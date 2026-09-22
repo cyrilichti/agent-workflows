@@ -43,10 +43,6 @@ candidate_criteria:
   label: agent-shaped
 ```
 
-When neither reference nor query is supplied, the command owns selection among
-the returned open `agent-shaped` candidates. Do not add an assignee criterion
-or validate assignment after resolution.
-
 ### 3. Summarize Item
 
 Use the returned item and provider ID as the complete official item context.
@@ -68,8 +64,7 @@ target_status: in progress
 mode: resolve
 ```
 
-Keep the returned `resolved_target_status`; any ambiguity is resolved before
-plan approval.
+Keep the returned `resolved_target_status` for Step 5.
 
 Follow `./plan.md` with:
 
@@ -122,11 +117,3 @@ Follow `./work.md` in caller mode with:
 plan: approved plan
 item: complete official item context with the observed updated status
 ```
-
----
-
-## Safety
-
-- Preserve the complete official item context across `/plan` and `/work`; never
-  replace it with pasted or inferred metadata.
-- Let `/plan` own planning specialist selection.
