@@ -10,7 +10,7 @@ Resolve update-only context, then follow the shared execution.
 
 Reuse an available provider item ID or title query from the workflow activation
 context. Otherwise ask for the item title or a short title search phrase. Do
-not resolve the provider before this input exists.
+not continue until this input exists.
 
 ### 2. Resolve Provider and Item
 
@@ -28,8 +28,8 @@ reference: user-provided provider item ID, when available
 query: collected title query, when no item ID is available
 ```
 
-Load only that official-item read path for this step. Identify the resolved
-item to the user using its title, status, and link when available.
+Identify the resolved item to the user using its title, status, and link when
+available.
 
 ### 3. Collect Need Description
 

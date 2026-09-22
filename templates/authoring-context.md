@@ -10,7 +10,6 @@ intention: <initial working context or confirmed intention>
 facts_constraints: <when known>
 open_questions: <unresolved questions, including blockers explicitly left open>
 to_spec: accepted | declined <only after an explicit user decision>
-understanding_confirmed: true <only after explicit confirmation>
 official_title: <update only>
 official_body: <update only>
 sources: <user-identified code, specs, files, URLs>
@@ -24,9 +23,7 @@ last_adjustment: <Adjust only>
 - Exclude orchestration, destination, status, assignees, links, provider IDs,
   and other provider results. Official title and body are the only provider
   content allowed, and only for update.
-- Treat `intention` as unconfirmed working context until
-  `understanding_confirmed: true`; never infer confirmation from completeness.
-- Record `to_spec` and `understanding_confirmed` only from explicit user input.
+- Record `to_spec` only from an explicit user decision.
 - Keep a compact working context by updating applicable fields incrementally
   with meaningful answers, sources, and revisions.
 - Remove obsolete content and resolved questions.

@@ -18,9 +18,10 @@ Resolve one existing official item from a configured provider.
    provider ID or native URL. Stop when the URL belongs to another provider.
    Run `./read-item.md` with the normalized ID and caller-requested fields.
    Return the official item and its provider ID, then stop this command.
-2. When neither `reference` nor `query` is available, run
-   `./retrieve-items.md` with `candidate_criteria`, all display fields, a limit
-   of 5, and `allow_empty: true`. Ask using
+2. When neither `reference` nor `query` is available, remove any assignment
+   criterion from `candidate_criteria`, then run `./retrieve-items.md` with the
+   remaining criteria, all display fields, a limit of 5, and `allow_empty:
+   true`. Ask using
    `../templates/select-option.md` with every returned candidate plus `Search
    by title`. Return the selected candidate through Step 4, or continue with
    the supplied title phrase as `query`.
@@ -41,4 +42,4 @@ Resolve one existing official item from a configured provider.
 5. Return the official item and its provider ID to the caller.
 
 All candidates are hints only. Only the final `read-item` result is official
-context. Never filter, validate, or rank by assignment.
+context.

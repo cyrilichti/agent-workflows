@@ -14,6 +14,3 @@ Search a configured provider for items matching a title phrase.
    provider-native query available.
 3. Return at most 5 relevant results.
 4. Return readable title, status, destination, and provider ID for each match.
-
-Do not list every item available from the provider or silently broaden the
-user's query.

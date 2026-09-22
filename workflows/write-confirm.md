@@ -26,8 +26,9 @@ Build the working context according to `../templates/authoring-context.md` from
 the collected intention and, for updates, the official item content.
 
 Read the complete `../agents/item-writer.md` profile and apply it directly to
-the working context. Use `../templates/item-understanding.md` and
-`../templates/item.md` as its phase-specific output contracts.
+the working context. Its qualification output follows
+`../templates/item-understanding.md`; its drafting output follows
+`../templates/item.md`.
 
 When the activation context explicitly requests `to-spec` or a specification
 format, record `to_spec: accepted`. Do not infer this field from detailed or
@@ -36,10 +37,9 @@ internally consistent input.
 ### 2. Qualify the Need
 
 When the activation context explicitly requests immediate drafting, or the
-request is purely mechanical and requires no substantive decision, invoke the
-direct path in `item-writer` and continue to Step 4 with its complete item.
-Otherwise, apply `item-writer` to the working context and follow exactly one
-returned phase:
+request is purely mechanical and requires no substantive decision, continue to
+Step 4. Otherwise, ask `item-writer` to qualify the working context and follow
+exactly one returned phase:
 
 - focused question: collect one answer or source, update the working context,
   and repeat this step;
@@ -55,12 +55,10 @@ returned phase:
 
   Record `to_spec: accepted` after acceptance or `to_spec: declined` after
   refusal, then repeat this step;
-- understanding summary: continue to Step 3;
-- complete item proposal: reject it and repeat this step because only the
-  direct path may return a complete item before understanding is confirmed.
+- understanding summary: continue to Step 3.
 
 If the user leaves a blocking question unanswered, ask whether to preserve it
-as an open question. Never use apparent completeness to bypass qualification.
+as an open question.
 
 ### 3. Confirm Understanding
 
@@ -77,17 +75,16 @@ options:
 
 - `Adjust understanding`: collect one adjustment, update the working context,
   and return to Step 2;
-- `Confirm understanding`: replace `intention` with the exact summary, record
-  `understanding_confirmed: true`, and continue to Step 4.
+- `Confirm understanding`: replace `intention` with the exact summary and
+  continue to Step 4.
 
 Stop without drafting or mutation when confirmation is refused or unavailable.
 Honor a selected Skill's terminal-turn rule before continuing to Step 4.
 
 ### 4. Draft and Present the Item
 
-Use the complete item already returned on the direct path. Otherwise apply
-`item-writer` to the confirmed understanding. Require exactly one complete
-proposed item following `../templates/item.md`, then present it using
+Ask `item-writer` to draft from the current working context. Require exactly one
+complete proposed item following `../templates/item.md`, then present it using
 `../templates/item-preview.md` followed by its current review notes.
 
 ### 5. Confirm or Adjust the Item
@@ -104,11 +101,12 @@ options:
 ```
 
 If the user selects `Adjust item`, update the working context with
-`current_proposal` and `last_adjustment`, then have `item-writer` reassess all
-authoring dimensions. When the adjustment materially changes the confirmed
-need, remove `understanding_confirmed` and return to Step 2. Otherwise present
-the revision according to `../templates/item-change-summary.md` and repeat this
-step.
+`current_proposal` and `last_adjustment`, then ask `item-writer` to draft the
+revision. When it returns `qualification required`, update `intention` with the
+confirmed understanding, `last_adjustment`, and the returned reason, remove
+`current_proposal` and `last_adjustment`, then return to Step 2. Otherwise
+present the revised item according to `../templates/item-change-summary.md` and
+repeat this step.
 
 Do not continue until the user explicitly selects `Save item`.
 If confirmation is refused or unavailable, stop without mutation.

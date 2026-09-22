@@ -1,7 +1,5 @@
 # create-item
 
-Serialize the confirmed item sections as Markdown, then create the issue:
-
 ```text
 tool: save_issue
 arguments:
