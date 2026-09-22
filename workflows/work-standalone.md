@@ -17,8 +17,6 @@ Do not infer or update todo states from Git history or local changes.
 
 ### 3. Follow Shared Execution
 
-After plan selection, execution is autonomous.
-
 Follow `./work-confirm.md` with:
 
 ```text
