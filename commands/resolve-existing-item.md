@@ -13,19 +13,19 @@ Resolve one existing official item from a configured provider.
 
 ## Steps
 
-1. Stop when `candidate_criteria` contains an assignment criterion.
-2. When `reference` is available, load
+1. When `reference` is available, load
    `../providers/<provider>/resolve-item-reference.md` and normalize the exact
    provider ID or native URL. Stop when the URL belongs to another provider.
    Run `./read-item.md` with the normalized ID and caller-requested fields.
    Return the official item and its provider ID, then stop this command.
-3. When neither `reference` nor `query` is available, run
-   `./retrieve-items.md` with `candidate_criteria`, all display fields, a limit
-   of 5, and `allow_empty: true`. Ask using
+2. When neither `reference` nor `query` is available, remove any assignment
+   criterion from `candidate_criteria`, then run `./retrieve-items.md` with the
+   remaining criteria, all display fields, a limit of 5, and `allow_empty:
+   true`. Ask using
    `../templates/select-option.md` with every returned candidate plus `Search
-   by title`. Return the selected candidate through Step 5, or continue with
+   by title`. Return the selected candidate through Step 4, or continue with
    the supplied title phrase as `query`.
-4. Run `./search-items.md` once with `query`, then handle the tolerant result:
+3. Run `./search-items.md` once with `query`, then handle the tolerant result:
    - If no item matches, ask the user to refine the search or stop. Repeat the
      search only when the user provides a refined phrase.
    - If exactly one item matches, select it without requiring an exact title.
@@ -37,9 +37,9 @@ Resolve one existing official item from a configured provider.
      - label: <title, status, and destination when available>
        value: <internal provider item ID>
      ```
-5. Run `./read-item.md` with the resolved provider, selected provider ID, and
+4. Run `./read-item.md` with the resolved provider, selected provider ID, and
    caller-requested fields.
-6. Return the official item and its provider ID to the caller.
+5. Return the official item and its provider ID to the caller.
 
 All candidates are hints only. Only the final `read-item` result is official
 context.
