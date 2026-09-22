@@ -1,9 +1,9 @@
 ---
-title: Turn coding agents into a controlled delivery workflow.
-description: Move from work item to merged request with autonomous delivery, explicit authority boundaries, and synchronized providers.
+title: Turn tickets into reviewed code.
+description: Route the right skills from ticket to plan, code, and review, automate the delivery loop, and keep the final say on merge.
 head:
   - tag: title
-    content: Agent Workflows - controlled delivery workflows for coding agents
+    content: Agent Workflows - turn tickets into reviewed code
   - tag: meta
     attrs:
       property: og:image
@@ -24,8 +24,8 @@ template: splash
 editUrl: false
 hero:
   layout: media-left
-  title: Turn coding agents into a controlled delivery workflow.
-  tagline: From work item to merged request, Agent Workflows selects the right skills, automates delivery, and keeps authority boundaries explicit.
+  title: Turn tickets into reviewed code.
+  tagline: Agent Workflows routes the right skills from ticket to plan, code, and review—automating the delivery loop while you keep the final say on merge.
   image:
     html: |-
       <div class="workflow-hero-media" role="img" aria-label="The write workflow dispatching to the idea-refine skill with Linear as the active provider">
@@ -68,80 +68,63 @@ hero:
   <section class="landing-proof" aria-label="Product facts">
     <div><strong>8</strong><span>workflows</span></div>
     <div><strong>4</strong><span>provider integrations</span></div>
-    <div><strong>33</strong><span>specialized skills</span></div>
-  </section>
-
-  <section class="landing-section landing-intro">
-    <div>
-      <p class="landing-eyebrow">A workflow layer for your agent</p>
-      <h2>Your agent has skills. It still needs a delivery system.</h2>
-    </div>
-    <div>
-      <p>Skills can shape ideas, plan changes, write code, and review requests. On their own, they do not decide what happens next, who may change an external system, or when you should approve the work.</p>
-      <p><strong>Agent Workflows</strong> gives those skills one controlled lifecycle. Each command owns a clear outcome, carries context forward, and stops at the right boundary.</p>
-    </div>
+    <div><strong>34</strong><span>specialized skills</span></div>
   </section>
 
   <section class="landing-section landing-lifecycle" aria-labelledby="lifecycle-title">
-    <p class="landing-eyebrow">One connected lifecycle</p>
-    <h2 id="lifecycle-title">From rough intent to completed work.</h2>
-    <div class="lifecycle-flow" aria-label="Shape, plan, deliver, and review">
-      <article>
-        <span>01</span>
-        <h3>Shape</h3>
-        <p>Turn intent into a clear, right-sized work item.</p>
-        <code>/write · /refine</code>
-      </article>
-      <article>
-        <span>02</span>
-        <h3>Plan</h3>
-        <p>Select the work and approve how it will be delivered.</p>
-        <code>/pick · /plan</code>
-      </article>
-      <article>
-        <span>03</span>
-        <h3>Deliver</h3>
-        <p>Execute, repair, validate, and prepare the request.</p>
-        <code>/work · /ready</code>
-      </article>
-      <article>
-        <span>04</span>
-        <h3>Review</h3>
-        <p>Inspect autonomously, then complete only when requested.</p>
-        <code>/inspect · /done</code>
-      </article>
+    <p class="landing-eyebrow">One governed delivery chain</p>
+    <h2 id="lifecycle-title">From ticket to merge, one continuous workflow.</h2>
+    <p class="landing-lifecycle__intro">Start with a new or existing ticket. Agent Workflows carries its context through planning, implementation, and review—routing the right skills at each step while you decide when to merge.</p>
+    <div class="delivery-map" role="img" aria-label="Agent Workflows lifecycle: shape a ticket, plan the work, start autonomous delivery, loop between delivery and review until no blocking findings remain, then make a human merge decision.">
+      <div class="delivery-map__stages">
+        <article class="delivery-stage delivery-stage--assisted">
+          <header><span>01</span><small>Assisted</small></header>
+          <h3>Shape</h3>
+          <code>/write · /refine</code>
+        </article>
+        <span class="delivery-connector" aria-hidden="true">→</span>
+        <article class="delivery-stage delivery-stage--assisted">
+          <header><span>02</span><small>Assisted</small></header>
+          <h3>Plan</h3>
+          <code>/pick · /plan</code>
+        </article>
+        <span class="delivery-connector" aria-hidden="true">→</span>
+        <div class="delivery-map__start">
+          <span class="delivery-map__human-mark" aria-hidden="true"></span>
+          <small>Human</small>
+          <strong>Start</strong>
+        </div>
+        <span class="delivery-connector" aria-hidden="true">→</span>
+        <div class="delivery-loop">
+          <span class="delivery-loop__label">Autonomous delivery loop</span>
+          <article class="delivery-stage delivery-stage--autonomous delivery-stage--deliver">
+            <header><span>03</span><small>Autonomous</small></header>
+            <h3>Deliver</h3>
+            <code>/work · /ready</code>
+            <strong class="delivery-stage__action">Commit</strong>
+          </article>
+          <article class="delivery-stage delivery-stage--autonomous delivery-stage--review">
+            <header><span>04</span><small>Autonomous</small></header>
+            <h3>Review</h3>
+            <code>/inspect</code>
+          </article>
+          <div class="delivery-loop__lines" aria-hidden="true"><span class="delivery-loop__line delivery-loop__line--forward"></span><span class="delivery-loop__line delivery-loop__line--return"></span></div>
+          <span class="delivery-loop__return-label">Blocking findings</span>
+        </div>
+        <span class="delivery-connector" aria-hidden="true">→</span>
+        <div class="delivery-map__merge">
+          <span class="delivery-map__human-mark" aria-hidden="true"></span>
+          <div><small>Human</small><strong>Merge</strong><code>/done</code></div>
+        </div>
+      </div>
     </div>
     <a class="landing-text-link" href="/agent-workflows/workflows/">Explore all workflows <span aria-hidden="true">→</span></a>
-  </section>
-
-  <section class="landing-section landing-control" aria-labelledby="control-title">
-    <div class="landing-control__heading">
-      <p class="landing-eyebrow">Control is part of the workflow</p>
-      <h2 id="control-title">Autonomy where it helps. Approval where it matters.</h2>
-    </div>
-    <div class="landing-control__grid">
-      <article>
-        <span>Route</span>
-        <h3>Context-aware skills</h3>
-        <p>The workflow selects only the specialist skills the current activity needs.</p>
-      </article>
-      <article>
-        <span>Authorize</span>
-        <h3>One delivery approval</h3>
-        <p>The approved plan drives work through inspection; merge and completion remain separate.</p>
-      </article>
-      <article>
-        <span>Sync</span>
-        <h3>Connected providers</h3>
-        <p>Keep Linear or ClickUp aligned with GitHub or GitLab throughout delivery.</p>
-      </article>
-    </div>
   </section>
 
   <section class="landing-cta">
     <div>
       <p class="landing-eyebrow">Start with one command</p>
-      <h2>Add the workflow layer to your coding agent.</h2>
+      <h2>Add a governed delivery workflow to your coding agent.</h2>
     </div>
     <div class="landing-cta__actions">
       <code>npx skills add cyrilichti/agent-workflows --skill agent-workflows</code>
