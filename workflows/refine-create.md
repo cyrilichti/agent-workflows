@@ -23,7 +23,7 @@ content:
 ```
 
 Map results to local references. Record failures and continue without
-replacement or rollback.
+replacement.
 
 ### 2. Apply Required Child Labels
 
@@ -37,10 +37,8 @@ item_id: created child provider ID
 label: agent-shaped
 ```
 
-Record the label result against each child. Record failures and continue
-without deleting, recreating, or otherwise changing the created child. When
+Record the label result against each child. Record failures and continue. When
 the parent does not contain `agent-shaped`, do not run a label operation.
-Never apply or inherit another parent label.
 
 ### 3. Create Blocking Relations
 
@@ -58,7 +56,7 @@ blocking_item_ids:
 
 Record every edge with a missing endpoint without a provider call. Do not call
 the command when no blocker in the group was created. Record operation failures
-and continue without removing successful relations.
+and continue.
 
 ### 4. Finish
 

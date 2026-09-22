@@ -23,10 +23,10 @@ Keep the selected specialist as sole author. It may inspect user- or
 item-identified technical context read-only.
 
 Have it load `../skills/to-tickets/SKILL.md` completely and run only Steps 1–3
-through `Draft vertical slices`. Require at least two provider-neutral children
-with stable references, meaningful titles, free-form Markdown bodies, and
-genuine blocking edges when applicable. Require every child body to
-communicate:
+through `Draft vertical slices`. Require a provider-neutral draft containing at
+least two autonomous vertical slices that cover the parent scope exactly once.
+Each child has a stable reference, meaningful title, and free-form Markdown
+body that communicates:
 
 - the observable outcome it delivers;
 - the verifiable conditions under which it is complete;
@@ -34,25 +34,21 @@ communicate:
 - every unresolved question that prevents an implementation decision, when
   applicable.
 
-These are content requirements, not required Markdown headings.
-
-Tracker setup is not required for this draft-only invocation. Return every
-blocking edge as:
+These are content requirements, not required Markdown headings. Return an
+acyclic graph of only genuine blockers whose valid, non-self edges use:
 
 ```text
 blocked_ref: stable reference of the child that waits
 blocking_ref: stable reference of the child that must complete first
 ```
 
-The children must be autonomous vertical slices covering the parent scope
-exactly once. Return the draft to `/refine` before Step 4 of `to-tickets`;
-`/refine` owns confirmation and provider operations.
+Tracker setup is not required for this draft-only invocation. Return the draft
+to `/refine` before Step 4 of `to-tickets`; `/refine` owns confirmation and
+provider operations.
 
 ### 2. Review the Decomposition
 
-Verify the complete Step 1 contract, including that every child is independently
-actionable, and an acyclic blocking graph containing only valid, non-self
-references and genuine blockers. Return every deficient child and the complete
+Verify the complete Step 1 contract. Return every deficiency and the complete
 draft to the same specialist for revision, then repeat this step before any
 preview.
 
