@@ -3,10 +3,10 @@ title: /pick
 description: Pick an item, approve its plan, and start autonomous delivery through inspection.
 ---
 
-`/pick` turns a ready item into active work. It lets you choose an item, reviews
-its context, and sends it to `/plan`. Approval authorizes autonomous delivery
-through `/work`, `/ready`, and `/inspect`. When the item needs refinement,
-`/pick` offers `/refine` or stops without changing it.
+`/pick` resolves an official item and reviews its context before sending it to
+`/plan`. Approval moves the item to in progress and authorizes autonomous
+delivery through `/work`, `/ready`, and `/inspect`. When the item needs
+refinement, `/pick` offers `/refine` or stops without changing it.
 
 ## Dispatching workflows
 
@@ -65,12 +65,12 @@ through `/work`, `/ready`, and `/inspect`. When the item needs refinement,
     <tr>
       <td>2</td>
       <th scope="row">Items</th>
-      <td>Find the work items that are ready to start.</td>
+      <td>Resolve a supplied item or find open <code>agent-shaped</code> candidates.</td>
     </tr>
     <tr>
       <td>3</td>
       <th scope="row">Pick</th>
-      <td>Choose the item you want to work on next.</td>
+      <td>Choose an item when resolution requires a decision.</td>
     </tr>
     <tr>
       <td>4</td>
