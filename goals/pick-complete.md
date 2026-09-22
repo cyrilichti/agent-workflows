@@ -7,8 +7,8 @@ its planning result.
 
 ## Success Criteria
 
-- One item from the configured provider was selected and its official summary
-  was shown.
+- One `agent-shaped` item from the configured provider was selected from its
+  official current labels and its summary was shown.
 - An approved plan caused the item to move to `in progress` before `/work`
   received the plan and updated official item context.
 - A `needs-refinement` result left the parent item unchanged by `/pick`,

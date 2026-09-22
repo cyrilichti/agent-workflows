@@ -41,7 +41,11 @@ query: supplied approximate title, when available
 candidate_criteria:
   status: open
   label: agent-shaped
+fields: labels
 ```
+
+Require the final official item to contain the exact `agent-shaped` label.
+Otherwise, identify the item, report that it is not ready for `/pick`, and stop.
 
 ### 3. Summarize Item
 
