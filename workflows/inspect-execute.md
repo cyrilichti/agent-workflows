@@ -70,12 +70,11 @@ item_id: exact official item ID
 label: agent-inspected
 ```
 
-Require `applied: true`, report the completed inspection, and stop. Never
-invoke `/done`.
+Require `applied: true` and finish according to
+`../goals/inspect-complete.md`.
 
 ## Safety
 
 - Limit inspection-owned mutations to publishing new review content and
   applying the final item label. Delegate code, commit, branch, and plan
   changes to `/work`.
-- Never merge, deploy, release, or invoke `/done`.
