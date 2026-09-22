@@ -30,10 +30,3 @@ Follow exactly one branch:
 
 Fail an explicit but incomplete caller handoff instead of switching it to
 standalone mode.
-
----
-
-## Safety
-
-- Do not treat pasted or inferred metadata as an official parent item.
-- Do not change the official parent item.

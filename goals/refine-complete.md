@@ -22,8 +22,7 @@ Report exactly one outcome:
 
 ## Stop Conditions
 
-Stop after one valid outcome or required-operation failure. Do not retry or
-roll back failed creation.
+Stop after reporting one valid outcome or a required-operation failure.
 
 ## Human Validation
 
