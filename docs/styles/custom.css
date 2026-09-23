@@ -2110,7 +2110,15 @@ a.dispatch-node--link:focus-visible {
     line-height: 0;
   }
 
-  .write-flow__loop .write-flow__step--focus::after {
+  .write-flow__loop
+    > .write-flow__loop-title
+    + .write-flow__step--focus {
+    position: relative;
+  }
+
+  .write-flow__loop
+    > .write-flow__loop-title
+    + .write-flow__step--focus::after {
     position: absolute;
     right: 50%;
     bottom: -1.55rem;
