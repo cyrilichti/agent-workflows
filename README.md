@@ -46,7 +46,7 @@ focus on the outcome instead of orchestrating the process.
 
 **Agent**
 
-> The reviewed pull request is ready. You can merge it when you decide.<br>
+> The reviewed pull request has been merged.<br>
 > `/done`
 
 You approve the plan before delivery and decide whether to merge. Everything
