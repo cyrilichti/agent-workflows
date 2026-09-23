@@ -1,6 +1,6 @@
 # Agent Workflows
 
-**Turn a ticket into reviewed code, while keeping the important decisions human.**
+**Automate the delivery loop. Keep the final say.**
 
 [Install Agent Workflows](#quick-start) · [Explore the documentation](https://cyrilichti.github.io/agent-workflows/) · [See every workflow](https://cyrilichti.github.io/agent-workflows/workflows/)
 
