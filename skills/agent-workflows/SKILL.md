@@ -31,7 +31,7 @@ Install or update agent-workflows in the current project.
   local customizations into them.
 - Treat `.agents/plans` as project-owned content. Never copy source-repository
   plans into a consuming project or remove consuming-project plans.
-- Do not create, modify, or remove `.cursor`.
+- Manage only `.cursor/plans` under `.cursor`. Preserve every other path.
 - Do not create commits.
 
 ## Preflight
@@ -51,7 +51,13 @@ Before any mutation:
    bootstrap artifacts. Stop and list every other dirty path.
 5. Require `.agents`, when present, to be a real directory. Stop when it is a
    symlink, file, or Git submodule.
-6. Create a temporary working directory outside `.agents`.
+6. Require `.cursor`, when present, to be a real directory.
+7. Resolve `.cursor/plans` without following it:
+   - continue when it is absent;
+   - continue when it is a symlink whose exact target is
+     `../.agents/plans`;
+   - otherwise stop and report the existing path and its type or target.
+8. Create a temporary working directory outside `.agents`.
 
 ## Download
 
@@ -96,6 +102,52 @@ contents exactly. Do not copy the downloaded `plans` directory.
 
 Do not copy the repository metadata, documentation site, build output,
 dependencies, or unrelated root files.
+
+## Integrate Cursor
+
+Create `.cursor` when absent, then create `.cursor/plans` as a relative symlink
+whose exact target is:
+
+```text
+../.agents/plans
+```
+
+The preflight owns every incompatible existing-path decision. Do not remove or
+replace another `.cursor/plans` path during deployment, and do not modify any
+other `.cursor` content.
+
+## Compose Git Ignore Rules
+
+Preserve the consuming project's root `.gitignore`, or create it when absent.
+Derive the Agent Workflows ignore block from the downloaded `.gitignore` rules
+for `plans/*`, `skills/*`, and every `!skills/<native-skill>/` exception. Prefix
+each derived path with `.agents/`, producing the current equivalent of:
+
+```gitignore
+.agents/plans/*
+
+.agents/skills/*
+!.agents/skills/agent-workflows/
+!.agents/skills/pick/
+!.agents/skills/plan/
+!.agents/skills/write/
+!.agents/skills/refine/
+!.agents/skills/work/
+!.agents/skills/ready/
+!.agents/skills/inspect/
+!.agents/skills/done/
+```
+
+Append only missing effective rules and keep one blank line around the block.
+Do not duplicate rules on repeated execution. Validate with `git check-ignore`
+that:
+
+- a file below `.agents/plans` is ignored;
+- a downloaded external Skill declared only in `skills-lock.json` is ignored;
+- every downloaded native Skill is not ignored.
+
+When existing broader rules prevent these outcomes, correct them only when the
+required change is unambiguous. Otherwise stop and report the conflicting rule.
 
 ## Merge Skill Dependencies
 
@@ -180,7 +232,9 @@ Before reporting success, verify:
 - every fully managed directory equals its downloaded source and contains no
   obsolete path;
 - `.agents/plans` still contains every pre-existing consuming-project plan;
-- `.cursor` was not created or modified;
+- `.cursor/plans` is a symlink to `../.agents/plans` and no other `.cursor`
+  content changed;
+- the effective Git ignore behavior matches Compose Git Ignore Rules;
 - the project lock contains every downloaded Skill entry;
 - every declared Skill is installed;
 - `agent-workflows.yaml` exists;
@@ -192,7 +246,7 @@ Before reporting success, verify:
 Always remove the temporary download after success or failure.
 
 Report whether agent-workflows was installed or updated, which managed sources
-were replaced, that plans were preserved, which lock entries were added or
-replaced, and the configured item and version providers. When GitLab is
-configured, include the `glab` installation and authentication prerequisite in
-the report.
+were replaced, that plans were preserved, the Cursor symlink result, the Git
+ignore rules added, which lock entries were added or replaced, and the
+configured item and version providers. When GitLab is configured, include the
+`glab` installation and authentication prerequisite in the report.
