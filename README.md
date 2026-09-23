@@ -17,7 +17,7 @@ focus on the outcome instead of orchestrating the process.
 
 > I need a ticket for a new customer profile page.
 
-**Agent Workflows**
+**Agent**
 
 > Let’s clarify the need, then create or update the ticket with your approval.<br>
 > `/write`
@@ -26,7 +26,7 @@ focus on the outcome instead of orchestrating the process.
 
 > The ticket is ready. Start the work.
 
-**Agent Workflows**
+**Agent**
 
 > I selected the item and prepared a delivery plan. I am waiting for your approval.<br>
 > `/pick` → `/plan`
@@ -35,7 +35,7 @@ focus on the outcome instead of orchestrating the process.
 
 > Approved.
 
-**Agent Workflows**
+**Agent**
 
 > The right skills implement and review the change. Blocking findings return to the delivery loop.<br>
 > `/work` → `/ready` → `/inspect`
@@ -44,9 +44,9 @@ focus on the outcome instead of orchestrating the process.
 
 > Merge it.
 
-**Agent Workflows**
+**Agent**
 
-> The reviewed pull request is ready to merge.<br>
+> The reviewed pull request is ready. You can merge it when you decide.<br>
 > `/done`
 
 You approve the plan before delivery and decide whether to merge. Everything
