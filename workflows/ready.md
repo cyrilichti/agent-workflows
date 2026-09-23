@@ -36,6 +36,7 @@ handoff instead of switching it to standalone mode.
 
 ## Safety
 
-- Only `/work` may modify the plan, code, or commits.
+- `/ready` may only update checkbox state in the plan's global Validation.
+  Only `/work` may otherwise modify the plan, code, or commits.
 - Do not force-push, merge, deploy, release, or run unplanned checks.
 - Invoke `/inspect` only after every required promotion mutation is observed.
