@@ -2,11 +2,6 @@
 
 **Turn a ticket into reviewed code, while keeping the important decisions human.**
 
-Agent Workflows gives your coding agent one governed delivery path: shape the
-work, approve a plan, deliver and review it, then decide whether to merge. It
-routes the relevant skills and preserves context between each step, so you can
-focus on the outcome instead of orchestrating the process.
-
 [Install Agent Workflows](#quick-start) · [Explore the documentation](https://cyrilichti.github.io/agent-workflows/) · [See every workflow](https://cyrilichti.github.io/agent-workflows/workflows/)
 
 ![Agent Workflows delivery lifecycle: shape and plan work with assistance, approve delivery as a human, let the agent deliver and review in a correction loop, then decide whether to merge.](./public/readme-lifecycle.svg)
