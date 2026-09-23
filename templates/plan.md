@@ -28,6 +28,8 @@ isProject: false
 
 # <Plan title>
 
+<when an official item reference is supplied: **Ticket :** [<exact item ID>](<exact item URL>)>
+
 ## Objective
 
 <what must be achieved>
@@ -73,7 +75,9 @@ isProject: false
   must match exactly in count, order, and wording.
 - Use only supplied or inspected context. Do not add Skill-specific formats,
   estimates, file lists, or checkpoints.
-- Do not duplicate provider metadata in the plan; resolve it at runtime.
+- For official item context, render its exact supplied ID and URL in the ticket
+  reference without reconstructing either value. Omit it for standalone plans.
+- Do not add other provider, item, Git, or request metadata to the plan.
 - Add `## Open Questions` only for unresolved decisions.
 - Only `/work` appends corrective todos after approval. Initial todos omit
   `source`.

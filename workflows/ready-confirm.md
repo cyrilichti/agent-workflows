@@ -19,10 +19,14 @@ the current branch with `../commands/resolve-version-provider.md`,
 backlinks from the delivery context; ask for its number or IID only when neither
 is available. Never search for or substitute another request.
 
-Run only the plan's global Validation. Compare the complete committed diff
-against the request target with the Objective and Expected Outcome. Check only
-that the planned outcome was delivered: do not select a specialist or perform
-a code review.
+Reset every checkbox in the plan's global Validation to unchecked, then run
+every validation item regardless of its prior state. After each successful
+item, check its exact checkbox. Never check a failed or unexecuted item, and do
+not modify any other plan content.
+
+Compare the complete committed diff against the request target with the
+Objective and Expected Outcome. Check only that the planned outcome was
+delivered: do not select a specialist or perform a code review.
 
 For every validation failure or concrete delivery gap, create one
 `delivery_context.source_findings` record defined by
@@ -39,7 +43,8 @@ equal the verified local HEAD.
 
 ### 3. Publish the Plan and Promote
 
-Use the exact complete authoritative plan file content as the request body,
+Re-read the authoritative plan after validation. Use its exact complete content
+as the request body,
 without adding a wrapper, heading, marker, summary, or metadata. Update the
 exact request description, then mark it ready through
 `../commands/update-request.md`. Stop on any failed, unsupported, or unobserved
