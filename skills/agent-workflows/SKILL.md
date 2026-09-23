@@ -138,9 +138,20 @@ each derived path with `.agents/`, producing the current equivalent of:
 !.agents/skills/done/
 ```
 
-Append only missing effective rules and keep one blank line around the block.
-Do not duplicate rules on repeated execution. Validate with `git check-ignore`
-that:
+Treat only these consuming-project patterns as installer-owned:
+
+```text
+.agents/plans/*
+.agents/skills/*
+!.agents/skills/*/
+```
+
+Remove every existing exact line matching one of those patterns, including
+exceptions for native Skills removed from the downloaded version. Append the
+newly derived block once with one blank line around it. Preserve every other
+line and its order. Do not duplicate rules on repeated execution.
+
+Validate with `git check-ignore` that:
 
 - a file below `.agents/plans` is ignored;
 - a downloaded external Skill declared only in `skills-lock.json` is ignored;

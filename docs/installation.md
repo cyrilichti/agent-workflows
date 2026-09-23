@@ -33,8 +33,9 @@ preserved on update. The installer creates `.cursor/plans` as a relative
 symlink to `../.agents/plans` without changing any other Cursor content. An
 existing incompatible path stops the installation instead of being replaced.
 
-The root `.gitignore` is preserved and completed idempotently so project plans
-and restored external Skills stay ignored while native Agent Workflows Skills
+The root `.gitignore` is preserved while its Agent Workflows rules are
+reconciled idempotently so stale native-Skill exceptions disappear, project
+plans and restored external Skills stay ignored, and current native Skills
 remain trackable. Skill lock entries owned by the consuming project are merged
 with Agent Workflows dependencies before `npx skills experimental_install`
 restores them.
