@@ -3,18 +3,13 @@ title: Providers
 description: Connect item and version operations to their configured providers.
 ---
 
-import { Badge } from '@astrojs/starlight/components'
+Agent Workflows separates where work is managed from where code is delivered.
+Configure one provider for each responsibility; workflows route every operation
+to the integration selected by the project.
 
-<div class="provider-badges" aria-label="Supported providers">
-  <Badge text="ClickUp" variant="note" size="large" />
-  <Badge text="Linear" variant="tip" size="large" />
-  <Badge text="GitHub" variant="note" size="large" />
-  <Badge text="GitLab" variant="caution" size="large" />
-</div>
+## Work items: ClickUp or Linear
 
-## Item provider
-
-Select ClickUp or Linear for item operations.
+The item provider owns ticket lookup, creation, updates, and status changes.
 
 ```yaml
 mcp:
@@ -22,9 +17,9 @@ mcp:
     provider: linear # or clickup
 ```
 
-## Version provider
+## Code delivery: GitHub or GitLab
 
-Select GitHub or GitLab for version operations.
+The version provider owns branches, commits, pull or merge requests, and reviews.
 
 ```yaml
 mcp:

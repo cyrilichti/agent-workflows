@@ -1,56 +1,52 @@
 ---
 title: Workflows
-description: Controlled sequences of skills that move work forward.
+description: Eight entry points across one governed delivery chain.
 ---
 
 import { CardGrid, LinkCard } from '@astrojs/starlight/components'
 
-Each workflow puts the right skills in order, carries context forward, and
-keeps approval and provider boundaries explicit.
-
-The playbook checks these explicit lifecycle routes first. When none matches,
-it passes the request context to optional specialist routing. A matching theme
-retains or activates the appropriate profile; otherwise, the original request
-continues without a profile or activation announcement.
+The workflows move the same work from ticket to merge. Shape and plan with
+assisted workflows, approve the start of delivery, then let the autonomous loop
+implement and review the change. `/done` remains a separate human decision.
 
 <CardGrid>
   <LinkCard
-    title={'<span class="workflow-badge workflow-badge--write">/write</span>'}
+    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/write</span><span class="workflow-card-mode">Assisted · Shape</span></span>'}
     href="/agent-workflows/workflows/write/"
     description="Turn an idea or an existing item into a clear work item, review it before saving, and assign it when needed."
   />
   <LinkCard
-    title={'<span class="workflow-badge workflow-badge--pick">/pick</span>'}
-    href="/agent-workflows/workflows/pick/"
-    description="Resolve a work item, review its context, approve an implementation plan, and start delivery."
-  />
-  <LinkCard
-    title={'<span class="workflow-badge workflow-badge--plan">/plan</span>'}
-    href="/agent-workflows/workflows/plan/"
-    description="Turn a task into an implementation plan, whether you start with /plan or come from another workflow."
-  />
-  <LinkCard
-    title={'<span class="workflow-badge workflow-badge--refine">/refine</span>'}
+    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/refine</span><span class="workflow-card-mode">Assisted · Shape</span></span>'}
     href="/agent-workflows/workflows/refine/"
     description="Split one oversized official item into confirmed provider-backed child items."
   />
   <LinkCard
-    title={'<span class="workflow-badge workflow-badge--work">/work</span>'}
+    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/pick</span><span class="workflow-card-mode">Assisted · Plan</span></span>'}
+    href="/agent-workflows/workflows/pick/"
+    description="Resolve a work item, review its context, approve an implementation plan, and start delivery."
+  />
+  <LinkCard
+    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/plan</span><span class="workflow-card-mode">Assisted · Plan</span></span>'}
+    href="/agent-workflows/workflows/plan/"
+    description="Turn a task into an implementation plan, whether you start with /plan or come from another workflow."
+  />
+  <LinkCard
+    title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/work</span><span class="workflow-card-mode">Autonomous · Deliver</span></span>'}
     href="/agent-workflows/workflows/work/"
     description="Execute a selected plan and corrective todos, then continue automatically to /ready."
   />
   <LinkCard
-    title={'<span class="workflow-badge workflow-badge--ready">/ready</span>'}
+    title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/ready</span><span class="workflow-card-mode">Autonomous · Deliver</span></span>'}
     href="/agent-workflows/workflows/ready/"
     description="Verify completed work, publish its plan, promote the request, and continue to /inspect."
   />
   <LinkCard
-    title={'<span class="workflow-badge workflow-badge--inspect">/inspect</span>'}
+    title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/inspect</span><span class="workflow-card-mode">Autonomous · Review</span></span>'}
     href="/agent-workflows/workflows/inspect/"
     description="Inspect one frozen request snapshot, publish every finding, and return blocking work automatically."
   />
   <LinkCard
-    title={'<span class="workflow-badge workflow-badge--done">/done</span>'}
+    title={'<span class="workflow-card-title workflow-card-title--human"><span class="workflow-card-command">/done</span><span class="workflow-card-mode">Human · Merge</span></span>'}
     href="/agent-workflows/workflows/done/"
     description="Confirm and squash-merge one exact request, then complete its official item."
   />
