@@ -43,7 +43,10 @@ infrastructure, quality, and review;
 - **provider routing** for Linear or ClickUp and GitHub or GitLab.
 
 It installs into your project's `.agents/` context and keeps upstream skill
-dependencies recorded in `skills-lock.json`.
+dependencies recorded in `skills-lock.json`. Updates replace managed workflow
+sources so deprecated files disappear, preserve project plans, and expose those
+plans to Cursor through `.cursor/plans`. Review the generated Git diff to
+restore any project-specific customization of managed sources.
 
 ## From intent to done
 
