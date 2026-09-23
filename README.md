@@ -1,31 +1,12 @@
 # Agent Workflows
 
-**Turn specialized agent skills into one controlled delivery system.**
+**Automate the delivery loop. Keep the final say.**
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./public/og.png">
-  <source media="(prefers-color-scheme: light)" srcset="./public/og-light.png">
-  <img
-    alt="Agent Workflows — controlled delivery workflows for coding agents"
-    src="./public/og-light.png"
-  >
-</picture>
+[Install Agent Workflows](#quick-start) · [Explore the documentation](https://cyrilichti.github.io/agent-workflows/) · [See every workflow](https://cyrilichti.github.io/agent-workflows/workflows/)
 
-Skills are good at individual jobs. They do not decide which specialist should
-run next, how context moves between steps, or when an agent is allowed to change
-your work tracker and repository.
+![Agent Workflows delivery lifecycle: shape and plan work with assistance, start autonomous delivery as a human, loop between delivery and review until no blocking findings remain, then make a human merge decision.](./public/readme-lifecycle.svg)
 
-**Agent Workflows** connects them. One install adds a complete delivery system
-to your coding agent—from rough intent to merged request—with the right skill
-at each step and explicit authority boundaries.
-
-<p>
-  <a href="https://cyrilichti.github.io/agent-workflows/">Documentation</a><br>
-  <a href="https://cyrilichti.github.io/agent-workflows/installation/">Installation</a><br>
-  <a href="https://cyrilichti.github.io/agent-workflows/workflows/">Explore the workflows</a>
-</p>
-
-## One install.
+## Quick start
 
 ```bash
 npx skills add cyrilichti/agent-workflows --skill agent-workflows
@@ -33,87 +14,63 @@ npx skills add cyrilichti/agent-workflows --skill agent-workflows
 
 Then run `/agent-workflows` once to install or update the system in your project.
 
-It brings together:
+## What it feels like
 
-- **8 connected workflows** that own the delivery lifecycle;
-- **33 curated skills** selected from specialized upstream packages;
-- **specialist agent profiles** for implementation, product, design, data,
-infrastructure, quality, and review;
-- **reusable commands and rules** for repeatable execution;
-- **provider routing** for Linear or ClickUp and GitHub or GitLab.
+**You**
 
-It installs into your project's `.agents/` context and keeps upstream skill
-dependencies recorded in `skills-lock.json`. Updates replace managed workflow
-sources so deprecated files disappear, preserve project plans, and expose those
-plans to Cursor through `.cursor/plans`. Review the generated Git diff to
-restore any project-specific customization of managed sources.
+> I need a ticket for a new customer profile page.
 
-## From intent to done
+**Agent**
 
+> Let’s clarify the need, then create or update the ticket with your approval.<br>
+> `/write`
 
-| Stage       | Purpose                                                    | Workflows            |
-| ----------- | ---------------------------------------------------------- | -------------------- |
-| **Shape**   | Turn intent into a clear, right-sized work item            | `/write` · `/refine` |
-| **Plan**    | Select the work and approve how it will be delivered       | `/pick` · `/plan`    |
-| **Deliver** | Execute, repair, validate, and prepare the request         | `/work` · `/ready`   |
-| **Review**  | Inspect autonomously, then complete only when requested    | `/inspect` · `/done` |
+**You**
 
+> The ticket is ready. Start the work.
 
+**Agent**
 
+> I selected the item and prepared a delivery plan. I am waiting for your approval.<br>
+> `/pick` → `/plan`
 
-## The problem it solves
+**You**
 
-- **Skills stay isolated.** Workflows select and sequence them around a concrete
-delivery outcome.
-- **Agents improvise the process.** Each workflow defines what happens, what
-context is preserved, and where execution stops.
-- **Context gets lost between prompts.** Approved outputs are handed to the next
-workflow instead of being reconstructed.
-- **Tool calls hide side effects.** One informed plan approval authorizes the
-delivery loop; merge and completion remain separate.
-- **Tickets and code drift apart.** Item and version providers are updated as one
-connected lifecycle.
+> Approved.
 
-This is not another collection of prompts. It is the control layer that makes
-specialized skills work together as a delivery system.
+**Agent**
 
-## Start a workflow
+> The right skills implement and review the change. Blocking findings return to the delivery loop.<br>
+> `/work` → `/ready` → `/inspect`
 
-Invoke the activity you need. The workflow loads the relevant context, selects
-the required skills and specialists, controls their sequence, and can dispatch
-the approved result to the next workflow.
+**You**
 
-```text
-/pick → /plan → /work → /ready → /inspect ↺ /work on blocking findings
-/done remains explicit and separate
-```
+> Merge it.
 
-You can also enter the lifecycle at any workflow—for example `/pick` to select
-an existing item before planning it.
+**Agent**
 
-## Works with
+> The reviewed pull request has been merged.<br>
+> `/done`
 
+Agent Workflows installs into your project's `.agents/` context. See the
+[installation guide](https://cyrilichti.github.io/agent-workflows/installation/)
+for provider setup and update behaviour.
 
-| Work items       | Version control |
-| ---------------- | --------------- |
+## Work with your existing tools
+
+| Work items | Version control |
+| --- | --- |
 | Linear · ClickUp | GitHub · GitLab |
 
-
-Linear, ClickUp, and GitHub require their corresponding MCP integrations.
-GitLab requires the authenticated official `glab` CLI. See the
-[provider setup](https://cyrilichti.github.io/agent-workflows/providers/).
+See [provider setup](https://cyrilichti.github.io/agent-workflows/providers/) for the required integrations.
 
 ## Documentation
 
-Explore the [installation guide](https://cyrilichti.github.io/agent-workflows/installation/),
-[provider setup](https://cyrilichti.github.io/agent-workflows/providers/), and
-[workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
+Start with the [installation guide](https://cyrilichti.github.io/agent-workflows/installation/), then explore [provider setup](https://cyrilichti.github.io/agent-workflows/providers/) and the [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
 
-## Contributing
+## Community
 
-New workflows and skill integrations are welcome. See
-[CONTRIBUTING.md](./CONTRIBUTING.md) to propose a workflow, declare its external
-skill dependencies, and prepare a pull request.
+New workflows and skill integrations are welcome. Read [Contributing](./CONTRIBUTING.md), [Support](./SUPPORT.md), [Security](./SECURITY.md), and the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## License
 

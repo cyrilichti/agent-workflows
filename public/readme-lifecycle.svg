@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1640 460" role="img" aria-labelledby="title description">
+  <title id="title">Agent Workflows delivery lifecycle</title>
+  <desc id="description">Shape and plan work with assistance, start autonomous delivery as a human, loop between delivery and review until no blocking findings remain, then make a human merge decision.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#07111f"/><stop offset="1" stop-color="#0a1220"/></linearGradient>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse"><path d="M 64 0 L 0 0 0 64" fill="none" stroke="#233246" stroke-opacity=".45"/></pattern>
+  </defs>
+  <rect width="1640" height="460" rx="28" fill="url(#background)"/>
+  <rect x="1" y="1" width="1638" height="458" rx="27" fill="url(#grid)" stroke="#2e4763"/>
+  <text x="1070" y="56" text-anchor="middle" fill="#67a7ff" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" letter-spacing="2.5">AUTONOMOUS DELIVERY LOOP</text>
+  <g font-family="ui-sans-serif, system-ui, sans-serif">
+    <g transform="translate(52 116)"><rect width="210" height="188" rx="20" fill="#091321" stroke="#3c5571"/><text x="28" y="45" fill="#9fb0c6" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14">01 · ASSISTED</text><text x="28" y="100" fill="#f8fbff" font-size="31">Shape</text><text x="28" y="146" fill="#9bc6ff" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18">/write · /refine</text></g>
+    <path d="M 276 210 H 314" stroke="#708198" stroke-width="3"/><path d="M 314 210 l-10 -7 v14 z" fill="#708198"/>
+    <g transform="translate(330 116)"><rect width="210" height="188" rx="20" fill="#091321" stroke="#3c5571"/><text x="28" y="45" fill="#9fb0c6" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14">02 · ASSISTED</text><text x="28" y="100" fill="#f8fbff" font-size="31">Plan</text><text x="28" y="146" fill="#9bc6ff" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18">/pick · /plan</text></g>
+    <path d="M 554 210 H 592" stroke="#708198" stroke-width="3"/><path d="M 592 210 l-10 -7 v14 z" fill="#708198"/>
+    <g transform="translate(608 116)"><rect width="150" height="188" rx="20" fill="#0a1d1c" stroke="#3f9570"/><circle cx="35" cy="94" r="13" fill="none" stroke="#70f6ac" stroke-width="4"/><circle cx="35" cy="94" r="5" fill="#70f6ac"/><text x="58" y="83" fill="#70f6ac" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14">HUMAN</text><text x="58" y="110" fill="#dfffee" font-size="21" font-weight="700">Start</text></g>
+    <path d="M 772 210 H 810" stroke="#708198" stroke-width="3"/><path d="M 810 210 l-10 -7 v14 z" fill="#708198"/>
+    <g transform="translate(826 116)"><rect width="210" height="188" rx="20" fill="#091321" stroke="#3f7fc8"/><text x="28" y="45" fill="#67a7ff" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14">03 · AUTONOMOUS</text><text x="28" y="100" fill="#f8fbff" font-size="31">Deliver</text><text x="28" y="146" fill="#9bc6ff" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18">/work · /ready</text></g>
+    <path d="M 1050 196 H 1088" stroke="#67a7ff" stroke-width="3"/><path d="M 1088 196 l-10 -7 v14 z" fill="#67a7ff"/>
+    <path d="M 1088 224 H 1050" stroke="#ff8992" stroke-width="3"/><path d="M 1050 224 l10 -7 v14 z" fill="#ff8992"/>
+    <g transform="translate(1104 116)"><rect width="210" height="188" rx="20" fill="#091321" stroke="#3f7fc8"/><text x="28" y="45" fill="#67a7ff" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14">04 · AUTONOMOUS</text><text x="28" y="100" fill="#f8fbff" font-size="31">Review</text><text x="28" y="146" fill="#9bc6ff" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18">/inspect</text></g>
+    <path d="M 1328 210 H 1366" stroke="#708198" stroke-width="3"/><path d="M 1366 210 l-10 -7 v14 z" fill="#708198"/>
+    <g transform="translate(1382 116)"><rect width="190" height="188" rx="20" fill="#0a1d1c" stroke="#3f9570"/><circle cx="35" cy="94" r="13" fill="none" stroke="#70f6ac" stroke-width="4"/><circle cx="35" cy="94" r="5" fill="#70f6ac"/><text x="58" y="83" fill="#70f6ac" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14">HUMAN</text><text x="58" y="110" fill="#dfffee" font-size="21" font-weight="700">Merge</text><text x="58" y="145" fill="#9bc6ff" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18">/done</text></g>
+    <text x="1070" y="350" text-anchor="middle" fill="#ff9aa2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15" letter-spacing="1.6">BLOCKING FINDINGS</text>
+  </g>
+</svg>
