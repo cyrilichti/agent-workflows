@@ -1,96 +1,85 @@
 ---
 title: /pick
-description: Pick an item, approve its plan, and start autonomous delivery through inspection.
+description: Select one agent-shaped item, approve its plan, and start autonomous delivery.
 ---
 
-`/pick` resolves an official item and reviews its context before sending it to
-`/plan`. Approval moves the item to in progress and authorizes autonomous
-delivery through `/work`, `/ready`, and `/inspect`. When the item needs
-refinement, `/pick` offers `/refine` or stops without changing it.
+`/pick` resolves one official item, shows its current context, and sends it to
+planning. An approved plan starts autonomous delivery; an item containing
+multiple delivery units can be handed to `/refine` without changing it first.
 
-## Dispatching workflows
+## How `/pick` routes the item
 
-<div className="dispatch-map dispatch-map--vertical">
-<div className="dispatch-node dispatch-node--workflow" data-workflow="pick">
-    <span className="dispatch-node__label">Workflow</span>
-    <strong>/pick</strong>
-    <span>Selects one item and owns the workflow sequence</span>
+<div class="write-flow pick-flow" role="group" aria-label="The pick workflow resolves and summarizes one agent-shaped item, sends it to planning, then either starts autonomous work after human plan approval or asks the human whether to refine an item that contains multiple delivery units.">
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>01 · Assisted</small>
+    <strong>Pick item</strong>
+    <span>Resolve and show one open, provider-backed item labeled <code>agent-shaped</code>.</span>
   </div>
 
-  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
 
-  <a
-    className="dispatch-node dispatch-node--workflow dispatch-node--link"
-    data-workflow="plan"
-    href="/agent-workflows/workflows/plan/"
-  >
-    <span className="dispatch-node__label">Workflow</span>
+  <a class="write-flow__step write-flow__step--workflow" href="/agent-workflows/workflows/plan/">
+    <small>Workflow</small>
     <strong>/plan</strong>
-    <span>Creates and approves the implementation plan</span>
+    <span>Return an approved plan or <code>needs-refinement</code>.</span>
   </a>
 
-  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+  <div class="pick-flow__fork">
+    <section class="pick-flow__path pick-flow__path--delivery">
+      <small class="pick-flow__path-label">Approved plan</small>
+      <div class="write-flow__step write-flow__step--human">
+        <small>Human</small>
+        <strong>Start delivery</strong>
+        <span>Approval authorizes the autonomous delivery loop.</span>
+      </div>
+      <span class="write-flow__connector" aria-hidden="true">↓</span>
+      <a class="write-flow__step write-flow__step--workflow write-flow__step--focus" href="/agent-workflows/workflows/work/">
+        <small>Workflow</small>
+        <strong>/work</strong>
+        <span>Receive the approved plan after the item moves to <code>in progress</code>.</span>
+      </a>
+    </section>
 
-  <div className="dispatch-skills dispatch-skills--conditional">
-    <a
-      className="dispatch-node dispatch-node--workflow dispatch-node--link"
-      data-workflow="work"
-      href="/agent-workflows/workflows/work/"
-    >
-      <span className="dispatch-node__label">Workflow</span>
-      <strong>/work</strong>
-      <span>Executes the plan</span>
-    </a>
-    <a
-      className="dispatch-node dispatch-node--workflow dispatch-node--link"
-      data-workflow="refine"
-      href="/agent-workflows/workflows/refine/"
-    >
-      <span className="dispatch-node__label">Workflow</span>
-      <strong>/refine</strong>
-      <span>Splits the item after confirmation</span>
-    </a>
+    <section class="pick-flow__path pick-flow__path--refine">
+      <small class="pick-flow__path-label">Needs refinement</small>
+      <div class="write-flow__step write-flow__step--human">
+        <small>Human</small>
+        <strong>Refine or stop</strong>
+        <span>Choose refinement or leave the item unchanged.</span>
+      </div>
+      <span class="write-flow__connector" aria-hidden="true">↓</span>
+      <a class="write-flow__step write-flow__step--workflow" href="/agent-workflows/workflows/refine/">
+        <small>Workflow</small>
+        <strong>/refine</strong>
+        <span>Split the item into confirmed delivery units, then stop `/pick`.</span>
+      </a>
+    </section>
   </div>
 </div>
 
-## How this workflow is structured
+## What `/pick` does
 
-<table className="workflow-steps">
+<table class="workflow-steps">
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Provider</th>
-      <td>Load the configured work item provider.</td>
+      <th scope="row">Pick</th>
+      <td>Resolve and present one open official item whose labels include <code>agent-shaped</code>.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Items</th>
-      <td>Resolve an item and require its official current labels to contain <code>agent-shaped</code>.</td>
+      <th scope="row">Plan</th>
+      <td>Run <code>/plan</code> and receive either an approved plan or concise <code>needs-refinement</code> findings.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Pick</th>
-      <td>Choose an item when resolution requires a decision.</td>
+      <th scope="row">Route</th>
+      <td>On refinement, ask the human to run <code>/refine</code> or stop; otherwise continue with the approved plan.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Context</th>
-      <td>Review the item's full context before planning.</td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <th scope="row">Plan</th>
-      <td>Approve a plan, or choose whether to refine an oversized item.</td>
-    </tr>
-    <tr>
-      <td>6</td>
       <th scope="row">Start</th>
-      <td>After approval, move the item to in progress.</td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <th scope="row">Work</th>
-      <td>Continue with <code>/work</code>; delivery then runs autonomously through inspection.</td>
+      <td>Move the item to <code>in progress</code>, report the observed status, and continue with <code>/work</code>.</td>
     </tr>
   </tbody>
 </table>

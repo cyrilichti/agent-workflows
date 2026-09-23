@@ -1,106 +1,137 @@
 ---
 title: /write
-description: Create or improve one work item with the right writing skill for the current need.
+description: Turn a rough need or existing item into one confirmed, provider-backed ticket.
 ---
 
-`/write` qualifies one new or existing item before drafting it. For non-trivial
-needs, it treats the initial description as working context, asks progressive
-questions, challenges relevance, risks, assumptions, constraints, and success
-criteria, then confirms a concise understanding summary. Only then does it
-produce one complete item proposal. Purely mechanical work or an explicit
-request for immediate drafting skips qualification and goes directly to the
-proposal, but the title and body still require confirmation before save.
+`/write` turns a rough need or an existing item into one confirmed,
+provider-backed ticket. It asks only for missing context, routes qualification
+to the best-fit writing skill when needed, and never saves without human
+approval.
 
-The workflow reuses available conversation and project context to avoid mode,
-intention, provider, and destination questions that are already answered. After
-confirmation, it saves the item and applies `agent-shaped`; a label failure is
-reported without failing the save. The label records use of `/write`, not
-readiness, feasibility, or size.
+## How `/write` shapes an item
 
-## Dispatching external skills
-
-<div class="dispatch-map dispatch-map--vertical">
-<div class="dispatch-node dispatch-node--workflow" data-workflow="write">
-    <span class="dispatch-node__label">Workflow</span>
-    <strong>/write</strong>
-    <span>Owns the execution flow</span>
+<div class="write-flow" role="img" aria-label="The write workflow resolves the target, loops between a focused question and a human answer until the need is clear, asks the human to confirm its understanding, then loops between drafting and human review until the item is approved for saving.">
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>01 · Assisted</small>
+    <strong>Resolve</strong>
+    <span>Create or update, provider, and target.</span>
   </div>
 
-  <span class="dispatch-arrow" aria-hidden="true">↓</span>
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
 
-  <div class="dispatch-skills">
-    <a
-      class="dispatch-skill dispatch-skill--interview dispatch-skill--cohort-product"
-      href="https://github.com/addyosmani/agent-skills/tree/main/skills/interview-me"
-    >
-      <span class="dispatch-skill__label">Skill</span>
-      <span>Intent is unclear</span>
-      <strong>interview-me ↗</strong>
-      <small>Addy Osmani</small>
-    </a>
-    <a
-      class="dispatch-skill dispatch-skill--idea dispatch-skill--cohort-product"
-      href="https://github.com/addyosmani/agent-skills/tree/main/skills/idea-refine"
-    >
-      <span class="dispatch-skill__label">Skill</span>
-      <span>Direction is open</span>
-      <strong>idea-refine ↗</strong>
-      <small>Addy Osmani</small>
-    </a>
-    <a
-      class="dispatch-skill dispatch-skill--grilling dispatch-skill--cohort-product"
-      href="https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling"
-    >
-      <span class="dispatch-skill__label">Skill</span>
-      <span>Decisions need challenging</span>
-      <strong>grilling ↗</strong>
-      <small>Matt Pocock</small>
-    </a>
-    <a
-      class="dispatch-skill dispatch-skill--to-spec dispatch-skill--cohort-product"
-      href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec"
-    >
-      <span class="dispatch-skill__label">Skill</span>
-      <span>Specification format suggested and accepted</span>
-      <strong>to-spec ↗</strong>
-      <small>Matt Pocock</small>
-    </a>
+  <div class="write-flow__loop">
+    <span class="write-flow__loop-title">Questioning loop</span>
+    <div class="write-flow__step write-flow__step--focus">
+      <small>02 · Assisted</small>
+      <strong>Ask one focused question</strong>
+      <span>Challenge only what is relevant and still unclear.</span>
+    </div>
+    <div class="write-flow__loop-lines" aria-hidden="true">
+      <span class="write-flow__loop-line write-flow__loop-line--question"></span>
+      <span class="write-flow__loop-line write-flow__loop-line--answer"></span>
+    </div>
+    <div class="write-flow__step write-flow__step--human">
+      <small>Human</small>
+      <strong>Answer</strong>
+      <span>Add the missing decision or source.</span>
+    </div>
+    <span class="write-flow__loop-return">More context needed</span>
+  </div>
+
+  <span class="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Need is clear</small>↓</span>
+
+  <div class="write-flow__step write-flow__step--human">
+    <small>Human</small>
+    <strong>Confirm understanding</strong>
+    <span>Validate the outcome before drafting.</span>
+  </div>
+
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
+
+  <div class="write-flow__loop">
+    <span class="write-flow__loop-title">Revision loop</span>
+    <div class="write-flow__step write-flow__step--focus">
+      <small>03 · Assisted</small>
+      <strong>Draft one item</strong>
+      <span>Present one complete proposal.</span>
+    </div>
+    <div class="write-flow__loop-lines" aria-hidden="true">
+      <span class="write-flow__loop-line write-flow__loop-line--question"></span>
+      <span class="write-flow__loop-line write-flow__loop-line--answer"></span>
+    </div>
+    <div class="write-flow__step write-flow__step--human">
+      <small>Human</small>
+      <strong>Review proposal</strong>
+      <span>Save it or request an adjustment.</span>
+    </div>
+    <span class="write-flow__loop-return">Adjust item</span>
+  </div>
+
+  <span class="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Save item</small>↓</span>
+
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>04 · Workflow</small>
+    <strong>Create or update item</strong>
+    <span>Persist the confirmed title and body, then apply <code>agent-shaped</code>.</span>
   </div>
 </div>
 
-## How this workflow is structured
+## Skills used under the hood
+
+Qualification loads at most one skill at a time. When none of these conditions
+applies, `/write` qualifies the need directly without loading a skill.
+
+<div class="workflow-links">
+  <a href="https://github.com/addyosmani/agent-skills/tree/main/skills/interview-me">
+    <small>Intent is unclear</small>
+    <strong>interview-me <span aria-hidden="true">↗</span></strong>
+    <span>Ask focused questions until the actual need is understood.</span>
+  </a>
+  <a href="https://github.com/addyosmani/agent-skills/tree/main/skills/idea-refine">
+    <small>Direction is open</small>
+    <strong>idea-refine <span aria-hidden="true">↗</span></strong>
+    <span>Explore and narrow an idea before committing to a direction.</span>
+  </a>
+  <a href="https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling">
+    <small>Decisions need challenging</small>
+    <strong>grilling <span aria-hidden="true">↗</span></strong>
+    <span>Test assumptions, risks, and unsupported choices.</span>
+  </a>
+  <a href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec">
+    <small>Specification format accepted</small>
+    <strong>to-spec <span aria-hidden="true">↗</span></strong>
+    <span>Structure the result as a specification after explicit opt-in.</span>
+  </a>
+</div>
+
+## What `/write` does
 
 <table class="workflow-steps">
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Mode</th>
-      <td>Infer create or reformulate from explicit intent, and ask only when the request is bare or ambiguous.</td>
+      <th scope="row">Resolve</th>
+      <td>Infer create or update, resolve the configured provider, then find the destination or existing item.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Context</th>
-      <td>Reuse the available intention and item reference, resolve the configured provider through the active MCP runtime, and try an explicit destination or the current project name before asking.</td>
+      <th scope="row">Qualify</th>
+      <td>Ask only for decisions that are still missing. Use at most one best-fit writing skill when it helps.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Qualification</th>
-      <td>For non-trivial needs, ask progressive contextual questions and challenge relevance, risks, assumptions, constraints, and success criteria before drafting.</td>
+      <th scope="row">Understand</th>
+      <td>For qualified needs, require human confirmation of the concise understanding before drafting.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Understanding</th>
-      <td>Confirm one concise understanding summary. Suggest <code>to-spec</code> when its format would help, and activate it only after explicit acceptance.</td>
+      <th scope="row">Draft</th>
+      <td>Present one complete item, revise it when requested, and wait for an explicit <code>Save item</code> decision.</td>
     </tr>
     <tr>
       <td>5</td>
-      <th scope="row">Draft and review</th>
-      <td>Produce one complete proposal after confirmed understanding, then adjust it or confirm its title and body for saving.</td>
-    </tr>
-    <tr>
-      <td>6</td>
       <th scope="row">Save</th>
-      <td>Save the confirmed content, apply `agent-shaped`, and report the result.</td>
+      <td>Create or update the item, apply <code>agent-shaped</code>, and report the provider result.</td>
     </tr>
   </tbody>
 </table>

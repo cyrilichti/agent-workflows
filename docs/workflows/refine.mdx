@@ -3,82 +3,132 @@ title: /refine
 description: Split one oversized work item into confirmed child items without changing the parent.
 ---
 
-`/refine` splits one oversized official item into confirmed child items. Start
-it directly by selecting an item, or enter from `/pick` after `/plan` returns
-`needs-refinement` and you choose to refine the item.
+`/refine` decomposes one oversized official item into autonomous child items.
+The parent stays unchanged, and no child is created before the human confirms
+the complete decomposition.
 
-## Dispatching external skills
+## How `/refine` decomposes an item
 
-<div class="dispatch-map dispatch-map--vertical dispatch-map--refine">
-<div class="dispatch-node dispatch-node--workflow" data-workflow="refine">
-    <span class="dispatch-node__label">Workflow</span>
-    <strong>/refine</strong>
-    <span>Owns official context, confirmation, and provider mutations</span>
+<div class="write-flow refine-flow" role="img" aria-label="The refine workflow confirms that an official item needs refinement, then loops between drafting and validating autonomous child items. It previews the complete decomposition for human adjustment, confirmation, or cancellation. After confirmation, it creates the children, labels, and blocking relations without changing the parent.">
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>01 · Standalone only</small>
+    <strong>Check refinement need</strong>
+    <span>Confirm that the item contains multiple autonomous delivery units.</span>
   </div>
 
-  <span class="dispatch-arrow" aria-hidden="true">↓</span>
+  <div class="plan-flow__scope">
+    <section class="plan-flow__scope-path plan-flow__scope-path--continue">
+      <small class="pick-flow__path-label">Refinement needed</small>
+      <div class="write-flow__step write-flow__step--focus">
+        <small>02 · Assisted</small>
+        <strong>Draft child items</strong>
+        <span>Cover the parent scope exactly once with autonomous vertical slices.</span>
+      </div>
+    </section>
+    <section class="plan-flow__scope-path">
+      <small class="pick-flow__path-label">One delivery unit</small>
+      <div class="write-flow__step">
+        <small>Outcome</small>
+        <strong>No changes</strong>
+        <span>Report <code>refinement-not-needed</code> and stop.</span>
+      </div>
+    </section>
+  </div>
 
-  <a
-    class="dispatch-skill dispatch-skill--planning dispatch-skill--cohort-architecture"
-    href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown"
-  >
-    <span class="dispatch-skill__label">Skill</span>
-    <span>Standalone only: confirm that refinement is needed</span>
-    <strong>planning-and-task-breakdown ↗</strong>
-    <small>Addy Osmani</small>
+  <span class="write-flow__connector plan-flow__continue" aria-hidden="true">↓</span>
+
+  <div class="write-flow__loop refine-flow__validation-loop">
+    <span class="write-flow__loop-title">Validation loop</span>
+    <div class="write-flow__step write-flow__step--focus">
+      <small>02 · Specialist</small>
+      <strong>Revise decomposition</strong>
+      <span>Keep complete child proposals and genuine blocking relations.</span>
+    </div>
+    <div class="write-flow__loop-lines" aria-hidden="true">
+      <span class="write-flow__loop-line write-flow__loop-line--question"></span>
+      <span class="write-flow__loop-line write-flow__loop-line--answer"></span>
+    </div>
+    <div class="write-flow__step write-flow__step--assisted">
+      <small>03 · Workflow</small>
+      <strong>Validate decomposition</strong>
+      <span>Return every contract deficiency to the same specialist.</span>
+    </div>
+    <span class="write-flow__loop-return">Fix deficiencies</span>
+  </div>
+
+  <span class="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Valid decomposition</small>↓</span>
+
+  <div class="write-flow__loop">
+    <span class="write-flow__loop-title">Confirmation loop</span>
+    <div class="write-flow__step write-flow__step--focus">
+      <small>04 · Assisted</small>
+      <strong>Preview all children</strong>
+      <span>Show complete bodies and blocking relations without creating them.</span>
+    </div>
+    <div class="write-flow__loop-lines" aria-hidden="true">
+      <span class="write-flow__loop-line write-flow__loop-line--question"></span>
+      <span class="write-flow__loop-line write-flow__loop-line--answer"></span>
+    </div>
+    <div class="write-flow__step write-flow__step--human">
+      <small>Human</small>
+      <strong>Review decomposition</strong>
+      <span>Confirm everything, request an adjustment, or cancel.</span>
+    </div>
+    <span class="write-flow__loop-return">Adjust decomposition</span>
+  </div>
+
+  <span class="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Confirm all children</small>↓</span>
+
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>05 · Workflow</small>
+    <strong>Create confirmed decomposition</strong>
+    <span>Create the children, required labels, and blocking relations. Keep the parent unchanged.</span>
+  </div>
+</div>
+
+## Skills used under the hood
+
+<div class="workflow-links">
+  <a href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown">
+    <small>Standalone only</small>
+    <strong>planning-and-task-breakdown <span aria-hidden="true">↗</span></strong>
+    <span>Check whether the selected item contains multiple autonomous delivery units.</span>
   </a>
-
-  <span class="dispatch-arrow" aria-hidden="true">↓</span>
-
-  <a
-    class="dispatch-skill dispatch-skill--to-tickets dispatch-skill--cohort-product"
-    href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-tickets"
-  >
-    <span class="dispatch-skill__label">Skill</span>
-    <span>Steps 1–3 only: draft vertical child tickets and genuine blocking edges</span>
-    <strong>to-tickets ↗</strong>
-    <small>Matt Pocock</small>
+  <a href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-tickets">
+    <small>Decomposition</small>
+    <strong>to-tickets <span aria-hidden="true">↗</span></strong>
+    <span>Draft vertical child items and only their genuine blocking relations.</span>
   </a>
 </div>
 
-## How this workflow is structured
+## What `/refine` does
 
 <table class="workflow-steps">
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Context</th>
-      <td>Reuse the official item supplied by /pick or select and read one in standalone mode.</td>
+      <th scope="row">Assess</th>
+      <td>In standalone mode, stop without changes when the item is already one coherent delivery unit.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Scope</th>
-      <td>In standalone mode, confirm that the item contains multiple autonomous delivery units.</td>
+      <th scope="row">Draft</th>
+      <td>Use one specialist to draft at least two autonomous children that cover the parent scope exactly once.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Draft</th>
-      <td>Have one specialist draft the complete provider-neutral decomposition.</td>
+      <th scope="row">Validate</th>
+      <td>Return every deficiency to the same specialist until the complete decomposition is valid.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Validate</th>
-      <td>Check the local decomposition contract and return every deficiency to the same specialist before preview.</td>
+      <th scope="row">Confirm</th>
+      <td>Preview every child and relation, then confirm everything, adjust the draft, or cancel without changes.</td>
     </tr>
     <tr>
       <td>5</td>
-      <th scope="row">Confirm</th>
-      <td>Preview the complete decomposition, then confirm, adjust, or cancel it.</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <th scope="row">Persist</th>
-      <td>Create every confirmed proposal as a native child, apply <code>agent-shaped</code> only when the official parent has it, then persist each directed blocking relation.</td>
-    </tr>
-    <tr>
-      <td>7</td>
-      <th scope="row">Report</th>
-      <td>Report the resulting children, required labels, blocking relations, and any failure.</td>
+      <th scope="row">Create</th>
+      <td>Create confirmed children in order, copy <code>agent-shaped</code> when required, persist valid blocking relations, and report every result.</td>
     </tr>
   </tbody>
 </table>

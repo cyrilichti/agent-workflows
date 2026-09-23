@@ -4,70 +4,81 @@ description: Validate completed work, promote it, and continue to inspection aut
 ---
 
 `/ready` receives a delivery context from `/work`, or in standalone mode asks
-for the plan and item before resolving the exact request. Gaps return to
-`/work`; passing work is promoted and handed to `/inspect` automatically.
+for the plan, item, and exact request. It verifies the complete delivery
+against the approved plan, returns concrete gaps to `/work`, and promotes
+passing work for inspection.
 
-## Dispatching workflows
+## How `/ready` promotes completed work
 
-<div className="dispatch-map dispatch-map--vertical">
-<div className="dispatch-node dispatch-node--workflow" data-workflow="ready">
-    <span className="dispatch-node__label">Workflow</span>
-    <strong>/ready</strong>
-    <span>Checks the branch and delivered work against the plan</span>
-  </div>
-
-  <span className="dispatch-arrow" aria-hidden="true">↓</span>
-
-  <div className="dispatch-skills dispatch-skills--conditional">
-    <a
-      className="dispatch-node dispatch-node--workflow dispatch-node--link"
-      data-workflow="work"
-      href="/agent-workflows/workflows/work/"
-    >
-      <span className="dispatch-node__label">Gaps</span>
+<div className="write-flow ready-flow" role="group" aria-label="The ready workflow verifies the completed branch against the approved plan. Concrete delivery gaps return to the work workflow as corrective todos and corrected work comes back through the same readiness loop. When validation passes, ready pushes the branch when needed, publishes the complete plan to the request, marks it ready for review, and continues automatically to inspect.">
+  <div className="write-flow__loop write-flow__loop--autonomous">
+    <span className="write-flow__loop-title">Readiness loop</span>
+    <div className="write-flow__step write-flow__step--focus">
+      <small>01 · Autonomous</small>
+      <strong>Verify delivery</strong>
+      <span>Run planned validation and compare the complete branch with the approved outcome.</span>
+    </div>
+    <div className="write-flow__loop-lines" aria-hidden="true">
+      <span className="write-flow__loop-line write-flow__loop-line--question"></span>
+      <span className="write-flow__loop-line write-flow__loop-line--answer"></span>
+    </div>
+    <a className="write-flow__step write-flow__step--workflow write-flow__step--focus" href="/agent-workflows/workflows/work/">
+      <small>Delivery gaps</small>
       <strong>/work</strong>
-      <span>Executes corrective todos</span>
+      <span>Create and execute corrective todos.</span>
     </a>
-    <a
-      className="dispatch-node dispatch-node--workflow dispatch-node--link"
-      data-workflow="inspect"
-      href="/agent-workflows/workflows/inspect/"
-    >
-      <span className="dispatch-node__label">Passing work</span>
-      <strong>/inspect</strong>
-      <span>Inspects the promoted request</span>
-    </a>
+    <span className="write-flow__loop-return">Corrected work</span>
   </div>
+
+  <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Validation passes</small>↓</span>
+
+  <div className="write-flow__step write-flow__step--focus">
+    <small>02 · Autonomous</small>
+    <strong>Promote request</strong>
+    <span>Push the branch, publish the complete plan, and mark the request ready for review.</span>
+  </div>
+
+  <span className="write-flow__connector" aria-hidden="true">↓</span>
+
+  <a className="write-flow__step write-flow__step--workflow write-flow__step--focus" href="/agent-workflows/workflows/inspect/">
+    <small>Workflow</small>
+    <strong>/inspect</strong>
+    <span>Inspect the exact promoted request snapshot.</span>
+  </a>
 </div>
 
-## How this workflow is structured
+`/ready` runs only the validation defined by the plan. It checks delivery
+completeness, but does not select a specialist or perform an independent code
+review.
+
+## What `/ready` does
 
 <table className="workflow-steps">
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Context</th>
-      <td>Use caller context or select a local plan, item, and exact request.</td>
+      <th scope="row">Verify</th>
+      <td>Require a terminal plan, completed work, and one clean branch that is not behind or diverged.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Verify</th>
-      <td>Require terminal work and one clean, non-behind branch snapshot.</td>
+      <th scope="row">Match</th>
+      <td>Run only planned validation and compare the complete branch diff with the Objective and Expected Outcome.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Match</th>
-      <td>Run only planned validation, then compare the complete branch diff with the Objective and Expected Outcome.</td>
+      <th scope="row">Repair</th>
+      <td>Return each concrete gap to <code>/work</code> as a corrective todo, then verify the corrected delivery again.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Publish</th>
-      <td>Recheck the branch and HEAD, push only when needed, then use the complete current plan as the request description.</td>
+      <th scope="row">Promote</th>
+      <td>Push when needed, use the complete plan as the request description, mark the request ready, and move the item to review when possible.</td>
     </tr>
     <tr>
       <td>5</td>
-      <th scope="row">Promote</th>
-      <td>Mark and observe the request as ready, transition the item when possible, then invoke <code>/inspect</code>.</td>
+      <th scope="row">Inspect</th>
+      <td>After observing every required request update, continue automatically to <code>/inspect</code>.</td>
     </tr>
   </tbody>
 </table>

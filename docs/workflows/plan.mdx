@@ -1,92 +1,134 @@
 ---
 title: /plan
-description: Turn one task into a clear, approved implementation plan before work begins.
+description: Turn one delivery unit into an approved implementation plan.
 ---
 
-`/plan` turns a task into an implementation plan before work begins.
-It first checks that the task can be delivered as one coherent unit. If the
-task is too broad, standalone mode reports why and stops; caller mode returns
-the findings so the caller can offer `/refine`. The final approval covers the
-complete plan and autonomous delivery through `/inspect`, but never `/done`.
+`/plan` turns one task into an approved implementation plan. It first checks
+that the task is one coherent delivery unit, routes the work to the right
+specialist, and resolves every material question before asking for approval.
 
-## Dispatching external skills
+## How `/plan` reaches approval
 
-<div class="dispatch-map dispatch-map--vertical dispatch-map--plan">
-<div class="dispatch-node dispatch-node--workflow" data-workflow="plan">
-    <span class="dispatch-node__label">Workflow</span>
-    <strong>/plan</strong>
-    <span>Owns the planning flow</span>
+<div class="write-flow plan-flow" role="img" aria-label="The plan workflow resolves the task context and checks whether it is one delivery unit. Tasks containing multiple independent units exit with needs-refinement. Otherwise, a specialist drafts the plan, resolves material questions with the human, and revises the complete plan until the human approves autonomous delivery.">
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>01 · Assisted</small>
+    <strong>Check delivery scope</strong>
+    <span>Decide whether the task is one independently deliverable unit.</span>
   </div>
 
-  <span class="dispatch-arrow" aria-hidden="true">↓</span>
+  <div class="plan-flow__scope">
+    <section class="plan-flow__scope-path plan-flow__scope-path--continue">
+      <small class="pick-flow__path-label">One delivery unit</small>
+      <div class="write-flow__step write-flow__step--focus">
+        <small>02 · Assisted</small>
+        <strong>Select a specialist</strong>
+        <span>Inspect the relevant context and author the plan.</span>
+      </div>
+    </section>
+    <section class="plan-flow__scope-path">
+      <small class="pick-flow__path-label">Multiple delivery units</small>
+      <div class="write-flow__step">
+        <small>Outcome</small>
+        <strong><code>needs-refinement</code></strong>
+        <span>Return concise findings without creating a plan.</span>
+      </div>
+    </section>
+  </div>
 
-  <a
-    class="dispatch-skill dispatch-skill--planning dispatch-skill--cohort-architecture"
-    href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown"
-  >
-    <span class="dispatch-skill__label">Skill</span>
-    <span>Always: assess and structure</span>
-    <strong>planning-and-task-breakdown ↗</strong>
-    <small>Addy Osmani</small>
-  </a>
+  <span class="write-flow__connector plan-flow__continue" aria-hidden="true">↓</span>
 
-  <span class="dispatch-arrow" aria-hidden="true">↓</span>
+  <div class="write-flow__loop">
+    <span class="write-flow__loop-title">Planning loop</span>
+    <div class="write-flow__step write-flow__step--focus">
+      <small>03 · Assisted</small>
+      <strong>Draft or revise plan</strong>
+      <span>Keep the fewest small, verifiable steps.</span>
+    </div>
+    <div class="write-flow__loop-lines" aria-hidden="true">
+      <span class="write-flow__loop-line write-flow__loop-line--question"></span>
+      <span class="write-flow__loop-line write-flow__loop-line--answer"></span>
+    </div>
+    <div class="write-flow__step write-flow__step--human">
+      <small>Human</small>
+      <strong>Answer</strong>
+      <span>Resolve decisions that materially change the plan.</span>
+    </div>
+    <span class="write-flow__loop-return">Material question</span>
+  </div>
 
-  <div class="dispatch-skills dispatch-skills--conditional">
-    <a
-      class="dispatch-skill dispatch-skill--source dispatch-skill--cohort-delivery"
-      href="https://github.com/addyosmani/agent-skills/tree/main/skills/source-driven-development"
-    >
-      <span class="dispatch-skill__label">Skill</span>
-      <span>When external facts matter</span>
-      <strong>source-driven-development ↗</strong>
-      <small>Addy Osmani</small>
-    </a>
-    <a
-      class="dispatch-skill dispatch-skill--doubt dispatch-skill--cohort-architecture"
-      href="https://github.com/addyosmani/agent-skills/tree/main/skills/doubt-driven-development"
-    >
-      <span class="dispatch-skill__label">Skill</span>
-      <span>When decisions need a second look</span>
-      <strong>doubt-driven-development ↗</strong>
-      <small>Addy Osmani</small>
-    </a>
+  <span class="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>No open question</small>↓</span>
+
+  <div class="write-flow__loop">
+    <span class="write-flow__loop-title">Approval loop</span>
+    <div class="write-flow__step write-flow__step--focus">
+      <small>04 · Assisted</small>
+      <strong>Present complete plan</strong>
+      <span>Show every step, validation, and the delivery scope.</span>
+    </div>
+    <div class="write-flow__loop-lines" aria-hidden="true">
+      <span class="write-flow__loop-line write-flow__loop-line--question"></span>
+      <span class="write-flow__loop-line write-flow__loop-line--answer"></span>
+    </div>
+    <div class="write-flow__step write-flow__step--human">
+      <small>Human</small>
+      <strong>Review plan</strong>
+      <span>Approve autonomous delivery or request an adjustment.</span>
+    </div>
+    <span class="write-flow__loop-return">Adjust plan</span>
+  </div>
+
+  <span class="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Approve plan</small>↓</span>
+
+  <div class="write-flow__step write-flow__step--human">
+    <small>Outcome</small>
+    <strong>Approved plan</strong>
+    <span>Autonomous delivery is authorized through successful <code>/inspect</code>. Merge remains a human decision.</span>
   </div>
 </div>
 
-## How this workflow is structured
+## Skills used under the hood
+
+<div class="workflow-links workflow-links--three">
+  <a href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown">
+    <small>Always</small>
+    <strong>planning-and-task-breakdown <span aria-hidden="true">↗</span></strong>
+    <span>Check delivery scope and structure the fewest verifiable steps.</span>
+  </a>
+  <a href="https://github.com/addyosmani/agent-skills/tree/main/skills/source-driven-development">
+    <small>External facts matter</small>
+    <strong>source-driven-development <span aria-hidden="true">↗</span></strong>
+    <span>Verify and cite a versioned fact that affects the plan.</span>
+  </a>
+  <a href="https://github.com/addyosmani/agent-skills/tree/main/skills/doubt-driven-development">
+    <small>Decision is high-risk</small>
+    <strong>doubt-driven-development <span aria-hidden="true">↗</span></strong>
+    <span>Challenge one unfamiliar or high-risk decision before approval.</span>
+  </a>
+</div>
+
+## What `/plan` does
 
 <table class="workflow-steps">
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Context</th>
-      <td>Use standalone conversation context or preserve the official item supplied by a caller.</td>
+      <th scope="row">Assess</th>
+      <td>Continue for one delivery unit or return <code>needs-refinement</code> without creating a plan.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Scope</th>
-      <td>Check that the task can be delivered as one coherent unit.</td>
+      <th scope="row">Plan</th>
+      <td>Route to one specialist, inspect the relevant context, and write the plan.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Specialist</th>
-      <td>Select the right specialist to inspect the technical context and author the plan.</td>
+      <th scope="row">Resolve</th>
+      <td>Ask and incorporate every answer that could materially change the plan.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Plan</th>
-      <td>Structure the work, verify external facts when needed, and challenge high-risk decisions.</td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <th scope="row">Review</th>
-      <td>Resolve material questions, show the complete plan and autonomous-delivery scope, then approve or adjust it.</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <th scope="row">Return</th>
-      <td>Return the approved plan or refinement findings to the caller; standalone mode stops.</td>
+      <th scope="row">Approve</th>
+      <td>Present the complete plan and revise it until the human approves autonomous delivery.</td>
     </tr>
   </tbody>
 </table>
