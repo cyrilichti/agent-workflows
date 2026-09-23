@@ -52,7 +52,7 @@ export const agentSkillCohorts = [
 ];
 
 export const skillUrl = (skill) =>
-  `https://github.com/${skill.source}/tree/main/${skillsLock.skills[skill.name].skillPath.replace("/SKILL.md", "")}`;
+  `https://github.com/${skill.source}/tree/HEAD/${skillsLock.skills[skill.name].skillPath.replace("/SKILL.md", "")}`;
 
 `/work` executes an approved plan autonomously, one todo at a time. It routes
 each todo to the right specialist and hands the completed plan directly to
@@ -60,7 +60,7 @@ each todo to the right specialist and hands the completed plan directly to
 
 ## How `/work` executes a plan
 
-<div className="write-flow work-flow" role="img" aria-label="The work workflow initializes a branch and draft request for new work, then loops through plan todos. For each todo it selects the appropriate specialist and skills, implements and validates the change, creates one non-empty commit when needed, and persists completion. When every todo is complete it continues automatically to the ready workflow. Readiness or inspection findings return later as corrective todos through the same execution loop.">
+<div className="write-flow work-flow" role="group" aria-label="The work workflow initializes a branch and draft request for new work, then loops through plan todos. For each todo it selects the appropriate specialist and skills, implements and validates the change, commits the result, and persists completion. When every todo is complete it continues automatically to the ready workflow. Readiness or inspection findings return later as corrective todos through the same execution loop.">
   <div className="write-flow__step write-flow__step--focus">
     <small>01 · New work only</small>
     <strong>Initialize delivery</strong>
