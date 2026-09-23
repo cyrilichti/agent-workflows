@@ -44,9 +44,6 @@
 > The reviewed pull request has been merged.<br>
 > `/done`
 
-You approve the plan before delivery and decide whether to merge. Everything
-between those decisions stays structured, traceable, and ready for review.
-
 ## Quick start
 
 ```bash
@@ -54,13 +51,6 @@ npx skills add cyrilichti/agent-workflows --skill agent-workflows
 ```
 
 Then run `/agent-workflows` once to install or update the system in your project.
-
-## Built for the delivery loop
-
-- Connected workflows own the handoff from intent to merge.
-- Specialist skills are selected for the work at hand.
-- Human approval boundaries remain explicit.
-- Linear or ClickUp and GitHub or GitLab fit into the same lifecycle.
 
 Agent Workflows installs into your project's `.agents/` context. See the
 [installation guide](https://cyrilichti.github.io/agent-workflows/installation/)
