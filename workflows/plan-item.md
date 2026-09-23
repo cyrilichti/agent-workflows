@@ -10,8 +10,9 @@ Resolve official-item planning context, then follow the shared execution.
 
 ### 1. Resolve Official Context
 
-Preserve the official item and use the conversation to complete only a missing
-objective, problem, or expected outcome.
+Require and preserve the official item's exact ID and URL. Stop when either is
+missing; never reconstruct them. Use the conversation to complete only a
+missing objective, problem, or expected outcome.
 
 ### 2. Follow Shared Execution
 
