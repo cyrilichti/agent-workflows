@@ -1348,6 +1348,102 @@ a.write-flow__step:hover {
   clip-path: polygon(100% 0, 0 50%, 100% 100%);
 }
 
+.write-flow__loop--autonomous .write-flow__loop-line--answer,
+.write-flow__loop--autonomous .write-flow__loop-return {
+  color: #60a5fa;
+}
+
+.work-flow__corrective-note {
+  display: flex;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px dashed rgba(96, 165, 250, 0.42);
+  border-radius: 0.65rem;
+  background: rgba(59, 130, 246, 0.06);
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.work-flow__corrective-note small {
+  color: #60a5fa;
+  font-family: var(--sl-font-mono);
+  font-size: 0.61rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.work-flow__corrective-note span {
+  color: var(--sl-color-gray-3);
+  font-size: var(--sl-text-sm);
+}
+
+.work-skills {
+  margin-block: 1.25rem 2rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #2b3a4f;
+  border-radius: 0.75rem;
+  background: rgba(10, 17, 28, 0.72);
+}
+
+.work-skills summary {
+  color: var(--sl-color-white);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.work-skills__groups {
+  display: grid;
+  margin-top: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.work-skills__groups section {
+  margin: 0;
+}
+
+.work-skills__groups small {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: #7f8da0;
+  font-family: var(--sl-font-mono);
+  font-size: 0.61rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.work-skills__groups section > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.work-skills__groups a {
+  padding: 0.28rem 0.5rem;
+  border: 1px solid #2b3a4f;
+  border-radius: 0.4rem;
+  color: var(--sl-color-gray-2);
+  font-family: var(--sl-font-mono);
+  font-size: 0.7rem;
+  text-decoration: none;
+}
+
+.work-skills__groups a:hover {
+  border-color: rgba(96, 165, 250, 0.62);
+  color: #60a5fa;
+}
+
+:root[data-theme="light"] .work-skills {
+  border-color: #b8c7da;
+  background: #f8fafd;
+}
+
+:root[data-theme="light"] .work-skills__groups a {
+  border-color: #b8c7da;
+  color: #475569;
+}
+
 :root[data-theme="light"] .write-flow {
   border-color: #c9d7e8;
   background:
@@ -2030,5 +2126,20 @@ a.dispatch-node--link:focus-visible {
     bottom: auto;
     left: auto;
     transform: rotate(-90deg) translateY(-50%);
+  }
+
+  .write-flow__loop--autonomous::after {
+    border-inline-end-color: #60a5fa;
+    color: #60a5fa;
+  }
+
+  .work-flow__corrective-note {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .work-skills__groups {
+    grid-template-columns: 1fr;
   }
 }

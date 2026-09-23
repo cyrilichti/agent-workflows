@@ -3,6 +3,8 @@ title: /work
 description: Execute one selected plan and continue autonomously through review preparation.
 ---
 
+import skillsLock from "../../skills-lock.json";
+
 export const agentSkills = [
   { name: "api-and-interface-design", source: "addyosmani/agent-skills", cohort: "architecture", cohortLabel: "Architecture and assurance" },
   { name: "ci-cd-and-automation", source: "addyosmani/agent-skills", cohort: "operations", cohortLabel: "Operations" },
@@ -49,84 +51,109 @@ export const agentSkillCohorts = [
   { slug: "operations", label: "Operations" },
 ];
 
-`/work` executes an approved plan without per-todo confirmation. Caller mode
-preserves the delivery context; standalone mode selects a local plan and item.
-It commits non-empty todo changes, persists corrective findings, and continues
-to `/ready` automatically.
+export const skillUrl = (skill) =>
+  `https://github.com/${skill.source}/tree/main/${skillsLock.skills[skill.name].skillPath.replace("/SKILL.md", "")}`;
 
-## Dispatching external skills
+`/work` executes an approved plan autonomously, one todo at a time. It routes
+each todo to the right specialist and hands the completed plan directly to
+`/ready` without another approval.
 
-<div className="dispatch-map dispatch-map--vertical dispatch-map--work">
-<div className="dispatch-node dispatch-node--workflow" data-workflow="work">
-    <span className="dispatch-node__label">Workflow</span>
-    <strong>/work</strong>
-    <span>Owns todo execution and agent routing</span>
+## How `/work` executes a plan
+
+<div className="write-flow work-flow" role="img" aria-label="The work workflow initializes a branch and draft request for new work, then loops through plan todos. For each todo it selects the appropriate specialist and skills, implements and validates the change, creates one non-empty commit when needed, and persists completion. When every todo is complete it continues automatically to the ready workflow. Readiness or inspection findings return later as corrective todos through the same execution loop.">
+  <div className="write-flow__step write-flow__step--focus">
+    <small>01 · New work only</small>
+    <strong>Initialize delivery</strong>
+    <span>Create the branch, initialization commit, draft request, and item backlink.</span>
   </div>
 
-  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+  <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>New or resumed work</small>↓</span>
 
-  <div className="dispatch-node dispatch-node--agent">
-    <span className="dispatch-node__label">Specialist</span>
-    <strong>Most suitable agent</strong>
-    <span>Routes only the Skills triggered by the current activity</span>
+  <div className="write-flow__loop write-flow__loop--autonomous">
+    <span className="write-flow__loop-title">Todo execution loop</span>
+    <div className="write-flow__step write-flow__step--focus">
+      <small>02 · Autonomous</small>
+      <strong>Implement one todo</strong>
+      <span>Select the right specialist and route only the skills its activity triggers.</span>
+    </div>
+    <div className="write-flow__loop-lines" aria-hidden="true">
+      <span className="write-flow__loop-line write-flow__loop-line--question"></span>
+      <span className="write-flow__loop-line write-flow__loop-line--answer"></span>
+    </div>
+    <div className="write-flow__step write-flow__step--focus">
+      <small>03 · Autonomous</small>
+      <strong>Validate and commit</strong>
+      <span>Commit the result, persist completion, and continue with the plan.</span>
+    </div>
+    <span className="write-flow__loop-return">Next todo</span>
   </div>
 
-  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+  <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>All todos complete</small>↓</span>
 
-  <div className="dispatch-skills dispatch-skills--catalog">
-    {agentSkillCohorts
-      .flatMap((cohort) => agentSkills.filter((skill) => skill.cohort === cohort.slug))
-      .map((skill) => (
-        <a
-          className={`dispatch-skill dispatch-skill--cohort-${skill.cohort}`}
-          href={`https://github.com/${skill.source}`}
-        >
-          <span className="dispatch-skill__label">Skill</span>
-          <strong>{skill.name} ↗</strong>
-          <small>{skill.source}</small>
-        </a>
-      ))}
+  <a className="write-flow__step write-flow__step--workflow write-flow__step--focus" href="/agent-workflows/workflows/ready/">
+    <small>Workflow</small>
+    <strong>/ready</strong>
+    <span>Check the complete branch and prepare the request for inspection.</span>
+  </a>
+
+  <div className="work-flow__corrective-note">
+    <small>Corrective loop</small>
+    <span>Readiness gaps or blocking inspection findings return to <code>/work</code> as new todos.</span>
   </div>
 </div>
 
-## How this workflow is structured
+## Skills used under the hood
+
+`/work` selects the most suitable specialist for the active todo. That
+specialist loads only the skills whose triggers apply and may work directly
+when none are needed.
+
+<details className="work-skills">
+  <summary>Browse the routed skills</summary>
+  <div className="work-skills__groups">
+    {agentSkillCohorts.map((cohort) => (
+      <section>
+        <small>{cohort.label}</small>
+        <div>
+          {agentSkills
+            .filter((skill) => skill.cohort === cohort.slug)
+            .map((skill) => (
+              <a href={skillUrl(skill)}>{skill.name} ↗</a>
+            ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</details>
+
+## What `/work` does
 
 <table className="workflow-steps">
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Plan</th>
-      <td>Use caller context or select a local plan and official item.</td>
+      <th scope="row">Initialize</th>
+      <td>For new work, start from a clean default branch, create and push one work branch, open one draft request, and link it to the item.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Branch</th>
-      <td>Initialize new work or trust the current branch when resuming.</td>
+      <th scope="row">Route</th>
+      <td>Select or reuse the most suitable specialist for the active todo and load only the skills its activity triggers.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Request</th>
-      <td>Create the draft pull request or merge request for new work.</td>
+      <th scope="row">Execute</th>
+      <td>Persist the todo as in progress, implement and validate only its scope, then stage only its changes.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Agent</th>
-      <td>Select the most suitable agent, then load only its currently triggered Skills or work directly.</td>
+      <th scope="row">Commit</th>
+      <td>Commit the result, persist todo completion immediately, and continue without pushing.</td>
     </tr>
     <tr>
       <td>5</td>
-      <th scope="row">Todo</th>
-      <td>Persist the todo as in progress, implement and validate it, then stage only its changes.</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <th scope="row">Commit</th>
-      <td>Create one non-empty commit when the todo changed tracked content, then continue.</td>
-    </tr>
-    <tr>
-      <td>7</td>
       <th scope="row">Ready</th>
-      <td>When work is completed, continue automatically with <code>/ready</code>.</td>
+      <td>When every todo is complete, continue automatically to <code>/ready</code>; later findings return through the same loop as corrective todos.</td>
     </tr>
   </tbody>
 </table>
