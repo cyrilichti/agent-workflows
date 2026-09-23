@@ -1490,6 +1490,10 @@ a.write-flow__step:hover {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.workflow-links--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .workflow-links a {
   display: flex;
   min-height: 7.5rem;

@@ -4,62 +4,82 @@ description: Inspect and publish one exact request snapshot autonomously.
 ---
 
 `/inspect` receives the delivery context from `/ready`, or in standalone mode
-asks for the local plan, item, and exact request. It freezes one snapshot,
-publishes every valid finding without manual curation, and observes the result.
+asks for the plan, item, and exact request. It binds one complete review to one
+frozen request snapshot and publishes every valid finding without manual
+curation.
 
-Blocking findings return to `/work` as corrective todos. When none is blocking,
-`/inspect` applies `agent-inspected` and stops. It never invokes `/done`.
+## How `/inspect` closes the delivery loop
 
-## Dispatching workflows
-
-<div className="dispatch-map dispatch-map--vertical">
-  <div className="dispatch-node dispatch-node--workflow" data-workflow="inspect">
-    <span className="dispatch-node__label">Workflow</span>
-    <strong>/inspect</strong>
-    <span>Publishes findings from one frozen snapshot</span>
+<div className="write-flow inspect-flow" role="img" aria-label="The inspect workflow freezes one exact request snapshot and head SHA, then a reviewer inspects it and publishes every valid finding. Blocking findings return to work as corrective todos. Corrected work passes through ready and returns to inspect as a new snapshot. When no blocking finding remains, inspect applies the agent-inspected label and stops without invoking done.">
+  <div className="write-flow__step write-flow__step--focus">
+    <small>01 · Autonomous</small>
+    <strong>Freeze request snapshot</strong>
+    <span>Bind the complete request, review activity, and plan to one exact head SHA.</span>
   </div>
 
-  <span className="dispatch-arrow" aria-hidden="true">↓</span>
+  <span className="write-flow__connector" aria-hidden="true">↓</span>
 
-  <a
-    className="dispatch-node dispatch-node--workflow dispatch-node--link"
-    data-workflow="work"
-    href="/agent-workflows/workflows/work/"
-  >
-    <span className="dispatch-node__label">Blocking findings</span>
-    <strong>/work</strong>
-    <span>Persists and executes corrective todos</span>
+  <div className="write-flow__loop write-flow__loop--autonomous">
+    <span className="write-flow__loop-title">Inspection loop</span>
+    <div className="write-flow__step write-flow__step--focus">
+      <small>02 · Autonomous</small>
+      <strong>Inspect and publish</strong>
+      <span>Review the frozen change and publish each unseen, evidence-based finding once.</span>
+    </div>
+    <div className="write-flow__loop-lines" aria-hidden="true">
+      <span className="write-flow__loop-line write-flow__loop-line--question"></span>
+      <span className="write-flow__loop-line write-flow__loop-line--answer"></span>
+    </div>
+    <a className="write-flow__step write-flow__step--workflow write-flow__step--focus" href="/agent-workflows/workflows/work/">
+      <small>Blocking findings</small>
+      <strong>/work</strong>
+      <span>Persist and execute corrective todos.</span>
+    </a>
+    <span className="write-flow__loop-return">New snapshot via /ready</span>
+  </div>
+
+  <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>No blocking finding</small>↓</span>
+
+  <div className="write-flow__step write-flow__step--assisted">
+    <small>03 · Outcome</small>
+    <strong>Apply <code>agent-inspected</code></strong>
+    <span>Mark the item as inspected and stop. Merge and <code>/done</code> remain human decisions.</span>
+  </div>
+</div>
+
+## Skill used under the hood
+
+<div className="workflow-links workflow-links--single">
+  <a href="https://github.com/addyosmani/agent-skills/tree/main/skills/code-review-and-quality">
+    <small>Review method</small>
+    <strong>code-review-and-quality <span aria-hidden="true">↗</span></strong>
+    <span>Review correctness, readability, architecture, security, and performance.</span>
   </a>
 </div>
 
-## How this workflow is structured
+## What `/inspect` does
 
 <table className="workflow-steps">
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Context</th>
-      <td>Use caller context or select the local plan, official item, and exact request.</td>
+      <th scope="row">Snapshot</th>
+      <td>Freeze the complete open request, its review activity, authoritative plan, and head SHA.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Snapshot</th>
-      <td>Freeze the complete open, non-draft request state and head SHA.</td>
+      <th scope="row">Inspect</th>
+      <td>Use the reviewer profile to produce one complete SHA-bound result with persistent finding IDs.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Inspect</th>
-      <td>Produce a complete SHA-bound result with persistent finding IDs.</td>
+      <th scope="row">Publish</th>
+      <td>Publish each unseen finding once for the unchanged SHA and observe the provider result.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Publish</th>
-      <td>Publish unseen findings once for the unchanged SHA and observe the result.</td>
-    </tr>
-    <tr>
-      <td>5</td>
-      <th scope="row">Continue</th>
-      <td>Return blocking findings to <code>/work</code>, or apply <code>agent-inspected</code> and stop.</td>
+      <th scope="row">Resolve</th>
+      <td>Return blocking findings to <code>/work</code>; otherwise apply <code>agent-inspected</code> and stop without invoking <code>/done</code>.</td>
     </tr>
   </tbody>
 </table>
