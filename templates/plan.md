@@ -28,7 +28,7 @@ isProject: false
 
 # <Plan title>
 
-<when an official item reference is supplied: **Ticket:** [<exact item ID>](<exact item URL>)>
+<when an official item reference is supplied: **Ticket :** [<exact item ID>](<exact item URL>)>
 
 ## Objective
 
