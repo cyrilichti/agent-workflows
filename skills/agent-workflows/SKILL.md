@@ -12,21 +12,46 @@ Install or update agent-workflows in the current project.
 
 ## Rules
 
-- Overwrite files when the downloaded repository contains the same relative
-  path.
-- Preserve additional files that do not collide.
+- Treat the root `AGENTS.md` and these `.agents/` directories as fully managed
+  Agent Workflows sources:
+
+  ```text
+  agents
+  commands
+  data
+  goals
+  providers
+  rules
+  skills
+  templates
+  workflows
+  ```
+
+- Replace every fully managed source on installation and update. Do not merge
+  local customizations into them.
+- Treat `.agents/plans` as project-owned content. Never copy source-repository
+  plans into a consuming project or remove consuming-project plans.
 - Do not create, modify, or remove `.cursor`.
 - Do not create commits.
 
 ## Preflight
 
-Before mutation:
+Before any mutation:
 
 1. Work from the consuming project root.
 2. Verify that Git, Node.js, and `npx` are available.
-3. Create `.agents` when absent. Otherwise use the existing path as-is,
-   including when it is a directory, symlink, or Git submodule.
-4. Create a temporary working directory outside `.agents`.
+3. Require the project root to belong to a Git worktree.
+4. Require the index and worktree to be clean, including untracked files.
+   Allow only the bootstrap artifacts created by the documented
+   `npx skills add ... --skill agent-workflows` command:
+   - `.agents/skills/agent-workflows/**`;
+   - the `agent-workflows` entry in `skills-lock.json`.
+
+   Verify that no other path or lock entry changed before treating these as
+   bootstrap artifacts. Stop and list every other dirty path.
+5. Require `.agents`, when present, to be a real directory. Stop when it is a
+   symlink, file, or Git submodule.
+6. Create a temporary working directory outside `.agents`.
 
 ## Download
 
@@ -40,53 +65,41 @@ Stop before deployment unless the downloaded repository contains:
 
 - `AGENTS.md`;
 - `agent-workflows.example.yaml`;
+- `.gitignore`;
 - `skills-lock.json`;
-- every directory listed below.
+- every fully managed directory listed in Rules.
+
+Read the downloaded and consuming `skills-lock.json` files and calculate the
+merged lock before deployment. Require compatible lock-file versions.
+
+Inspect ignored, untracked content inside every fully managed target
+directory. Stop when it contains anything that is neither:
+
+- a path present in the matching downloaded source directory; nor
+- a Skill declared by the calculated merged lock under `.agents/skills`.
+
+This check must include ignored files. Ordinary Git status is insufficient for
+this guard.
 
 ## Deploy
 
-Copy the contents of these downloaded directories into the matching directories
-under `.agents`:
+Replace the consuming project's root `AGENTS.md` with the downloaded
+`AGENTS.md`.
 
-```text
-agents
-commands
-data
-goals
-plans
-providers
-rules
-skills
-templates
-workflows
-```
+For every fully managed directory listed in Rules:
 
-For every directory:
+1. remove the matching directory under `.agents` completely;
+2. recreate it from the matching downloaded source directory.
 
-- create the destination directory when absent;
-- recursively copy its contents;
-- overwrite files with the same relative path;
-- preserve destination files that do not exist in the downloaded source.
-
-Merge the downloaded `AGENTS.md` into the consuming project's root `AGENTS.md`:
-
-- when the root file is absent, create it from the downloaded file;
-- when the root file exists, preserve its content, remove the downloaded
-  top-level `# AGENTS.md` heading, and append the remaining instructions;
-- when the instructions are already present, do not append them again;
-- never add ownership markers, HTML comments, metadata, or another generated
-  heading.
+Create `.agents/plans` when absent. Otherwise preserve it and all of its
+contents exactly. Do not copy the downloaded `plans` directory.
 
 Do not copy the repository metadata, documentation site, build output,
 dependencies, or unrelated root files.
 
 ## Merge Skill Dependencies
 
-Read the downloaded `skills-lock.json` and the consuming project's
-`skills-lock.json`.
-
 - When the project lock file is absent, initialize it with the downloaded lock.
-- Require compatible lock-file versions.
 - Preserve project Skill entries not declared by agent-workflows.
 - Add every downloaded Skill entry to the project lock.
 - Replace a project entry when agent-workflows declares the same Skill name.
@@ -163,20 +176,23 @@ missing `mcp.version.provider`.
 
 Before reporting success, verify:
 
-- every file selected for deployment exists at the expected destination;
-- the root `AGENTS.md` contains exactly one copy of the up-to-date
-  agent-workflows instructions, without ownership comments or a duplicated
-  `# AGENTS.md` heading;
+- the root `AGENTS.md` equals the downloaded source;
+- every fully managed directory equals its downloaded source and contains no
+  obsolete path;
+- `.agents/plans` still contains every pre-existing consuming-project plan;
 - `.cursor` was not created or modified;
 - the project lock contains every downloaded Skill entry;
 - every declared Skill is installed;
 - `agent-workflows.yaml` exists;
 - `mcp.item.provider` is either `clickup` or `linear`.
 - `mcp.version.provider` is either `github` or `gitlab`.
+- a repeated deployment of the same downloaded version would produce no
+  filesystem change.
 
 Always remove the temporary download after success or failure.
 
-Report whether agent-workflows was installed or updated, which directories were
-deployed, which lock entries were added or replaced, and the configured item
-and version providers. When GitLab is configured, include the `glab`
-installation and authentication prerequisite in the report.
+Report whether agent-workflows was installed or updated, which managed sources
+were replaced, that plans were preserved, which lock entries were added or
+replaced, and the configured item and version providers. When GitLab is
+configured, include the `glab` installation and authentication prerequisite in
+the report.
