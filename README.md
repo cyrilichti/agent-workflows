@@ -4,7 +4,7 @@
 
 [Install Agent Workflows](#quick-start) · [Explore the documentation](https://cyrilichti.github.io/agent-workflows/) · [See every workflow](https://cyrilichti.github.io/agent-workflows/workflows/)
 
-![Agent Workflows delivery lifecycle: shape and plan work with assistance, approve delivery as a human, let the agent deliver and review in a correction loop, then decide whether to merge.](./public/readme-lifecycle.svg)
+![Agent Workflows delivery lifecycle: shape and plan work with assistance, start autonomous delivery as a human, loop between delivery and review until no blocking findings remain, then make a human merge decision.](./public/readme-lifecycle.svg)
 
 ## What it feels like
 
