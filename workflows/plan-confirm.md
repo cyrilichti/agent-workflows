@@ -50,8 +50,6 @@ Have the specialist write using `../templates/plan.md` with:
 
 ```text
 task_context: resolved task context
-official_item_reference: exact official item ID and URL, when supplied by the
-  item branch
 ```
 
 For high-risk or unfamiliar decisions, the workflow—not the author—loads
