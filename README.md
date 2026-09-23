@@ -6,6 +6,14 @@
 
 ![Agent Workflows delivery lifecycle: shape and plan work with assistance, start autonomous delivery as a human, loop between delivery and review until no blocking findings remain, then make a human merge decision.](./public/readme-lifecycle.svg)
 
+## Quick start
+
+```bash
+npx skills add cyrilichti/agent-workflows --skill agent-workflows
+```
+
+Then run `/agent-workflows` once to install or update the system in your project.
+
 ## What it feels like
 
 **You**
@@ -43,14 +51,6 @@
 
 > The reviewed pull request has been merged.<br>
 > `/done`
-
-## Quick start
-
-```bash
-npx skills add cyrilichti/agent-workflows --skill agent-workflows
-```
-
-Then run `/agent-workflows` once to install or update the system in your project.
 
 Agent Workflows installs into your project's `.agents/` context. See the
 [installation guide](https://cyrilichti.github.io/agent-workflows/installation/)
