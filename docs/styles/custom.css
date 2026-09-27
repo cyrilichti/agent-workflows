@@ -900,7 +900,7 @@
   }
 
   .delivery-loop {
-    padding: 1.75rem 2.25rem;
+    padding: 1.75rem 2.75rem;
     grid-template-columns: 1fr;
     gap: 2rem;
   }
@@ -941,7 +941,7 @@
 
   .delivery-loop__return-label {
     top: 50%;
-    right: 1.35rem;
+    right: 0.8rem;
     bottom: auto;
     left: auto;
     writing-mode: vertical-rl;
@@ -954,6 +954,10 @@
 }
 
 @media (max-width: 38rem) {
+  .hero .actions {
+    flex-wrap: wrap;
+  }
+
   .landing-proof {
     grid-template-columns: 1fr;
   }
@@ -2046,7 +2050,7 @@ a.dispatch-node--link:focus-visible {
   }
 
   .write-flow__loop {
-    padding: 1.75rem 2.25rem;
+    padding: 1.75rem 2.75rem;
     grid-template-columns: 1fr;
     gap: 2rem;
   }
@@ -2089,7 +2093,7 @@ a.dispatch-node--link:focus-visible {
 
   .write-flow__loop-return {
     top: 50%;
-    right: 1.35rem;
+    right: 0.8rem;
     bottom: auto;
     left: auto;
     writing-mode: vertical-rl;
