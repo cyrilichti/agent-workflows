@@ -19,13 +19,13 @@ const profile = join(temp, 'chrome')
 const page = join(temp, 'demo.html')
 const output = new URL('public/readme-workflow-demo.gif', root).pathname
 await writeFile(page, `<!doctype html><html data-theme="dark"><head><meta charset="utf-8"><style>
-* { box-sizing: border-box; } html, body { width: 496px; height: 368px; margin: 0; }
+* { box-sizing: border-box; } html, body { width: 360px; height: 368px; margin: 0; }
 body { font-family: var(--sl-font); } ${css}
 </style></head><body>${demo}<script>${js}</script></body></html>`)
 
 const chrome = spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', [
   '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
-  '--remote-debugging-port=0', `--user-data-dir=${profile}`, '--window-size=496,368',
+  '--remote-debugging-port=0', `--user-data-dir=${profile}`, '--window-size=360,368',
   'about:blank',
 ], { stdio: 'ignore' })
 
@@ -70,7 +70,7 @@ try {
   await send('Page.enable', {}, sessionId)
   await send('Runtime.enable', {}, sessionId)
   await send('Emulation.setDeviceMetricsOverride', {
-    width: 496, height: 368, deviceScaleFactor: 1, mobile: false,
+    width: 360, height: 368, deviceScaleFactor: 1.5, mobile: false,
   }, sessionId)
   await send('Emulation.setEmulatedMedia', {
     features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }],
