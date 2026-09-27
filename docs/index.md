@@ -41,7 +41,7 @@ hero:
             <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>Who needs to search, and what should they be able to find? That will help us define success.</p></div>
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
               <li><span>Workflow</span><p><code>/write</code> guides the ticket conversation.</p></li>
-              <li><span>Skill</span><p><code>idea-refine</code> sharpens the need through questions.</p></li>
+              <li><span>Skill</span><p>One best fit at a time: <span class="workflow-demo__skill-list"><strong class="workflow-demo__skill workflow-demo__skill--active">idea-refine</strong><strong class="workflow-demo__skill">interview-me</strong><strong class="workflow-demo__skill">grilling</strong><strong class="workflow-demo__skill">to-spec</strong></span> (opt-in for to-spec).</p></li>
             </ul></div>
           </article>
           <article class="workflow-demo__scene" data-demo-scene>
@@ -51,7 +51,7 @@ hero:
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
               <li><span>Integration</span><p>Linear receives the approved ticket.</p></li>
               <li><span>Workflow</span><p><code>/plan</code> turns it into verifiable steps.</p></li>
-              <li><span>Skill</span><p><code>planning-and-task-breakdown</code> orders the work.</p></li>
+              <li><span>Skill</span><p><strong class="workflow-demo__skill workflow-demo__skill--active">planning-and-task-breakdown</strong> orders the work.</p></li>
               <li><span>Validation</span><p>Execution waits for your approval.</p></li>
             </ul></div>
           </article>

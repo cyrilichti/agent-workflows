@@ -225,7 +225,7 @@
   align-items: baseline;
 }
 
-.workflow-demo__behind li span {
+.workflow-demo__behind li > span {
   color: var(--demo-muted);
   font-family: var(--sl-font-mono);
   font-size: 0.57rem;
@@ -240,11 +240,36 @@
 }
 
 .workflow-demo__behind code {
-  padding: 0;
+  padding: 0.02rem 0.16rem;
   border: 0;
-  background: transparent;
-  color: inherit;
+  border-radius: 0.2rem;
+  background: rgba(117, 169, 241, 0.12);
+  color: #b8d7ff;
   font-size: inherit;
+  font-weight: 600;
+}
+
+.workflow-demo__skill-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.45rem;
+  vertical-align: middle;
+}
+
+.workflow-demo__skill {
+  display: inline-block;
+  border-bottom: 1px dotted currentColor;
+  color: #aebee0;
+  font-family: var(--sl-font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.workflow-demo__skill--active {
+  border-bottom-style: solid;
+  color: #d7e3ff;
 }
 
 .workflow-demo [hidden] {
@@ -284,6 +309,19 @@
 :root[data-theme="light"] .workflow-demo__message--user {
   border-color: #b9d2f2;
   background: #edf4ff;
+}
+
+:root[data-theme="light"] .workflow-demo__skill {
+  color: #52699a;
+}
+
+:root[data-theme="light"] .workflow-demo__skill--active {
+  color: #2b4f90;
+}
+
+:root[data-theme="light"] .workflow-demo__behind code {
+  background: #e2eefc;
+  color: #245387;
 }
 
 @media (prefers-reduced-motion: reduce) {
