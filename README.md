@@ -16,41 +16,9 @@ Then run `/agent-workflows` once to install or update the system in your project
 
 ## What it feels like
 
-**You**
+[![Animated preview of Agent Workflows: shape an AI search ticket, approve the plan, build and review the change, then merge and complete the Linear ticket.](./public/readme-workflow-demo.gif)](https://cyrilichti.github.io/agent-workflows/)
 
-> I need a ticket for a new customer profile page.
-
-**Agent**
-
-> Let’s clarify the need, then create or update the ticket with your approval.<br>
-> `/write`
-
-**You**
-
-> The ticket is ready. Start the work.
-
-**Agent**
-
-> I selected the item and prepared a delivery plan. I am waiting for your approval.<br>
-> `/pick` → `/plan`
-
-**You**
-
-> Approved.
-
-**Agent**
-
-> The right skills implement and review the change. Blocking findings return to the delivery loop.<br>
-> `/work` → `/ready` → `/inspect`
-
-**You**
-
-> Merge it.
-
-**Agent**
-
-> The reviewed pull request has been merged.<br>
-> `/done`
+[Open the full demo](https://cyrilichti.github.io/agent-workflows/) to explore each step and its behind-the-scenes details.
 
 Agent Workflows installs into your project's `.agents/` context. See the
 [installation guide](https://cyrilichti.github.io/agent-workflows/installation/)
