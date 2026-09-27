@@ -40,8 +40,8 @@ hero:
             <div class="workflow-demo__message workflow-demo__message--user"><b>You</b><p data-demo-typing>I want to create a ticket for AI search.</p></div>
             <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>Who needs to search, and what should they be able to find? That will help us define success.</p></div>
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
-              <li><span>Workflow</span><p><code>/write</code> guides the ticket conversation.</p></li>
-              <li><span>Skill</span><p>One best fit at a time: <span class="workflow-demo__skill-list"><strong class="workflow-demo__skill workflow-demo__skill--active">idea-refine</strong><strong class="workflow-demo__skill">interview-me</strong><strong class="workflow-demo__skill">grilling</strong><strong class="workflow-demo__skill">to-spec</strong></span> (opt-in for to-spec).</p></li>
+              <li><span>Workflow</span><p><a class="workflow-demo__workflow" href="/agent-workflows/workflows/write/">/write</a> guides the ticket conversation.</p></li>
+              <li><span>Skill</span><p>One best fit at a time: <span class="workflow-demo__skill-list"><a class="workflow-demo__skill workflow-demo__skill--active" href="https://github.com/addyosmani/agent-skills/tree/main/skills/idea-refine">idea-refine</a><a class="workflow-demo__skill" href="https://github.com/addyosmani/agent-skills/tree/main/skills/interview-me">interview-me</a><a class="workflow-demo__skill" href="https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling">grilling</a><a class="workflow-demo__skill" href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec">to-spec</a></span></p></li>
             </ul></div>
           </article>
           <article class="workflow-demo__scene" data-demo-scene>
@@ -50,8 +50,8 @@ hero:
             <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>The ticket is in Linear. I’ve prepared a plan with checks for the search experience. Do you approve it?</p></div>
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
               <li><span>Integration</span><p>Linear receives the approved ticket.</p></li>
-              <li><span>Workflow</span><p><code>/plan</code> turns it into verifiable steps.</p></li>
-              <li><span>Skill</span><p><strong class="workflow-demo__skill workflow-demo__skill--active">planning-and-task-breakdown</strong> orders the work.</p></li>
+              <li><span>Workflow</span><p><a class="workflow-demo__workflow" href="/agent-workflows/workflows/plan/">/plan</a> turns it into verifiable steps.</p></li>
+              <li><span>Skill</span><p><a class="workflow-demo__skill workflow-demo__skill--active" href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown">planning-and-task-breakdown</a> orders the work.</p></li>
               <li><span>Validation</span><p>Execution waits for your approval.</p></li>
             </ul></div>
           </article>
@@ -60,17 +60,17 @@ hero:
             <div class="workflow-demo__message workflow-demo__message--user"><b>You</b><p data-demo-typing>Approved. Go ahead.</p></div>
             <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>I’m building the search and checking it against the plan. Then I’ll open a request for review.</p></div>
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
-              <li><span>Workflow</span><p><code>/work</code> implements the approved plan.</p></li>
+              <li><span>Workflow</span><p><a class="workflow-demo__workflow" href="/agent-workflows/workflows/work/">/work</a> implements the approved plan.</p></li>
               <li><span>Profile</span><p><code>ai-engineer</code> handles the search feature.</p></li>
               <li><span>Validation</span><p>Checks run before the request is prepared.</p></li>
-              <li><span>Workflow</span><p><code>/ready</code> prepares the request.</p></li>
+              <li><span>Workflow</span><p><a class="workflow-demo__workflow" href="/agent-workflows/workflows/ready/">/ready</a> prepares the request.</p></li>
             </ul></div>
           </article>
           <article class="workflow-demo__scene" data-demo-scene>
             <p class="workflow-demo__phase">04 / Review</p>
             <div class="workflow-demo__message workflow-demo__message--agent"><b>Agent</b><p data-demo-typing>The request is ready. I’ve reviewed it against the ticket and plan. No blocking findings remain; it’s ready for your merge decision.</p></div>
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
-              <li><span>Workflow</span><p><code>/inspect</code> reviews a specific request version.</p></li>
+              <li><span>Workflow</span><p><a class="workflow-demo__workflow" href="/agent-workflows/workflows/inspect/">/inspect</a> reviews a specific request version.</p></li>
               <li><span>Profile</span><p><code>reviewer</code> checks for defects and gaps.</p></li>
               <li><span>Validation</span><p>The result is submitted for human review.</p></li>
             </ul></div>
@@ -80,7 +80,7 @@ hero:
             <div class="workflow-demo__message workflow-demo__message--user"><b>You</b><p data-demo-typing>Merge it.</p></div>
             <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>Merged to main. The Linear ticket is now complete.</p></div>
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
-              <li><span>Workflow</span><p><code>/done</code> merges after your confirmation.</p></li>
+              <li><span>Workflow</span><p><a class="workflow-demo__workflow" href="/agent-workflows/workflows/done/">/done</a> merges after your confirmation.</p></li>
               <li><span>Integration</span><p>Linear records the completed ticket.</p></li>
             </ul></div>
           </article>

@@ -36,6 +36,16 @@ if (demo) {
     })
   }
 
+  function scheduleNext(delay) {
+    timer = window.setTimeout(() => {
+      if (demo.querySelector('a:hover') || demo.contains(document.activeElement)) {
+        scheduleNext(1000)
+      } else {
+        showScene((active + 1) % scenes.length)
+      }
+    }, delay)
+  }
+
   function showScene(index) {
     clearTimers()
     active = index
@@ -70,10 +80,7 @@ if (demo) {
           timer = window.setTimeout(() => {
             behind.hidden = false
             followConversation(true)
-            timer = window.setTimeout(
-              () => showScene((active + 1) % scenes.length),
-              active === scenes.length - 1 ? 6500 : 4200,
-            )
+            scheduleNext(active === scenes.length - 1 ? 9000 : 7000)
           }, 450)
         }, 300)
       }

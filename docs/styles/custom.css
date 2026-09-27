@@ -229,7 +229,6 @@
   color: var(--demo-muted);
   font-family: var(--sl-font-mono);
   font-size: 0.57rem;
-  text-transform: uppercase;
 }
 
 .workflow-demo__behind li p {
@@ -239,14 +238,17 @@
   line-height: 1.35;
 }
 
-.workflow-demo__behind code {
+.workflow-demo__workflow {
   padding: 0.02rem 0.16rem;
-  border: 0;
   border-radius: 0.2rem;
   background: rgba(117, 169, 241, 0.12);
   color: #b8d7ff;
-  font-size: inherit;
+  font-family: var(--sl-font-mono);
+  font-size: 0.61rem;
   font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(184, 215, 255, 0.6);
+  text-underline-offset: 0.12em;
 }
 
 .workflow-demo__skill-list {
@@ -264,6 +266,7 @@
   font-size: 0.58rem;
   font-weight: 500;
   line-height: 1.25;
+  text-decoration: none;
   white-space: nowrap;
 }
 
@@ -319,9 +322,14 @@
   color: #2b4f90;
 }
 
-:root[data-theme="light"] .workflow-demo__behind code {
+:root[data-theme="light"] .workflow-demo__workflow {
   background: #e2eefc;
   color: #245387;
+}
+
+.workflow-demo__behind a:focus-visible {
+  outline: 2px solid var(--demo-accent);
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
