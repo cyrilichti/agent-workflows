@@ -68,8 +68,7 @@ hero:
           </article>
           <article class="workflow-demo__scene" data-demo-scene>
             <p class="workflow-demo__phase">04 / Review</p>
-            <div class="workflow-demo__message workflow-demo__message--user"><b>You</b><p data-demo-typing>Review the merge request.</p></div>
-            <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>I’ve checked this version against the ticket and plan. The review is ready for your decision.</p></div>
+            <div class="workflow-demo__message workflow-demo__message--agent"><b>Agent</b><p data-demo-typing>The request is ready. I’ve reviewed it against the ticket and plan. No blocking findings remain; it’s ready for your merge decision.</p></div>
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
               <li><span>Workflow</span><p><code>/inspect</code> reviews a specific request version.</p></li>
               <li><span>Profile</span><p><code>reviewer</code> checks for defects and gaps.</p></li>
