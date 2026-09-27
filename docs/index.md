@@ -28,32 +28,65 @@ hero:
   tagline: Agent Workflows routes the right skills from ticket to plan, code, and review—automating the delivery loop while you keep the final say on merge.
   image:
     html: |-
-      <div class="workflow-hero-media" role="img" aria-label="The write workflow dispatching to the idea-refine skill with Linear as the active provider">
-        <div class="workflow-hero-media__bar">
-          <span class="workflow-hero-media__lights" aria-hidden="true"><i></i><i></i><i></i></span>
-          <code>workflow.run</code>
-          <span class="workflow-hero-media__status">controlled</span>
+      <section class="workflow-demo" aria-label="A ticket-to-merge conversation demo" data-workflow-demo>
+        <div class="workflow-demo__bar">
+          <span class="workflow-demo__lights" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>agent-workflows / demo</span>
+          <span class="workflow-demo__status">scripted</span>
         </div>
-        <div class="workflow-hero-media__body">
-          <div class="workflow-hero-step workflow-hero-step--active">
-            <span class="workflow-hero-step__index">01</span>
-            <div><small>workflow</small><strong>/write</strong><em>owns the sequence</em></div>
-          </div>
-          <div class="workflow-hero-connector"><span></span><small>dispatch</small></div>
-          <div class="workflow-hero-skills">
-            <div><small>best-fit skills</small><span>context aware</span></div>
-            <ul>
-              <li>interview-me</li>
-              <li class="workflow-hero-skill--active">idea-refine</li>
-              <li>grilling</li>
-              <li>to-spec</li>
-            </ul>
-          </div>
-          <div class="workflow-hero-provider">
-            <small>provider</small><span>ClickUp</span><span class="workflow-hero-provider--active">Linear</span>
-          </div>
+        <div class="workflow-demo__scenes">
+          <article class="workflow-demo__scene" data-demo-scene>
+            <p class="workflow-demo__phase">01 / Shape the request</p>
+            <div class="workflow-demo__message workflow-demo__message--user"><b>You</b><p data-demo-typing>I want to create a ticket for AI search.</p></div>
+            <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>Who needs to search, and what should they be able to find? That will help us define success.</p></div>
+            <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
+              <li><span>Workflow</span><p><code>/write</code> guides the ticket conversation.</p></li>
+              <li><span>Skill</span><p><code>idea-refine</code> sharpens the need through questions.</p></li>
+            </ul></div>
+          </article>
+          <article class="workflow-demo__scene" data-demo-scene>
+            <p class="workflow-demo__phase">02 / Save and plan</p>
+            <div class="workflow-demo__message workflow-demo__message--user"><b>You</b><p data-demo-typing>People need to find answers in our docs. That ticket looks right; save it and plan the work.</p></div>
+            <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>The ticket is in Linear. I’ve prepared a plan with checks for the search experience. Do you approve it?</p></div>
+            <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
+              <li><span>Integration</span><p>Linear receives the approved ticket.</p></li>
+              <li><span>Workflow</span><p><code>/plan</code> turns it into verifiable steps.</p></li>
+              <li><span>Skill</span><p><code>planning-and-task-breakdown</code> orders the work.</p></li>
+              <li><span>Validation</span><p>Execution waits for your approval.</p></li>
+            </ul></div>
+          </article>
+          <article class="workflow-demo__scene" data-demo-scene>
+            <p class="workflow-demo__phase">03 / Build and check</p>
+            <div class="workflow-demo__message workflow-demo__message--user"><b>You</b><p data-demo-typing>Approved. Go ahead.</p></div>
+            <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>I’m building the search and checking it against the plan. Then I’ll open a request for review.</p></div>
+            <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
+              <li><span>Workflow</span><p><code>/work</code> implements the approved plan.</p></li>
+              <li><span>Profile</span><p><code>ai-engineer</code> handles the search feature.</p></li>
+              <li><span>Validation</span><p>Checks run before the request is prepared.</p></li>
+              <li><span>Workflow</span><p><code>/ready</code> prepares the request.</p></li>
+            </ul></div>
+          </article>
+          <article class="workflow-demo__scene" data-demo-scene>
+            <p class="workflow-demo__phase">04 / Review</p>
+            <div class="workflow-demo__message workflow-demo__message--user"><b>You</b><p data-demo-typing>Review the merge request.</p></div>
+            <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>I’ve checked this version against the ticket and plan. The review is ready for your decision.</p></div>
+            <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
+              <li><span>Workflow</span><p><code>/inspect</code> reviews a specific request version.</p></li>
+              <li><span>Profile</span><p><code>reviewer</code> checks for defects and gaps.</p></li>
+              <li><span>Validation</span><p>The result is submitted for human review.</p></li>
+            </ul></div>
+          </article>
+          <article class="workflow-demo__scene" data-demo-scene>
+            <p class="workflow-demo__phase">05 / Merge and close</p>
+            <div class="workflow-demo__message workflow-demo__message--user"><b>You</b><p data-demo-typing>Merge it.</p></div>
+            <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>Merged to main. The Linear ticket is now complete.</p></div>
+            <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
+              <li><span>Workflow</span><p><code>/done</code> merges after your confirmation.</p></li>
+              <li><span>Integration</span><p>Linear records the completed ticket.</p></li>
+            </ul></div>
+          </article>
         </div>
-      </div>
+      </section>
   actions:
     - text: Install Agent Workflows
       link: /agent-workflows/installation/
@@ -130,3 +163,5 @@ hero:
     </div>
   </section>
 </div>
+
+<script src="/agent-workflows/workflow-demo.js" defer></script>
