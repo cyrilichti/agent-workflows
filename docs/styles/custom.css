@@ -2045,7 +2045,7 @@ a.dispatch-node--link:focus-visible {
   }
 
   .write-flow__loop {
-    padding: 1.75rem 2.25rem 1.75rem 0;
+    padding: 1.75rem 2.25rem;
     grid-template-columns: 1fr;
     gap: 2rem;
   }
@@ -2088,10 +2088,11 @@ a.dispatch-node--link:focus-visible {
 
   .write-flow__loop-return {
     top: 50%;
-    right: -2.4rem;
+    right: 1.35rem;
     bottom: auto;
     left: auto;
-    transform: rotate(-90deg) translateY(-50%);
+    writing-mode: vertical-rl;
+    transform: translateY(-50%) rotate(180deg);
   }
 
   .write-flow__loop--autonomous::after {
@@ -2107,5 +2108,20 @@ a.dispatch-node--link:focus-visible {
 
   .work-skills__groups {
     grid-template-columns: 1fr;
+  }
+
+  .plan-flow__scope {
+    padding-top: 0;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plan-flow__scope::before,
+  .plan-flow__scope::after,
+  .plan-flow__scope-path::before {
+    display: none;
+  }
+
+  .plan-flow__continue {
+    width: 100%;
   }
 }
