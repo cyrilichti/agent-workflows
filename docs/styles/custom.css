@@ -885,7 +885,7 @@
     grid-template-columns: 1fr;
   }
 
-  .delivery-map__stages > * {
+  .delivery-map__stages > :nth-child(n) {
     grid-column: 1;
   }
 
@@ -900,7 +900,7 @@
   }
 
   .delivery-loop {
-    padding: 1.75rem 2.25rem 1.75rem 0;
+    padding: 1.75rem 2.75rem;
     grid-template-columns: 1fr;
     gap: 2rem;
   }
@@ -941,10 +941,11 @@
 
   .delivery-loop__return-label {
     top: 50%;
-    right: -2.4rem;
+    right: 0.8rem;
     bottom: auto;
     left: auto;
-    transform: rotate(-90deg) translateY(-50%);
+    writing-mode: vertical-rl;
+    transform: translateY(-50%) rotate(180deg);
   }
 
   .delivery-map__merge {
@@ -953,6 +954,10 @@
 }
 
 @media (max-width: 38rem) {
+  .hero .actions {
+    flex-wrap: wrap;
+  }
+
   .landing-proof {
     grid-template-columns: 1fr;
   }
@@ -2045,7 +2050,7 @@ a.dispatch-node--link:focus-visible {
   }
 
   .write-flow__loop {
-    padding: 1.75rem 2.25rem 1.75rem 0;
+    padding: 1.75rem 2.75rem;
     grid-template-columns: 1fr;
     gap: 2rem;
   }
@@ -2088,10 +2093,11 @@ a.dispatch-node--link:focus-visible {
 
   .write-flow__loop-return {
     top: 50%;
-    right: -2.4rem;
+    right: 0.8rem;
     bottom: auto;
     left: auto;
-    transform: rotate(-90deg) translateY(-50%);
+    writing-mode: vertical-rl;
+    transform: translateY(-50%) rotate(180deg);
   }
 
   .write-flow__loop--autonomous::after {
@@ -2107,5 +2113,20 @@ a.dispatch-node--link:focus-visible {
 
   .work-skills__groups {
     grid-template-columns: 1fr;
+  }
+
+  .plan-flow__scope {
+    padding-top: 0;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .plan-flow__scope::before,
+  .plan-flow__scope::after,
+  .plan-flow__scope-path::before {
+    display: none;
+  }
+
+  .plan-flow__continue {
+    width: 100%;
   }
 }
