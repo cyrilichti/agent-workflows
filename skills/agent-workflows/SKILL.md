@@ -98,7 +98,9 @@ For every fully managed directory listed in Rules:
 2. recreate it from the matching downloaded source directory.
 
 Create `.agents/plans` when absent. Otherwise preserve it and all of its
-contents exactly. Do not copy the downloaded `plans` directory.
+contents exactly. Do not copy the downloaded `plans` directory. Create
+`.agents/plans/.gitkeep` when that file is absent, and leave every other file
+in `.agents/plans` unchanged.
 
 Do not copy the repository metadata, documentation site, build output,
 dependencies, or unrelated root files.
@@ -120,11 +122,13 @@ other `.cursor` content.
 
 Preserve the consuming project's root `.gitignore`, or create it when absent.
 Derive the Agent Workflows ignore block from the downloaded `.gitignore` rules
-for `plans/*`, `skills/*`, and every `!skills/<native-skill>/` exception. Prefix
-each derived path with `.agents/`, producing the current equivalent of:
+for `plans/*`, `!plans/.gitkeep`, `skills/*`, and every
+`!skills/<native-skill>/` exception. Prefix each derived path with `.agents/`,
+producing the current equivalent of:
 
 ```gitignore
 .agents/plans/*
+!.agents/plans/.gitkeep
 
 .agents/skills/*
 !.agents/skills/agent-workflows/
@@ -142,6 +146,7 @@ Treat only these consuming-project patterns as installer-owned:
 
 ```text
 .agents/plans/*
+!.agents/plans/.gitkeep
 .agents/skills/*
 !.agents/skills/*/
 ```
@@ -153,7 +158,8 @@ line and its order. Do not duplicate rules on repeated execution.
 
 Validate with `git check-ignore` that:
 
-- a file below `.agents/plans` is ignored;
+- a file below `.agents/plans` other than `.gitkeep` is ignored;
+- `.agents/plans/.gitkeep` is not ignored;
 - a downloaded external Skill declared only in `skills-lock.json` is ignored;
 - every downloaded native Skill is not ignored.
 

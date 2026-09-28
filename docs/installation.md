@@ -35,10 +35,10 @@ existing incompatible path stops the installation instead of being replaced.
 
 The root `.gitignore` is preserved while its Agent Workflows rules are
 reconciled idempotently so stale native-Skill exceptions disappear, project
-plans and restored external Skills stay ignored, and current native Skills
-remain trackable. Skill lock entries owned by the consuming project are merged
-with Agent Workflows dependencies before `npx skills experimental_install`
-restores them.
+plans and restored external Skills stay ignored, `.agents/plans/.gitkeep` stays
+trackable, and current native Skills remain trackable. Skill lock entries
+owned by the consuming project are merged with Agent Workflows dependencies
+before `npx skills experimental_install` restores them.
 
 ## Provider prerequisites
 
