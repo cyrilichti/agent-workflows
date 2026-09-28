@@ -3,6 +3,7 @@ node_modules/
 dist/
 .astro/
 plans/*
+!plans/.gitkeep
 agent-workflows.yaml
 skills/*
 !skills/agent-workflows/
