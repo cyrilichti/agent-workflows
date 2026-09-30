@@ -34,17 +34,46 @@ x-depends: &langfuse-depends
   redis: {condition: service_healthy}
   minio: {condition: service_healthy}
 services:
-  flowise:
-    image: flowiseai/flowise:3.1.4
+  flowise-volume-init:
+    image: flowiseai/flowise:3.1.4@sha256:3922767afb52a5777759fd8b28a3c9eee864daea96018a791f2429eae2a76571
+    user: '0:0'
+    network_mode: none
+    entrypoint: ['/bin/sh', '-c']
+    command: ['chown -R 1000:1000 /data']
+    volumes: [flowise:/data]
+    restart: 'no'
+  flowise-db:
+    image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
     restart: unless-stopped
+    environment:
+      POSTGRES_DB: flowise
+      POSTGRES_PASSWORD: ${FLOWISE_DB_PASSWORD}
+    volumes: [flowise-db:/var/lib/postgresql/data]
+    networks: [workflow]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d flowise']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  flowise:
+    image: flowiseai/flowise:3.1.4@sha256:3922767afb52a5777759fd8b28a3c9eee864daea96018a791f2429eae2a76571
+    restart: unless-stopped
+    depends_on:
+      flowise-volume-init: {condition: service_completed_successfully}
+      flowise-db: {condition: service_healthy}
     ports: ['127.0.0.1:3000:3000']
     environment:
       PORT: 3000
-      DATABASE_PATH: /root/.flowise
-      APIKEY_PATH: /root/.flowise
-      SECRETKEY_PATH: /root/.flowise
-      LOG_PATH: /root/.flowise/logs
-      BLOB_STORAGE_PATH: /root/.flowise/storage
+      DATABASE_TYPE: postgres
+      DATABASE_HOST: flowise-db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: flowise
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: ${FLOWISE_DB_PASSWORD}
+      APIKEY_PATH: /home/node/.flowise
+      SECRETKEY_PATH: /home/node/.flowise
+      LOG_PATH: /home/node/.flowise/logs
+      BLOB_STORAGE_PATH: /home/node/.flowise/storage
       JWT_AUTH_TOKEN_SECRET: ${FLOWISE_JWT_SECRET}
       JWT_REFRESH_TOKEN_SECRET: ${FLOWISE_REFRESH_SECRET}
       EXPRESS_SESSION_SECRET: ${FLOWISE_SESSION_SECRET}
@@ -53,7 +82,7 @@ services:
       # Same upstream deny policy, except the one private bridge IP.
       HTTP_SECURITY_CHECK: 'false'
       HTTP_DENY_LIST: ${FLOWISE_HTTP_DENY_LIST}
-    volumes: [flowise:/root/.flowise]
+    volumes: [flowise:/home/node/.flowise]
     networks: [workflow]
     healthcheck:
       test: ['CMD', 'node', '-e', "fetch('http://localhost:3000/api/v1/ping').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
@@ -91,12 +120,13 @@ services:
       timeout: 5s
       retries: 10
   langfuse-web:
-    image: langfuse/langfuse:4.48.0
+    image: langfuse/langfuse:4.48.0@sha256:8c1b80ed7735be587974d603af0f6e0247b33d3b56c7d5ab9d2337aec313efa0
     restart: unless-stopped
     depends_on: *langfuse-depends
     ports: ['127.0.0.1:3001:3000']
     environment:
       <<: *langfuse-env
+      HOSTNAME: 0.0.0.0
       LANGFUSE_INIT_ORG_ID: local
       LANGFUSE_INIT_ORG_NAME: Local AI
       LANGFUSE_INIT_PROJECT_ID: local-ai
@@ -113,13 +143,13 @@ services:
       timeout: 5s
       retries: 30
   langfuse-worker:
-    image: langfuse/langfuse-worker:4.48.0
+    image: langfuse/langfuse-worker:4.48.0@sha256:9349b003a453326b3d2e2033eb94fe5ca9ee12ee237779c10984b9d3dfe0f8ed
     restart: unless-stopped
     depends_on: *langfuse-depends
     environment: *langfuse-env
     networks: [storage]
   postgres:
-    image: postgres:17.6-bookworm
+    image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -132,7 +162,7 @@ services:
       timeout: 5s
       retries: 20
   clickhouse:
-    image: clickhouse/clickhouse-server:25.12
+    image: clickhouse/clickhouse-server:25.12@sha256:8a790dd3468db22b1d4e7b18a176f378ff5ff6053b9c48dd4ea1fa71a24c5ba6
     restart: unless-stopped
     user: '101:101'
     environment:
@@ -147,7 +177,7 @@ services:
       timeout: 5s
       retries: 20
   redis:
-    image: redis:7.2.6-bookworm
+    image: redis:7.2.6-bookworm@sha256:43c5c111b5b63afce26faea67198f8cf7e63b941460bcfe1525b68a6ad1eef92
     restart: unless-stopped
     command: ['redis-server', '--requirepass', '${REDIS_PASSWORD}', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
     environment: {REDISCLI_AUTH: '${REDIS_PASSWORD}'}
@@ -159,7 +189,7 @@ services:
       timeout: 5s
       retries: 20
   minio:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    image: cgr.dev/chainguard/minio@sha256:4692462f35d97d7e82c30371d82f057703c5d9489bcae726010594c812f2d285
     restart: unless-stopped
     entrypoint: /bin/sh
     command: ['-c', 'mkdir -p /data/langfuse && minio server --address :9000 /data']
@@ -169,7 +199,7 @@ services:
     volumes: [minio:/data]
     networks: [storage]
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      test: ['CMD', 'mc', 'ready', 'local']
       interval: 5s
       timeout: 5s
       retries: 20
@@ -180,6 +210,7 @@ networks:
   observability: {}
   storage: {internal: true}
 volumes:
+  flowise-db: {}
   flowise: {}
   bridge: {}
   codex-auth: {}
