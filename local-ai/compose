@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+cd "$(dirname "$0")"
+mode=$(sed -n 's/^AI_PROVIDER=//p' .env)
+case "$mode" in
+  codex) exec docker compose -f compose.yaml "$@" ;;
+  openai-api) exec docker compose -f compose.yaml -f compose.api.yaml "$@" ;;
+  *) echo 'AI_PROVIDER must be codex or openai-api in local-ai/.env' >&2; exit 1 ;;
+esac

@@ -1,0 +1,13 @@
+services:
+  bridge:
+    build: {target: api}
+    environment:
+      AI_PROVIDER: openai-api
+      OPENAI_API_KEY_FILE: /run/secrets/openai_api_key
+      CODEX_HOME: !reset null
+      CODEX_WORKSPACE_ID: !reset null
+    volumes: !override [bridge:/data]
+    secrets: [openai_api_key]
+secrets:
+  openai_api_key:
+    file: ./.local/openai-api-key

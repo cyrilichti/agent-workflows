@@ -1,0 +1,190 @@
+name: agent-workflows-ai
+x-langfuse-env: &langfuse-env
+  DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/langfuse
+  NEXTAUTH_URL: http://localhost:3001
+  NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+  SALT: ${LANGFUSE_SALT}
+  ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY}
+  TELEMETRY_ENABLED: 'false'
+  CLICKHOUSE_MIGRATION_URL: clickhouse://clickhouse:9000
+  CLICKHOUSE_URL: http://clickhouse:8123
+  CLICKHOUSE_USER: langfuse
+  CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+  CLICKHOUSE_CLUSTER_ENABLED: 'false'
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  REDIS_AUTH: ${REDIS_PASSWORD}
+  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_EVENT_UPLOAD_REGION: auto
+  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: minio
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${MINIO_PASSWORD}
+  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://minio:9000
+  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: 'true'
+  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_MEDIA_UPLOAD_REGION: auto
+  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: minio
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${MINIO_PASSWORD}
+  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://minio:9000
+  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: 'true'
+  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+x-depends: &langfuse-depends
+  postgres: {condition: service_healthy}
+  clickhouse: {condition: service_healthy}
+  redis: {condition: service_healthy}
+  minio: {condition: service_healthy}
+services:
+  flowise:
+    image: flowiseai/flowise:3.1.4
+    restart: unless-stopped
+    ports: ['127.0.0.1:3000:3000']
+    environment:
+      PORT: 3000
+      DATABASE_PATH: /root/.flowise
+      APIKEY_PATH: /root/.flowise
+      SECRETKEY_PATH: /root/.flowise
+      LOG_PATH: /root/.flowise/logs
+      BLOB_STORAGE_PATH: /root/.flowise/storage
+      JWT_AUTH_TOKEN_SECRET: ${FLOWISE_JWT_SECRET}
+      JWT_REFRESH_TOKEN_SECRET: ${FLOWISE_REFRESH_SECRET}
+      EXPRESS_SESSION_SECRET: ${FLOWISE_SESSION_SECRET}
+      TOKEN_HASH_SECRET: ${FLOWISE_HASH_SECRET}
+      DISABLE_FLOWISE_TELEMETRY: 'true'
+      # Same upstream deny policy, except the one private bridge IP.
+      HTTP_SECURITY_CHECK: 'false'
+      HTTP_DENY_LIST: ${FLOWISE_HTTP_DENY_LIST}
+    volumes: [flowise:/root/.flowise]
+    networks: [workflow]
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://localhost:3000/api/v1/ping').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+  bridge:
+    build: {context: ./bridge, target: codex}
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    tmpfs: ['/tmp:uid=1000,gid=1000,mode=700']
+    environment:
+      AI_PROVIDER: codex
+      AI_MODEL: ${AI_MODEL:-gpt-6-luna}
+      INFERENCE_ENABLED: ${INFERENCE_ENABLED:-false}
+      REQUEST_TIMEOUT_MS: 90000
+      LANGFUSE_URL: http://langfuse-web:3000
+      LANGFUSE_PUBLIC_URL: http://localhost:3001
+      LANGFUSE_PROJECT_ID: local-ai
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY}
+      CODEX_WORKSPACE_ID: ${CODEX_WORKSPACE_ID:-}
+      CODEX_HOME: /auth
+      DATA_DIR: /data
+    volumes: [bridge:/data, codex-auth:/auth]
+    networks:
+      workflow: {ipv4_address: 172.30.81.10}
+      observability: {}
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://localhost:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  langfuse-web:
+    image: langfuse/langfuse:4.48.0
+    restart: unless-stopped
+    depends_on: *langfuse-depends
+    ports: ['127.0.0.1:3001:3000']
+    environment:
+      <<: *langfuse-env
+      LANGFUSE_INIT_ORG_ID: local
+      LANGFUSE_INIT_ORG_NAME: Local AI
+      LANGFUSE_INIT_PROJECT_ID: local-ai
+      LANGFUSE_INIT_PROJECT_NAME: Local AI workflow
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_SECRET_KEY}
+      LANGFUSE_INIT_USER_EMAIL: local@example.test
+      LANGFUSE_INIT_USER_NAME: Local user
+      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_ADMIN_PASSWORD}
+    networks: [observability, storage]
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://localhost:3000/api/public/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+  langfuse-worker:
+    image: langfuse/langfuse-worker:4.48.0
+    restart: unless-stopped
+    depends_on: *langfuse-depends
+    environment: *langfuse-env
+    networks: [storage]
+  postgres:
+    image: postgres:17.6-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: langfuse
+    volumes: [postgres:/var/lib/postgresql/data]
+    networks: [storage]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d langfuse']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.12
+    restart: unless-stopped
+    user: '101:101'
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: langfuse
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+    volumes: [clickhouse:/var/lib/clickhouse, clickhouse-logs:/var/log/clickhouse-server]
+    networks: [storage]
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost:8123/ping']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  redis:
+    image: redis:7.2.6-bookworm
+    restart: unless-stopped
+    command: ['redis-server', '--requirepass', '${REDIS_PASSWORD}', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
+    environment: {REDISCLI_AUTH: '${REDIS_PASSWORD}'}
+    volumes: [redis:/data]
+    networks: [storage]
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    restart: unless-stopped
+    entrypoint: /bin/sh
+    command: ['-c', 'mkdir -p /data/langfuse && minio server --address :9000 /data']
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+    volumes: [minio:/data]
+    networks: [storage]
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+networks:
+  workflow:
+    ipam:
+      config: [{subnet: 172.30.81.0/24}]
+  observability: {}
+  storage: {internal: true}
+volumes:
+  flowise: {}
+  bridge: {}
+  codex-auth: {}
+  postgres: {}
+  clickhouse: {}
+  clickhouse-logs: {}
+  redis: {}
+  minio: {}
