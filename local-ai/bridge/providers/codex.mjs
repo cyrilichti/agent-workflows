@@ -8,7 +8,9 @@ const disabled = ['shell_tool', 'unified_exec', 'apply_patch_freeform', 'js_repl
   'plugin_hooks', 'multi_agent', 'multi_agent_v2', 'multi_agent_mode', 'browser_use',
   'computer_use', 'in_app_browser', 'image_generation', 'view_image',
   'memories', 'skill_search', 'tool_search', 'search_tool', 'remote_plugin',
-  'request_permissions_tool', 'tool_suggest'];
+  'request_permissions_tool', 'tool_suggest', 'goals', 'sleep_tool', 'unified_exec_tty',
+  'unified_exec_zsh_fork', 'shell_snapshot', 'in_app_local_automation', 'in_app_chat',
+  'workspace_dependencies', 'skill_mcp_dependency_install', 'unbounded_connection_retries'];
 export function codexArgs(model, workspace) {
   const args = ['exec', '--json', '--ephemeral', '--skip-git-repo-check', '--ignore-user-config',
     '--sandbox', 'read-only', '-C', '/empty', '-m', model,

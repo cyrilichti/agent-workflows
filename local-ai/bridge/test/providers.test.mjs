@@ -53,3 +53,35 @@ test('missing, revoked or wrong-workspace authentication fails without fallback'
     await assert.rejects(api.generate('Hello', opts)); assert.equal(calls, 1);
   }
 });
+
+test('API transport cancellation and malformed responses never retry', async t => {
+  const dir = mkdtempSync(`${tmpdir()}/api-failure-test-`); t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const keyFile = `${dir}/key`; writeFileSync(keyFile, 'test-only');
+  let calls = 0;
+  const controller = new AbortController(); controller.abort();
+  const api = createOpenAI({ model: 'test', keyFile, fetchImpl: async () => { calls++; throw new Error('aborted'); } });
+  await assert.rejects(api.generate('Hello', { signal: controller.signal }), { code: 'timeout' });
+  assert.equal(calls, 1);
+  const malformed = createOpenAI({ model: 'test', keyFile, fetchImpl: async () => ({ ok: true, json: async () => { throw new SyntaxError('malformed'); } }) });
+  await assert.rejects(malformed.generate('Hello', { signal: new AbortController().signal }));
+});
+
+test('Codex cancellation terminates the subprocess group', async t => {
+  const { spawn } = await import('node:child_process');
+  const { existsSync } = await import('node:fs');
+  const dir = mkdtempSync(`${tmpdir()}/codex-cancel-test-`); t.after(() => rmSync(dir, { recursive: true, force: true }));
+  writeFileSync(`${dir}/auth.json`, JSON.stringify({ tokens: { access_token: 'test-only', account_id: 'wanted' } }));
+  const marker = `${dir}/survived`;
+  const controller = new AbortController();
+  const grandchild = `setTimeout(()=>require('fs').writeFileSync(${JSON.stringify(marker)},'alive'),300)`;
+  const script = `const c=require('child_process').spawn(process.execPath,['-e',${JSON.stringify(grandchild)}],{stdio:'ignore'}); console.log('ready');setInterval(()=>{},1000)`;
+  const provider = createCodex({ model: 'test', workspace: 'wanted', authDir: dir,
+    spawnImpl: (_file, _args, options) => {
+      const child = spawn(process.execPath, ['-e', script], options);
+      child.stdout.once('data', () => controller.abort());
+      return child;
+    } });
+  await assert.rejects(provider.generate('Hello', { signal: controller.signal }), { code: 'timeout' });
+  await new Promise(resolve => setTimeout(resolve, 400));
+  assert.equal(existsSync(marker), false);
+});
