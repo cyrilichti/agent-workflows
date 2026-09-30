@@ -4,7 +4,7 @@ import { ProviderError } from '../contract.mjs';
 
 // Pinned CLI schema: https://github.com/openai/codex/blob/rust-v0.159.2/codex-rs/core/config.schema.json
 const disabled = ['shell_tool', 'unified_exec', 'apply_patch_freeform', 'js_repl', 'code_mode',
-  'code_mode_host', 'code_mode_only', 'apps', 'plugins', 'hooks', 
+  'code_mode_host', 'code_mode_only', 'apps', 'plugins', 'hooks',
   'plugin_hooks', 'multi_agent', 'multi_agent_v2', 'multi_agent_mode', 'browser_use',
   'computer_use', 'in_app_browser', 'image_generation', 'view_image',
   'memories', 'skill_search', 'tool_search', 'search_tool', 'remote_plugin',
