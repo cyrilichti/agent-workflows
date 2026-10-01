@@ -1,0 +1,40 @@
+id: local_ai
+namespace: local.ai
+description: Run a prompt through the private Codex/API bridge and inspect its Langfuse trace.
+inputs:
+  - id: requestId
+    type: STRING
+    required: true
+    description: Unique correlation ID. Reuse the same ID and prompt to retrieve a saved result.
+  - id: prompt
+    type: STRING
+    required: true
+    description: The request sent to the selected inference provider.
+tasks:
+  - id: inference
+    type: io.kestra.plugin.core.http.Request
+    uri: http://bridge:8080/generate
+    method: POST
+    contentType: text/plain
+    headers:
+      X-Request-Id: '{{ inputs.requestId }}'
+    body: '{{ inputs.prompt }}'
+    timeout: PT2M
+    options:
+      timeout:
+        connectTimeout: PT5S
+        readIdleTimeout: PT110S
+  - id: response
+    type: io.kestra.plugin.core.log.Log
+    message: '{{ outputs.inference.body }}'
+  - id: require_completed
+    type: io.kestra.plugin.core.execution.Fail
+    runIf: "{{ fromJson(outputs.inference.body).status != 'completed' }}"
+    errorMessage: 'Inference did not complete. Inspect the response and trace; no automatic retry.'
+outputs:
+  - id: result
+    type: JSON
+    value: '{{ fromJson(outputs.inference.body) }}'
+  - id: traceUrl
+    type: STRING
+    value: '{{ fromJson(outputs.inference.body).traceUrl }}'

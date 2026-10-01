@@ -52,7 +52,7 @@ x-bridge: &bridge
     DATA_DIR: /data
   volumes: [bridge:/data]
   networks:
-    workflow: {ipv4_address: 172.30.81.10, aliases: [bridge]}
+    workflow: {aliases: [bridge]}
     observability: {}
   healthcheck:
     test: ['CMD', 'node', '-e', "fetch('http://localhost:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
@@ -60,60 +60,69 @@ x-bridge: &bridge
     timeout: 5s
     retries: 10
 services:
-  flowise-volume-init:
-    image: flowiseai/flowise:3.1.4@sha256:3922767afb52a5777759fd8b28a3c9eee864daea96018a791f2429eae2a76571
-    user: '0:0'
-    network_mode: none
-    entrypoint: ['/bin/sh', '-c']
-    command: ['chown -R 1000:1000 /data']
-    volumes: [flowise:/data]
-    restart: 'no'
-  flowise-db:
+  kestra-db:
     image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
     restart: unless-stopped
     environment:
-      POSTGRES_DB: flowise
-      POSTGRES_PASSWORD: ${FLOWISE_DB_PASSWORD:?Set FLOWISE_DB_PASSWORD in .env}
-    volumes: [flowise-db:/var/lib/postgresql/data]
+      POSTGRES_DB: kestra
+      POSTGRES_USER: kestra
+      POSTGRES_PASSWORD: ${KESTRA_DB_PASSWORD:?Set KESTRA_DB_PASSWORD in .env}
+    volumes: [kestra-db:/var/lib/postgresql/data]
     networks: [workflow]
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d flowise']
+      test: ['CMD-SHELL', 'pg_isready -U kestra -d kestra']
       interval: 5s
       timeout: 5s
       retries: 20
-  flowise:
-    image: flowiseai/flowise:3.1.4@sha256:3922767afb52a5777759fd8b28a3c9eee864daea96018a791f2429eae2a76571
+  kestra:
+    build:
+      context: ./.docker
+      dockerfile: Dockerfile.kestra
     restart: unless-stopped
+    command: server standalone --worker-thread=4
+    stop_grace_period: 2m
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
     depends_on:
-      flowise-volume-init: {condition: service_completed_successfully}
-      flowise-db: {condition: service_healthy}
-    ports: ['127.0.0.1:3000:3000']
+      kestra-db: {condition: service_healthy}
+    ports: ['127.0.0.1:3000:8080']
     environment:
-      PORT: 3000
-      DATABASE_TYPE: postgres
-      DATABASE_HOST: flowise-db
-      DATABASE_PORT: 5432
-      DATABASE_NAME: flowise
-      DATABASE_USER: postgres
-      DATABASE_PASSWORD: ${FLOWISE_DB_PASSWORD:?Set FLOWISE_DB_PASSWORD in .env}
-      APIKEY_PATH: /home/node/.flowise
-      SECRETKEY_PATH: /home/node/.flowise
-      LOG_PATH: /home/node/.flowise/logs
-      BLOB_STORAGE_PATH: /home/node/.flowise/storage
-      JWT_AUTH_TOKEN_SECRET: ${FLOWISE_JWT_SECRET:?Set FLOWISE_JWT_SECRET in .env}
-      JWT_REFRESH_TOKEN_SECRET: ${FLOWISE_REFRESH_SECRET:?Set FLOWISE_REFRESH_SECRET in .env}
-      EXPRESS_SESSION_SECRET: ${FLOWISE_SESSION_SECRET:?Set FLOWISE_SESSION_SECRET in .env}
-      TOKEN_HASH_SECRET: ${FLOWISE_HASH_SECRET:?Set FLOWISE_HASH_SECRET in .env}
-      DISABLE_FLOWISE_TELEMETRY: 'true'
-      # Same upstream deny policy, except the one private bridge IP.
-      HTTP_SECURITY_CHECK: 'false'
-      HTTP_DENY_LIST: 0.0.0.0,10.0.0.0/8,127.0.0.0/8,169.254.0.0/16,192.168.0.0/16,224.0.0.0/4,240.0.0.0/4,255.255.255.255/32,::1,fc00::/7,fe80::/10,ff00::/8,localhost,ip6-localhost,172.16.0.0/13,172.24.0.0/14,172.28.0.0/15,172.31.0.0/16,172.30.128.0/17,172.30.0.0/18,172.30.96.0/19,172.30.64.0/20,172.30.88.0/21,172.30.84.0/22,172.30.82.0/23,172.30.80.0/24,172.30.81.128/25,172.30.81.64/26,172.30.81.32/27,172.30.81.16/28,172.30.81.0/29,172.30.81.12/30,172.30.81.8/31,172.30.81.11/32
-    volumes: [flowise:/home/node/.flowise]
+      KESTRA_DB_PASSWORD: ${KESTRA_DB_PASSWORD:?Set KESTRA_DB_PASSWORD in .env}
+      KESTRA_ADMIN_EMAIL: ${KESTRA_ADMIN_EMAIL:-local@example.test}
+      KESTRA_ADMIN_PASSWORD: ${KESTRA_ADMIN_PASSWORD:?Set KESTRA_ADMIN_PASSWORD in .env}
+      KESTRA_CONFIGURATION: |
+        datasources:
+          postgres:
+            url: jdbc:postgresql://kestra-db:5432/kestra
+            driverClassName: org.postgresql.Driver
+            username: kestra
+            password: $${KESTRA_DB_PASSWORD}
+        kestra:
+          server:
+            basic-auth:
+              username: $${KESTRA_ADMIN_EMAIL}
+              password: $${KESTRA_ADMIN_PASSWORD}
+          repository:
+            type: postgres
+          queue:
+            type: postgres
+          storage:
+            type: local
+            local:
+              base-path: /app/storage
+          tasks:
+            tmp-dir:
+              path: /tmp/kestra
+          url: http://localhost:3000/
+          anonymous-usage-report:
+            enabled: false
+    volumes: [kestra:/app/storage]
     networks: [workflow]
     healthcheck:
-      test: ['CMD', 'node', '-e', "fetch('http://localhost:3000/api/v1/ping').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test: ['CMD', 'curl', '--fail', '--silent', 'http://localhost:8081/health']
       interval: 10s
       timeout: 5s
+      start_period: 60s
       retries: 30
   workflow-init:
     build:
@@ -124,12 +133,11 @@ services:
     cap_drop: [ALL]
     security_opt: ['no-new-privileges:true']
     depends_on:
-      flowise: {condition: service_healthy}
+      kestra: {condition: service_healthy}
     environment:
-      FLOWISE_URL: http://flowise:3000
-      FLOWISE_ADMIN_EMAIL: ${FLOWISE_ADMIN_EMAIL:-local@example.test}
-      FLOWISE_ADMIN_PASSWORD: ${FLOWISE_ADMIN_PASSWORD:?Set FLOWISE_ADMIN_PASSWORD in .env}
-    volumes: [flowise:/state]
+      KESTRA_URL: http://kestra:8080
+      KESTRA_ADMIN_EMAIL: ${KESTRA_ADMIN_EMAIL:-local@example.test}
+      KESTRA_ADMIN_PASSWORD: ${KESTRA_ADMIN_PASSWORD:?Set KESTRA_ADMIN_PASSWORD in .env}
     networks: [workflow]
   bridge:
     <<: *bridge
@@ -234,18 +242,12 @@ services:
       timeout: 5s
       retries: 20
 networks:
-  workflow:
-    ipam:
-      config: [{subnet: 172.30.81.0/24}]
+  workflow: {}
   observability: {}
   storage: {internal: true}
 volumes:
-  flowise-db:
-    external: ${EXTERNAL_VOLUMES:-false}
-    name: ${VOLUME_PREFIX:-agent-workflows}_flowise-db
-  flowise:
-    external: ${EXTERNAL_VOLUMES:-false}
-    name: ${VOLUME_PREFIX:-agent-workflows}_flowise
+  kestra-db: {}
+  kestra: {}
   bridge:
     external: ${EXTERNAL_VOLUMES:-false}
     name: ${VOLUME_PREFIX:-agent-workflows}_bridge
