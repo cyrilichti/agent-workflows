@@ -76,16 +76,6 @@ docker compose exec bridge codex -c 'cli_auth_credentials_store="file"' login --
 docker compose exec bridge codex login status
 ```
 
-Follow the displayed link and code in your browser. Login stays in a Docker
-volume; your host Codex configuration is not copied or mounted. After checking
-your allowance, set `INFERENCE_ENABLED=true` in `.env` and run
-`docker compose up -d` to apply it.
-
-In Flowise, open **Agentflows → Local AI — Codex or API → Chat**. Enter a unique
-`requestId` (such as `my-first-run-001`) and a prompt. The response includes its
-Langfuse trace link, also accessible through **Local AI workflow → Tracing**.
-Reusing the same ID and prompt returns the saved response without another inference.
-
 ### Configuration
 
 Choose exactly one provider in the **root `.env`**:
