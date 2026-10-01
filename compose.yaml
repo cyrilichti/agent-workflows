@@ -1,30 +1,30 @@
-name: agent-workflows-ai
+name: agent-workflows
 x-langfuse-env: &langfuse-env
-  DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/langfuse
+  DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/langfuse
   NEXTAUTH_URL: http://localhost:3001
-  NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-  SALT: ${LANGFUSE_SALT}
-  ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY}
+  NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in .env}
+  SALT: ${LANGFUSE_SALT:?Set LANGFUSE_SALT in .env}
+  ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:?Set LANGFUSE_ENCRYPTION_KEY in .env}
   TELEMETRY_ENABLED: 'false'
   CLICKHOUSE_MIGRATION_URL: clickhouse://clickhouse:9000
   CLICKHOUSE_URL: http://clickhouse:8123
   CLICKHOUSE_USER: langfuse
-  CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+  CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?Set CLICKHOUSE_PASSWORD in .env}
   CLICKHOUSE_CLUSTER_ENABLED: 'false'
   REDIS_HOST: redis
   REDIS_PORT: 6379
-  REDIS_AUTH: ${REDIS_PASSWORD}
+  REDIS_AUTH: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
   LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
   LANGFUSE_S3_EVENT_UPLOAD_REGION: auto
   LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: minio
-  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${MINIO_PASSWORD}
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${MINIO_PASSWORD:?Set MINIO_PASSWORD in .env}
   LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://minio:9000
   LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: 'true'
   LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
   LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
   LANGFUSE_S3_MEDIA_UPLOAD_REGION: auto
   LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: minio
-  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${MINIO_PASSWORD}
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${MINIO_PASSWORD:?Set MINIO_PASSWORD in .env}
   LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://minio:9000
   LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: 'true'
   LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
@@ -47,8 +47,8 @@ x-bridge: &bridge
     LANGFUSE_URL: http://langfuse-web:3000
     LANGFUSE_PUBLIC_URL: http://localhost:3001
     LANGFUSE_PROJECT_ID: local-ai
-    LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY}
-    LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY}
+    LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:?Set LANGFUSE_PUBLIC_KEY in .env}
+    LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:?Set LANGFUSE_SECRET_KEY in .env}
     DATA_DIR: /data
   volumes: [bridge:/data]
   networks:
@@ -73,7 +73,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_DB: flowise
-      POSTGRES_PASSWORD: ${FLOWISE_DB_PASSWORD}
+      POSTGRES_PASSWORD: ${FLOWISE_DB_PASSWORD:?Set FLOWISE_DB_PASSWORD in .env}
     volumes: [flowise-db:/var/lib/postgresql/data]
     networks: [workflow]
     healthcheck:
@@ -95,19 +95,19 @@ services:
       DATABASE_PORT: 5432
       DATABASE_NAME: flowise
       DATABASE_USER: postgres
-      DATABASE_PASSWORD: ${FLOWISE_DB_PASSWORD}
+      DATABASE_PASSWORD: ${FLOWISE_DB_PASSWORD:?Set FLOWISE_DB_PASSWORD in .env}
       APIKEY_PATH: /home/node/.flowise
       SECRETKEY_PATH: /home/node/.flowise
       LOG_PATH: /home/node/.flowise/logs
       BLOB_STORAGE_PATH: /home/node/.flowise/storage
-      JWT_AUTH_TOKEN_SECRET: ${FLOWISE_JWT_SECRET}
-      JWT_REFRESH_TOKEN_SECRET: ${FLOWISE_REFRESH_SECRET}
-      EXPRESS_SESSION_SECRET: ${FLOWISE_SESSION_SECRET}
-      TOKEN_HASH_SECRET: ${FLOWISE_HASH_SECRET}
+      JWT_AUTH_TOKEN_SECRET: ${FLOWISE_JWT_SECRET:?Set FLOWISE_JWT_SECRET in .env}
+      JWT_REFRESH_TOKEN_SECRET: ${FLOWISE_REFRESH_SECRET:?Set FLOWISE_REFRESH_SECRET in .env}
+      EXPRESS_SESSION_SECRET: ${FLOWISE_SESSION_SECRET:?Set FLOWISE_SESSION_SECRET in .env}
+      TOKEN_HASH_SECRET: ${FLOWISE_HASH_SECRET:?Set FLOWISE_HASH_SECRET in .env}
       DISABLE_FLOWISE_TELEMETRY: 'true'
       # Same upstream deny policy, except the one private bridge IP.
       HTTP_SECURITY_CHECK: 'false'
-      HTTP_DENY_LIST: ${FLOWISE_HTTP_DENY_LIST}
+      HTTP_DENY_LIST: 0.0.0.0,10.0.0.0/8,127.0.0.0/8,169.254.0.0/16,192.168.0.0/16,224.0.0.0/4,240.0.0.0/4,255.255.255.255/32,::1,fc00::/7,fe80::/10,ff00::/8,localhost,ip6-localhost,172.16.0.0/13,172.24.0.0/14,172.28.0.0/15,172.31.0.0/16,172.30.128.0/17,172.30.0.0/18,172.30.96.0/19,172.30.64.0/20,172.30.88.0/21,172.30.84.0/22,172.30.82.0/23,172.30.80.0/24,172.30.81.128/25,172.30.81.64/26,172.30.81.32/27,172.30.81.16/28,172.30.81.0/29,172.30.81.12/30,172.30.81.8/31,172.30.81.11/32
     volumes: [flowise:/home/node/.flowise]
     networks: [workflow]
     healthcheck:
@@ -115,6 +115,22 @@ services:
       interval: 10s
       timeout: 5s
       retries: 30
+  workflow-init:
+    build:
+      context: ./.docker
+      dockerfile: Dockerfile.init
+    restart: 'no'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    depends_on:
+      flowise: {condition: service_healthy}
+    environment:
+      FLOWISE_URL: http://flowise:3000
+      FLOWISE_ADMIN_EMAIL: ${FLOWISE_ADMIN_EMAIL:-local@example.test}
+      FLOWISE_ADMIN_PASSWORD: ${FLOWISE_ADMIN_PASSWORD:?Set FLOWISE_ADMIN_PASSWORD in .env}
+    volumes: [flowise:/state]
+    networks: [workflow]
   bridge:
     <<: *bridge
     profiles: [codex]
@@ -145,11 +161,11 @@ services:
       LANGFUSE_INIT_ORG_NAME: Local AI
       LANGFUSE_INIT_PROJECT_ID: local-ai
       LANGFUSE_INIT_PROJECT_NAME: Local AI workflow
-      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY}
-      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_SECRET_KEY}
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:?Set LANGFUSE_PUBLIC_KEY in .env}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_SECRET_KEY:?Set LANGFUSE_SECRET_KEY in .env}
       LANGFUSE_INIT_USER_EMAIL: local@example.test
       LANGFUSE_INIT_USER_NAME: Local user
-      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_ADMIN_PASSWORD}
+      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_ADMIN_PASSWORD:?Set LANGFUSE_ADMIN_PASSWORD in .env}
     networks: [observability, storage]
     healthcheck:
       test: ['CMD', 'node', '-e', "fetch('http://localhost:3000/api/public/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
@@ -166,7 +182,7 @@ services:
     image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
     restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: langfuse
     volumes: [postgres:/var/lib/postgresql/data]
     networks: [storage]
@@ -182,7 +198,7 @@ services:
     environment:
       CLICKHOUSE_DB: default
       CLICKHOUSE_USER: langfuse
-      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?Set CLICKHOUSE_PASSWORD in .env}
     volumes: [clickhouse:/var/lib/clickhouse, clickhouse-logs:/var/log/clickhouse-server]
     networks: [storage]
     healthcheck:
@@ -193,8 +209,8 @@ services:
   redis:
     image: redis:7.2.6-bookworm@sha256:43c5c111b5b63afce26faea67198f8cf7e63b941460bcfe1525b68a6ad1eef92
     restart: unless-stopped
-    command: ['redis-server', '--requirepass', '${REDIS_PASSWORD}', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
-    environment: {REDISCLI_AUTH: '${REDIS_PASSWORD}'}
+    command: ['redis-server', '--requirepass', '${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
+    environment: {REDISCLI_AUTH: '${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}'}
     volumes: [redis:/data]
     networks: [storage]
     healthcheck:
@@ -209,7 +225,7 @@ services:
     command: ['-c', 'mkdir -p /data/langfuse && minio server --address :9000 /data']
     environment:
       MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:?Set MINIO_PASSWORD in .env}
     volumes: [minio:/data]
     networks: [storage]
     healthcheck:
@@ -224,12 +240,30 @@ networks:
   observability: {}
   storage: {internal: true}
 volumes:
-  flowise-db: {}
-  flowise: {}
-  bridge: {}
-  codex-auth: {}
-  postgres: {}
-  clickhouse: {}
-  clickhouse-logs: {}
-  redis: {}
-  minio: {}
+  flowise-db:
+    external: ${EXTERNAL_VOLUMES:-false}
+    name: ${VOLUME_PREFIX:-agent-workflows}_flowise-db
+  flowise:
+    external: ${EXTERNAL_VOLUMES:-false}
+    name: ${VOLUME_PREFIX:-agent-workflows}_flowise
+  bridge:
+    external: ${EXTERNAL_VOLUMES:-false}
+    name: ${VOLUME_PREFIX:-agent-workflows}_bridge
+  codex-auth:
+    external: ${EXTERNAL_VOLUMES:-false}
+    name: ${VOLUME_PREFIX:-agent-workflows}_codex-auth
+  postgres:
+    external: ${EXTERNAL_VOLUMES:-false}
+    name: ${VOLUME_PREFIX:-agent-workflows}_postgres
+  clickhouse:
+    external: ${EXTERNAL_VOLUMES:-false}
+    name: ${VOLUME_PREFIX:-agent-workflows}_clickhouse
+  clickhouse-logs:
+    external: ${EXTERNAL_VOLUMES:-false}
+    name: ${VOLUME_PREFIX:-agent-workflows}_clickhouse-logs
+  redis:
+    external: ${EXTERNAL_VOLUMES:-false}
+    name: ${VOLUME_PREFIX:-agent-workflows}_redis
+  minio:
+    external: ${EXTERNAL_VOLUMES:-false}
+    name: ${VOLUME_PREFIX:-agent-workflows}_minio

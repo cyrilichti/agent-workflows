@@ -1,72 +1,59 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, mkdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
+import { mkdtempSync, rmSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { prepare, readConfig, writeConfig } from '../config.mjs';
 import { installFlowise } from '../flowise.mjs';
-function fixture(t) {
-  const root = mkdtempSync(join(tmpdir(), 'ai-setup-'));
+function fixture(t, options = {}) {
+  const root = mkdtempSync(join(tmpdir(), 'ai-init-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
-  return root;
+  return { url: 'http://flowise:3000', email: 'local@example.test', password: 'test-only',
+    workflow: '{"nodes":[]}', idPath: join(root, 'flow-id'), ...options };
 }
-test('first start generates private secrets once and leaves inference disabled', t => {
-  const root = fixture(t), first = prepare(root, ['127.0.0.0/8']);
-  assert.equal(first.COMPOSE_PROFILES, 'codex'); assert.equal(first.INFERENCE_ENABLED, 'false');
-  assert.equal(statSync(join(root, '.env')).mode & 0o777, 0o600);
-  assert.equal(first.POSTGRES_PASSWORD.length, 64);
-  assert.deepEqual(prepare(root, ['127.0.0.0/8']), first);
-});
-test('migration retains old secrets, enabled state and imported workflow identity', t => {
-  const root = fixture(t);
-  mkdirSync(join(root, 'local-ai/.local'), { recursive: true });
-  writeFileSync(join(root, 'local-ai/.env'), 'AI_PROVIDER=codex\nPOSTGRES_PASSWORD=existing-secret\nINFERENCE_ENABLED=true\n');
-  writeFileSync(join(root, 'local-ai/.local/flowise-id'), 'existing-flow');
-  const config = prepare(root, []);
-  assert.equal(config.POSTGRES_PASSWORD, 'existing-secret'); assert.equal(config.INFERENCE_ENABLED, 'true');
-  assert.equal(config.COMPOSE_PROFILES, 'codex'); assert.equal(config.AI_PROVIDER, undefined);
-  assert.equal(readFileSync(join(root, '.local/flowise-id'), 'utf8'), 'existing-flow');
-});
-test('API migration retains token and provider without enabling inference', t => {
-  const root = fixture(t);
-  mkdirSync(join(root, 'local-ai/.local'), { recursive: true });
-  writeFileSync(join(root, 'local-ai/.env'), 'AI_PROVIDER=openai-api\n');
-  writeFileSync(join(root, 'local-ai/.local/openai-api-key'), 'test-only-key\n');
-  const config = prepare(root, []);
-  assert.equal(config.OPENAI_API_KEY, 'test-only-key'); assert.equal(config.COMPOSE_PROFILES, 'openai-api');
-  assert.equal(config.INFERENCE_ENABLED, 'false');
-});
-test('configuration accepts quoted values and rejects ambiguous provider selection', t => {
-  const root = fixture(t); prepare(root, []);
-  writeFileSync(join(root, '.env'), 'COMPOSE_PROFILES="openai-api"\nOPENAI_API_KEY="test-only-key"\n');
-  assert.equal(readConfig(root).OPENAI_API_KEY, 'test-only-key');
-  const config = prepare(root, []); config.COMPOSE_PROFILES = 'codex,openai-api'; writeConfig(root, config);
-  assert.throws(() => prepare(root, []), /COMPOSE_PROFILES/);
-});
-test('Flowise initial import and repeated startup retain user edits and use session cookies', async t => {
-  const root = fixture(t); prepare(root, []);
-  mkdirSync(join(root, '.docker')); writeFileSync(join(root, '.docker/workflow.json'), '{"nodes":[]}');
+test('initial import uses configured credentials, session cookies and retains renamed/edited workflow on restart', async t => {
+  const options = fixture(t);
   let registered = false, imports = 0;
-  const fetchImpl = async (url, options) => {
+  options.fetchImpl = async (url, init) => {
     const path = new URL(url).pathname;
-    if (path.endsWith('/auth/login')) return new Response('{}', { status: registered ? 200 : 401, headers: { 'Set-Cookie': 'session=test-only; HttpOnly' } });
+    assert.equal(new URL(url).hostname, 'flowise');
+    if (path.endsWith('/auth/login')) {
+      assert.deepEqual(JSON.parse(init.body), { email: options.email, password: options.password });
+      return new Response('{}', { status: registered ? 200 : 401, headers: { 'Set-Cookie': 'session=test-only; HttpOnly' } });
+    }
     if (path.endsWith('/account/register')) { registered = true; return new Response('{}'); }
-    assert.equal(options.headers.Cookie, 'session=test-only');
-    assert.equal(options.headers['x-request-from'], 'internal');
-    if (path.endsWith('/chatflows')) { imports++; return Response.json({ id: 'existing-flow' }); }
-    assert.ok(path.endsWith('/chatflows/existing-flow')); assert.equal(options.method, 'GET');
-    return Response.json({ id: 'existing-flow', flowData: 'user edits' });
+    assert.equal(init.headers.Cookie, 'session=test-only');
+    assert.equal(init.headers['x-request-from'], 'internal');
+    if (path.endsWith('/chatflows')) {
+      if (init.method === 'GET') return Response.json([]);
+      imports++; return Response.json({ id: 'saved-flow' });
+    }
+    assert.ok(path.endsWith('/chatflows/saved-flow')); assert.equal(init.method, 'GET');
+    return Response.json({ id: 'saved-flow', name: 'Renamed', flowData: 'user edits' });
   };
-  const first = await installFlowise(root, { fetchImpl });
-  const second = await installFlowise(root, { fetchImpl });
-  assert.equal(imports, 1); assert.deepEqual(second, first);
+  assert.equal(await installFlowise(options), 'saved-flow');
+  assert.equal(await installFlowise(options), 'saved-flow');
+  assert.equal(imports, 1);
 });
-
-test('migration refuses conflicting local workflow identities', t => {
-  const root = fixture(t); prepare(root, []);
-  mkdirSync(join(root, 'local-ai/.local'), { recursive: true });
-  writeFileSync(join(root, 'local-ai/.local/flowise-id'), 'old-flow');
-  writeFileSync(join(root, '.local/flowise-id'), 'different-flow');
-  assert.throws(() => prepare(root, []), /Conflicting installation/);
-  assert.equal(readFileSync(join(root, '.local/flowise-id'), 'utf8'), 'different-flow');
+test('adopts a previous example without importing or overwriting it', async t => {
+  const options = fixture(t, { fetchImpl: async (url, init) => {
+    if (url.endsWith('/auth/login')) return new Response('{}');
+    assert.equal(init.method, 'GET');
+    return Response.json([{ id: 'old-id', name: 'Local AI — Codex or API', type: 'AGENTFLOW', flowData: 'edited' }]);
+  }});
+  assert.equal(await installFlowise(options), 'old-id');
+  assert.equal(readFileSync(options.idPath, 'utf8'), 'old-id');
+});
+test('missing configured password fails without generating credentials or contacting Flowise', async t => {
+  await assert.rejects(installFlowise(fixture(t, { password: '', fetchImpl: () => assert.fail('Unexpected HTTP call') })), /FLOWISE_ADMIN_PASSWORD/);
+});
+test('missing persisted workflow fails instead of silently replacing it', async t => {
+  const options = fixture(t, { fetchImpl: async url => new Response('{}', { status: url.endsWith('/auth/login') ? 200 : 404 }) });
+  writeFileSync(options.idPath, 'deleted-id');
+  await assert.rejects(installFlowise(options), /HTTP 404/);
+  assert.equal(readFileSync(options.idPath, 'utf8'), 'deleted-id');
+});
+test('ambiguous existing examples fail rather than choosing a workflow arbitrarily', async t => {
+  const options = fixture(t, { fetchImpl: async url => url.endsWith('/auth/login') ? new Response('{}') : Response.json(
+    ['one', 'two'].map(id => ({ id, name: 'Local AI — Codex or API', type: 'AGENTFLOW' }))) });
+  await assert.rejects(installFlowise(options), /Multiple example workflows/);
 });

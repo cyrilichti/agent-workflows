@@ -47,49 +47,58 @@ New workflows and skill integrations are welcome. Read [Contributing](./CONTRIBU
 ## Local AI workflow (Docker)
 
 Run Flowise and Langfuse locally, with Codex or the OpenAI API for inference.
-Requires **Docker with Compose 2.24+** and **Node 22.12+**. On Apple Silicon,
+Only **Docker with Compose 2.24+** is required to run the stack. On Apple Silicon,
 this stack was tested with approximately 10 GB of Docker memory.
 
 ### Start
 
-From the repository root:
+From the repository root, on a new installation:
 
 ```bash
-npm run start
+cp .env.example .env
+# Fill the secrets and passwords in .env, then:
+docker compose up -d --build
 ```
 
-This creates the root `.env`, builds and starts the services, waits for them,
-imports the example workflow and reuses an existing host Codex login when
-available. Existing secrets, workflows and Docker volumes are retained,
-including installations created with the previous `local-ai/` layout.
-No `npm install` is needed for these Docker commands.
+Choose your own distinct secrets; a password manager or `openssl rand -hex 32`
+can generate each value. Compose rejects missing required values. It never
+creates or rewrites `.env`. Keep this file private and retain its values across
+restarts. The `workflow-init` container creates the Flowise account and imports
+the example once, preserving subsequent edits.
 
-- **Flowise:** http://localhost:3000 — open **Agentflows → Local AI — Codex or API → Chat**.
-- **Langfuse:** http://localhost:3001 — open **Local AI workflow → Tracing**.
-- **Both logins:** open the private `.local/access.json` file.
+- **Flowise:** http://localhost:3000 — use `FLOWISE_ADMIN_EMAIL` and `FLOWISE_ADMIN_PASSWORD`.
+- **Langfuse:** http://localhost:3001 — use `local@example.test` and `LANGFUSE_ADMIN_PASSWORD`.
 
-For a new installation, check your Codex allowance, set
-`INFERENCE_ENABLED=true` in `.env`, then run `npm run start` again.
-If no Codex login is available, run `npm run login` and follow its instructions.
+With the default Codex profile, sign in explicitly once:
 
-Enter a unique `requestId` (such as `my-first-run-001`) and a prompt in Flowise.
-The response includes its Langfuse trace link. Reusing the same ID and prompt
-returns the saved response without another inference.
+```bash
+docker compose exec bridge codex -c 'cli_auth_credentials_store="file"' login --device-auth
+docker compose exec bridge codex login status
+```
+
+Follow the displayed link and code in your browser. Login stays in a Docker
+volume; your host Codex configuration is not copied or mounted. After checking
+your allowance, set `INFERENCE_ENABLED=true` in `.env` and run
+`docker compose up -d` to apply it.
+
+In Flowise, open **Agentflows → Local AI — Codex or API → Chat**. Enter a unique
+`requestId` (such as `my-first-run-001`) and a prompt. The response includes its
+Langfuse trace link, also accessible through **Local AI workflow → Tracing**.
+Reusing the same ID and prompt returns the saved response without another inference.
 
 ### Everyday commands
 
 | Command | Action |
 | --- | --- |
-| `npm run start` | Set up, start or apply configuration changes |
-| `npm run stop` | Stop all services, keeping data |
-| `npm run logs` | Show recent service logs |
-| `npm run login` | Refresh Codex authentication |
-| `npm run test` | Run local tests without model calls |
-| `npm run doc` | Open the documentation website (requires `npm install`) |
+| `docker compose up -d --build` | Start services or apply code/configuration changes |
+| `docker compose stop` | Stop services, keeping data |
+| `docker compose logs --tail 80` | Show recent service logs (including initialization) |
+| `npm run test` | Run tests without model calls; requires Node 22.12+ |
+| `npm run doc` | Start the documentation website; requires Node and `npm install` |
 
 ### Configuration
 
-Edit the **root `.env`**, then run `npm run start`. Choose exactly one provider:
+Choose exactly one provider in the **root `.env`**:
 
 | Setting | Codex subscription | OpenAI API |
 | --- | --- | --- |
@@ -98,37 +107,55 @@ Edit the **root `.env`**, then run `npm run start`. Choose exactly one provider:
 | `OPENAI_API_KEY` | Leave empty | Your Platform project token |
 | `INFERENCE_ENABLED` | `true` after checking allowance | `true` after checking API funding |
 
-API billing is separate from ChatGPT. There is no automatic provider fallback
-or credit purchase. The API adapter has controlled tests; live API inference
-has not been verified with a funded token. Codex login stays in its own Docker
-volume and is not mounted into the API service.
+To switch providers, **run `docker compose stop` before changing the profile**,
+then edit `.env` and run `docker compose up -d --build`. Only one bridge may run
+at a time. API billing is separate from ChatGPT; there is no automatic fallback
+or credit purchase. Live API inference has not been verified with a funded token.
 
 <details>
-<summary>How it works and troubleshooting</summary>
+<summary>Existing installations, technical details and troubleshooting</summary>
 
-There is **one `compose.yaml` at the repository root**. Docker assets and
-initialization code live in `.docker/`. Its Dockerfile installs the pinned
-runtime once during build; dependencies are not reinstalled on every startup.
-The two Compose profiles select separate Codex/API images and credentials.
+**Migrating from the previous npm launcher:** keep your existing `.env`.
+Copy the email/password from `.local/flowise-account.json` into
+`FLOWISE_ADMIN_EMAIL` / `FLOWISE_ADMIN_PASSWORD`. Set
+`VOLUME_PREFIX=agent-workflows-ai` and `EXTERNAL_VOLUMES=true` to keep your data
+and Codex login,
+then run these commands once:
 
-Only Flowise (port 3000) and Langfuse (port 3001) are exposed, on localhost.
-The bridge is private, runs as non-root with a read-only root filesystem, and
-permits one inference at a time. Flowise 3.1.4, Langfuse 4.48.0, PostgreSQL 17.6,
-ClickHouse 25.12, Redis 7.2.6 and MinIO are pinned in Compose; the Codex image
-uses CLI 0.159.2. Model inference requires internet access.
+```bash
+docker compose -p agent-workflows-ai --profile codex --profile openai-api down
+docker compose up -d --build
+```
 
-- On startup errors, check Docker is running, ports 3000/3001 are free, and
-  inspect `npm run logs`. The workflow network uses `172.30.81.0/24`.
-- For expired/revoked Codex access, authenticate again on the host and run
-  `npm run login`. This preserves workflow data. The container refreshes its
-  own copy of the login; it does not mount your personal Codex configuration.
-- `traceStatus=pending` means the trace will be retried without repeating
-  inference. `unknown` means an interrupted request may have consumed usage;
-  reuse its ID to read its saved state. `accepted` means ingestion accepted;
-  verify the observation in Langfuse. Subscription token counts are not API costs.
-- Keep `.env`, `.local/` and named Docker volumes together for recovery.
-  `docker compose down -v` deletes data. Back up before upgrading, and avoid
-  sharing configuration/logs containing secrets or private prompts.
+Do not add `-v`: it deletes volumes. The project and containers now use
+`agent-workflows`; existing volumes keep their old names. New installations
+use `agent-workflows` for both. The initializer adopts the existing example by
+name; keep its name `Local AI — Codex or API` for the migration. Its stored ID
+then preserves it even after renaming. Old `.local/` files are no longer used.
+
+There is one root `compose.yaml`. Dockerfiles and the initializer live in
+`.docker/`; dependencies are installed during image builds. Node is needed on
+the host only for tests and the Astro documentation. The API image has neither
+Codex nor its authentication volume. UI passwords initialize accounts once;
+change existing passwords in the UI (also update Flowise's password in `.env`).
+
+Only ports 3000/3001 are exposed, on localhost. The private bridge runs as
+non-root with a read-only root filesystem and permits one inference at a time.
+Flowise 3.1.4, Langfuse 4.48.0, PostgreSQL 17.6, ClickHouse 25.12, Redis 7.2.6,
+MinIO and Codex CLI 0.159.2 are pinned. Model inference requires internet access.
+
+- If the example is missing, check `docker compose logs workflow-init`.
+  A successful initializer exits with code 0; it is not a long-running service.
+- Check Docker is running and ports 3000/3001 are free. The workflow network
+  uses `172.30.81.0/24`; do not run two copies of this stack simultaneously.
+- For expired/revoked Codex access, repeat the login command above. Optional
+  `CODEX_WORKSPACE_ID` restricts authentication to your chosen ChatGPT workspace.
+- `traceStatus=pending` retries trace delivery without repeating inference.
+  `unknown` means an interrupted request may have consumed usage; reuse its ID
+  to read its saved state. `accepted` means ingestion accepted; verify it in
+  Langfuse. Subscription token counts are not API costs.
+- Back up `.env` and named Docker volumes together. Avoid sharing secrets,
+  private prompts or logs; back up before upgrading.
 
 This is a trusted local trial. Flowise has announced its
 [end of life](https://flowiseai.com/sunset); evaluate maintenance before a
@@ -137,8 +164,5 @@ core, PostgreSQL PostgreSQL License, ClickHouse Apache-2.0, Redis 7.2 BSD-3-Clau
 MinIO AGPL-3.0. Enterprise features, Docker Desktop licensing and model usage
 have separate terms. Production also requires access control, TLS, backups
 and retention policies.
-
-The documentation website remains available with `npm run doc` (after
-`npm install`); its build and preview commands are unchanged.
 
 </details>

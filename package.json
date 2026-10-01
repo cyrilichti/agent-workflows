@@ -9,13 +9,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "start": "node .docker/manage.mjs up",
     "build": "astro build",
     "preview": "astro preview",
     "test": "node --test .docker/bridge/test/*.test.mjs .docker/test/*.test.mjs",
-    "stop": "node .docker/manage.mjs stop",
-    "login": "node .docker/manage.mjs login",
-    "logs": "node .docker/manage.mjs logs",
     "doc": "astro dev",
     "dev": "astro dev"
   },
