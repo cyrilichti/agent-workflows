@@ -86,16 +86,6 @@ In Flowise, open **Agentflows → Local AI — Codex or API → Chat**. Enter a 
 Langfuse trace link, also accessible through **Local AI workflow → Tracing**.
 Reusing the same ID and prompt returns the saved response without another inference.
 
-### Everyday commands
-
-| Command | Action |
-| --- | --- |
-| `docker compose up -d --build` | Start services or apply code/configuration changes |
-| `docker compose stop` | Stop services, keeping data |
-| `docker compose logs --tail 80` | Show recent service logs (including initialization) |
-| `npm run test` | Run tests without model calls; requires Node 22.12+ |
-| `npm run start` | Start the documentation website; requires Node and `npm install` |
-
 ### Configuration
 
 Choose exactly one provider in the **root `.env`**:
