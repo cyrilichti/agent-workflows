@@ -33,6 +33,32 @@ x-depends: &langfuse-depends
   clickhouse: {condition: service_healthy}
   redis: {condition: service_healthy}
   minio: {condition: service_healthy}
+x-bridge: &bridge
+  restart: unless-stopped
+  init: true
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ['no-new-privileges:true']
+  tmpfs: ['/tmp:uid=1000,gid=1000,mode=700']
+  environment: &bridge-env
+    AI_MODEL: ${AI_MODEL:-gpt-6-luna}
+    INFERENCE_ENABLED: ${INFERENCE_ENABLED:-false}
+    REQUEST_TIMEOUT_MS: 90000
+    LANGFUSE_URL: http://langfuse-web:3000
+    LANGFUSE_PUBLIC_URL: http://localhost:3001
+    LANGFUSE_PROJECT_ID: local-ai
+    LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY}
+    LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY}
+    DATA_DIR: /data
+  volumes: [bridge:/data]
+  networks:
+    workflow: {ipv4_address: 172.30.81.10, aliases: [bridge]}
+    observability: {}
+  healthcheck:
+    test: ['CMD', 'node', '-e', "fetch('http://localhost:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+    interval: 10s
+    timeout: 5s
+    retries: 10
 services:
   flowise-volume-init:
     image: flowiseai/flowise:3.1.4@sha256:3922767afb52a5777759fd8b28a3c9eee864daea96018a791f2429eae2a76571
@@ -90,35 +116,23 @@ services:
       timeout: 5s
       retries: 30
   bridge:
-    build: {context: ./bridge, target: codex}
-    restart: unless-stopped
-    init: true
-    read_only: true
-    cap_drop: [ALL]
-    security_opt: ['no-new-privileges:true']
-    tmpfs: ['/tmp:uid=1000,gid=1000,mode=700']
+    <<: *bridge
+    profiles: [codex]
+    build: {context: ./.docker/bridge, target: codex}
     environment:
+      <<: *bridge-env
       AI_PROVIDER: codex
-      AI_MODEL: ${AI_MODEL:-gpt-6-luna}
-      INFERENCE_ENABLED: ${INFERENCE_ENABLED:-false}
-      REQUEST_TIMEOUT_MS: 90000
-      LANGFUSE_URL: http://langfuse-web:3000
-      LANGFUSE_PUBLIC_URL: http://localhost:3001
-      LANGFUSE_PROJECT_ID: local-ai
-      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY}
-      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY}
       CODEX_WORKSPACE_ID: ${CODEX_WORKSPACE_ID:-}
       CODEX_HOME: /auth
-      DATA_DIR: /data
     volumes: [bridge:/data, codex-auth:/auth]
-    networks:
-      workflow: {ipv4_address: 172.30.81.10}
-      observability: {}
-    healthcheck:
-      test: ['CMD', 'node', '-e', "fetch('http://localhost:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+  bridge-api:
+    <<: *bridge
+    profiles: [openai-api]
+    build: {context: ./.docker/bridge, target: api}
+    environment:
+      <<: *bridge-env
+      AI_PROVIDER: openai-api
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
   langfuse-web:
     image: langfuse/langfuse:4.48.0@sha256:8c1b80ed7735be587974d603af0f6e0247b33d3b56c7d5ab9d2337aec313efa0
     restart: unless-stopped

@@ -9,7 +9,7 @@ for (const name of ['AI_PROVIDER', 'AI_MODEL', 'LANGFUSE_PUBLIC_KEY', 'LANGFUSE_
   if (!env[name]) throw new Error(`Missing configuration: ${name}`);
 const service = new Service({
   provider: createProvider(env.AI_PROVIDER, { model: env.AI_MODEL, workspace: env.CODEX_WORKSPACE_ID,
-    authDir: env.CODEX_HOME, keyFile: env.OPENAI_API_KEY_FILE }),
+    authDir: env.CODEX_HOME, key: env.OPENAI_API_KEY, keyFile: env.OPENAI_API_KEY_FILE }),
   providerName: env.AI_PROVIDER, model: env.AI_MODEL,
   store: new Store(env.DATA_DIR ?? '/data'),
   trace: createTracer({ url: env.LANGFUSE_URL, publicKey: env.LANGFUSE_PUBLIC_KEY, secretKey: env.LANGFUSE_SECRET_KEY }),

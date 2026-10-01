@@ -85,3 +85,11 @@ test('Codex cancellation terminates the subprocess group', async t => {
   await new Promise(resolve => setTimeout(resolve, 400));
   assert.equal(existsSync(marker), false);
 });
+
+test('API mode accepts its configured environment token without requiring a key file', async () => {
+  const provider = createOpenAI({ model: 'test', key: 'test-only-env-token', keyFile: '/nonexistent', fetchImpl: async (_url, options) => {
+    assert.equal(options.headers.Authorization, 'Bearer test-only-env-token');
+    return Response.json({ status: 'completed', output: [{ type: 'message', content: [{ type: 'output_text', text: 'OK' }] }] });
+  } });
+  assert.equal((await provider.generate('Hello', { signal: new AbortController().signal })).text, 'OK');
+});

@@ -10,12 +10,12 @@ export function parseOpenAI(body, model) {
   return { text, model: body.model ?? model, requestId: body.id,
     usage: u ? { input: u.input_tokens, cachedInput: u.input_tokens_details?.cached_tokens, output: u.output_tokens } : undefined };
 }
-export function createOpenAI({ model, keyFile = '/run/secrets/openai_api_key', fetchImpl = fetch }) {
+export function createOpenAI({ model, key: configuredKey, keyFile = '/run/secrets/openai_api_key', fetchImpl = fetch }) {
   return {
     async generate(prompt, { signal }) {
-      let key;
-      try { key = readFileSync(keyFile, 'utf8').trim(); } catch {}
-      if (!key) throw new ProviderError('authentication', 'Configure the API token file before enabling API inference.');
+      let key = configuredKey?.trim();
+      if (!key) try { key = readFileSync(keyFile, 'utf8').trim(); } catch {}
+      if (!key) throw new ProviderError('authentication', 'Set OPENAI_API_KEY in .env before enabling API inference.');
       let response;
       try {
         response = await fetchImpl('https://api.openai.com/v1/responses', {
