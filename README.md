@@ -103,25 +103,7 @@ at a time. API billing is separate from ChatGPT; there is no automatic fallback
 or credit purchase. Live API inference has not been verified with a funded token.
 
 <details>
-<summary>Existing installations, technical details and troubleshooting</summary>
-
-**Migrating from the previous npm launcher:** keep your existing `.env`.
-Copy the email/password from `.local/flowise-account.json` into
-`FLOWISE_ADMIN_EMAIL` / `FLOWISE_ADMIN_PASSWORD`. Set
-`VOLUME_PREFIX=agent-workflows-ai` and `EXTERNAL_VOLUMES=true` to keep your data
-and Codex login,
-then run these commands once:
-
-```bash
-docker compose -p agent-workflows-ai --profile codex --profile openai-api down
-docker compose up -d --build
-```
-
-Do not add `-v`: it deletes volumes. The project and containers now use
-`agent-workflows`; existing volumes keep their old names. New installations
-use `agent-workflows` for both. The initializer adopts the existing example by
-name; keep its name `Local AI — Codex or API` for the migration. Its stored ID
-then preserves it even after renaming. Old `.local/` files are no longer used.
+<summary>Technical details and troubleshooting</summary>
 
 There is one root `compose.yaml`. Dockerfiles and the initializer live in
 `.docker/`; dependencies are installed during image builds. Node is needed on
