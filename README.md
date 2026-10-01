@@ -94,7 +94,7 @@ Reusing the same ID and prompt returns the saved response without another infere
 | `docker compose stop` | Stop services, keeping data |
 | `docker compose logs --tail 80` | Show recent service logs (including initialization) |
 | `npm run test` | Run tests without model calls; requires Node 22.12+ |
-| `npm run doc` | Start the documentation website; requires Node and `npm install` |
+| `npm run start` | Start the documentation website; requires Node and `npm install` |
 
 ### Configuration
 
