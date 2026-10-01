@@ -78,14 +78,7 @@ docker compose exec bridge codex login status
 
 ### Configuration
 
-Choose exactly one provider in the **root `.env`**:
-
-| Setting | Codex subscription | OpenAI API |
-| --- | --- | --- |
-| `COMPOSE_PROFILES` | `codex` (default) | `openai-api` |
-| `AI_MODEL` | `gpt-6-luna` | A model available to your API project |
-| `OPENAI_API_KEY` | Leave empty | Your Platform project token |
-| `INFERENCE_ENABLED` | `true` after checking allowance | `true` after checking API funding |
+Configure the provider and credentials in `.env`, using `.env.example` as a reference.
 
 To switch providers, **run `docker compose stop` before changing the profile**,
 then edit `.env` and run `docker compose up -d --build`. Only one bridge may run
