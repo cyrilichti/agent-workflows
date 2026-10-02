@@ -9,9 +9,9 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "start": "node src/bridge/start.mjs",
+    "start": "node src/bridge/startBridge.mjs",
     "build": "astro build",
-    "test": "node --test test/bridge/*.test.mjs test/*.test.mjs",
+    "test": "node --test \"test/**/*.test.mjs\"",
     "doc": "astro dev"
   },
   "dependencies": {
