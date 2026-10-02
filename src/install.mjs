@@ -22,7 +22,7 @@ async function main() {
     url: process.env.KESTRA_URL,
     email: process.env.KESTRA_ADMIN_EMAIL,
     password: process.env.KESTRA_ADMIN_PASSWORD,
-    workflow: readFileSync(new URL('../workflow.yaml', import.meta.url), 'utf8')
+    workflow: readFileSync(new URL('../.docker/workflow.yaml', import.meta.url), 'utf8')
   });
   console.log(`Workflow local.ai/local_ai ${status}. Kestra: http://localhost:3000.`);
 }

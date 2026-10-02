@@ -126,8 +126,8 @@ services:
       retries: 30
   workflow-init:
     build:
-      context: ./.docker
-      dockerfile: Dockerfile.init
+      context: .
+      dockerfile: .docker/Dockerfile.init
     restart: 'no'
     read_only: true
     cap_drop: [ALL]
