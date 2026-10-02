@@ -146,20 +146,20 @@ The bridge remains one process, organized by responsibility:
 | Path | Responsibility |
 | --- | --- |
 | `src/bridge/index.mjs` | Assemble dependencies, start HTTP and stop active work. |
-| `src/bridge/config/bridgeConfig.mjs` | Load and validate settings while preserving the CLI environment. |
+| `src/bridge/config/bridge-config.mjs` | Load and validate settings while preserving the CLI environment. |
 | `src/bridge/server.mjs` | Authenticate and handle HTTP requests. |
-| `src/bridge/execution/taskExecutionService.mjs` | Execute tasks, deduplicate requests, handle cancellation and coordinate trace delivery. |
-| `src/bridge/execution/taskContract.mjs` | Validate task inputs and provider results. |
-| `src/bridge/persistence/taskRecordStore.mjs` | Persist task records as JSON files. |
-| `src/bridge/providers/aiProviderFactory.mjs` | Select the configured AI provider. |
-| `src/bridge/providers/codexCliProvider.mjs` | Run the local Codex CLI and parse its events. |
-| `src/bridge/providers/openaiApiProvider.mjs` | Call the OpenAI Responses API. |
-| `src/bridge/observability/langfuseTraceClient.mjs` | Build and send Langfuse trace payloads. |
+| `src/bridge/execution/task-execution-service.mjs` | Execute tasks, deduplicate requests, handle cancellation and coordinate trace delivery. |
+| `src/bridge/execution/task-contract.mjs` | Validate task inputs and provider results. |
+| `src/bridge/persistence/task-record-store.mjs` | Persist task records as JSON files. |
+| `src/bridge/providers/ai-provider-factory.mjs` | Select the configured AI provider. |
+| `src/bridge/providers/codex-cli-provider.mjs` | Run the local Codex CLI and parse its events. |
+| `src/bridge/providers/openai-api-provider.mjs` | Call the OpenAI Responses API. |
+| `src/bridge/observability/langfuse-trace-client.mjs` | Build and send Langfuse trace payloads. |
 | `src/install.mjs` | Install the demo workflow without overwriting an existing one. |
 
 HTTP handling delegates to task execution; provider adapters, persistence and
 Langfuse handle their respective external interfaces. Configuration is loaded
 only at startup. Tests mirror `src/` under `test/`: for example,
-`src/bridge/execution/taskExecutionService.mjs` is covered by
-`test/bridge/execution/taskExecutionService.test.mjs`. Only modules with tests
+`src/bridge/execution/task-execution-service.mjs` is covered by
+`test/bridge/execution/task-execution-service.test.mjs`. Only modules with tests
 need a matching test file. `npm test` discovers test files recursively.

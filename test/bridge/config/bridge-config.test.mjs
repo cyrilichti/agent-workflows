@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { loadBridgeConfig } from '../../../src/bridge/config/bridgeConfig.mjs';
+import { loadBridgeConfig } from '../../../src/bridge/config/bridge-config.mjs';
 
 function envFile(t, extra = '') {
   const directory = mkdtempSync(`${tmpdir()}/bridge-config-`);

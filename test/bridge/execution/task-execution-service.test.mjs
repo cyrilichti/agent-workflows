@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { TaskRecordStore } from '../../../src/bridge/persistence/taskRecordStore.mjs';
-import { TaskExecutionService } from '../../../src/bridge/execution/taskExecutionService.mjs';
-import { ProviderError } from '../../../src/bridge/execution/taskContract.mjs';
+import { TaskRecordStore } from '../../../src/bridge/persistence/task-record-store.mjs';
+import { TaskExecutionService } from '../../../src/bridge/execution/task-execution-service.mjs';
+import { ProviderError } from '../../../src/bridge/execution/task-contract.mjs';
 function fixture(t, options = {}) {
   const directory = mkdtempSync(`${tmpdir()}/local-ai-test-`);
   t.after(() => rmSync(directory, { recursive: true, force: true }));

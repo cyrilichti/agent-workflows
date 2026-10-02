@@ -19,7 +19,7 @@ export class TaskRecordStore {
    * Read a record; missing files represent requests not yet processed.
    *
    * @param {string} requestId Request identifier validated by the task contract.
-   * @returns {import('../execution/taskContract.mjs').TaskRecord | undefined}
+   * @returns {import('../execution/task-contract.mjs').TaskRecord | undefined}
    * @throws {Error} For malformed JSON or filesystem errors other than a missing file.
    */
   get(requestId) {
@@ -36,7 +36,7 @@ export class TaskRecordStore {
   /**
    * Flush a temporary file to disk and atomically replace the saved record.
    *
-   * @param {import('../execution/taskContract.mjs').TaskRecord} record
+   * @param {import('../execution/task-contract.mjs').TaskRecord} record
    * @returns {void}
    * @throws {Error} If writing or renaming the record fails.
    */
@@ -49,7 +49,7 @@ export class TaskRecordStore {
   /**
    * Load every saved JSON task record for recovery and trace delivery.
    *
-   * @returns {Array<import('../execution/taskContract.mjs').TaskRecord>}
+   * @returns {Array<import('../execution/task-contract.mjs').TaskRecord>}
    * @throws {Error} If a record cannot be read or parsed.
    */
   all() {

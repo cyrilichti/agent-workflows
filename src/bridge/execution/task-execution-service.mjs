@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { ProviderError, validateTaskInput, validateTaskResult } from './taskContract.mjs';
-import { traceIdFor } from '../observability/langfuseTraceClient.mjs';
+import { ProviderError, validateTaskInput, validateTaskResult } from './task-contract.mjs';
+import { traceIdFor } from '../observability/langfuse-trace-client.mjs';
 
 /**
  * Bind an idempotency key to its original input and provider settings.
@@ -14,11 +14,11 @@ export class TaskExecutionService {
   /**
    * Recover interrupted tasks without replaying inference.
    * @param {object} options
-   * @param {import('./taskContract.mjs').AiProvider} options.provider Inference adapter.
+   * @param {import('./task-contract.mjs').AiProvider} options.provider Inference adapter.
    * @param {string} options.providerName Provider identifier.
    * @param {string} options.model Model label used for idempotency.
-   * @param {import('../persistence/taskRecordStore.mjs').TaskRecordStore} options.store Durable storage.
-   * @param {function(import('./taskContract.mjs').TaskRecord): Promise<void>} options.trace Trace sender.
+   * @param {import('../persistence/task-record-store.mjs').TaskRecordStore} options.store Durable storage.
+   * @param {function(import('./task-contract.mjs').TaskRecord): Promise<void>} options.trace Trace sender.
    * @param {string} options.publicUrl Public Langfuse URL.
    * @param {string} options.projectId Langfuse project identifier.
    * @param {boolean} options.enabled Whether new inference is allowed.
@@ -67,7 +67,7 @@ export class TaskExecutionService {
 
   /**
    * Expose the result without internal input or idempotency metadata.
-   * @param {import('./taskContract.mjs').TaskRecord} record Saved task state.
+   * @param {import('./task-contract.mjs').TaskRecord} record Saved task state.
    * @returns {object} HTTP response payload with a public trace link.
    */
   presentTaskResult(record) {
@@ -89,7 +89,7 @@ export class TaskExecutionService {
 
   /**
    * Share concurrent delivery attempts and leave rejected traces pending for retry.
-   * @param {import('./taskContract.mjs').TaskRecord} record Updated with delivery status.
+   * @param {import('./task-contract.mjs').TaskRecord} record Updated with delivery status.
    * @returns {Promise<void>}
    * @throws {Error} If reading or persisting delivery state fails.
    */

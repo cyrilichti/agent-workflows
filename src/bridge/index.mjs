@@ -1,8 +1,8 @@
-import { loadBridgeConfig } from './config/bridgeConfig.mjs';
-import { createAiProvider } from './providers/aiProviderFactory.mjs';
-import { TaskRecordStore } from './persistence/taskRecordStore.mjs';
-import { TaskExecutionService } from './execution/taskExecutionService.mjs';
-import { createLangfuseTraceClient } from './observability/langfuseTraceClient.mjs';
+import { loadBridgeConfig } from './config/bridge-config.mjs';
+import { createAiProvider } from './providers/ai-provider-factory.mjs';
+import { TaskRecordStore } from './persistence/task-record-store.mjs';
+import { TaskExecutionService } from './execution/task-execution-service.mjs';
+import { createLangfuseTraceClient } from './observability/langfuse-trace-client.mjs';
 import { createBridgeHttpServer } from './server.mjs';
 
 const config = loadBridgeConfig();

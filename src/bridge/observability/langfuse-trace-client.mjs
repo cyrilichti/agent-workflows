@@ -29,7 +29,7 @@ const attribute = (key, value) => ({
 /**
  * Build a replayable OTLP batch, separating cached token usage from input usage.
  *
- * @param {import('../execution/taskContract.mjs').TaskRecord} record Finished task record.
+ * @param {import('../execution/task-contract.mjs').TaskRecord} record Finished task record.
  * @returns {object} OTLP HTTP/JSON payload for Langfuse.
  */
 export function buildLangfuseTraceBatch(record) {
@@ -105,7 +105,7 @@ export function buildLangfuseTraceBatch(record) {
  * @param {string} options.publicKey Project public key.
  * @param {string} options.secretKey Project secret key.
  * @param {typeof fetch} [options.fetchImpl=fetch] Injectable HTTP client.
- * @returns {function(import('../execution/taskContract.mjs').TaskRecord): Promise<void>} Sender that rejects failed or partially accepted deliveries.
+ * @returns {function(import('../execution/task-contract.mjs').TaskRecord): Promise<void>} Sender that rejects failed or partially accepted deliveries.
  */
 export function createLangfuseTraceClient({ url, publicKey, secretKey, fetchImpl = fetch }) {
   return async (record) => {

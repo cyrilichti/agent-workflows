@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { ProviderError } from '../execution/taskContract.mjs';
+import { ProviderError } from '../execution/task-contract.mjs';
 
 // https://developers.openai.com/api/docs/guides/text (Responses API).
 /**
@@ -7,7 +7,7 @@ import { ProviderError } from '../execution/taskContract.mjs';
  *
  * @param {object} body Parsed API response.
  * @param {string} model Fallback model label.
- * @returns {import('../execution/taskContract.mjs').TaskResult}
+ * @returns {import('../execution/task-contract.mjs').TaskResult}
  * @throws {ProviderError} If the API response is incomplete.
  */
 export function parseOpenAiResponse(body, model) {
@@ -43,7 +43,7 @@ export function parseOpenAiResponse(body, model) {
  * @param {string} [options.key] API key; takes precedence over the file.
  * @param {string} [options.keyFile] Fallback credential file.
  * @param {typeof fetch} [options.fetchImpl=fetch] Injectable HTTP client.
- * @returns {import('../execution/taskContract.mjs').AiProvider}
+ * @returns {import('../execution/task-contract.mjs').AiProvider}
  */
 export function createOpenAiApiProvider({
   model,
@@ -57,7 +57,7 @@ export function createOpenAiApiProvider({
      *
      * @param {string} prompt Task instructions.
      * @param {{ signal: AbortSignal }} options Cancellation and deadline signal.
-     * @returns {Promise<import('../execution/taskContract.mjs').TaskResult>}
+     * @returns {Promise<import('../execution/task-contract.mjs').TaskResult>}
      * @throws {ProviderError} For execution, authentication, cancellation or provider failures.
      */
     async generate(prompt, { signal }) {

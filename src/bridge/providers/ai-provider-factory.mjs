@@ -1,5 +1,5 @@
-import { createCodexCliProvider } from './codexCliProvider.mjs';
-import { createOpenAiApiProvider } from './openaiApiProvider.mjs';
+import { createCodexCliProvider } from './codex-cli-provider.mjs';
+import { createOpenAiApiProvider } from './openai-api-provider.mjs';
 // Extension point: add an adapter here without changing orchestration or trace handling.
 const providers = { codex: createCodexCliProvider, 'openai-api': createOpenAiApiProvider };
 
@@ -8,7 +8,7 @@ const providers = { codex: createCodexCliProvider, 'openai-api': createOpenAiApi
  *
  * @param {string} name Configured provider name.
  * @param {object} options Provider-specific dependencies and settings.
- * @returns {import('../execution/taskContract.mjs').AiProvider}
+ * @returns {import('../execution/task-contract.mjs').AiProvider}
  * @throws {Error} If the provider name is not registered.
  */
 export function createAiProvider(name, options) {

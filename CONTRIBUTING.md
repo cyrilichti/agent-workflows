@@ -98,6 +98,7 @@ operation fails. A failure must stop cleanly without pretending the goal was met
 
 ## JavaScript style
 
+Use kebab-case for file and directory names under `src/` and `test/`.
 Use a consistent JavaScript style under `src/` and `test/`: two-space indentation,
 single quotes, semicolons, trailing commas, and a 100-column line width.
 Use descriptive names, explicit control-flow blocks, and one responsibility per

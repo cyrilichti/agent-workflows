@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildLangfuseTraceBatch } from '../../../src/bridge/observability/langfuseTraceClient.mjs';
+import { buildLangfuseTraceBatch } from '../../../src/bridge/observability/langfuse-trace-client.mjs';
 
 test('trace usage subtracts cached input and leaves unavailable usage absent', () => {
   const r = {

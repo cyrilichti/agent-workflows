@@ -6,7 +6,7 @@ import {
   buildCodexArguments,
   parseCodexEvents,
   createCodexCliProvider,
-} from '../../../src/bridge/providers/codexCliProvider.mjs';
+} from '../../../src/bridge/providers/codex-cli-provider.mjs';
 
 test('Codex events map to common result and usage', () => {
   const events = [

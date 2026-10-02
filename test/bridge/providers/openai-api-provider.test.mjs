@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import {
   createOpenAiApiProvider,
   parseOpenAiResponse,
-} from '../../../src/bridge/providers/openaiApiProvider.mjs';
+} from '../../../src/bridge/providers/openai-api-provider.mjs';
 
 test('API uses selected model, bounded output and supplied token without retries', async (t) => {
   const dir = mkdtempSync(`${tmpdir()}/api-test-`);

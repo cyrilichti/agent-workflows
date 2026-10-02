@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { ProviderError } from '../execution/taskContract.mjs';
+import { ProviderError } from '../execution/task-contract.mjs';
 
 // Authentication, tools, skills, MCP servers and model defaults belong to the local CLI.
 /**
@@ -35,7 +35,7 @@ export function buildCodexArguments(model, workspace, directory = process.cwd())
  *
  * @param {string} text Captured CLI standard output.
  * @param {string} model Model label to include in the result.
- * @returns {import('../execution/taskContract.mjs').TaskResult}
+ * @returns {import('../execution/task-contract.mjs').TaskResult}
  * @throws {ProviderError} For malformed events, failed turns or missing completion.
  */
 export function parseCodexEvents(text, model) {
@@ -90,7 +90,7 @@ export function parseCodexEvents(text, model) {
  * @param {NodeJS.ProcessEnv} [options.environment=process.env] Inherited host environment.
  * @param {string} [options.directory=process.cwd()] Task working directory.
  * @param {typeof spawn} [options.spawnImpl=spawn] Injectable subprocess launcher.
- * @returns {import('../execution/taskContract.mjs').AiProvider}
+ * @returns {import('../execution/task-contract.mjs').AiProvider}
  */
 export function createCodexCliProvider({
   model,
@@ -106,7 +106,7 @@ export function createCodexCliProvider({
      *
      * @param {string} prompt Task instructions.
      * @param {{ signal: AbortSignal }} options Cancellation and deadline signal.
-     * @returns {Promise<import('../execution/taskContract.mjs').TaskResult>}
+     * @returns {Promise<import('../execution/task-contract.mjs').TaskResult>}
      * @throws {ProviderError} For execution, authentication, cancellation or provider failures.
      */
     async generate(prompt, { signal }) {

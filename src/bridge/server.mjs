@@ -16,7 +16,7 @@ const sendJsonResponse = (response, status, value) => {
 /**
  * Create an authenticated task endpoint and an unauthenticated health endpoint.
  * @param {object} options
- * @param {import('./execution/taskExecutionService.mjs').TaskExecutionService} options.taskExecution
+ * @param {import('./execution/task-execution-service.mjs').TaskExecutionService} options.taskExecution
  * @param {string} options.token Shared bearer token of at least 32 bytes.
  * @param {string} options.providerName Provider name exposed by the health endpoint.
  * @returns {import('node:http').Server} Unbound server; the caller owns its lifecycle.
