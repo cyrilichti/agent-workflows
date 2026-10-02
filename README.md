@@ -49,9 +49,10 @@ New workflows and skill integrations are welcome. Read [Contributing](./CONTRIBU
 Run Kestra locally to orchestrate agents, with Langfuse for AI traces.
 
 ```bash
-cp .env.example .env
-# Fill the credentials and secrets in .env.
-docker compose up -d --build
+npm run bridge:setup
+# Fill the credentials and settings in .env.
+docker compose up -d
+npm run bridge
 ```
 
 [Configuration, authentication and example workflow](./.docker/README.md).

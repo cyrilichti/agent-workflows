@@ -83,3 +83,13 @@ test('concurrent outbox and duplicate deliveries share one trace attempt', async
   assert.equal(a.traceStatus, 'accepted'); assert.equal(b.traceStatus, 'accepted');
   assert.equal(attempts, 1); assert.equal(f.calls(), 1);
 });
+
+test('shutdown cancellation reaches the running provider and preserves an unknown result', async t => {
+  const f = fixture(t, { provider: { generate: (_prompt, { signal }) => new Promise((resolve, reject) => {
+    signal.addEventListener('abort', () => reject(new ProviderError('timeout', 'Cancelled')), { once: true });
+  }) } });
+  const running = f.service.run(input);
+  f.service.cancel();
+  assert.equal((await running).status, 'unknown');
+  assert.equal(f.service.busy, false);
+});

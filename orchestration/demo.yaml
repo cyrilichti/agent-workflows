@@ -1,6 +1,6 @@
-id: local_ai
+id: local_agent
 namespace: local.ai
-description: Run a prompt through the private Codex/API bridge and inspect its Langfuse trace.
+description: Run an ephemeral task through the local agent bridge.
 inputs:
   - id: requestId
     type: STRING
@@ -13,17 +13,18 @@ inputs:
 tasks:
   - id: inference
     type: io.kestra.plugin.core.http.Request
-    uri: http://bridge:8080/generate
+    uri: '{{ envs.bridge_url }}/generate'
     method: POST
     contentType: text/plain
     headers:
       X-Request-Id: '{{ inputs.requestId }}'
+      Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
     body: '{{ inputs.prompt }}'
-    timeout: PT2M
+    timeout: PT35M
     options:
       timeout:
         connectTimeout: PT5S
-        readIdleTimeout: PT110S
+        readIdleTimeout: PT35M
   - id: response
     type: io.kestra.plugin.core.log.Log
     message: '{{ outputs.inference.body }}'

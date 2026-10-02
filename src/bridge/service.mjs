@@ -3,7 +3,7 @@ import { ProviderError, validateInput, validateResult } from './contract.mjs';
 import { traceIdFor } from './tracing.mjs';
 const fingerprint = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 export class Service {
-  constructor({ provider, providerName, model, store, trace, publicUrl, projectId, enabled, timeoutMs = 90000 }) {
+  constructor({ provider, providerName, model, store, trace, publicUrl, projectId, enabled, timeoutMs = 1800000 }) {
     Object.assign(this, { provider, providerName, model, store, trace, publicUrl, projectId, enabled, timeoutMs });
     this.busy = false; this.flushing = false; this.deliveries = new Map();
     for (const record of store.all()) if (record.status === 'running') {
@@ -43,6 +43,7 @@ export class Service {
     try { for (const record of this.store.all()) await this.deliver(record); }
     finally { this.flushing = false; }
   }
+  cancel() { this.controller?.abort(); }
   async run(body) {
     const { prompt, requestId } = validateInput(body);
     const digest = fingerprint({ prompt, provider: this.providerName, model: this.model });
@@ -55,12 +56,13 @@ export class Service {
     if (!this.enabled) throw new ProviderError('disabled', 'Inference disabled. Verify credentials and usage controls before enabling it.');
     if (this.busy) throw new ProviderError('busy', 'One inference is already running. Retry this request ID later.');
     this.busy = true;
+    this.controller = new AbortController();
     const record = { requestId, prompt, fingerprint: digest, provider: this.providerName, model: this.model,
       status: 'running', traceStatus: 'pending', traceId: traceIdFor(requestId), startedAt: new Date().toISOString() };
     try {
       this.store.put(record);
       try {
-        const result = validateResult(await this.provider.generate(prompt, { signal: AbortSignal.timeout(this.timeoutMs) }));
+        const result = validateResult(await this.provider.generate(prompt, { signal: AbortSignal.any([this.controller.signal, AbortSignal.timeout(this.timeoutMs)]) }));
         Object.assign(record, { status: 'completed', text: result.text, model: result.model,
           usage: result.usage, providerRequestId: result.requestId });
       } catch (error) {
@@ -73,6 +75,6 @@ export class Service {
       this.store.put(record);
       await this.deliver(record);
       return this.present(record);
-    } finally { this.busy = false; }
+    } finally { this.busy = false; this.controller = null; }
   }
 }

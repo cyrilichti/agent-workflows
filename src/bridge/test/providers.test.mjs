@@ -13,10 +13,18 @@ test('Codex events map to common result and usage', () => {
   assert.throws(() => parseCodex('{"type":"turn.failed"}', 'test'), { code: 'codex_error' });
   assert.throws(() => parseCodex('bad json', 'test'), { code: 'invalid_output' });
 });
-test('Codex runtime disables tools and excludes project and personal configuration', () => {
-  const args = codexArgs('test', 'workspace');
-  for (const required of ['--ignore-user-config', 'read-only', 'forced_login_method="chatgpt"', 'web_search="disabled"', 'shell_tool', 'unified_exec', 'apps', 'plugins']) assert.ok(args.includes(required));
-  assert.equal(args.at(-1), '-'); assert.ok(!args.includes('--dangerously-bypass-approvals-and-sandbox'));
+test('Codex uses an ephemeral task with local configuration and a working directory', () => {
+  const directory = '/projects/app with spaces';
+  const args = codexArgs(undefined, '', directory);
+  assert.equal(args[args.indexOf('-C') + 1], directory);
+  assert.ok(args.includes('--ephemeral'));
+  assert.ok(args.includes('approval_policy="never"'));
+  for (const blocked of ['--disable', '--ignore-user-config', '--sandbox', '-m', '--dangerously-bypass-approvals-and-sandbox'])
+    assert.ok(!args.includes(blocked));
+  assert.equal(args.at(-1), '-');
+  const overridden = codexArgs('selected', 'workspace', directory);
+  assert.equal(overridden[overridden.indexOf('-m') + 1], 'selected');
+  assert.ok(overridden.includes('forced_chatgpt_workspace_id="workspace"'));
 });
 test('API uses selected model, bounded output and supplied token without retries', async t => {
   const dir = mkdtempSync(`${tmpdir()}/api-test-`); t.after(() => rmSync(dir, { recursive: true, force: true }));
@@ -36,14 +44,9 @@ test('provider selection and API completeness fail closed', () => {
   assert.throws(() => parseOpenAI({ status: 'incomplete' }, 'test'), { code: 'api_incomplete' });
 });
 
-test('missing, revoked or wrong-workspace authentication fails without fallback', async t => {
+test('API authentication failures do not retry or fall back', async t => {
   const dir = mkdtempSync(`${tmpdir()}/auth-test-`); t.after(() => rmSync(dir, { recursive: true, force: true }));
   const opts = { signal: new AbortController().signal };
-  const codex = createCodex({ model: 'test', workspace: 'wanted', authDir: dir,
-    spawnImpl: () => { throw new Error('must not spawn'); } });
-  await assert.rejects(codex.generate('Hello', opts), { code: 'authentication' });
-  writeFileSync(`${dir}/auth.json`, JSON.stringify({ tokens: { access_token: 'test-only', account_id: 'other' } }));
-  await assert.rejects(codex.generate('Hello', opts), { code: 'authentication' });
   const keyFile = `${dir}/key`;
   await assert.rejects(createOpenAI({ model: 'test', keyFile }).generate('Hello', opts), { code: 'authentication' });
   writeFileSync(keyFile, 'test-only');
@@ -75,7 +78,7 @@ test('Codex cancellation terminates the subprocess group', async t => {
   const controller = new AbortController();
   const grandchild = `setTimeout(()=>require('fs').writeFileSync(${JSON.stringify(marker)},'alive'),300)`;
   const script = `const c=require('child_process').spawn(process.execPath,['-e',${JSON.stringify(grandchild)}],{stdio:'ignore'}); console.log('ready');setInterval(()=>{},1000)`;
-  const provider = createCodex({ model: 'test', workspace: 'wanted', authDir: dir,
+  const provider = createCodex({ model: 'test', workspace: 'wanted', directory: dir,
     spawnImpl: (_file, _args, options) => {
       const child = spawn(process.execPath, ['-e', script], options);
       child.stdout.once('data', () => controller.abort());
@@ -92,4 +95,23 @@ test('API mode accepts its configured environment token without requiring a key 
     return Response.json({ status: 'completed', output: [{ type: 'message', content: [{ type: 'output_text', text: 'OK' }] }] });
   } });
   assert.equal((await provider.generate('Hello', { signal: new AbortController().signal })).text, 'OK');
+});
+
+test('local CLI receives host environment and cwd without a file-based auth prerequisite', async t => {
+  const { spawn } = await import('node:child_process');
+  const dir = mkdtempSync(`${tmpdir()}/codex-local-`); t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const environment = { PATH: process.env.PATH, HOME: dir, CODEX_HOME: `${dir}/config`, SSH_AUTH_SOCK: '/host/agent' };
+  const provider = createCodex({ environment, directory: dir, executable: '/custom/codex', spawnImpl: (file, args, options) => {
+    assert.equal(file, '/custom/codex');
+    assert.equal(options.cwd, dir);
+    assert.deepEqual(options.env, environment);
+    assert.ok(args.includes('--ephemeral'));
+    return spawn(process.execPath, ['-e', `process.stdin.resume();process.stdin.on('end',()=>{
+      console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:'OK'}}));
+      console.log(JSON.stringify({type:'turn.completed'}));
+    })`], options);
+  } });
+  const result = await provider.generate('Hello', { signal: new AbortController().signal });
+  assert.equal(result.text, 'OK');
+  assert.equal(result.model, 'configured-default');
 });

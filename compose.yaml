@@ -33,32 +33,6 @@ x-depends: &langfuse-depends
   clickhouse: {condition: service_healthy}
   redis: {condition: service_healthy}
   minio: {condition: service_healthy}
-x-bridge: &bridge
-  restart: unless-stopped
-  init: true
-  read_only: true
-  cap_drop: [ALL]
-  security_opt: ['no-new-privileges:true']
-  tmpfs: ['/tmp:uid=1000,gid=1000,mode=700']
-  environment: &bridge-env
-    AI_MODEL: ${AI_MODEL:-gpt-6-luna}
-    INFERENCE_ENABLED: ${INFERENCE_ENABLED:-false}
-    REQUEST_TIMEOUT_MS: 90000
-    LANGFUSE_URL: http://langfuse-web:3000
-    LANGFUSE_PUBLIC_URL: http://localhost:3001
-    LANGFUSE_PROJECT_ID: local-ai
-    LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:?Set LANGFUSE_PUBLIC_KEY in .env}
-    LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:?Set LANGFUSE_SECRET_KEY in .env}
-    DATA_DIR: /data
-  volumes: [bridge:/data]
-  networks:
-    workflow: {aliases: [bridge]}
-    observability: {}
-  healthcheck:
-    test: ['CMD', 'node', '-e', "fetch('http://localhost:8080/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-    interval: 10s
-    timeout: 5s
-    retries: 10
 services:
   kestra-db:
     image: postgres:17.6-bookworm@sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3
@@ -84,10 +58,13 @@ services:
     depends_on:
       kestra-db: {condition: service_healthy}
     ports: ['127.0.0.1:3000:8080']
+    extra_hosts: ['host.docker.internal:host-gateway']
     environment:
       KESTRA_DB_PASSWORD: ${KESTRA_DB_PASSWORD:?Set KESTRA_DB_PASSWORD in .env}
       KESTRA_ADMIN_EMAIL: ${KESTRA_ADMIN_EMAIL:-local@example.test}
       KESTRA_ADMIN_PASSWORD: ${KESTRA_ADMIN_PASSWORD:?Set KESTRA_ADMIN_PASSWORD in .env}
+      SECRET_BRIDGE_TOKEN: ${SECRET_BRIDGE_TOKEN:?Run npm run bridge:setup}
+      ENV_BRIDGE_URL: ${BRIDGE_URL:-http://host.docker.internal:8787}
       KESTRA_CONFIGURATION: |
         datasources:
           postgres:
@@ -140,24 +117,6 @@ services:
       - ./src/install.mjs:/app/src/install.mjs:ro
       - ./orchestration/demo.yaml:/app/orchestration/demo.yaml:ro
     networks: [workflow]
-  bridge:
-    <<: *bridge
-    profiles: [codex]
-    build: {context: ./.docker/bridge, target: codex}
-    environment:
-      <<: *bridge-env
-      AI_PROVIDER: codex
-      CODEX_WORKSPACE_ID: ${CODEX_WORKSPACE_ID:-}
-      CODEX_HOME: /auth
-    volumes: [bridge:/data, codex-auth:/auth]
-  bridge-api:
-    <<: *bridge
-    profiles: [openai-api]
-    build: {context: ./.docker/bridge, target: api}
-    environment:
-      <<: *bridge-env
-      AI_PROVIDER: openai-api
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
   langfuse-web:
     image: langfuse/langfuse:4.48.0@sha256:8c1b80ed7735be587974d603af0f6e0247b33d3b56c7d5ab9d2337aec313efa0
     restart: unless-stopped
@@ -249,12 +208,6 @@ networks:
 volumes:
   kestra-db: {}
   kestra: {}
-  bridge:
-    external: ${EXTERNAL_VOLUMES:-false}
-    name: ${VOLUME_PREFIX:-agent-workflows}_bridge
-  codex-auth:
-    external: ${EXTERNAL_VOLUMES:-false}
-    name: ${VOLUME_PREFIX:-agent-workflows}_codex-auth
   postgres:
     external: ${EXTERNAL_VOLUMES:-false}
     name: ${VOLUME_PREFIX:-agent-workflows}_postgres
