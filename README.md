@@ -47,7 +47,7 @@ New workflows and skill integrations are welcome. Read [Contributing](./CONTRIBU
 ## Agent orchestration
 
 Run Kestra workflows with a local AI bridge and Langfuse traces. Follow the
-[orchestration guide](./README.orchestration.md) to configure the services and
+[orchestration guide](./ORCHESTRATION.md) to configure the services and
 run the demo.
 
 To start the documentation development server, install dependencies with
