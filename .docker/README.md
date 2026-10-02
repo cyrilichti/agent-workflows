@@ -145,7 +145,7 @@ The bridge remains one process, organized by responsibility:
 
 | Path | Responsibility |
 | --- | --- |
-| `src/bridge/startBridge.mjs` | Assemble dependencies, start HTTP and stop active work. |
+| `src/bridge/index.mjs` | Assemble dependencies, start HTTP and stop active work. |
 | `src/bridge/config/bridgeConfig.mjs` | Load and validate settings while preserving the CLI environment. |
 | `src/bridge/server.mjs` | Authenticate and handle HTTP requests. |
 | `src/bridge/execution/taskExecutionService.mjs` | Execute tasks, deduplicate requests, handle cancellation and coordinate trace delivery. |
