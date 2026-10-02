@@ -1,3 +1,4 @@
+import { homedir } from 'node:os';
 import { readFileSync } from 'node:fs';
 import { parseEnv } from 'node:util';
 
@@ -7,14 +8,14 @@ import { parseEnv } from 'node:util';
  * @param {object} [options]
  * @param {string} [options.envFile='.env'] File containing bridge-specific settings.
  * @param {NodeJS.ProcessEnv} [options.environment=process.env] Host environment; overrides the file.
- * @param {string} [options.directory=process.cwd()] Default CLI working directory.
+ * @param {string} [options.directory=homedir()] Default CLI working directory.
  * @returns {object} Settings grouped by provider, HTTP, execution, storage and tracing.
  * @throws {Error} If the file cannot be read or required settings are invalid.
  */
 export function loadBridgeConfig({
   envFile = '.env',
   environment = process.env,
-  directory = process.cwd(),
+  directory = homedir(),
 } = {}) {
   // Service secrets from .env must not be injected into the local CLI environment.
   const cliEnvironment = { ...environment };

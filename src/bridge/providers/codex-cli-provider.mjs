@@ -1,3 +1,4 @@
+import { homedir } from 'node:os';
 import { spawn } from 'node:child_process';
 import { ProviderError } from '../execution/task-contract.mjs';
 
@@ -7,10 +8,10 @@ import { ProviderError } from '../execution/task-contract.mjs';
  *
  * @param {string | undefined} model Optional override of the configured model.
  * @param {string} workspace Optional ChatGPT workspace restriction.
- * @param {string} [directory=process.cwd()] Working directory for the task.
+ * @param {string} [directory=homedir()] Working directory for the task.
  * @returns {string[]} Arguments passed directly to spawn, without a shell.
  */
-export function buildCodexArguments(model, workspace, directory = process.cwd()) {
+export function buildCodexArguments(model, workspace, directory = homedir()) {
   const args = [
     'exec',
     '--json',
@@ -88,7 +89,7 @@ export function parseCodexEvents(text, model) {
  * @param {string} [options.workspace=''] Optional ChatGPT workspace restriction.
  * @param {string} [options.executable='codex'] Executable name or absolute path.
  * @param {NodeJS.ProcessEnv} [options.environment=process.env] Inherited host environment.
- * @param {string} [options.directory=process.cwd()] Task working directory.
+ * @param {string} [options.directory=homedir()] Task working directory.
  * @param {typeof spawn} [options.spawnImpl=spawn] Injectable subprocess launcher.
  * @returns {import('../execution/task-contract.mjs').AiProvider}
  */
@@ -97,7 +98,7 @@ export function createCodexCliProvider({
   workspace = '',
   executable = 'codex',
   environment = process.env,
-  directory = process.cwd(),
+  directory = homedir(),
   spawnImpl = spawn,
 }) {
   return {

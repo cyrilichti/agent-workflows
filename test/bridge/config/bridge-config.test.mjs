@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 import { loadBridgeConfig } from '../../../src/bridge/config/bridge-config.mjs';
 
 function envFile(t, extra = '') {
@@ -41,4 +41,10 @@ test('configuration rejects invalid execution settings and missing API model', (
   }
   const config = loadBridgeConfig({ envFile: envFile(t), environment: {} });
   assert.equal(config.providerOptions.model, undefined);
+  assert.equal(config.providerOptions.directory, homedir());
+  const projectConfig = loadBridgeConfig({
+    envFile: envFile(t, 'CODEX_WORKING_DIRECTORY=/host/project\n'),
+    environment: {},
+  });
+  assert.equal(projectConfig.providerOptions.directory, '/host/project');
 });
