@@ -125,9 +125,9 @@ services:
       start_period: 60s
       retries: 30
   workflow-init:
-    build:
-      context: .
-      dockerfile: .docker/Dockerfile.init
+    image: node:24-bookworm-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6
+    working_dir: /app
+    command: ['node', 'src/install.mjs']
     restart: 'no'
     read_only: true
     cap_drop: [ALL]
@@ -138,6 +138,9 @@ services:
       KESTRA_URL: http://kestra:8080
       KESTRA_ADMIN_EMAIL: ${KESTRA_ADMIN_EMAIL:-local@example.test}
       KESTRA_ADMIN_PASSWORD: ${KESTRA_ADMIN_PASSWORD:?Set KESTRA_ADMIN_PASSWORD in .env}
+    volumes:
+      - ./src/install.mjs:/app/src/install.mjs:ro
+      - ./.docker/workflow.yaml:/app/.docker/workflow.yaml:ro
     networks: [workflow]
   bridge:
     <<: *bridge

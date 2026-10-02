@@ -1,6 +1,0 @@
-**
-!src/
-!src/install.mjs
-!.docker/
-!.docker/Dockerfile.init
-!.docker/workflow.yaml
