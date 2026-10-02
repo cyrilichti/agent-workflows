@@ -36,6 +36,15 @@ See [provider setup](https://cyrilichti.github.io/agent-workflows/providers/) fo
 
 Start with the [installation guide](https://cyrilichti.github.io/agent-workflows/installation/), then explore [provider setup](https://cyrilichti.github.io/agent-workflows/providers/) and the [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
 
+To start the documentation development server, install dependencies with
+`npm ci`, then run `npm run doc`.
+
+## Agent orchestration
+
+Run Kestra workflows with a local AI bridge and Langfuse traces. Follow the
+[orchestration guide](./ORCHESTRATION.md) to configure the services and
+run the demo.
+
 ## Community
 
 New workflows and skill integrations are welcome. Read [Contributing](./CONTRIBUTING.md), [Support](./SUPPORT.md), [Security](./SECURITY.md), and the [Code of Conduct](./CODE_OF_CONDUCT.md).

@@ -7,19 +7,19 @@ head:
   - tag: meta
     attrs:
       property: og:image
-      content: https://cyrilichti.github.io/agent-workflows/og.png
+      content: https://cyrilichti.github.io/agent-workflows/readme-lifecycle.svg
   - tag: meta
     attrs:
       property: og:image:width
-      content: "1730"
+      content: "1640"
   - tag: meta
     attrs:
       property: og:image:height
-      content: "909"
+      content: "460"
   - tag: meta
     attrs:
       name: twitter:image
-      content: https://cyrilichti.github.io/agent-workflows/og.png
+      content: https://cyrilichti.github.io/agent-workflows/readme-lifecycle.svg
 template: splash
 editUrl: false
 hero:
