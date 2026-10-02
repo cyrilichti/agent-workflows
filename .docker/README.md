@@ -7,7 +7,8 @@ MCP integrations, configuration and authentication. It does not copy or mount
 
 ## Setup
 
-Requires Docker Compose 2.24+, Node.js 24+, and a local Codex CLI supporting
+Requires **Node.js 24+ with npm installed on the host**, Docker Compose 2.24+,
+and a local Codex CLI supporting
 `exec --ephemeral --json --cd --add-dir`. Run from the repository root:
 
 ```bash
@@ -16,7 +17,7 @@ cp .env.example .env
 # Fill the credentials and settings in .env.
 # Run codex login if your local CLI is not already authenticated.
 docker compose up -d
-npm run bridge
+npm start
 ```
 
 If `.env` already exists, update it manually from `.env.example` without
@@ -59,7 +60,7 @@ requires an explicit `AI_MODEL` and funded `OPENAI_API_KEY`.
 - Langfuse: http://localhost:3001 — `local@example.test` / `LANGFUSE_ADMIN_PASSWORD`.
 - Bridge health: http://localhost:8787/health.
 
-Keep the bridge process running, or manage `npm run bridge` with your OS service
+Keep the bridge process running, or manage `npm start` with your OS service
 manager using this repository as its working directory and the correct user.
 The service manager must supply the same `HOME`, `PATH`, optional `CODEX_HOME`,
 SSH agent and integration environment as your terminal. `CODEX_BIN` in `.env`
