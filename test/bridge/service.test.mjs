@@ -2,10 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { Store } from '../store.mjs';
-import { Service } from '../service.mjs';
-import { ProviderError, validateInput } from '../contract.mjs';
-import { traceBatch } from '../tracing.mjs';
+import { Store } from '../../src/bridge/store.mjs';
+import { Service } from '../../src/bridge/service.mjs';
+import { ProviderError, validateInput } from '../../src/bridge/contract.mjs';
+import { traceBatch } from '../../src/bridge/tracing.mjs';
 function fixture(t, options = {}) {
   const directory = mkdtempSync(`${tmpdir()}/local-ai-test-`);
   t.after(() => rmSync(directory, { recursive: true, force: true }));

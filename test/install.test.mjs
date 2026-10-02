@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { installWorkflow } from '../src/install.mjs';
-const config = { url: 'http://kestra:8080', email: 'local@example.test', password: 'test-only', workflow: 'id: local_agent\nnamespace: local.ai\n' };
+const config = { url: 'http://kestra:8080', email: 'local@example.test', password: 'test-only', workflow: 'id: demo\nnamespace: demo\n' };
 test('first initialization imports the YAML with local authentication', async () => {
   const calls = [];
   const fetchImpl = async (url, options) => {
@@ -10,7 +10,7 @@ test('first initialization imports the YAML with local authentication', async ()
     return new Response('{}', { status: calls.length === 1 ? 404 : 200 });
   };
   assert.equal(await installWorkflow({ ...config, fetchImpl }), 'created');
-  assert.equal(calls[0].url, 'http://kestra:8080/api/v1/main/flows/local.ai/local_agent');
+  assert.equal(calls[0].url, 'http://kestra:8080/api/v1/main/flows/demo/demo');
   assert.equal(calls[1].url, 'http://kestra:8080/api/v1/main/flows');
   assert.equal(calls[1].options.method, 'POST');
   assert.equal(calls[1].options.headers['Content-Type'], 'application/x-yaml');
@@ -19,7 +19,7 @@ test('first initialization imports the YAML with local authentication', async ()
 test('restarting retains the existing workflow without overwriting edits', async () => {
   let calls = 0;
   assert.equal(await installWorkflow({ ...config, fetchImpl: async () => {
-    calls++; return Response.json({ id: 'local_agent', description: 'User edits', revision: 7 });
+    calls++; return Response.json({ id: 'demo', description: 'User edits', revision: 7 });
   } }), 'retained');
   assert.equal(calls, 1);
 });

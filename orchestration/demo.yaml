@@ -1,6 +1,6 @@
-id: local_agent
-namespace: local.ai
-description: Run an ephemeral task through the local agent bridge.
+id: demo
+namespace: demo
+description: Demonstrate a bridge request and its Langfuse trace.
 inputs:
   - id: requestId
     type: STRING

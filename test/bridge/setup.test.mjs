@@ -8,8 +8,8 @@ import { parseEnv } from 'node:util';
 
 test('setup preserves credentials, model overrides on repeated runs without creating a project registry', t => {
   const dir = mkdtempSync(`${tmpdir()}/bridge-setup-`); t.after(() => rmSync(dir, { recursive: true, force: true }));
-  const script = fileURLToPath(new URL('../setup.mjs', import.meta.url));
-  copyFileSync(new URL('../../../.env.example', import.meta.url), `${dir}/.env.example`);
+  const script = fileURLToPath(new URL('../../src/bridge/setup.mjs', import.meta.url));
+  copyFileSync(new URL('../../.env.example', import.meta.url), `${dir}/.env.example`);
   writeFileSync(`${dir}/.env`, 'AI_MODEL=chosen\nOPENAI_API_KEY=test-only\nSECRET_BRIDGE_TOKEN=\n');
   execFileSync(process.execPath, [script], { cwd: dir });
   const first = readFileSync(`${dir}/.env`, 'utf8');

@@ -11,7 +11,7 @@
   "scripts": {
     "start": "astro dev",
     "build": "astro build",
-    "test": "node --test src/bridge/test/*.test.mjs test/*.test.mjs",
+    "test": "node --test test/bridge/*.test.mjs test/*.test.mjs",
     "bridge": "node src/bridge/start.mjs",
     "bridge:setup": "node src/bridge/setup.mjs"
   },

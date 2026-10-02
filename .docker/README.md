@@ -63,7 +63,7 @@ rather than claiming a model name the CLI event stream did not report.
 
 ## Workflow and networking
 
-The example `local.ai / local_agent` is installed automatically. Its inputs are
+The example `demo / demo` is installed automatically. Its inputs are
 `requestId` and `prompt`. Results contain the response and trace URL.
 Kestra uses `BRIDGE_URL` (default `http://host.docker.internal:8787`); Compose
 adds the host-gateway alias for Linux. The bridge listens on `BRIDGE_HOST` and
@@ -103,8 +103,8 @@ seccomp exception. Existing Docker volumes are not deleted or imported. The host
 CLI uses its own existing login. Old request records remain in the old bridge
 volume; the host result store starts separately.
 
-The new workflow ID `local_agent` avoids overwriting edits to `local_ai`.
-Switch to the new workflow; the old one still points to the removed container.
+The demonstration uses `id: demo` and `namespace: demo`. Existing workflows
+are retained; select `demo / demo` to run this example.
 Initialization never overwrites an existing workflow, so later YAML updates must
 be applied explicitly in Kestra. `COMPOSE_PROFILES` is no longer used to select
 the AI provider; replace that setting with `AI_PROVIDER`.

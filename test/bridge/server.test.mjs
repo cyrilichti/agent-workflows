@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
-import { createBridgeServer } from '../server.mjs';
+import { createBridgeServer } from '../../src/bridge/server.mjs';
 
 test('HTTP bridge authenticates before executing and accepts a task without a project', async t => {
   const token = 'test-only-token-'.repeat(4);

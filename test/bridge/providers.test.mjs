@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { createProvider } from '../providers/index.mjs';
-import { createOpenAI, parseOpenAI } from '../providers/openai.mjs';
-import { codexArgs, parseCodex, createCodex } from '../providers/codex.mjs';
+import { createProvider } from '../../src/bridge/providers/index.mjs';
+import { createOpenAI, parseOpenAI } from '../../src/bridge/providers/openai.mjs';
+import { codexArgs, parseCodex, createCodex } from '../../src/bridge/providers/codex.mjs';
 test('Codex events map to common result and usage', () => {
   const events = [{ type: 'thread.started', thread_id: 'thread-1' }, { type: 'item.completed', item: { type: 'agent_message', text: 'OK' } },
     { type: 'turn.completed', usage: { input_tokens: 10, cached_input_tokens: 4, output_tokens: 2 } }];
