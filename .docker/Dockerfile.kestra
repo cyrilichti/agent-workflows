@@ -1,2 +1,0 @@
-FROM kestra/kestra:v2.0.4@sha256:3db5e0110babe75bdf6d9e5f030e1df9f7da2a148c47b5197ba233f3f0d6e8f5
-RUN mkdir -p /app/storage

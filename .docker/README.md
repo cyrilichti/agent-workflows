@@ -47,9 +47,8 @@ in Docker volumes. Back up the volumes with `.env`; deleting volumes deletes
 stored data. Neither the bridge nor Kestra mounts the host repository or Docker
 socket. This example performs inference; autonomous repository work is separate.
 
-Kestra 2.0.4 is pinned in `.docker/Dockerfile.kestra`; Langfuse 4.48.0 and
-infrastructure images in `compose.yaml`; Codex CLI in `.docker/bridge/Dockerfile`. Model calls
+Kestra 2.0.4, Langfuse 4.48.0 and infrastructure images are pinned in
+`compose.yaml`; Codex CLI is pinned in `.docker/bridge/Dockerfile`. Model calls
 require internet access. Licenses: Kestra Apache-2.0, Langfuse MIT core,
 PostgreSQL PostgreSQL License, ClickHouse Apache-2.0, Redis 7.2 BSD-3-Clause,
 MinIO AGPL-3.0. Model usage and Docker Desktop have separate terms.
-
