@@ -46,19 +46,9 @@ New workflows and skill integrations are welcome. Read [Contributing](./CONTRIBU
 
 ## Agent orchestration
 
-Run Kestra locally to orchestrate agents, with Langfuse for AI traces.
-Requires **Node.js 24+ with npm on the host**, Docker Compose 2.24+, and Codex CLI
-installed and authenticated for the Codex provider.
-
-```bash
-# First setup only, if .env does not exist:
-cp .env.example .env
-# Fill the credentials and settings in .env.
-docker compose up -d
-npm start
-```
-
-[Configuration, authentication and example workflow](./.docker/README.md).
+Run Kestra workflows with a local AI bridge and Langfuse traces. Follow the
+[orchestration guide](./README.orchestration.md) to configure the services and
+run the demo.
 
 To start the documentation development server, install dependencies with
 `npm ci`, then run `npm run doc`.

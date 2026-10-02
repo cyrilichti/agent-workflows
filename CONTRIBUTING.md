@@ -96,21 +96,6 @@ explicit. Require human approval before operations such as:
 The workflow must also define what happens when approval is declined or an
 operation fails. A failure must stop cleanly without pretending the goal was met.
 
-## JavaScript style
-
-Use kebab-case for file and directory names under `src/` and `test/`.
-Use a consistent JavaScript style under `src/` and `test/`: two-space indentation,
-single quotes, semicolons, trailing commas, and a 100-column line width.
-Use descriptive names, explicit control-flow blocks, and one responsibility per
-function. Document named functions and methods with JSDoc, including their
-inputs, results, failure behavior, and meaningful side effects. Explain intent
-and constraints rather than restating the implementation. Anonymous callbacks
-and self-describing test cases do not need boilerplate documentation.
-
-Tests mirror the source tree: `src/<path>/<module>.mjs` corresponds to
-`test/<path>/<module>.test.mjs` when that module has tests. Keep tests outside
-`src/` and run `npm test` before submitting JavaScript changes.
-
 ## Validate the contribution
 
 Restore declared skills when the lock file changed:
