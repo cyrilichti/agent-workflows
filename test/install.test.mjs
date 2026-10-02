@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { installWorkflow } from '../kestra.mjs';
+import { installWorkflow } from '../.docker/src/install.mjs';
 const config = { url: 'http://kestra:8080', email: 'local@example.test', password: 'test-only', workflow: 'id: local_ai\nnamespace: local.ai\n' };
 test('first initialization imports the YAML with local authentication', async () => {
   const calls = [];

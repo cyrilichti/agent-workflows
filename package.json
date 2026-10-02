@@ -11,7 +11,7 @@
   "scripts": {
     "start": "astro dev",
     "build": "astro build",
-    "test": "node --test .docker/bridge/test/*.test.mjs .docker/test/*.test.mjs"
+    "test": "node --test .docker/bridge/test/*.test.mjs test/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.41.3",
