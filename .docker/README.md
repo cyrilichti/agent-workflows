@@ -11,15 +11,44 @@ Requires Docker Compose 2.24+, Node.js 24+, and a local Codex CLI supporting
 `exec --ephemeral --json --cd --add-dir`. Run from the repository root:
 
 ```bash
-npm run bridge:setup
-# Fill the remaining secrets in .env and settings.
+# First setup only, if .env does not exist:
+cp .env.example .env
+# Fill the credentials and settings in .env.
 # Run codex login if your local CLI is not already authenticated.
 docker compose up -d
 npm run bridge
 ```
 
-Setup creates `.env` from the example if missing, fills missing settings,
-generates a bridge token when absent. It preserves existing values and credentials.
+If `.env` already exists, update it manually from `.env.example` without
+replacing your existing values. No script creates or updates `.env`.
+
+Generate a separate value for each `*_PASSWORD`, `NEXTAUTH_SECRET`,
+`LANGFUSE_SALT`, `LANGFUSE_ENCRYPTION_KEY`, `LANGFUSE_PUBLIC_KEY` and
+`LANGFUSE_SECRET_KEY` with the same command, rerunning it for each variable:
+
+```bash
+openssl rand -hex 32
+```
+
+This produces 64 hexadecimal characters, including the format required by
+`LANGFUSE_ENCRYPTION_KEY`. The Langfuse keys here initialize your own instance;
+they are not OpenAI API keys.
+
+For `SECRET_BRIDGE_TOKEN`, use the same generation with base64 encoding:
+
+```bash
+openssl rand -hex 32 | tr -d '\n' | openssl base64 -A
+```
+
+Paste the output as `SECRET_BRIDGE_TOKEN` in `.env`. This is a random token
+encoded as base64 for Kestra's secret format; do not encode the output again.
+It authenticates Kestra to the bridge and is separate from Codex authentication
+and OpenAI API keys. Existing installations can keep their current token.
+`tr` removes the newline before encoding so the decoded token can be used in
+an HTTP header. The command prints no trailing newline; copy only its output.
+`OPENAI_API_KEY` must come from OpenAI, and `CODEX_WORKSPACE_ID` is an existing
+workspace identifier. Neither is generated with these commands.
+
 Set `INFERENCE_ENABLED=true` in `.env` when ready to execute tasks. Restart the
 bridge after changing configuration. Clear `AI_MODEL` to inherit the CLI model;
 an existing nonempty value remains an explicit override. `AI_PROVIDER=codex`

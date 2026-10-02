@@ -49,7 +49,8 @@ New workflows and skill integrations are welcome. Read [Contributing](./CONTRIBU
 Run Kestra locally to orchestrate agents, with Langfuse for AI traces.
 
 ```bash
-npm run bridge:setup
+# First setup only, if .env does not exist:
+cp .env.example .env
 # Fill the credentials and settings in .env.
 docker compose up -d
 npm run bridge

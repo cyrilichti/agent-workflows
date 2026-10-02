@@ -14,7 +14,7 @@ const providerName = env.AI_PROVIDER || 'codex';
 const model = env.AI_MODEL || undefined;
 if (providerName === 'openai-api' && !model) throw new Error('Set AI_MODEL for openai-api.');
 for (const name of ['LANGFUSE_PUBLIC_KEY', 'LANGFUSE_SECRET_KEY', 'SECRET_BRIDGE_TOKEN'])
-  if (!env[name]) throw new Error(`Missing configuration: ${name}. Run npm run bridge:setup.`);
+  if (!env[name]) throw new Error(`Missing configuration: ${name}. Set it in .env.`);
 const timeoutMs = Number(env.REQUEST_TIMEOUT_MS || 1800000);
 const port = Number(env.BRIDGE_PORT || 8787);
 if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 1800000) throw new Error('REQUEST_TIMEOUT_MS must be 1–1800000.');

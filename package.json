@@ -12,8 +12,7 @@
     "start": "astro dev",
     "build": "astro build",
     "test": "node --test test/bridge/*.test.mjs test/*.test.mjs",
-    "bridge": "node src/bridge/start.mjs",
-    "bridge:setup": "node src/bridge/setup.mjs"
+    "bridge": "node src/bridge/start.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.41.3",

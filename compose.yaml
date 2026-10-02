@@ -63,7 +63,7 @@ services:
       KESTRA_DB_PASSWORD: ${KESTRA_DB_PASSWORD:?Set KESTRA_DB_PASSWORD in .env}
       KESTRA_ADMIN_EMAIL: ${KESTRA_ADMIN_EMAIL:-local@example.test}
       KESTRA_ADMIN_PASSWORD: ${KESTRA_ADMIN_PASSWORD:?Set KESTRA_ADMIN_PASSWORD in .env}
-      SECRET_BRIDGE_TOKEN: ${SECRET_BRIDGE_TOKEN:?Run npm run bridge:setup}
+      SECRET_BRIDGE_TOKEN: ${SECRET_BRIDGE_TOKEN:?Set SECRET_BRIDGE_TOKEN in .env}
       ENV_BRIDGE_URL: ${BRIDGE_URL:-http://host.docker.internal:8787}
       KESTRA_CONFIGURATION: |
         datasources:
