@@ -1,16 +1,18 @@
 # merge-request
 
-Require writable `merge_pull_request`; otherwise return `unsupported` without
-substitution.
+In `resolve` mode, return `supported` for `merge`, `squash`, and `rebase`, or `unsupported` for other methods. Make no GitHub call.
+
+In `apply` mode, read the exact pull request once. Require an open, unmerged request with a `head.sha`.
 
 ```text
-tool: merge_pull_request
-arguments:
-  owner: caller repository owner
-  repo: caller repository name
-  pullNumber: caller request ID
-  merge_method: caller merge method
+gh api --hostname <host> repos/<owner>/<repo>/pulls/<number>
 ```
 
-Return the provider result without reading the pull request or normalizing its
-delivery state. Do not retry an ambiguous operation.
+Merge once using the observed SHA and caller method as JSON on standard input:
+
+```text
+gh api --hostname <host> --method PUT --input - repos/<owner>/<repo>/pulls/<number>/merge
+stdin JSON: {"sha":"<observed head SHA>","merge_method":"<caller method>"}
+```
+
+Return exit, stdout, and stderr, including any provider rejection reason. The caller reads the final state. Do not retry an ambiguous merge, queue auto-merge, delete the branch, or change transport.

@@ -19,6 +19,5 @@ repo: parsed repository
 ```
 
 Reject local paths, file URLs, missing owners, nested paths, and ambiguous URL
-forms. Do not infer `github.com`; the MCP server configuration remains
-authoritative for GitHub.com versus GitHub Enterprise connectivity.
-
+forms. Do not infer `github.com` or contact GitHub. The parsed host is
+authoritative for every subsequent `gh` operation, including GitHub Enterprise.

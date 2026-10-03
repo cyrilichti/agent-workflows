@@ -184,22 +184,24 @@ Stop and report the command output when dependency installation fails.
 
 ## Configure Providers
 
-GitHub uses its configured MCP integration. GitLab uses the official `glab`
-CLI and requires the user to install it and authenticate it for the repository
-host before running version workflows. Refer users to:
+GitHub uses the official `gh` CLI and GitLab uses the official `glab` CLI.
+Refer users to the setup documentation for the selected provider:
 
 ```text
+https://github.com/cli/cli#installation
+https://cli.github.com/manual/gh_auth_login
 https://docs.gitlab.com/cli/installation/
 https://docs.gitlab.com/cli/authentication/
 ```
 
-For a self-managed host, the authentication command is:
+For a self-managed host, the authentication commands are:
 
 ```bash
+gh auth login --hostname github.example.com
 glab auth login --hostname gitlab.example.com
 ```
 
-For GitLab.com, use `glab auth login`.
+For GitHub.com, use `gh auth login`; for GitLab.com, use `glab auth login`.
 
 When `agent-workflows.yaml` already exists:
 
@@ -265,5 +267,5 @@ Always remove the temporary download after success or failure.
 Report whether agent-workflows was installed or updated, which managed sources
 were replaced, that plans were preserved, the Cursor symlink result, the Git
 ignore rules added, which lock entries were added or replaced, and the
-configured item and version providers. When GitLab is configured, include the
-`glab` installation and authentication prerequisite in the report.
+configured item and version providers. Include the selected version CLI's
+installation and authentication prerequisite in the report.

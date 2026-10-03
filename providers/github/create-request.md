@@ -1,19 +1,30 @@
 # create-request
 
-Require writable `create_pull_request`; otherwise stop without substitution.
+Create exactly one draft pull request with:
 
 ```text
-tool: create_pull_request
+command: gh api
 arguments:
-  owner: caller repository owner
-  repo: caller repository name
+  - --hostname
+  - caller repository host
+  - --method
+  - POST
+  - --input
+  - -
+  - repos/<owner>/<repo>/pulls
+stdin JSON:
+  title: caller title beginning with "Draft:"
   head: caller source branch
   base: caller target branch
-  title: caller title beginning with "Draft:"
   draft: true
 ```
 
-Send no body, reviewers, or maintainer settings. Normalize:
+Do not send a body, reviewers, or maintainer settings. Require a successful
+exit and exactly one returned pull request with a numeric `number`, native
+draft state, and `html_url`. Do not search or retry if creation fails or its
+result is ambiguous.
+
+Normalize:
 
 ```text
 request_id: pull request number

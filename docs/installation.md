@@ -42,8 +42,19 @@ before `npx skills experimental_install` restores them.
 
 ## Provider prerequisites
 
-Connect the MCP integrations required by the selected Linear, ClickUp, or
-GitHub providers before running their workflows.
+Connect the MCP integration required by the selected Linear or ClickUp item
+provider before running its workflows.
+
+For GitHub, install the official [`gh` CLI](https://github.com/cli/cli#installation)
+and authenticate it for the repository's GitHub host:
+
+```bash
+gh auth login --hostname github.example.com
+```
+
+Use `gh auth login` without `--hostname` for GitHub.com. See the
+[authentication guide](https://cli.github.com/manual/gh_auth_login) for other
+authentication methods.
 
 For GitLab, install the official [`glab` CLI](https://gitlab.com/gitlab-org/cli)
 and authenticate it for the repository's GitLab host:

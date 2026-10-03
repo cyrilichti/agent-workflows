@@ -1,29 +1,32 @@
 # read-request
 
+Read the exact pull request and require its number to match the caller's ID:
+
 ```text
-tool: pull_request_read
-arguments:
-  method: get
-  owner: caller repository owner
-  repo: caller repository name
-  pullNumber: caller request ID
+gh api --hostname <host> repos/<owner>/<repo>/pulls/<number>
 ```
 
-Map the number to `request_id`, set `kind: pull_request`, normalize merged and
-closed states, and return native draft state, head and base branches, author,
-HTML URL, and body normalized to an empty string.
+Normalize its number to `request_id`, kind to `pull_request`, `merged`/`state` to open, merged, or closed, and null `body` to an empty string. Preserve draft, head/base branches, author, and URL. For `delivery_state`, return exact `head.sha`; map merged to `merged`, `mergeable: false` or a definite blocked state to `blocked`, `mergeable: true` with a definite ready state to `mergeable`, and all other states to `unknown`. Preserve a definite blocker reason. Never infer repository or request identity from the current branch.
 
-For `delivery_state`, also return the exact head SHA and normalize the native
-mergeability fields to `merge_status: mergeable`, `blocked`, `unknown`, or
-`merged`. Preserve the provider's concise blocker reason when available.
+For requested commits or files, exhaust the relevant endpoint with `per_page=100`, flatten all pages, and reject partial results or provider limits:
 
-For diffs, use `method: get_diff`. For changed files, use `method: get_files`
-and paginate only as required. Keep the same repository and request arguments.
+```text
+gh api --hostname <host> --paginate --slurp 'repos/<owner>/<repo>/pulls/<number>/commits?per_page=100'
+gh api --hostname <host> --paginate --slurp 'repos/<owner>/<repo>/pulls/<number>/files?per_page=100'
+```
 
-For `review_activity`, exhaust `get_review_comments`, `get_reviews`, and
-`get_comments`. Return their complete threads, replies, comments, and verdicts.
+For requested diffs, require the complete, untruncated response:
 
-For `review_snapshot`, also return the head SHA, untruncated `get_diff` result,
-and every paginated `get_files` result with its anchor data. Read the pull
-request again and require the same head SHA before returning the snapshot.
-Stop when any required collection is partial, filtered, or truncated.
+```text
+gh api --hostname <host> -H 'Accept: application/vnd.github.v3.diff' repos/<owner>/<repo>/pulls/<number>
+```
+
+For `review_activity`, exhaust all three endpoints independently. Preserve `in_reply_to_id` relationships, review bodies and verdicts, identities, locations, bodies, and timestamps:
+
+```text
+gh api --hostname <host> --paginate --slurp 'repos/<owner>/<repo>/pulls/<number>/comments?per_page=100'
+gh api --hostname <host> --paginate --slurp 'repos/<owner>/<repo>/pulls/<number>/reviews?per_page=100'
+gh api --hostname <host> --paginate --slurp 'repos/<owner>/<repo>/issues/<number>/comments?per_page=100'
+```
+
+For `review_snapshot`, include activity, full diff, and complete changed files. Derive valid inline anchors from paths and patches; reject missing patches needed for anchors or disagreement with the diff. Reread the request and require the same `head.sha`. Stop on stale, malformed, filtered, truncated, or ambiguous data. Do not retry failed reads or substitute search results. Pass arguments separately without a shell.
