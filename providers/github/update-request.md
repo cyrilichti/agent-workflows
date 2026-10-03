@@ -1,20 +1,25 @@
 # update-request
 
-Keep the repository host, owner, repo, and exact request number fixed for the
-entire action.
+Keep the exact host, repository, and request number throughout.
 
-For `replace-description`, run one `gh api --hostname <host> --method PATCH
---input - repos/<owner>/<repo>/pulls/<number>` with a JSON object containing
-only `body: <caller exact replacement body>`.
+For `replace-description`, send only the caller's exact replacement body:
 
-For `mark-ready`, when the caller supplies a ready title, first run one
-`gh api --hostname <host> --method PATCH --input -
-repos/<owner>/<repo>/pulls/<number>` with a JSON object containing only that
-`title`. After it succeeds, run `gh pr ready <number> --repo
-<host>/<owner>/<repo>` once. When no title is supplied, run only `gh pr ready`.
+```text
+gh api --hostname <host> --method PATCH --input - repos/<owner>/<repo>/pulls/<number>
+stdin JSON: {"body":"<caller exact replacement body>"}
+```
 
-Stop immediately on a failed or ambiguous command. In particular, do not run
-`gh pr ready` after an ambiguous title update. Return each attempted command's
-exit, stdout, stderr, and any returned pull request identity; the caller owns
-the postcondition read. Do not change the base, state, reviewers, maintainer
-settings, or any other field. Do not combine the two actions or retry.
+For `mark-ready`, when a title is supplied, update only that title first:
+
+```text
+gh api --hostname <host> --method PATCH --input - repos/<owner>/<repo>/pulls/<number>
+stdin JSON: {"title":"<caller title>"}
+```
+
+Then mark the request ready; without a title, run only this command:
+
+```text
+gh pr ready <number> --repo <host>/<owner>/<repo>
+```
+
+Stop on failure or ambiguity, including before `gh pr ready` if the title update is uncertain. Return each attempted command's exit, stdout, stderr, and returned identity. The caller reads the postcondition. Do not change other fields, combine actions, or retry.
