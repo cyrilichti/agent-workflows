@@ -1,6 +1,6 @@
 /**
  * @typedef {object} TaskInput
- * @property {string} requestId Unique, filesystem-safe idempotency key.
+ * @property {string} requestId Correlation identifier supplied by the caller.
  * @property {string} prompt Task instructions.
  */
 
@@ -21,22 +21,21 @@
  */
 
 /**
- * Each adapter owns authentication; execution owns validation and persistence.
+ * Each adapter owns authentication; execution owns validation.
  * @typedef {object} AiProvider
  * @property {function(string, {signal: AbortSignal}): Promise<TaskResult>} generate
  */
 
 /**
- * Durable state used for idempotency, restart recovery and trace delivery.
- * @typedef {object} TaskRecord
+ * Outcome of one bridge execution, used to build its response and trace.
+ * @typedef {object} TaskOutcome
  * @property {string} requestId Bridge request identifier.
  * @property {string} prompt Task instructions.
- * @property {string} fingerprint Digest of input and provider settings.
  * @property {string} provider Provider name.
  * @property {string} model Model identifier.
  * @property {'running' | 'completed' | 'failed' | 'unknown'} status Execution outcome.
- * @property {'pending' | 'accepted'} traceStatus Delivery state.
- * @property {string} traceId Stable trace identifier.
+ * @property {'accepted' | 'failed'} [traceStatus] One-shot delivery state.
+ * @property {string} traceId Unique trace identifier for this execution.
  * @property {string} startedAt ISO timestamp.
  * @property {string} [endedAt] ISO timestamp.
  * @property {number} [durationMs] Elapsed execution time.
@@ -61,7 +60,7 @@ export class ProviderError extends Error {
 }
 
 /**
- * Validate the prompt and filesystem-safe request identifier.
+ * Validate the prompt and correlation identifier.
  *
  * @param {unknown} body Untrusted HTTP request data.
  * @returns {TaskInput} Validated input, without extra request properties.
@@ -74,7 +73,7 @@ export function validateTaskInput(body) {
   if (typeof body.requestId !== 'string' || !/^[A-Za-z0-9_-]{8,100}$/.test(body.requestId)) {
     throw new ProviderError(
       'invalid_input',
-      'Provide a unique requestId (8–100 letters, digits, underscores or hyphens).',
+      'Provide a requestId (8–100 letters, digits, underscores or hyphens).',
     );
   }
   return { prompt: body.prompt, requestId: body.requestId };
