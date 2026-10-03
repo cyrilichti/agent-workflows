@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { validateTaskInput } from '../../../src/bridge/execution/task-contract.mjs';
 
 const input = { requestId: 'test-request-001', prompt: 'Say OK' };
-test('input validation prevents traversal and empty or excessive prompts', () => {
+test('input validation rejects malformed correlation IDs and invalid prompts', () => {
   for (const body of [
     null,
     {},
