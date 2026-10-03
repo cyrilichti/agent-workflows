@@ -1,7 +1,7 @@
 # update-request
 
-Follow `./cli-conventions.md`. Keep the repository host, owner, repo, and
-exact request number fixed for the entire action.
+Keep the repository host, owner, repo, and exact request number fixed for the
+entire action.
 
 For `replace-description`, run one `gh api --hostname <host> --method PATCH
 --input - repos/<owner>/<repo>/pulls/<number>` with a JSON object containing

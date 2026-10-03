@@ -185,8 +185,7 @@ Stop and report the command output when dependency installation fails.
 ## Configure Providers
 
 GitHub uses the official `gh` CLI and GitLab uses the official `glab` CLI.
-Require the user to install the selected CLI and authenticate it for the
-repository host before running version workflows. Refer users to:
+Refer users to the setup documentation for the selected provider:
 
 ```text
 https://github.com/cli/cli#installation

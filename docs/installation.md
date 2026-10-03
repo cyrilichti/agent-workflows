@@ -52,8 +52,7 @@ and authenticate it for the repository's GitHub host:
 gh auth login --hostname github.example.com
 ```
 
-Use `gh auth login` without `--hostname` for GitHub.com. Verify the active
-account with `gh auth status --active --hostname <host>`. See the
+Use `gh auth login` without `--hostname` for GitHub.com. See the
 [authentication guide](https://cli.github.com/manual/gh_auth_login) for other
 authentication methods.
 

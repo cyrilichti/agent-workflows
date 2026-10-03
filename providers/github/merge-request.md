@@ -1,12 +1,11 @@
 # merge-request
 
 Support `merge`, `squash`, and `rebase` through the GitHub pull-request merge
-endpoint. In `resolve` mode, return `supported` for these methods when `gh` is
-available and `unsupported` for another method, without contacting the
-repository or mutating anything.
+endpoint. In `resolve` mode, return `supported` for these methods and
+`unsupported` for another method, without contacting the repository or
+mutating anything.
 
-In `apply` mode, follow `./cli-conventions.md` and read the exact request once
-with `gh api --hostname <host>
+In `apply` mode, read the exact request once with `gh api --hostname <host>
 repos/<owner>/<repo>/pulls/<number>`. Require it to be open, unmerged, and to
 have an exact `head.sha`. Then run once:
 

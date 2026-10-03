@@ -1,8 +1,8 @@
 # publish-review
 
-Follow `./cli-conventions.md`. Publish the supplied findings as one review at
-the caller's frozen head SHA. The caller has already checked that the pull
-request is open, non-draft, and still at that SHA.
+Publish the supplied findings as one review at the caller's frozen head SHA.
+The caller has already checked that the pull request is open, non-draft, and
+still at that SHA.
 
 1. Build one JSON body for `POST repos/<owner>/<repo>/pulls/<number>/reviews`.
    Set `commit_id` to the frozen SHA and omit `event` so GitHub creates a

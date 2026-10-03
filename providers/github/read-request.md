@@ -1,6 +1,6 @@
 # read-request
 
-Follow `./cli-conventions.md`. Read the exact pull request with `gh api
+Read the exact pull request with `gh api
 --hostname <host> repos/<owner>/<repo>/pulls/<number>` and parse its complete
 JSON response. Require the returned `number` to equal the caller's request ID.
 

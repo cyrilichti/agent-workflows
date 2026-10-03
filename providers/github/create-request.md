@@ -1,6 +1,6 @@
 # create-request
 
-Follow `./cli-conventions.md`. Create exactly one draft pull request with:
+Create exactly one draft pull request with:
 
 ```text
 command: gh api
