@@ -1,31 +1,20 @@
 # update-request
 
-Require writable `update_pull_request`; otherwise return the provider error
-without substitution.
+Follow `./cli-conventions.md`. Keep the repository host, owner, repo, and
+exact request number fixed for the entire action.
 
-For `replace-description`:
+For `replace-description`, run one `gh api --hostname <host> --method PATCH
+--input - repos/<owner>/<repo>/pulls/<number>` with a JSON object containing
+only `body: <caller exact replacement body>`.
 
-```text
-tool: update_pull_request
-arguments:
-  owner: caller repository owner
-  repo: caller repository name
-  pullNumber: caller request ID
-  body: caller exact replacement body
-```
+For `mark-ready`, when the caller supplies a ready title, first run one
+`gh api --hostname <host> --method PATCH --input -
+repos/<owner>/<repo>/pulls/<number>` with a JSON object containing only that
+`title`. After it succeeds, run `gh pr ready <number> --repo
+<host>/<owner>/<repo>` once. When no title is supplied, run only `gh pr ready`.
 
-For `mark-ready`:
-
-```text
-tool: update_pull_request
-arguments:
-  owner: caller repository owner
-  repo: caller repository name
-  pullNumber: caller request ID
-  draft: false
-  title: caller ready title, only when supplied
-```
-
-Send no omitted field. Do not change base, state, reviewers, or maintainer
-settings, or combine both actions. For `mark-ready`, change the title only when
-the caller supplies the current title with its leading `Draft:` removed.
+Stop immediately on a failed or ambiguous command. In particular, do not run
+`gh pr ready` after an ambiguous title update. Return each attempted command's
+exit, stdout, stderr, and any returned pull request identity; the caller owns
+the postcondition read. Do not change the base, state, reviewers, maintainer
+settings, or any other field. Do not combine the two actions or retry.
