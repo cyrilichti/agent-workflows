@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Select the oldest open `agent-shaped` item from the configured provider and
-return only its identity. This is a standalone, read-only entry point.
+Select one `agent-shaped` item from the configured provider and return only
+its identity. This is a standalone entry point.
 
 ---
 

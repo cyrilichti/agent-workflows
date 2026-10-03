@@ -1,6 +1,6 @@
 # Next Result
 
-Use when `/next` finishes a complete provider search.
+Use when `/next` finishes the provider selection query.
 
 ## Found Format
 
@@ -12,7 +12,7 @@ Return exactly one JSON object, without a Markdown fence or surrounding text:
 
 ## Empty Format
 
-When no eligible item remains after verification, return exactly:
+When the query returns no item, return exactly:
 
 ```json
 {"status":"no eligible item"}
@@ -20,7 +20,7 @@ When no eligible item remains after verification, return exactly:
 
 ## Rules
 
-- Copy only the current title, ID, and URL from the individually verified item.
+- Copy only the returned item's title, ID, and URL.
 - Do not include provider metadata, candidate counts, or explanation in the
   found result.
-- A provider failure or incomplete search is an error, never an empty result.
+- A provider failure is an error, never an empty result.

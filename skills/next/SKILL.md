@@ -1,8 +1,8 @@
 ---
 name: next
 description: >-
-  Find the oldest open agent-shaped item across the configured Linear or
-  ClickUp provider and return its name, ID, and URL. Use when explicitly
+  Find the first agent-shaped item returned by the configured Linear or
+  ClickUp provider filter and return its name, ID, and URL. Use when explicitly
   invoked with `/next` or `$next`.
 disable-model-invocation: true
 ---

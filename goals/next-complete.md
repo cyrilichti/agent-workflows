@@ -2,14 +2,14 @@
 
 ## Outcome
 
-One oldest currently eligible item is identified, or the completed provider
-search establishes that no eligible item exists.
+One item matching the provider's selection query is identified, or that query
+returns no item.
 
 ## Success Criteria
 
-- The configured item provider was used across all pages and destinations.
-- The returned item was individually verified as open and exactly tagged
-  `agent-shaped`.
+- The configured item provider was queried once without a destination scope.
+- The returned item is the first result of its provider-native filter for
+  `agent-shaped` work.
 - A found response contains only `name`, `id`, and `url`; an empty response is
   exactly `{ "status": "no eligible item" }`.
 - No item, repository, plan, or delivery state was changed.
@@ -17,5 +17,4 @@ search establishes that no eligible item exists.
 ## Stop Conditions
 
 - Stop after returning the found or empty result.
-- Stop and report a provider or incomplete-search error without returning an
-  empty result.
+- Stop and report a provider error without returning an empty result.
