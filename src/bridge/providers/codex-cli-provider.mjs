@@ -135,7 +135,7 @@ export function createCodexCliProvider({
         const abort = () => {
           failure = new ProviderError(
             'timeout',
-            'Execution cancelled; remote outcome may be unknown. Reuse this request ID.',
+            'Execution cancelled; remote outcome may be unknown. Inspect its effects before starting another request.',
           );
           terminateProcessGroup();
         };

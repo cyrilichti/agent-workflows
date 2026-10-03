@@ -42,12 +42,11 @@ Kestra and Langfuse run in Docker Compose. Kestra runs with its own PostgreSQL d
 ```text
 Kestra (Docker) ──authenticated HTTP──> bridge (host) ──> Codex CLI or OpenAI API
                                               │
-                                              ├──> durable local task records
                                               └──> Langfuse traces (Docker)
 ```
 
-The bridge exposes an authenticated task endpoint and a health endpoint. It selects the configured AI adapter, runs one task at a time, and stores task records locally. A repeated request ID with the same input and provider settings returns the saved result; a conflicting reuse is rejected. Interrupted or uncertain inference is not automatically replayed. Trace delivery is independent: failed Langfuse deliveries remain pending and can be retried without rerunning the AI task.
+The bridge exposes an authenticated task endpoint and a health endpoint. It selects the configured AI adapter and runs one inference at a time. Every accepted call starts a new inference, including calls with a repeated request ID. The request ID correlates responses and traces. A trace is sent once after inference; trace delivery failure does not change the inference result.
 
-The Codex adapter starts a fresh, ephemeral CLI execution using local settings. The API adapter sends a request with its separately configured API credential. Both return a common task result for the bridge to persist and trace. Langfuse receives the response, status, duration, and observed token usage through its tracing endpoint. Its web and worker services use PostgreSQL, ClickHouse, Redis, and MinIO for their supporting storage and processing.
+The Codex adapter starts a fresh, ephemeral CLI execution using local settings. The API adapter sends a request with its separately configured API credential. Both return a common task result for the bridge to return and trace. Langfuse receives the response, status, duration, and observed token usage through its tracing endpoint. Its web and worker services use PostgreSQL, ClickHouse, Redis, and MinIO for their supporting storage and processing.
 
 The Kestra stack currently calls the bridge as a separate orchestration path. The repository does not connect Kestra directly to the playbook's `/write` through `/done` delivery chain. `README.md`, `ORCHESTRATION.md`, and `docs/` contain the user-facing setup and workflow guidance; this file describes how the pieces fit together.

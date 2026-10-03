@@ -9,7 +9,7 @@ import { parseEnv } from 'node:util';
  * @param {string} [options.envFile='.env'] File containing bridge-specific settings.
  * @param {NodeJS.ProcessEnv} [options.environment=process.env] Host environment; overrides the file.
  * @param {string} [options.directory=homedir()] Default CLI working directory.
- * @returns {object} Settings grouped by provider, HTTP, execution, storage and tracing.
+ * @returns {object} Settings grouped by provider, HTTP, execution and tracing.
  * @throws {Error} If the file cannot be read or required settings are invalid.
  */
 export function loadBridgeConfig({
@@ -57,7 +57,6 @@ export function loadBridgeConfig({
       token: Buffer.from(env.SECRET_BRIDGE_TOKEN, 'base64').toString('utf8'),
     },
     execution: { enabled: env.INFERENCE_ENABLED === 'true', timeoutMs },
-    dataDirectory: env.DATA_DIR || '.local/bridge',
     langfuse: {
       url: env.LANGFUSE_URL || 'http://localhost:3001',
       publicUrl: env.LANGFUSE_PUBLIC_URL || 'http://localhost:3001',

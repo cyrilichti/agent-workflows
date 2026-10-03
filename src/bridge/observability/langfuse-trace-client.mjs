@@ -1,18 +1,6 @@
 import { createHash } from 'node:crypto';
-/**
- * Hash identifiers deterministically so trace retries reuse the same IDs.
- *
- * @param {string} value Identifier to hash.
- * @returns {string} SHA-256 digest in hexadecimal.
- */
+/** Hash an identifier for its OpenTelemetry span ID. */
 const hash = (value) => createHash('sha256').update(value).digest('hex');
-/**
- * Derive a stable 128-bit trace ID from a request identifier.
- *
- * @param {string} id Request identifier.
- * @returns {string} OpenTelemetry trace ID in hexadecimal.
- */
-export const traceIdFor = (id) => hash(id).slice(0, 32);
 /**
  * Encode a value as an OpenTelemetry string attribute.
  *
@@ -24,12 +12,11 @@ const attribute = (key, value) => ({
   key,
   value: { stringValue: typeof value === 'string' ? value : JSON.stringify(value) },
 });
-// OTLP HTTP/JSON allows deterministic span IDs and durable replay without redoing inference.
 // https://langfuse.com/integrations/native/opentelemetry
 /**
- * Build a replayable OTLP batch, separating cached token usage from input usage.
+ * Build an OTLP batch, separating cached token usage from input usage.
  *
- * @param {import('../execution/task-contract.mjs').TaskRecord} record Finished task record.
+ * @param {import('../execution/task-contract.mjs').TaskOutcome} record Finished task outcome.
  * @returns {object} OTLP HTTP/JSON payload for Langfuse.
  */
 export function buildLangfuseTraceBatch(record) {
@@ -98,14 +85,14 @@ export function buildLangfuseTraceBatch(record) {
 }
 
 /**
- * Create a trace sender; retries are coordinated by task execution.
+ * Create a trace sender for one delivery attempt.
  *
  * @param {object} options
  * @param {string} options.url Langfuse base URL.
  * @param {string} options.publicKey Project public key.
  * @param {string} options.secretKey Project secret key.
  * @param {typeof fetch} [options.fetchImpl=fetch] Injectable HTTP client.
- * @returns {function(import('../execution/task-contract.mjs').TaskRecord): Promise<void>} Sender that rejects failed or partially accepted deliveries.
+ * @returns {function(import('../execution/task-contract.mjs').TaskOutcome): Promise<void>} Sender that rejects failed or partially accepted deliveries.
  */
 export function createLangfuseTraceClient({ url, publicKey, secretKey, fetchImpl = fetch }) {
   return async (record) => {

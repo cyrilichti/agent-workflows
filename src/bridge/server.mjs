@@ -61,7 +61,7 @@ export function createBridgeHttpServer({ taskExecution, token, providerName }) {
       }
       sendJsonResponse(response, 200, await taskExecution.executeTask(taskInput));
     } catch (error) {
-      const statuses = { conflict: 409, busy: 429, disabled: 503, invalid_input: 400 };
+      const statuses = { busy: 429, disabled: 503, invalid_input: 400 };
       sendJsonResponse(response, statuses[error.code] ?? 500, {
         error: statuses[error.code] ? error.code : 'internal_error',
         message: statuses[error.code] ? error.message : 'Local service failed.',
