@@ -37,8 +37,4 @@ the caller.
 
 ### 3. Return the Result
 
-Format the returned result with `../templates/next-result.md`. On a provider
-failure, report the error and stop without returning the empty outcome.
-
-Do not call `/pick`, `/plan`, or `/work`, create a plan, or mutate an item or
-repository.
+Format the returned result with `../templates/next-result.md`.
