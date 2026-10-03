@@ -5,7 +5,7 @@ inputs:
   - id: requestId
     type: STRING
     required: true
-    description: Unique correlation ID. Reuse the same ID and prompt to retrieve a saved result.
+    description: Correlation ID shown in the result and Langfuse trace. Each execution runs a new inference.
   - id: prompt
     type: STRING
     required: true

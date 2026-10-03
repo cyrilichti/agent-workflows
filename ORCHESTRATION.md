@@ -100,10 +100,11 @@ It does not create a persistent conversation in Codex Desktop. Permissions come
 from your CLI configuration; interactive approvals are disabled because the
 bridge cannot answer them. Tasks can modify files when those permissions allow it.
 
-The bridge runs one task at a time and saves results in `.local/bridge`.
-Reuse the same request ID and inputs to retrieve a saved result. Use a new ID
-for a new task or after changing execution settings. Tasks are never retried
-automatically; failed Langfuse deliveries are retried separately.
+The bridge runs one inference at a time. Each accepted request starts a new
+inference, even when it reuses a request ID. The ID correlates the response with
+its Langfuse trace. If an HTTP response is lost, sending the request again may
+repeat the inference. Tasks and failed Langfuse deliveries are not retried
+automatically.
 
 Execution times out after 30 minutes by default (`REQUEST_TIMEOUT_MS`). A failed
 or interrupted task may already have changed files: inspect its outcome before
