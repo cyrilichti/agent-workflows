@@ -1,0 +1,4 @@
+interface:
+  display_name: "Next"
+  short_description: "Find the oldest eligible item"
+  default_prompt: "Use $next to find the oldest eligible item."

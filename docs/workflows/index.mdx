@@ -1,6 +1,6 @@
 ---
 title: Workflows
-description: Eight entry points across one governed delivery chain.
+description: Nine entry points across one governed delivery chain.
 ---
 
 import { CardGrid, LinkCard } from '@astrojs/starlight/components'
@@ -10,6 +10,11 @@ assisted workflows, approve the start of delivery, then let the autonomous loop
 implement and review the change. `/done` remains a separate human decision.
 
 <CardGrid>
+  <LinkCard
+    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/next</span><span class="workflow-card-mode">Assisted · Select</span></span>'}
+    href="/agent-workflows/workflows/next/"
+    description="Find the oldest open agent-shaped item in the configured provider and return its identity."
+  />
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/write</span><span class="workflow-card-mode">Assisted · Shape</span></span>'}
     href="/agent-workflows/workflows/write/"

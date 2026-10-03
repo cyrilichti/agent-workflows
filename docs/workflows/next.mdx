@@ -1,0 +1,17 @@
+---
+title: /next
+description: Find the oldest eligible Linear or ClickUp item without starting work.
+---
+
+`/next` searches the item provider configured in `agent-workflows.yaml` for the
+oldest open item with the exact `agent-shaped` label or tag. It searches every
+page across all projects and destinations, then reads the chosen item again to
+verify that it is still eligible.
+
+Invoke it as `/next` or `$next`, or let the Kestra `work` workflow call it
+through the bridge. It needs no item reference.
+
+The response is a JSON object containing only `name`, `id`, and `url`. If the
+complete search finds none, it returns `{"status":"no eligible item"}`.
+Provider errors are reported as errors. The workflow stops after selection;
+it does not plan, start delivery, or change the item or repository.
