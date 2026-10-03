@@ -6,10 +6,11 @@ Use the active Linear MCP connection selected by `mcp.item.provider`.
    `includeArchived: false`, `limit: 250`, and fields `id`, `title`, `url`,
    `createdAt`, `status`, `statusType`, and `labels`. Do not pass `project`,
    `team`, `assignee`, or a saved view. Follow `cursor` until `hasNextPage` is
-   false. An unavailable or repeated cursor while more pages remain is an
-   error.
+   false. Missing pagination metadata, or an unavailable or repeated cursor
+   while more pages remain, is an error.
 2. Keep only issues with the exact `agent-shaped` label whose `statusType` is
-   neither `completed` nor `canceled` and whose status is not `duplicate`.
+   neither `completed` nor `canceled` and whose status is not `duplicate`
+   (case-insensitive).
    Require `createdAt` and `id` on each candidate. Do not infer eligibility
    from the label filter alone.
 3. After the command sorts the candidates, call `get_issue` for each candidate
