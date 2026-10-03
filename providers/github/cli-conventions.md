@@ -3,9 +3,10 @@
 Apply these conventions to every GitHub provider operation after the caller
 has parsed the push remote through `resolve-repository.md`.
 
-1. Require `gh` to be installed and run `gh auth status --active --hostname
-   <repository host>` before the operation. Stop with the observed CLI or
-   authentication error when either check fails. Do not print a token.
+1. Require `gh` to be installed. Set `GH_PROMPT_DISABLED=1` for every `gh`
+   process, then run `gh auth status --active --hostname <repository host>`
+   before the operation. Stop with the observed CLI or authentication error
+   when either check fails. Do not print a token.
 2. Address REST requests with `gh api --hostname <repository host>` and an
    explicit `repos/<owner>/<repo>/...` endpoint. Address `gh pr` commands
    with `--repo <host>/<owner>/<repo>`. Never rely on the current directory,
