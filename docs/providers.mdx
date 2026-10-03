@@ -27,14 +27,29 @@ mcp:
     provider: github # or gitlab
 ```
 
+The `mcp.version.provider` key is retained for existing project configurations;
+`github` selects the `gh` CLI.
+
 ## Configure provider access
 
-ClickUp, Linear, and GitHub use their official MCP integrations. Enable the
-integrations selected by the project in the AI client running the workflows:
+ClickUp and Linear use their official MCP integrations. Enable the selected
+item provider in the AI client running the workflows:
 
 - [Connect ClickUp's MCP server](https://developer.clickup.com/docs/connect-an-ai-assistant-to-clickups-mcp-server)
 - [Connect Linear's MCP server](https://linear.app/docs/mcp)
-- [Connect GitHub's MCP server](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp-in-your-ide)
+
+GitHub operations use the official [`gh` CLI](https://cli.github.com/).
+Install it and authenticate it for the repository's host before selecting
+GitHub:
+
+```bash
+gh auth login --hostname github.example.com
+gh auth status --active --hostname github.example.com
+```
+
+For GitHub.com, use `gh auth login` and `gh auth status --active --hostname
+github.com`. See the [`gh` installation guide](https://github.com/cli/cli#installation)
+and [authentication guide](https://cli.github.com/manual/gh_auth_login).
 
 GitLab operations use the official `glab` CLI instead of an MCP server. Install
 [`glab`](https://docs.gitlab.com/cli/installation/), then authenticate it for
