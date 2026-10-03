@@ -14,7 +14,8 @@ Use the active ClickUp MCP connection selected by `mcp.item.provider`.
    use filter-result order as a substitute for timestamps. A missing timestamp
    or failed read is an error.
 3. After the command sorts by `date_created` and ID, use the individual task
-   responses to verify the current exact tag and open status. Re-read a task
+   responses to verify the current exact tag and that `date_closed` is null.
+   Re-read a task
    if its earlier read no longer establishes current eligibility. Return the
    first verified task's current name, ID, and URL as `{name, id, url}`.
    Continue when a task became stale.
