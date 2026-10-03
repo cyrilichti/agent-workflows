@@ -93,6 +93,20 @@ using [src/install.mjs](./src/install.mjs).
 The installer preserves an existing workflow. If you edit the YAML later,
 update the workflow in Kestra explicitly.
 
+## Run item selection
+
+Docker Compose also imports [orchestration/work.yaml](./orchestration/work.yaml)
+as `agent_workflows/work`. Its first and only task, `next`, sends the fixed
+request `Execute /next` through the bridge. It accepts no item or prompt input.
+The `item` output is either an object with `name`, `id`, and `url`, or
+`{"status":"no eligible item"}`. The flow stops there; `/pick` and delivery
+are separate steps.
+
+Set `AI_PROVIDER=codex` and `CODEX_WORKING_DIRECTORY` to the absolute path of a
+project with Agent Workflows installed and `agent-workflows.yaml` configured.
+The bridge stays generic; Codex CLI loads that project's context for `/next`.
+Use a new Kestra execution for a fresh selection.
+
 ## Execution behavior
 
 Each Codex task starts a fresh, ephemeral CLI session using your local settings.

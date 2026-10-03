@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { installDemoWorkflow } from '../src/install.mjs';
+import { installDemoWorkflow, installWorkflow } from '../src/install.mjs';
 const config = {
   url: 'http://kestra:8080',
   email: 'local@example.test',
@@ -37,6 +37,30 @@ test('restarting retains the existing workflow without overwriting edits', async
     'retained',
   );
   assert.equal(calls, 1);
+});
+test('the work flow is imported under its own namespace and retained later', async () => {
+  const calls = [];
+  const options = {
+    ...config,
+    namespace: 'agent_workflows',
+    id: 'work',
+    workflow: 'id: work\nnamespace: agent_workflows\n',
+    fetchImpl: async (url, request) => {
+      calls.push({ url, request });
+      return new Response('{}', { status: calls.length === 1 ? 404 : 200 });
+    },
+  };
+  assert.equal(await installWorkflow(options), 'created');
+  assert.equal(calls[0].url, 'http://kestra:8080/api/v1/main/flows/agent_workflows/work');
+  assert.equal(calls[1].request.body, options.workflow);
+  const existing = await installWorkflow({
+    ...options,
+    fetchImpl: async (url) => {
+      assert.equal(url, calls[0].url);
+      return Response.json({ id: 'work', revision: 3 });
+    },
+  });
+  assert.equal(existing, 'retained');
 });
 test('authentication and server failures do not trigger creation', async () => {
   for (const status of [401, 403, 500, 503]) {
