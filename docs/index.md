@@ -98,7 +98,7 @@ hero:
 
 <div class="landing-page">
   <section class="landing-proof" aria-label="Product facts">
-    <div><strong>8</strong><span>workflows</span></div>
+    <div><strong>9</strong><span>workflows</span></div>
     <div><strong>4</strong><span>provider integrations</span></div>
     <div><strong>34</strong><span>specialized skills</span></div>
   </section>

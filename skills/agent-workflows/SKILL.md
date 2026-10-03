@@ -133,6 +133,7 @@ producing the current equivalent of:
 .agents/skills/*
 !.agents/skills/agent-workflows/
 !.agents/skills/pick/
+!.agents/skills/next/
 !.agents/skills/plan/
 !.agents/skills/write/
 !.agents/skills/refine/

@@ -1,0 +1,29 @@
+id: work
+namespace: agent_workflows
+description: Select the next eligible item; later work stages are separate changes.
+tasks:
+  - id: next
+    type: io.kestra.plugin.core.http.Request
+    uri: '{{ envs.bridge_url }}/generate'
+    method: POST
+    contentType: text/plain
+    headers:
+      X-Request-Id: '{{ execution.id }}-next'
+      Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+    body: 'Execute /next'
+    timeout: PT35M
+    options:
+      timeout:
+        connectTimeout: PT5S
+        readIdleTimeout: PT35M
+  - id: require_completed
+    type: io.kestra.plugin.core.execution.Fail
+    runIf: "{{ fromJson(outputs.next.body).status != 'completed' }}"
+    errorMessage: 'Next did not complete. Inspect the response and trace; no automatic retry.'
+outputs:
+  - id: item
+    type: JSON
+    value: '{{ fromJson(fromJson(outputs.next.body).text) }}'
+  - id: traceUrl
+    type: STRING
+    value: '{{ fromJson(outputs.next.body).traceUrl }}'
