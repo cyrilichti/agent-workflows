@@ -1,22 +1,28 @@
 # Select Next Item: Linear
 
-Use the active Linear MCP connection selected by `mcp.item.provider`.
+## List
 
-1. Call `list_issues` with `label: agent-shaped`,
-   `includeArchived: false`, `limit: 250`, and fields `id`, `title`, `url`,
-   `createdAt`, `status`, `statusType`, and `labels`. Do not pass `project`,
-   `team`, `assignee`, or a saved view. Follow `cursor` until `hasNextPage` is
-   false. Missing pagination metadata, or an unavailable or repeated cursor
-   while more pages remain, is an error.
-2. Keep only issues with the exact `agent-shaped` label whose `statusType` is
-   neither `completed`, `canceled`, nor `duplicate`. Also exclude a status
-   named `duplicate` (case-insensitive).
-   Require `createdAt` and `id` on each candidate. Do not infer eligibility
-   from the label filter alone.
-3. After the command sorts the candidates, call `get_issue` for each candidate
-   in order. Reapply the same label and status exclusions to the returned
-   issue. Return the first verified item's current title, ID, and URL as
-   `{name, id, url}`. Continue when an issue became stale. A read failure is an
-   error, not a stale result.
+```text
+tool: list_issues
+arguments:
+  label: agent-shaped
+  includeArchived: false
+  limit: 250
+  fields: [id, title, url, createdAt, status, statusType, labels]
+  cursor: caller continuation when present
+```
 
-No issue mutation or item-specific search is part of this adapter.
+Normalize `hasNextPage` to `has_more`, `cursor` to `next`, `title` to `name`,
+and `createdAt` to `created_at`.
+
+## Read
+
+```text
+tool: get_issue
+arguments:
+  id: candidate ID
+```
+
+Return the same normalized fields. In both operations, set `status` to
+`ineligible` for `completed`, `canceled`, or `duplicate` status types or a
+status named `duplicate` (case-insensitive); otherwise set it to `open`.
