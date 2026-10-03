@@ -9,7 +9,7 @@ gh api --hostname <host> --method PATCH --input - repos/<owner>/<repo>/pulls/<nu
 stdin JSON: {"body":"<caller exact replacement body>"}
 ```
 
-For `mark-ready`, when a title is supplied, update only that title first:
+For `mark-ready`, update the title only when the caller supplies the current title without its leading `Draft:`:
 
 ```text
 gh api --hostname <host> --method PATCH --input - repos/<owner>/<repo>/pulls/<number>
