@@ -12,35 +12,38 @@ authentication. It can also call the OpenAI API when configured to do so.
 
 ## How the pieces connect
 
-<div class="orchestration-map" role="group" aria-label="Kestra in Docker sends an authenticated HTTP POST to the bridge on the host. The bridge calls Codex CLI or the OpenAI API and sends a trace to Langfuse in Docker.">
+<div class="orchestration-map" role="group" aria-label="Kestra sends an HTTP request to the host bridge. The bridge calls Codex CLI or the OpenAI API and sends tracing data to Langfuse.">
   <div class="orchestration-map__node orchestration-map__node--kestra">
-    <small>Docker</small>
+    <small>Orchestration</small>
     <strong>Kestra</strong>
     <span>Runs workflows and sends AI tasks.</span>
   </div>
 
-  <div class="orchestration-map__connector orchestration-map__connector--request" aria-hidden="true">Ask <b>→</b></div>
+  <div class="orchestration-map__connector" aria-hidden="true"><span>Ask</span><b>↓</b></div>
 
   <div class="orchestration-map__node orchestration-map__node--bridge">
-    <small>Host · <code>npm start</code></small>
+    <small>Connection</small>
     <strong>Bridge</strong>
     <span>Accepts the request and calls the configured AI provider.</span>
   </div>
 
-  <div class="orchestration-map__connector orchestration-map__connector--provider" aria-hidden="true">Task <b>→</b></div>
-
-  <div class="orchestration-map__node orchestration-map__node--provider">
-    <small>Host or remote API</small>
-    <strong>Codex CLI / OpenAI API</strong>
-    <span>Executes the AI task and returns its response.</span>
-  </div>
-
-  <div class="orchestration-map__connector orchestration-map__connector--trace" aria-hidden="true">Bridge trace <b>↓</b></div>
-
-  <div class="orchestration-map__node orchestration-map__node--langfuse">
-    <small>Docker</small>
-    <strong>Langfuse</strong>
-    <span>Records the response and observed token usage.</span>
+  <div class="orchestration-map__branches">
+    <div class="orchestration-map__branch">
+      <div class="orchestration-map__connector" aria-hidden="true"><span>Task</span><b>↓</b></div>
+      <div class="orchestration-map__node orchestration-map__node--provider">
+        <small>Inference</small>
+        <strong>Codex CLI / OpenAI API</strong>
+        <span>Executes the AI task and returns its response.</span>
+      </div>
+    </div>
+    <div class="orchestration-map__branch">
+      <div class="orchestration-map__connector" aria-hidden="true"><span>Trace</span><b>↓</b></div>
+      <div class="orchestration-map__node orchestration-map__node--langfuse">
+        <small>Tracing</small>
+        <strong>Langfuse</strong>
+        <span>Records the response and observed token usage.</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -74,9 +77,8 @@ Then start the bridge **on the host machine**, under your usual user account
 npm start
 ```
 
-Keep this process running. When using Codex CLI, set
-`CODEX_WORKING_DIRECTORY` to the absolute path of the project it should work
-in. Kestra reaches the host bridge through `BRIDGE_URL`, which defaults to
+Keep this process running. Kestra reaches the host bridge through
+`BRIDGE_URL`, which defaults to
 `http://host.docker.internal:8787`; the bridge health endpoint is
 `http://localhost:8787/health`. Kestra is at `http://localhost:3000` and
 Langfuse at `http://localhost:3001`.
