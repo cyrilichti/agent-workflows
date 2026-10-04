@@ -11,8 +11,9 @@ Find Git repositories matching a `list` name.
 1. Ask the active execution environment for its configured project paths and
    match those absolute paths first. Use the project configuration exposed by
    the active AI provider; do not assume a provider-specific file or path.
-   If the configuration cannot be read, stop with an execution error. Return
-   configured matches without searching elsewhere.
+   If the configuration is unavailable or cannot be read, use no configured
+   paths and continue the search. Return configured matches without searching
+   elsewhere.
 2. If none match, inspect Git repositories directly inside the parent
    directories of the configured paths, in path order. Stop at the first exact
    match; otherwise return any matching repositories before searching farther.

@@ -6,8 +6,8 @@ description: Resolve a ticket destination to one local project directory.
 `/project` finds the local Git repository for a destination name (`list`) and
 an exact item ID. Invoke it as `/project` or `$project` with both values, or let
 the Kestra `work` flow call it after `/next` returns an item. It reads the item
-only when several repositories match the destination. The active AI provider
-must expose its configured project paths to the workflow.
+only when several repositories match the destination. Configured project paths
+take priority when available; the search continues when they are unavailable.
 
 ## How `/project` finds a repository
 
@@ -23,7 +23,7 @@ must expose its configured project paths to the workflow.
   <div class="write-flow__step write-flow__step--focus">
     <small>02 · Search</small>
     <strong>Find Git repositories</strong>
-    <span>Check configured project directories, their neighboring repositories, then the home directory only if needed.</span>
+    <span>Check available project configuration, neighboring repositories, then the home directory if needed.</span>
   </div>
 
   <span class="write-flow__connector" aria-hidden="true">↓</span>
@@ -55,7 +55,7 @@ must expose its configured project paths to the workflow.
     <tr>
       <td>2</td>
       <th scope="row">Search</th>
-      <td>Search configured project directories first, then neighboring repositories and the home directory if needed. Match Git repository roots by name, preferring exact matches and ignoring case and separators.</td>
+      <td>Search available configured project directories first, then neighboring repositories and the home directory if needed. Match Git repository roots by name, preferring exact matches and ignoring case and separators.</td>
     </tr>
     <tr>
       <td>3</td>
@@ -65,7 +65,7 @@ must expose its configured project paths to the workflow.
     <tr>
       <td>4</td>
       <th scope="row">Return</th>
-      <td>Return one absolute path, <code>not found</code>, or <code>search incomplete</code>. Invalid input or unavailable configuration is an error.</td>
+      <td>Return one absolute path, <code>not found</code>, or <code>search incomplete</code>. Invalid input or a failed search is an error.</td>
     </tr>
   </tbody>
 </table>
