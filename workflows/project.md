@@ -34,12 +34,11 @@ Choose one candidate in this order:
 
 1. A repository whose full basename is uniquely named in the item's title or
    description, ignoring case and treating spaces, hyphens and points alike.
-   A generic `api`, `back` or `app` mention is not a repository name.
 2. The repository indicated by the item's objective, description and
    acceptance criteria. Choose an API or backend repository only when it is
    the clear primary target, not for an incidental mention.
-3. A repository without an `api` segment or a segment starting with `back`
-   (segments are separated by spaces, hyphens or points).
+3. If the item does not distinguish them, prefer a frontend repository over
+   an API or backend repository.
 4. The lexicographically smallest absolute path if several still qualify.
 
 ### 4. Return Result
