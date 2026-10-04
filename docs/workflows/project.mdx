@@ -55,17 +55,17 @@ must expose its configured project paths to the workflow.
     <tr>
       <td>2</td>
       <th scope="row">Search</th>
-      <td>Match Git repository roots from the active provider's configured project directories first, then repositories beside them, then under <code>~</code>. Exact names outrank names with a separator-boundary suffix: <code>aftersales</code> matches <code>aftersales-api</code>, but not <code>aftersalesman</code>. Matching ignores case, spaces, hyphens, and points. The home search does not follow symlinks or enter <code>.git</code>, <code>node_modules</code>, or a repository already found.</td>
+      <td>Search configured project directories first, then neighboring repositories and the home directory if needed. Match Git repository roots by name, preferring exact matches and ignoring case and separators.</td>
     </tr>
     <tr>
       <td>3</td>
       <th scope="row">Choose</th>
-      <td>For several matches, read the complete item. Prefer a uniquely named repository, then its clear primary target, then a frontend repository over an incidental API or backend match, and finally the alphabetically first absolute path.</td>
+      <td>For several matches, use the complete item to identify the primary repository, then apply stable tie breaks.</td>
     </tr>
     <tr>
       <td>4</td>
       <th scope="row">Return</th>
-      <td>Return <code>{'{"path":"/absolute/repository/path"}'}</code>, or <code>{'{"status":"not found"}'}</code> after a complete search, or <code>{'{"status":"search incomplete"}'}</code> when the home search cannot finish without an exact match. Missing project configuration and other execution failures are errors, not resolution results.</td>
+      <td>Return one absolute path, <code>not found</code>, or <code>search incomplete</code>. Invalid input or unavailable configuration is an error.</td>
     </tr>
   </tbody>
 </table>
