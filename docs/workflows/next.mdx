@@ -4,9 +4,10 @@ description: Select one eligible item and return its identity and destination.
 ---
 
 The `agent-shaped` label marks work an agent may take. `/next` selects the
-first eligible item in the configured provider's order. It does not choose the
-most recently created or updated item: neither provider query specifies that
-ordering. The provider-specific status rules below narrow the eligible set.
+first eligible item in the configured provider's returned page. It does not
+choose the most recently created or updated item: neither provider query
+specifies that ordering. The provider-specific status rules below narrow the
+eligible set.
 
 Invoke it as `/next` or `$next`, or let the Kestra `work` workflow call it
 through the bridge. It needs no item reference.
@@ -25,7 +26,7 @@ through the bridge. It needs no item reference.
   <div class="write-flow__step write-flow__step--focus">
     <small>02 · Select</small>
     <strong>Query once</strong>
-    <span>Apply the provider's eligibility filter and take only its first result.</span>
+    <span>Apply the provider's eligibility rule and take the first eligible result.</span>
   </div>
 
   <span class="write-flow__connector" aria-hidden="true">↓</span>
@@ -44,7 +45,7 @@ through the bridge. It needs no item reference.
     <tr>
       <td>1</td>
       <th scope="row">Filter</th>
-      <td>Linear selects an unarchived <code>Backlog</code> issue with the exact <code>agent-shaped</code> label. ClickUp selects a task tagged <code>agent-shaped</code> and excludes closed tasks.</td>
+      <td>Linear selects the first unarchived issue in the returned page with the exact <code>agent-shaped</code> label and a <code>Backlog</code> or <code>Open</code> status. ClickUp selects a task tagged <code>agent-shaped</code> and excludes closed tasks.</td>
     </tr>
     <tr>
       <td>2</td>

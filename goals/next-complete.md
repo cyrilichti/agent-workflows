@@ -2,14 +2,14 @@
 
 ## Outcome
 
-One item matching the provider's selection query is identified, or that query
-returns no item.
+One eligible item from the provider's selection page is identified, or that
+page contains no eligible item.
 
 ## Success Criteria
 
 - The configured item provider was queried once without a destination scope.
-- The returned item is the first result of its provider-native filter for
-  `agent-shaped` work.
+- The returned item is the first eligible result from the provider's single
+  selection page for `agent-shaped` work.
 - A found response contains only `name`, `id`, `url`, and `list`; an empty
   response is exactly `{ "status": "no eligible item" }`.
 - No item, repository, plan, or delivery state was changed.
