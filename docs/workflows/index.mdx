@@ -1,25 +1,15 @@
 ---
 title: Workflows
-description: Select an item, then move it through the governed delivery chain.
+description: Skills that agents and orchestrators can combine into a governed delivery flow.
 ---
 
 import { CardGrid, LinkCard } from '@astrojs/starlight/components'
 
-`/next` identifies an eligible item and stops. The delivery workflows shape and
-plan work, then implement and review an approved plan. `/done` remains a
-separate human decision.
+Each workflow is available as a Skill. Invoke one directly or combine them in
+an automated flow to shape, plan, deliver, and review work. The final merge
+remains a human decision.
 
-## Find an item
-
-<CardGrid>
-  <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--selection"><span class="workflow-card-command">/next</span><span class="workflow-card-mode">Selection</span></span>'}
-    href="/agent-workflows/workflows/next/"
-    description="Query the configured item provider once for eligible agent-shaped work and return the first item's identity."
-  />
-</CardGrid>
-
-## Prepare and deliver
+## Delivery Skills
 
 <CardGrid>
   <LinkCard
@@ -61,5 +51,19 @@ separate human decision.
     title={'<span class="workflow-card-title workflow-card-title--human"><span class="workflow-card-command">/done</span><span class="workflow-card-mode">Human · Merge</span></span>'}
     href="/agent-workflows/workflows/done/"
     description="Confirm and squash-merge one exact request, then complete its official item."
+  />
+</CardGrid>
+
+## Automation and orchestration
+
+These Skills are reusable entry points for an orchestrator to call and combine.
+The [Orchestration](/agent-workflows/orchestration/) page shows how Kestra
+connects to an agent running on your machine.
+
+<CardGrid>
+  <LinkCard
+    title={'<span class="workflow-card-title workflow-card-title--selection"><span class="workflow-card-command">/next</span><span class="workflow-card-mode">Selection</span></span>'}
+    href="/agent-workflows/workflows/next/"
+    description="Query the configured item provider once for eligible agent-shaped work and return the first item's identity."
   />
 </CardGrid>
