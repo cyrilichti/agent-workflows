@@ -1004,6 +1004,17 @@
   transform: translateY(-1px);
 }
 
+.sl-link-card:has(.workflow-card-title--selection) {
+  border-color: rgba(196, 181, 253, 0.52);
+  background:
+    linear-gradient(145deg, rgba(139, 92, 246, 0.14), transparent 60%),
+    rgba(16, 12, 28, 0.96);
+}
+
+.sl-link-card:has(.workflow-card-title--selection):hover {
+  border-color: rgba(196, 181, 253, 0.8);
+}
+
 .sl-link-card:has(.workflow-card-title--autonomous) {
   border-color: rgba(96, 165, 250, 0.45);
   background:
@@ -1074,6 +1085,10 @@
   color: #60a5fa;
 }
 
+.workflow-card-title--selection :is(.workflow-card-command, .workflow-card-mode) {
+  color: #c4b5fd;
+}
+
 .workflow-card-title--human :is(.workflow-card-command, .workflow-card-mode) {
   color: #86efac;
 }
@@ -1094,6 +1109,17 @@
   background:
     linear-gradient(145deg, rgba(59, 130, 246, 0.12), transparent 60%),
     #f7faff;
+}
+
+:root[data-theme="light"] .sl-link-card:has(.workflow-card-title--selection) {
+  border-color: rgba(109, 40, 217, 0.4);
+  background:
+    linear-gradient(145deg, rgba(139, 92, 246, 0.11), transparent 60%),
+    #faf8ff;
+}
+
+:root[data-theme="light"] .workflow-card-title--selection :is(.workflow-card-command, .workflow-card-mode) {
+  color: #6d28d9;
 }
 
 :root[data-theme="light"] .sl-link-card:has(.workflow-card-title--human) {

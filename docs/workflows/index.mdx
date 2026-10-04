@@ -1,20 +1,27 @@
 ---
 title: Workflows
-description: Nine entry points across one governed delivery chain.
+description: Select an item, then move it through the governed delivery chain.
 ---
 
 import { CardGrid, LinkCard } from '@astrojs/starlight/components'
 
-The workflows move the same work from ticket to merge. Shape and plan with
-assisted workflows, approve the start of delivery, then let the autonomous loop
-implement and review the change. `/done` remains a separate human decision.
+`/next` identifies an eligible item and stops. The delivery workflows shape and
+plan work, then implement and review an approved plan. `/done` remains a
+separate human decision.
+
+## Find an item
 
 <CardGrid>
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/next</span><span class="workflow-card-mode">Assisted · Select</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--selection"><span class="workflow-card-command">/next</span><span class="workflow-card-mode">Selection</span></span>'}
     href="/agent-workflows/workflows/next/"
-    description="Find the first agent-shaped item returned by the configured provider filter and return its identity."
+    description="Query the configured item provider once for eligible agent-shaped work and return the first item's identity."
   />
+</CardGrid>
+
+## Prepare and deliver
+
+<CardGrid>
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/write</span><span class="workflow-card-mode">Assisted · Shape</span></span>'}
     href="/agent-workflows/workflows/write/"
