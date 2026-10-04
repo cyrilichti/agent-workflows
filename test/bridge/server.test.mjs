@@ -91,3 +91,57 @@ test('HTTP bridge returns 429 for a concurrent call with the same request ID', a
   release();
   assert.equal((await first).status, 200);
 });
+
+test('HTTP bridge reports inference failures through HTTP while preserving the trace', async (t) => {
+  const token = 'test-only-token-'.repeat(4);
+  const server = createBridgeHttpServer({
+    token,
+    providerName: 'codex',
+    taskExecution: {
+      enabled: true,
+      async executeTask() {
+        return { status: 'failed', traceUrl: 'http://localhost:3001/project/local/traces/123' };
+      },
+    },
+  });
+  t.after(() => {
+    server.closeAllConnections();
+    server.close();
+  });
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  const response = await fetch(`http://127.0.0.1:${server.address().port}/generate`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'text/plain', 'X-Request-Id': 'request-001' },
+    body: 'Hello',
+  });
+  assert.equal(response.status, 502);
+  assert.equal((await response.json()).traceUrl, 'http://localhost:3001/project/local/traces/123');
+});
+
+test('HTTP bridge distinguishes an unknown inference outcome from a failure', async (t) => {
+  const token = 'test-only-token-'.repeat(4);
+  const server = createBridgeHttpServer({
+    token,
+    providerName: 'codex',
+    taskExecution: {
+      enabled: true,
+      async executeTask() {
+        return { status: 'unknown', error: { code: 'timeout' }, traceUrl: 'http://localhost:3001/trace' };
+      },
+    },
+  });
+  t.after(() => {
+    server.closeAllConnections();
+    server.close();
+  });
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  const response = await fetch(`http://127.0.0.1:${server.address().port}/generate`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'text/plain', 'X-Request-Id': 'request-001' },
+    body: 'Hello',
+  });
+  assert.equal(response.status, 504);
+  assert.equal((await response.json()).error.code, 'timeout');
+});

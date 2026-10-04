@@ -3,32 +3,69 @@ title: /project
 description: Resolve a ticket destination to one local project directory.
 ---
 
-Invoke `/project` or `$project` with a `list` value and an item ID. The
-workflow rejects a missing list before reading the Codex configuration. A
-successful response contains only an absolute path:
+`/project` finds the local Git repository for a destination name (`list`) and
+an exact item ID. Invoke it as `/project` or `$project` with both values, or let
+the Kestra `work` flow call it after `/next` returns an item. It reads the item
+only when several repositories match the destination. Configured project paths
+take priority when available; the search continues when they are unavailable.
 
-```json
-{"path":"/Users/cyril/Workspace/agent-workflows"}
-```
+## How `/project` finds a repository
 
-The resolver compares directory names without case, whitespace, hyphens, or
-points. For example, `Agent workflows`, `agent-workflows`, and
-`agent.workflows` match the same name. Exact matches take priority. A product
-name can also match a repository name at a separator boundary: `aftersales`
-matches `aftersales-api`, but not `aftersalesman`. It accepts only Git repository
-roots with a `.git` directory or file, including worktrees. If both
-`aftersales-api` and `aftersales-app` match, the workflow reads the complete
-ticket. It selects an explicitly named repository first, then uses the ticket's
-primary target. When the ticket gives no clear clue, it prefers a repository
-whose name has no `api` segment and no segment starting with `back`. A final
-alphabetical path tie break always selects one repository from the candidates.
+<div class="write-flow" role="group" aria-label="The project workflow requires a destination name and exact item ID, searches configured project directories and then nearby and home repositories as needed, uses the item to choose only when several repositories match, and returns one absolute path or an unresolved status.">
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>01 · Input</small>
+    <strong>Require destination and item</strong>
+    <span>Use the supplied <code>list</code> and exact item ID without inferring either value.</span>
+  </div>
 
-It first checks existing project directories in Codex's `config.toml`, using
-`CODEX_HOME` when set and `~/.codex` otherwise. A unique match ends the search.
-If none match, it scans under `~` through depth 4, inspecting at most 10,000
-directories. The scan does not follow symbolic links or enter `.git` and
-`node_modules` directories.
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
 
-An unresolved response contains a `status` without a path: `not found`,
-`search limit reached`, or `search incomplete`. An input or execution error is
-reported as an error rather than a resolution result.
+  <div class="write-flow__step write-flow__step--focus">
+    <small>02 · Search</small>
+    <strong>Find Git repositories</strong>
+    <span>Check available project configuration, neighboring repositories, then the home directory if needed.</span>
+  </div>
+
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
+
+  <div class="write-flow__step write-flow__step--focus">
+    <small>03 · Multiple matches only</small>
+    <strong>Choose from the item</strong>
+    <span>Read the complete item to identify its primary repository; use stable tie breaks if it does not distinguish candidates.</span>
+  </div>
+
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
+
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>04 · Return</small>
+    <strong>Return path or status</strong>
+    <span>Return one absolute repository path, or report that the search found none or could not finish.</span>
+  </div>
+</div>
+
+## What `/project` does
+
+<table class="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Require</th>
+      <td>Reject a missing or blank <code>list</code> or exact item ID before searching.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Search</th>
+      <td>Search available configured project directories first, then neighboring repositories and the home directory if needed. Match Git repository roots by name, preferring exact matches and ignoring case and separators.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Choose</th>
+      <td>For several matches, use the complete item to identify the primary repository, then apply stable tie breaks.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Return</th>
+      <td>Return one absolute path, <code>not found</code>, or <code>search incomplete</code>. Invalid input or a failed search is an error.</td>
+    </tr>
+  </tbody>
+</table>

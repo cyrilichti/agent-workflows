@@ -93,6 +93,13 @@ its Langfuse trace. If an HTTP response is lost, sending the request again may
 repeat the inference. Tasks and failed Langfuse deliveries are not retried
 automatically.
 
+The bridge returns HTTP 200 for completed inference, 502 for a failed inference,
+and 504 when the outcome is unknown. Error responses retain the trace URL in
+their JSON body, so Kestra can fail the HTTP task without a separate status
+check after each call. In `agent_workflows.work`, no eligible item skips project
+resolution; an unresolved project leaves `projectDirectory` empty for a later
+stage to handle conditionally.
+
 Execution times out after 30 minutes by default (`REQUEST_TIMEOUT_MS`). A failed
 or interrupted task may already have changed files: inspect its outcome before
 submitting a new request. Kestra and Langfuse data persist in Docker volumes.
