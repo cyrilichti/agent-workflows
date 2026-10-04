@@ -45,7 +45,9 @@ at `http://localhost:8787/health`. Kestra reaches the bridge through
 ## Run an example, then extend it
 
 Docker Compose imports two YAML workflows when they do not already exist in
-Kestra:
+Kestra. `demo` works with either AI provider. `work` requires
+`AI_PROVIDER=codex`: the OpenAI API adapter performs text inference and cannot
+execute `/next` or access the configured item provider.
 
 | Example | What it provides | Try it |
 | --- | --- | --- |
