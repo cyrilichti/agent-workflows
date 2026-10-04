@@ -1,4 +1,4 @@
-# Resolve Local Project
+# Project
 
 ## Purpose
 

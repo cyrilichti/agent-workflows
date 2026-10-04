@@ -14,7 +14,6 @@ or yield an explicit unresolved status.
   frontend preference, and a stable final tie break.
 - Missing, invalid, or incomplete search results return only a status and never
   an uncertain path.
-- No project, item, or repository state is changed.
 
 ## Stop Conditions
 

@@ -30,9 +30,9 @@ tasks:
     method: POST
     contentType: text/plain
     headers:
-      X-Request-Id: '{{ execution.id }}-resolve-local-project'
+      X-Request-Id: '{{ execution.id }}-project'
       Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-    body: 'Execute /resolve-local-project with list: {{ fromJson(fromJson(outputs.next.body).text).list }} and item ID: {{ fromJson(fromJson(outputs.next.body).text).id }}'
+    body: 'Execute /project with list: {{ fromJson(fromJson(outputs.next.body).text).list }} and item ID: {{ fromJson(fromJson(outputs.next.body).text).id }}'
     timeout: PT35M
     options:
       timeout:

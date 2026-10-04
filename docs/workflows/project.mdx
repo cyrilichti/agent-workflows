@@ -1,11 +1,11 @@
 ---
-title: /resolve-local-project
+title: /project
 description: Resolve a ticket destination to one local project directory.
 ---
 
-`/resolve-local-project` receives the `list` value returned by `/next`. Invoke
-it as `/resolve-local-project` or `$resolve-local-project`, followed by the
-destination name. A successful response contains only an absolute path:
+`/project` receives the `list` value and item ID returned by `/next`. Invoke
+it as `/project` or `$project` with both values. A successful response contains
+only an absolute path:
 
 ```json
 {"path":"/Users/cyril/Workspace/agent-workflows"}
