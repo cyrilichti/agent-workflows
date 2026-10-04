@@ -3,10 +3,10 @@ title: /next
 description: Select one eligible item and return its identity.
 ---
 
-`/next` finds one eligible item when you do not have a ticket reference. It
-queries the item provider configured in `agent-workflows.yaml` once, without
-limiting the search to a project, team, list, or assignee. The first result is
-returned as an identity that another workflow can use.
+The `agent-shaped` label marks work an agent may take. `/next` selects the
+first eligible item in the configured provider's order. It does not choose the
+most recently created or updated item: neither provider query specifies that
+ordering. The provider-specific status rules below narrow the eligible set.
 
 Invoke it as `/next` or `$next`, or let the Kestra `work` workflow call it
 through the bridge. It needs no item reference.
