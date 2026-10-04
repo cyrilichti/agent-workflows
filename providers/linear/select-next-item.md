@@ -7,8 +7,9 @@ arguments:
   state: Backlog
   includeArchived: false
   limit: 1
-  fields: [id, title, url]
+  fields: [id, title, url, project]
 ```
 
-Return the first issue's `id`, `title` as `name`, and `url`, or no match when
-the result is empty.
+Return the first issue's `id`, `title` as `name`, `url`, and project name as
+`list`, or no match when the result is empty. A missing project name is an
+error.
