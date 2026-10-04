@@ -1,4 +1,4 @@
 interface:
   display_name: "Project"
   short_description: "Find the local directory for a ticket destination"
-  default_prompt: "Use $project with a /next list value and item ID."
+  default_prompt: "Use $project with a list value and item ID."

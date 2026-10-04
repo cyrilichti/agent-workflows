@@ -12,10 +12,11 @@ or yield an explicit unresolved status.
 - The fallback search is bounded as specified by the resolver command.
 - Multiple candidate repositories are resolved using the complete item,
   frontend preference, and a stable final tie break.
-- Missing, invalid, or incomplete search results return only a status and never
+- Missing or incomplete search results return only a status and never
   an uncertain path.
 
 ## Stop Conditions
 
 - Stop after returning the resolver result.
+- Stop with an input error when `list` or the item ID is missing.
 - Stop and report an execution error when the resolver cannot run.

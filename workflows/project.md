@@ -2,9 +2,9 @@
 
 ## Purpose
 
-Resolve the `list` value from `/next` to one absolute local project directory,
+Resolve a `list` value to one absolute local project directory,
 using the selected item's content when several repositories match. This is a
-standalone entry point for Kestra.
+standalone entry point.
 
 ---
 
@@ -19,8 +19,9 @@ completion contract. Follow `../rules/user-facing-output.md`.
 
 ### 1. Require Input
 
-Require the `list` value and exact item ID returned by `/next`. Do not infer
-either value.
+Require a non-blank `list` value and an exact item ID from the caller. Stop
+with an input error before running the command when either is missing. Do not
+infer either value.
 
 ### 2. Resolve Directory
 

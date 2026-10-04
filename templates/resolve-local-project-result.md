@@ -1,8 +1,8 @@
 # Resolve Local Project Result
 
-Return exactly the JSON object produced by
-`../commands/resolve-local-project-directory.md`, without a Markdown fence or
-surrounding text.
+Return exactly one JSON object for the workflow's final result, without a
+Markdown fence or surrounding text. Candidate paths from the command stay
+internal.
 
 ## Found Format
 
@@ -13,7 +13,7 @@ surrounding text.
 ## Unresolved Format
 
 ```json
-{"status":"<not found|search limit reached|search incomplete|invalid list>"}
+{"status":"<not found|search limit reached|search incomplete>"}
 ```
 
 An unresolved result has no `path`. A command failure is an error, not a JSON

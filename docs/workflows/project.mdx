@@ -3,9 +3,9 @@ title: /project
 description: Resolve a ticket destination to one local project directory.
 ---
 
-`/project` receives the `list` value and item ID returned by `/next`. Invoke
-it as `/project` or `$project` with both values. A successful response contains
-only an absolute path:
+Invoke `/project` or `$project` with a `list` value and an item ID. The
+workflow rejects a missing list before reading the Codex configuration. A
+successful response contains only an absolute path:
 
 ```json
 {"path":"/Users/cyril/Workspace/agent-workflows"}
@@ -30,7 +30,5 @@ directories. The scan does not follow symbolic links or enter `.git` and
 `node_modules` directories.
 
 An unresolved response contains a `status` without a path: `not found`,
-`search limit reached`, `search incomplete`, or
-`invalid list`. Kestra stops before later work when it receives one of these
-statuses. An execution error is reported as an error rather than a resolution
-result.
+`search limit reached`, or `search incomplete`. An input or execution error is
+reported as an error rather than a resolution result.

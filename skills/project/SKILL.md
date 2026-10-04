@@ -1,7 +1,7 @@
 ---
 name: project
 description: >-
-  Resolve a /next list value and item ID to one absolute local project
+  Resolve a list value and item ID to one absolute local project
   directory. Use when explicitly invoked with /project or $project.
 disable-model-invocation: true
 ---
