@@ -9,6 +9,7 @@ Routing means loading and following the workflow file in the current agent.
 | --- | --- |
 | Create or reformulate one item | `./write.md` |
 | Find one eligible item without planning or delivery | `./next.md` |
+| Resolve an item destination to a local project directory | `./resolve-local-project.md` |
 | Select an item, plan it, and start its implementation | `./pick.md` |
 | Create an implementation plan | `./plan.md` |
 | Decompose one oversized item into child items | `./refine.md` |

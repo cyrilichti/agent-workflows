@@ -1,6 +1,6 @@
 ---
 title: /next
-description: Select one eligible item and return its identity.
+description: Select one eligible item and return its identity and destination.
 ---
 
 The `agent-shaped` label marks work an agent may take. `/next` selects the
@@ -13,7 +13,7 @@ through the bridge. It needs no item reference.
 
 ## How `/next` selects
 
-<div class="write-flow" role="group" aria-label="The next workflow resolves the configured item provider, runs one filtered selection query, then returns the first item's identity or an empty result.">
+<div class="write-flow" role="group" aria-label="The next workflow resolves the configured item provider, runs one filtered selection query, then returns the first item's identity and destination or an empty result.">
   <div class="write-flow__step write-flow__step--assisted">
     <small>01 · Configure</small>
     <strong>Resolve item provider</strong>
@@ -32,8 +32,8 @@ through the bridge. It needs no item reference.
 
   <div class="write-flow__step write-flow__step--assisted">
     <small>03 · Return</small>
-    <strong>Return identity</strong>
-    <span>Return the item name, ID, and URL, or report that no item matched.</span>
+    <strong>Return item</strong>
+    <span>Return the item name, ID, URL, and destination, or report that no item matched.</span>
   </div>
 </div>
 
@@ -49,7 +49,7 @@ through the bridge. It needs no item reference.
     <tr>
       <td>2</td>
       <th scope="row">Return</th>
-      <td>A found item returns only <code>{'{"name":"…","id":"…","url":"…"}'}</code>. No match returns <code>{'{"status":"no eligible item"}'}</code>; a provider failure is reported as an error.</td>
+      <td>A found item returns only <code>{'{"name":"…","id":"…","url":"…","list":"…"}'}</code>. <code>list</code> is the Linear project name or ClickUp list name. No match returns <code>{'{"status":"no eligible item"}'}</code>; a missing destination or provider failure is an error.</td>
     </tr>
     <tr>
       <td>3</td>

@@ -1,0 +1,28 @@
+---
+title: /resolve-local-project
+description: Resolve a ticket destination to one local project directory.
+---
+
+`/resolve-local-project` receives the `list` value returned by `/next`. Invoke
+it as `/resolve-local-project` or `$resolve-local-project`, followed by the
+destination name. A successful response contains only an absolute path:
+
+```json
+{"path":"/Users/cyril/Workspace/agent-workflows"}
+```
+
+The resolver compares directory names without case, whitespace, hyphens, or
+points. For example, `Agent workflows`, `agent-workflows`, and
+`agent.workflows` match the same name.
+
+It first checks existing project directories in Codex's `config.toml`, using
+`CODEX_HOME` when set and `~/.codex` otherwise. A unique match ends the search.
+If none match, it scans under `~` through depth 4, inspecting at most 10,000
+directories. The scan does not follow symbolic links or enter `.git` and
+`node_modules` directories.
+
+An unresolved response contains a `status` without a path: `not found`,
+`multiple matches`, `search limit reached`, `search incomplete`, or
+`invalid list`. Kestra stops before later work when it receives one of these
+statuses. An execution error is reported as an error rather than a resolution
+result.

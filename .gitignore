@@ -9,6 +9,7 @@ skills/*
 !skills/agent-workflows/
 !skills/pick/
 !skills/next/
+!skills/resolve-local-project/
 !skills/plan/
 !skills/write/
 !skills/refine/

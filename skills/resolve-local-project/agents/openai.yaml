@@ -1,0 +1,4 @@
+interface:
+  display_name: "Resolve Local Project"
+  short_description: "Find the local directory for a ticket destination"
+  default_prompt: "Use $resolve-local-project with a list value."
