@@ -1,4 +1,4 @@
-# Resolve Local Project Result
+# Project Path
 
 Return exactly one JSON object for the workflow's final result, without a
 Markdown fence or surrounding text. Candidate paths from the command stay

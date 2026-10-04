@@ -62,5 +62,5 @@ or another status.
 ### 4. Return Result
 
 Format the selected path or unresolved status with
-`../templates/resolve-local-project-result.md`. Do not expose the command's
+`../templates/project-path.md`. Do not expose the command's
 candidate paths in the final JSON.
