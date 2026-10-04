@@ -4,12 +4,12 @@
 tool: list_issues
 arguments:
   label: agent-shaped
-  state: Backlog
   includeArchived: false
-  limit: 1
-  fields: [id, title, url, project]
+  limit: 250
+  fields: [id, title, url, project, status]
 ```
 
-Return the first issue's `id`, `title` as `name`, `url`, and project name as
-`list`, or no match when the result is empty. A missing project name is an
-error.
+From the returned page, select the first issue whose status name is `Backlog`
+or `Open`. Return its `id`, `title` as `name`, `url`, and project name as
+`list`. Return no match when the page has no eligible issue. A missing project
+name is an error.
