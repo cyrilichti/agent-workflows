@@ -1,68 +1,82 @@
 ---
 title: Orchestration
-description: Run Kestra and Langfuse locally, connect the bridge, and build from the bundled workflows.
+description: How Kestra, the host bridge, an AI provider, and Langfuse connect.
 ---
 
-Use the local orchestration stack to run AI tasks from Kestra and inspect their
-results in Langfuse. The stack is separate from the interactive `/write` to
-`/done` delivery chain described under [Workflows](/agent-workflows/workflows/).
+The local stack contains **Kestra** to run workflows, **Langfuse** to record
+traces, and a **bridge** supplied by this repository to connect Kestra to an
+AI provider. Docker Compose runs Kestra and Langfuse with their supporting
+PostgreSQL, ClickHouse, Redis, and MinIO services. The bridge runs separately
+on your machine, where it can use your local Codex CLI, project files, and
+authentication. It can also call the OpenAI API when configured to do so.
 
 ## How the pieces connect
 
-```text
-Kestra (Docker) ──authenticated HTTP──> Bridge (host) ──> Codex CLI or OpenAI API
-                                            │
-                                            └────────────> Langfuse (Docker)
-```
+<div class="orchestration-map" role="group" aria-label="Kestra in Docker sends an authenticated HTTP POST to the bridge on the host. The bridge calls Codex CLI or the OpenAI API and sends a trace to Langfuse in Docker.">
+  <div class="orchestration-map__node orchestration-map__node--kestra">
+    <small>Docker</small>
+    <strong>Kestra</strong>
+    <span>Runs workflows and sends AI tasks.</span>
+  </div>
 
-Kestra schedules and runs workflows. The bridge receives their AI requests and
-uses either an ephemeral local Codex CLI session or the configured OpenAI API
-model. It sends the response and observed usage to Langfuse. The bridge runs on
-the host so Codex can access your local project, configuration, and tools.
+  <span class="orchestration-map__connector orchestration-map__connector--request" aria-hidden="true">HTTP POST <code>/generate</code> + token <b>→</b></span>
 
-## Start the local stack
+  <div class="orchestration-map__node orchestration-map__node--bridge">
+    <small>Host · <code>npm start</code></small>
+    <strong>Bridge</strong>
+    <span>Accepts the request and calls the configured AI provider.</span>
+  </div>
 
-You need Node.js 24+, npm, and Docker with Compose 2.24+. For the default
-`codex` provider, install and authenticate Codex CLI with `codex login`.
+  <span class="orchestration-map__connector orchestration-map__connector--provider" aria-hidden="true">Task <b>→</b></span>
 
-From the repository root, create `.env` from the example and fill in its
-required secrets. Choose `AI_PROVIDER=codex` or `AI_PROVIDER=openai-api`, then
-set `INFERENCE_ENABLED=true`. The API option also needs `AI_MODEL` and
-`OPENAI_API_KEY`. Follow the [configuration guide](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#configure) for the exact secret-generation commands and optional Codex working directory.
+  <div class="orchestration-map__node orchestration-map__node--provider">
+    <small>Host or remote API</small>
+    <strong>Codex CLI / OpenAI API</strong>
+    <span>Executes the AI task and returns its response.</span>
+  </div>
+
+  <span class="orchestration-map__connector orchestration-map__connector--trace" aria-hidden="true">Bridge trace <b>↓</b></span>
+
+  <div class="orchestration-map__node orchestration-map__node--langfuse">
+    <small>Docker</small>
+    <strong>Langfuse</strong>
+    <span>Records the response and observed token usage.</span>
+  </div>
+</div>
+
+Kestra makes an authenticated HTTP `POST` to the host bridge at
+`/generate`. The request carries a text task, an `X-Request-Id`, and the
+shared bearer token. The bridge starts a fresh Codex CLI execution on the
+host or sends the task to the OpenAI API, returns a JSON result to Kestra,
+and sends a trace to Langfuse. The bridge must be running for Kestra to
+reach either provider.
+
+## Start the architecture locally
+
+You need Node.js 24+, npm, and Docker with Compose 2.24+. To use the local
+Codex CLI, install it and authenticate with `codex login`. From the repository
+root, create `.env` and fill its required secrets. Set `INFERENCE_ENABLED=true`
+and choose `AI_PROVIDER=codex` or `AI_PROVIDER=openai-api`; the API option also
+requires `AI_MODEL` and `OPENAI_API_KEY`. See the
+[configuration guide](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#configure)
+for the secret-generation commands and other settings. If `.env` already
+exists, edit it instead of copying the example over it.
 
 ```bash
 cp .env.example .env
 docker compose up -d --build
+```
+
+Then start the bridge **on the host machine**, under your usual user account
+(the one authenticated with Codex CLI when using that provider):
+
+```bash
 npm start
 ```
 
-Keep `npm start` running in its own terminal. Kestra is at
-`http://localhost:3000`, Langfuse at `http://localhost:3001`, and bridge health
-at `http://localhost:8787/health`. Kestra reaches the bridge through
-`BRIDGE_URL` (by default, `http://host.docker.internal:8787`); task calls use
-`SECRET_BRIDGE_TOKEN` from `.env`.
-
-## Run an example, then extend it
-
-Docker Compose imports two YAML workflows when they do not already exist in
-Kestra. `demo` works with either AI provider. `work` requires
-`AI_PROVIDER=codex`: the OpenAI API adapter performs text inference and cannot
-execute `/next` or access the configured item provider.
-
-| Example | What it provides | Try it |
-| --- | --- | --- |
-| [`demo/demo`](https://github.com/cyrilichti/agent-workflows/blob/main/orchestration/demo.yaml) | Sends a prompt through the bridge and returns the result and Langfuse trace URL. | In Kestra, start `demo` in the `demo` namespace with a `requestId` and a `prompt`. |
-| [`agent_workflows/work`](https://github.com/cyrilichti/agent-workflows/blob/main/orchestration/work.yaml) | Calls `/next` through the bridge and returns the selected item and trace URL. | Install Agent Workflows in the Codex project, connect its item provider, then start `work` in the `agent_workflows` namespace. |
-
-Start with `demo` to check the bridge and tracing path. To build an automated
-delivery flow, copy or edit `work.yaml` and add the stages you need after item
-selection. The bundled `work` example stops after `/next`; planning,
-implementation, review, and scheduling are workflows to build. If you change
-an imported YAML file, update its workflow in Kestra explicitly: the importer
-preserves an existing workflow.
-
-For `work`, set `CODEX_WORKING_DIRECTORY` to the project where you completed
-[Agent Workflows installation](/agent-workflows/installation/). The selected
-item provider must be accessible to the Codex CLI running on the host.
-
-See the [full orchestration guide](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md) for execution behavior, timeouts, and shutdown.
+Keep this process running. When using Codex CLI, set
+`CODEX_WORKING_DIRECTORY` to the absolute path of the project it should work
+in. Kestra reaches the host bridge through `BRIDGE_URL`, which defaults to
+`http://host.docker.internal:8787`; the bridge health endpoint is
+`http://localhost:8787/health`. Kestra is at `http://localhost:3000` and
+Langfuse at `http://localhost:3001`.

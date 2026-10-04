@@ -80,29 +80,6 @@ Kestra reaches the bridge through `BRIDGE_URL`, which defaults to
 `0.0.0.0` so containers can connect; keep this port accessible only to trusted
 clients. Task requests require the shared token.
 
-## Run the examples
-
-Docker Compose imports [orchestration/demo.yaml](./orchestration/demo.yaml)
-and [orchestration/work.yaml](./orchestration/work.yaml) using
-[src/install.mjs](./src/install.mjs).
-
-1. Open Kestra and select the `demo` workflow in the `demo` namespace.
-2. Start an execution with `requestId: demo-0001` and a prompt such as
-   `Explain the role of an orchestrator in two sentences.`
-3. Read the `result` output and follow `traceUrl` to its Langfuse trace.
-
-The `demo` workflow works with either AI provider. The `work` workflow in the
-`agent_workflows` namespace requires `AI_PROVIDER=codex`: it calls `/next`
-through the bridge and returns the selected item and trace URL. The OpenAI API
-adapter performs text inference and cannot execute `/next` or access the item
-provider. To run `work`, set `CODEX_WORKING_DIRECTORY` to a project with Agent
-Workflows installed and make its configured item provider accessible to Codex
-CLI. It stops after item selection; later delivery stages and scheduling must
-be built separately.
-
-The installer preserves an existing workflow. If you edit either YAML file
-later, update its workflow in Kestra explicitly.
-
 ## Execution behavior
 
 Each Codex task starts a fresh, ephemeral CLI session using your local settings.
