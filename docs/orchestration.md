@@ -19,7 +19,7 @@ authentication. It can also call the OpenAI API when configured to do so.
     <span>Runs workflows and sends AI tasks.</span>
   </div>
 
-  <span class="orchestration-map__connector orchestration-map__connector--request" aria-hidden="true">HTTP POST <code>/generate</code> + token <b>→</b></span>
+  <div class="orchestration-map__connector orchestration-map__connector--request" aria-hidden="true">Ask <b>→</b></div>
 
   <div class="orchestration-map__node orchestration-map__node--bridge">
     <small>Host · <code>npm start</code></small>
@@ -27,7 +27,7 @@ authentication. It can also call the OpenAI API when configured to do so.
     <span>Accepts the request and calls the configured AI provider.</span>
   </div>
 
-  <span class="orchestration-map__connector orchestration-map__connector--provider" aria-hidden="true">Task <b>→</b></span>
+  <div class="orchestration-map__connector orchestration-map__connector--provider" aria-hidden="true">Task <b>→</b></div>
 
   <div class="orchestration-map__node orchestration-map__node--provider">
     <small>Host or remote API</small>
@@ -35,7 +35,7 @@ authentication. It can also call the OpenAI API when configured to do so.
     <span>Executes the AI task and returns its response.</span>
   </div>
 
-  <span class="orchestration-map__connector orchestration-map__connector--trace" aria-hidden="true">Bridge trace <b>↓</b></span>
+  <div class="orchestration-map__connector orchestration-map__connector--trace" aria-hidden="true">Bridge trace <b>↓</b></div>
 
   <div class="orchestration-map__node orchestration-map__node--langfuse">
     <small>Docker</small>
