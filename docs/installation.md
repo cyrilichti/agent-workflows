@@ -19,56 +19,22 @@ The same command installs a new project or updates an existing installation.
 
 ## Managed project content
 
-Run the bootstrap from a Git worktree without pending changes. The bootstrap
-artifacts created by `npx skills add` are the only accepted exception before
-deployment; any other dirty or unrecoverable local content stops the operation.
+Run the bootstrap from the project root with no pending Git changes. The files
+created by the `npx skills add` command above are the only exception.
 
-Agent Workflows completely replaces the root `AGENTS.md` and its managed
-`.agents/` sources on every installation or update. Review the resulting Git
-diff and restore any project-specific customizations that should remain.
-Removed upstream files are removed from the consuming project as well.
+Installation and updates replace the root `AGENTS.md` and the Agent Workflows
+sources under `.agents/`. Review the resulting Git diff if you keep local
+customizations there. Your `.agents/plans` content is preserved; the installer
+links `.cursor/plans` to it and leaves other Cursor content alone.
 
-Project plans are different: `.agents/plans` is created when absent and always
-preserved on update. The installer creates `.cursor/plans` as a relative
-symlink to `../.agents/plans` without changing any other Cursor content. An
-existing incompatible path stops the installation instead of being replaced.
-
-The root `.gitignore` is preserved while its Agent Workflows rules are
-reconciled idempotently so stale native-Skill exceptions disappear, project
-plans and restored external Skills stay ignored, `.agents/plans/.gitkeep` stays
-trackable, and current native Skills remain trackable. Skill lock entries
-owned by the consuming project are merged with Agent Workflows dependencies
-before `npx skills experimental_install` restores them.
+The installer also updates its rules in `.gitignore`, merges Agent Workflows
+dependencies into `skills-lock.json`, restores the declared Skills, and
+configures the project's providers.
 
 ## Provider prerequisites
-
-Connect the MCP integration required by the selected Linear or ClickUp item
-provider before running its workflows.
-
-For GitHub, install the official [`gh` CLI](https://github.com/cli/cli#installation)
-and authenticate it for the repository's GitHub host:
-
-```bash
-gh auth login --hostname github.example.com
-```
-
-Use `gh auth login` without `--hostname` for GitHub.com. See the
-[authentication guide](https://cli.github.com/manual/gh_auth_login) for other
-authentication methods.
-
-For GitLab, install the official [`glab` CLI](https://gitlab.com/gitlab-org/cli)
-and authenticate it for the repository's GitLab host:
-
-```bash
-glab auth login --hostname gitlab.example.com
-```
-
-Use `glab auth login` without `--hostname` for GitLab.com. See GitLab's
-[installation](https://docs.gitlab.com/cli/installation/) and
-[authentication](https://docs.gitlab.com/cli/authentication/) guides for
-platform-specific setup.
 
 During installation, select the project's item provider (ClickUp or Linear)
 and version provider (GitHub or GitLab). An update preserves either supported
 version provider and asks for one only when it is missing from the existing
-configuration.
+configuration. Before running workflows, connect the selected integrations as
+described in [Providers](/agent-workflows/providers/).
