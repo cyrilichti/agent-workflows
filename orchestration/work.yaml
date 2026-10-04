@@ -16,16 +16,9 @@ tasks:
       timeout:
         connectTimeout: PT5S
         readIdleTimeout: PT35M
-  - id: require_completed
-    type: io.kestra.plugin.core.execution.Fail
-    runIf: "{{ fromJson(outputs.next.body).status != 'completed' }}"
-    errorMessage: 'Next did not complete. Inspect the response and trace; no automatic retry.'
-  - id: require_item
-    type: io.kestra.plugin.core.execution.Fail
-    runIf: "{{ fromJson(fromJson(outputs.next.body).text).status == 'no eligible item' }}"
-    errorMessage: 'Next found no eligible item.'
   - id: resolve_local_project
     type: io.kestra.plugin.core.http.Request
+    runIf: "{{ fromJson(fromJson(outputs.next.body).text).status != 'no eligible item' }}"
     uri: '{{ envs.bridge_url }}/generate'
     method: POST
     contentType: text/plain
@@ -38,14 +31,6 @@ tasks:
       timeout:
         connectTimeout: PT5S
         readIdleTimeout: PT35M
-  - id: require_resolver_completed
-    type: io.kestra.plugin.core.execution.Fail
-    runIf: "{{ fromJson(outputs.resolve_local_project.body).status != 'completed' }}"
-    errorMessage: 'Local project resolution did not complete. Inspect the response and trace; no automatic retry.'
-  - id: require_project_directory
-    type: io.kestra.plugin.core.execution.Fail
-    runIf: "{{ fromJson(fromJson(outputs.resolve_local_project.body).text).path == null }}"
-    errorMessage: 'Local project directory was not found. Inspect the resolver status; no work stage will start.'
 outputs:
   - id: item
     type: JSON
@@ -55,10 +40,10 @@ outputs:
     value: '{{ fromJson(outputs.next.body).traceUrl }}'
   - id: projectDirectory
     type: STRING
-    value: '{{ fromJson(fromJson(outputs.resolve_local_project.body).text).path }}'
+    value: "{{ tasks.resolve_local_project.state != 'SKIPPED' ? (fromJson(fromJson(outputs.resolve_local_project.body).text).path ?? '') : '' }}"
   - id: resolution
     type: JSON
-    value: '{{ fromJson(fromJson(outputs.resolve_local_project.body).text) }}'
+    value: "{{ tasks.resolve_local_project.state != 'SKIPPED' ? fromJson(fromJson(outputs.resolve_local_project.body).text) : fromJson('{}') }}"
   - id: resolutionTraceUrl
     type: STRING
-    value: '{{ fromJson(outputs.resolve_local_project.body).traceUrl }}'
+    value: "{{ tasks.resolve_local_project.state != 'SKIPPED' ? fromJson(outputs.resolve_local_project.body).traceUrl : '' }}"

@@ -28,10 +28,6 @@ tasks:
   - id: response
     type: io.kestra.plugin.core.log.Log
     message: '{{ outputs.inference.body }}'
-  - id: require_completed
-    type: io.kestra.plugin.core.execution.Fail
-    runIf: "{{ fromJson(outputs.inference.body).status != 'completed' }}"
-    errorMessage: 'Inference did not complete. Inspect the response and trace; no automatic retry.'
 outputs:
   - id: result
     type: JSON

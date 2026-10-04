@@ -59,7 +59,10 @@ export function createBridgeHttpServer({ taskExecution, token, providerName }) {
       } catch {
         return sendJsonResponse(response, 400, { error: 'invalid_json' });
       }
-      sendJsonResponse(response, 200, await taskExecution.executeTask(taskInput));
+      const result = await taskExecution.executeTask(taskInput);
+      // Keep the trace in the body, while letting HTTP clients fail the task.
+      const status = result.status === 'completed' ? 200 : result.status === 'unknown' ? 504 : 502;
+      sendJsonResponse(response, status, result);
     } catch (error) {
       const statuses = { busy: 429, disabled: 503, invalid_input: 400 };
       sendJsonResponse(response, statuses[error.code] ?? 500, {
