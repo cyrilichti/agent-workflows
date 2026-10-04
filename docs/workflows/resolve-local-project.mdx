@@ -17,7 +17,11 @@ points. For example, `Agent workflows`, `agent-workflows`, and
 name can also match a repository name at a separator boundary: `aftersales`
 matches `aftersales-api`, but not `aftersalesman`. It accepts only Git repository
 roots with a `.git` directory or file, including worktrees. If both
-`aftersales-api` and `aftersales-app` match, it returns `multiple matches`.
+`aftersales-api` and `aftersales-app` match, the workflow reads the complete
+ticket. It selects an explicitly named repository first, then uses the ticket's
+primary target. When the ticket gives no clear clue, it prefers a repository
+whose name has no `api` segment and no segment starting with `back`. A final
+alphabetical path tie break always selects one repository from the candidates.
 
 It first checks existing project directories in Codex's `config.toml`, using
 `CODEX_HOME` when set and `~/.codex` otherwise. A unique match ends the search.
@@ -26,7 +30,7 @@ directories. The scan does not follow symbolic links or enter `.git` and
 `node_modules` directories.
 
 An unresolved response contains a `status` without a path: `not found`,
-`multiple matches`, `search limit reached`, `search incomplete`, or
+`search limit reached`, `search incomplete`, or
 `invalid list`. Kestra stops before later work when it receives one of these
 statuses. An execution error is reported as an error rather than a resolution
 result.

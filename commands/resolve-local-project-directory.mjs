@@ -26,7 +26,7 @@ function matchKind(directoryName, name) {
 function resultForMatches(matches) {
   const preferred = matches.exact.size > 0 ? matches.exact : matches.prefix;
   if (preferred.size === 1) return { path: [...preferred][0] };
-  if (preferred.size > 1) return { status: 'multiple matches' };
+  if (preferred.size > 1) return { candidates: [...preferred].sort() };
   return null;
 }
 
@@ -91,7 +91,6 @@ async function fallbackMatches(name, home) {
     const kind = matchKind(basename(path), name);
     if (kind && await isRepository(path)) {
       matches[kind].add(await realpath(path));
-      if (matches.exact.size > 1) return { status: 'multiple matches' };
     }
     if (depth === MAX_DEPTH) continue;
 

@@ -32,7 +32,7 @@ tasks:
     headers:
       X-Request-Id: '{{ execution.id }}-resolve-local-project'
       Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-    body: 'Execute /resolve-local-project with list: {{ fromJson(fromJson(outputs.next.body).text).list }}'
+    body: 'Execute /resolve-local-project with list: {{ fromJson(fromJson(outputs.next.body).text).list }} and item ID: {{ fromJson(fromJson(outputs.next.body).text).id }}'
     timeout: PT35M
     options:
       timeout:
@@ -45,7 +45,7 @@ tasks:
   - id: require_project_directory
     type: io.kestra.plugin.core.execution.Fail
     runIf: "{{ fromJson(fromJson(outputs.resolve_local_project.body).text).path == null }}"
-    errorMessage: 'Local project directory was not resolved uniquely. Inspect the resolver status; no work stage will start.'
+    errorMessage: 'Local project directory was not found. Inspect the resolver status; no work stage will start.'
 outputs:
   - id: item
     type: JSON
