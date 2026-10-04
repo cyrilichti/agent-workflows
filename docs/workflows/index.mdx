@@ -1,20 +1,17 @@
 ---
 title: Workflows
-description: Nine entry points across one governed delivery chain.
+description: Skills that agents and orchestrators can combine into a governed delivery flow.
 ---
 
 import { CardGrid, LinkCard } from '@astrojs/starlight/components'
 
-The workflows move the same work from ticket to merge. Shape and plan with
-assisted workflows, approve the start of delivery, then let the autonomous loop
-implement and review the change. `/done` remains a separate human decision.
+Each workflow is available as a Skill. Invoke one directly or combine them in
+an automated flow to shape, plan, deliver, and review work. The final merge
+remains a human decision.
+
+## Delivery Skills
 
 <CardGrid>
-  <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/next</span><span class="workflow-card-mode">Assisted · Select</span></span>'}
-    href="/agent-workflows/workflows/next/"
-    description="Find the first agent-shaped item returned by the configured provider filter and return its identity."
-  />
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/write</span><span class="workflow-card-mode">Assisted · Shape</span></span>'}
     href="/agent-workflows/workflows/write/"
@@ -54,5 +51,19 @@ implement and review the change. `/done` remains a separate human decision.
     title={'<span class="workflow-card-title workflow-card-title--human"><span class="workflow-card-command">/done</span><span class="workflow-card-mode">Human · Merge</span></span>'}
     href="/agent-workflows/workflows/done/"
     description="Confirm and squash-merge one exact request, then complete its official item."
+  />
+</CardGrid>
+
+## Automation and orchestration
+
+These Skills are reusable entry points for an orchestrator to call and combine.
+The [Orchestration](/agent-workflows/orchestration/) page shows how Kestra
+connects to an agent running on your machine.
+
+<CardGrid>
+  <LinkCard
+    title={'<span class="workflow-card-title workflow-card-title--selection"><span class="workflow-card-command">/next</span><span class="workflow-card-mode">Selection</span></span>'}
+    href="/agent-workflows/workflows/next/"
+    description="Query the configured item provider once for eligible agent-shaped work and return the first item's identity."
   />
 </CardGrid>

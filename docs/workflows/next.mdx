@@ -1,17 +1,60 @@
 ---
 title: /next
-description: Find one eligible Linear or ClickUp item without starting work.
+description: Select one eligible item and return its identity.
 ---
 
-`/next` makes one filtered request to the item provider configured in
-`agent-workflows.yaml` and returns its first result across all projects and
-destinations. Linear filters for the exact `agent-shaped` label and `Backlog`
-status. ClickUp filters for the `agent-shaped` tag and excludes closed tasks.
+The `agent-shaped` label marks work an agent may take. `/next` selects the
+first eligible item in the configured provider's order. It does not choose the
+most recently created or updated item: neither provider query specifies that
+ordering. The provider-specific status rules below narrow the eligible set.
 
 Invoke it as `/next` or `$next`, or let the Kestra `work` workflow call it
 through the bridge. It needs no item reference.
 
-The response is a JSON object containing only `name`, `id`, and `url`. If the
-provider query finds none, it returns `{"status":"no eligible item"}`.
-Provider errors are reported as errors. The workflow stops after selection;
-it does not plan, start delivery, or change the item or repository.
+## How `/next` selects
+
+<div class="write-flow" role="group" aria-label="The next workflow resolves the configured item provider, runs one filtered selection query, then returns the first item's identity or an empty result.">
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>01 · Configure</small>
+    <strong>Resolve item provider</strong>
+    <span>Read the Linear or ClickUp selection from <code>agent-workflows.yaml</code>.</span>
+  </div>
+
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
+
+  <div class="write-flow__step write-flow__step--focus">
+    <small>02 · Select</small>
+    <strong>Query once</strong>
+    <span>Apply the provider's eligibility filter and take only its first result.</span>
+  </div>
+
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
+
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>03 · Return</small>
+    <strong>Return identity</strong>
+    <span>Return the item name, ID, and URL, or report that no item matched.</span>
+  </div>
+</div>
+
+## What `/next` does
+
+<table class="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Filter</th>
+      <td>Linear selects an unarchived <code>Backlog</code> issue with the exact <code>agent-shaped</code> label. ClickUp selects a task tagged <code>agent-shaped</code> and excludes closed tasks.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Return</th>
+      <td>A found item returns only <code>{'{"name":"…","id":"…","url":"…"}'}</code>. No match returns <code>{'{"status":"no eligible item"}'}</code>; a provider failure is reported as an error.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Stop</th>
+      <td>Selection ends without reading another item, creating a plan, changing the ticket, or starting delivery. Use <a href="/agent-workflows/workflows/pick/"><code>/pick</code></a> to plan and start a selected item.</td>
+    </tr>
+  </tbody>
+</table>

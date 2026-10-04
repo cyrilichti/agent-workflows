@@ -991,6 +991,152 @@
     var(--sl-color-bg);
 }
 
+.orchestration-map {
+  display: flex;
+  max-width: 48rem;
+  margin-block: 2rem;
+  margin-inline: auto;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid #26364c;
+  border-radius: 1rem;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 70% 16%, rgba(59, 130, 246, 0.11), transparent 28rem),
+    #0a111c;
+  background-size: 2rem 2rem, 2rem 2rem, auto, auto;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.18);
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sl-markdown-content .orchestration-map :is(.orchestration-map__node, .orchestration-map__connector, .orchestration-map__branches, .orchestration-map__branch) {
+  margin-block: 0;
+}
+
+.orchestration-map__node {
+  display: flex;
+  box-sizing: border-box;
+  height: 10rem;
+  padding: 1rem;
+  border: 1px solid #2b3a4f;
+  border-radius: 0.75rem;
+  background: rgba(10, 17, 28, 0.94);
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.orchestration-map__node small,
+.orchestration-map__connector {
+  color: #60a5fa;
+  font-family: var(--sl-font-mono);
+  font-size: 0.61rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.orchestration-map__node strong {
+  color: var(--sl-color-white);
+  font-size: 1rem;
+}
+
+.orchestration-map__node span {
+  color: var(--sl-color-gray-3);
+  font-size: var(--sl-text-sm);
+  line-height: 1.4;
+}
+
+.orchestration-map__node--bridge {
+  border-color: rgba(196, 181, 253, 0.6);
+  background: rgba(139, 92, 246, 0.12);
+}
+
+.orchestration-map__node--provider {
+  border-color: rgba(96, 165, 250, 0.45);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.orchestration-map__node--langfuse {
+  border-color: rgba(134, 239, 172, 0.45);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.orchestration-map__connector {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.orchestration-map__branches {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.orchestration-map__branch {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.orchestration-map__connector span {
+  color: inherit;
+  font: inherit;
+}
+
+.orchestration-map__connector b {
+  color: #60a5fa;
+  font-size: 1rem;
+}
+
+:root[data-theme="light"] .orchestration-map {
+  border-color: #c9d7e8;
+  background:
+    linear-gradient(rgba(37, 99, 235, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at 70% 16%, rgba(59, 130, 246, 0.09), transparent 28rem),
+    #f7faff;
+  background-size: 2rem 2rem, 2rem 2rem, auto, auto;
+  box-shadow: 0 1.5rem 4rem rgba(45, 67, 97, 0.08);
+}
+
+:root[data-theme="light"] .orchestration-map__node {
+  border-color: #b8c7da;
+  background: #fff;
+}
+
+:root[data-theme="light"] .orchestration-map__node--bridge {
+  border-color: rgba(109, 40, 217, 0.42);
+  background: #f6f1ff;
+}
+
+:root[data-theme="light"] .orchestration-map__node--provider {
+  border-color: rgba(37, 99, 235, 0.42);
+  background: #f0f5ff;
+}
+
+:root[data-theme="light"] .orchestration-map__node--langfuse {
+  border-color: rgba(21, 128, 61, 0.38);
+  background: #f0fdf4;
+}
+
+:root[data-theme="light"] .orchestration-map__node small,
+:root[data-theme="light"] .orchestration-map__connector,
+:root[data-theme="light"] .orchestration-map__connector b {
+  color: #1d4ed8;
+}
+
+@media (max-width: 34rem) {
+  .orchestration-map__branches {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .sl-link-card:has(.workflow-card-title) {
   min-height: 10rem;
   border-color: #2b3a4f;
@@ -1002,6 +1148,17 @@
 .sl-link-card:has(.workflow-card-title):hover {
   border-color: #52647b;
   transform: translateY(-1px);
+}
+
+.sl-link-card:has(.workflow-card-title--selection) {
+  border-color: rgba(196, 181, 253, 0.52);
+  background:
+    linear-gradient(145deg, rgba(139, 92, 246, 0.14), transparent 60%),
+    rgba(16, 12, 28, 0.96);
+}
+
+.sl-link-card:has(.workflow-card-title--selection):hover {
+  border-color: rgba(196, 181, 253, 0.8);
 }
 
 .sl-link-card:has(.workflow-card-title--autonomous) {
@@ -1074,6 +1231,10 @@
   color: #60a5fa;
 }
 
+.workflow-card-title--selection :is(.workflow-card-command, .workflow-card-mode) {
+  color: #c4b5fd;
+}
+
 .workflow-card-title--human :is(.workflow-card-command, .workflow-card-mode) {
   color: #86efac;
 }
@@ -1094,6 +1255,17 @@
   background:
     linear-gradient(145deg, rgba(59, 130, 246, 0.12), transparent 60%),
     #f7faff;
+}
+
+:root[data-theme="light"] .sl-link-card:has(.workflow-card-title--selection) {
+  border-color: rgba(109, 40, 217, 0.4);
+  background:
+    linear-gradient(145deg, rgba(139, 92, 246, 0.11), transparent 60%),
+    #faf8ff;
+}
+
+:root[data-theme="light"] .workflow-card-title--selection :is(.workflow-card-command, .workflow-card-mode) {
+  color: #6d28d9;
 }
 
 :root[data-theme="light"] .sl-link-card:has(.workflow-card-title--human) {

@@ -32,6 +32,10 @@ export default defineConfig({
               label: 'Workflows',
               link: '/workflows/',
             },
+            {
+              label: 'Orchestration',
+              link: '/orchestration/',
+            },
           ],
         }),
       ],
@@ -42,6 +46,7 @@ export default defineConfig({
             { label: 'Overview', slug: 'index' },
             { label: 'Installation', slug: 'installation' },
             { label: 'Providers', slug: 'providers' },
+            { label: 'Orchestration', slug: 'orchestration' },
           ],
         },
         {
@@ -56,6 +61,7 @@ export default defineConfig({
             { label: '/ready', slug: 'workflows/ready' },
             { label: '/inspect', slug: 'workflows/inspect' },
             { label: '/done', slug: 'workflows/done' },
+            { label: '/next', slug: 'workflows/next' },
           ],
         },
       ],
