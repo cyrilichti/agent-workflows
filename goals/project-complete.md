@@ -12,8 +12,9 @@ or yield an explicit unresolved status.
 - The fallback search is bounded as specified by the resolver command.
 - Multiple candidate repositories are resolved using the complete item,
   frontend preference, and a stable final tie break.
-- Missing or incomplete search results return only a status and never
-  an uncertain path.
+- An exact repository match is returned even when the fallback search cannot
+  inspect every directory. Without an exact match, incomplete searches return
+  a status.
 
 ## Stop Conditions
 

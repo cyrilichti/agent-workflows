@@ -14,12 +14,15 @@ Find Git repositories matching a `list` name.
    matches without searching elsewhere.
 2. If none match, search under `~` with filesystem listing tools, breadth
    first, up to four levels and 10,000 directories. Do not follow symlinks or
-   enter `.git` or `node_modules`. Return `{"status":"search limit reached"}`
-   if the bound is reached or `{"status":"search incomplete"}` if a needed
-   directory cannot be read, even when some matches were found.
-3. Return `{"path":"<absolute canonical path>"}` for one best match,
-   `{"candidates":["<absolute canonical path>",...]}` for several, sorted by
-   path, or `{"status":"not found"}` after a complete search with no match.
+   enter `.git` or `node_modules`. Record unreadable directories and whether
+   the limit was reached.
+3. In the fallback search, keep exact matches even if other directories were
+   unreadable or the limit was reached. Without an exact match, report
+   `{"status":"search limit reached"}` or `{"status":"search incomplete"}`
+   before considering prefix matches. Return `{"path":"<absolute canonical
+   path>"}` for one best match or `{"candidates":["<absolute canonical
+   path>",...]}` for several, sorted by path. Return `{"status":"not found"}`
+   only after a complete search with no match.
 
 ## Matching
 
