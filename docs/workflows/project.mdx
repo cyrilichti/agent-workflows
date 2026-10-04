@@ -6,11 +6,12 @@ description: Resolve a ticket destination to one local project directory.
 `/project` finds the local Git repository for a destination name (`list`) and
 an exact item ID. Invoke it as `/project` or `$project` with both values, or let
 the Kestra `work` flow call it after `/next` returns an item. It reads the item
-only when several repositories match the destination.
+only when several repositories match the destination. The active AI provider
+must expose its configured project paths to the workflow.
 
 ## How `/project` finds a repository
 
-<div class="write-flow" role="group" aria-label="The project workflow requires a destination name and exact item ID, searches configured Codex projects and then nearby and home repositories as needed, uses the item to choose only when several repositories match, and returns one absolute path or an unresolved status.">
+<div class="write-flow" role="group" aria-label="The project workflow requires a destination name and exact item ID, searches configured project directories and then nearby and home repositories as needed, uses the item to choose only when several repositories match, and returns one absolute path or an unresolved status.">
   <div class="write-flow__step write-flow__step--assisted">
     <small>01 · Input</small>
     <strong>Require destination and item</strong>
@@ -22,7 +23,7 @@ only when several repositories match the destination.
   <div class="write-flow__step write-flow__step--focus">
     <small>02 · Search</small>
     <strong>Find Git repositories</strong>
-    <span>Check configured Codex projects, their neighboring repositories, then the home directory only if needed.</span>
+    <span>Check configured project directories, their neighboring repositories, then the home directory only if needed.</span>
   </div>
 
   <span class="write-flow__connector" aria-hidden="true">↓</span>
@@ -54,7 +55,7 @@ only when several repositories match the destination.
     <tr>
       <td>2</td>
       <th scope="row">Search</th>
-      <td>Match Git repository roots from Codex's configured projects first, then repositories beside them, then under <code>~</code>. Exact names outrank names with a separator-boundary suffix: <code>aftersales</code> matches <code>aftersales-api</code>, but not <code>aftersalesman</code>. Matching ignores case, spaces, hyphens, and points. The home search does not follow symlinks or enter <code>.git</code>, <code>node_modules</code>, or a repository already found.</td>
+      <td>Match Git repository roots from the active provider's configured project directories first, then repositories beside them, then under <code>~</code>. Exact names outrank names with a separator-boundary suffix: <code>aftersales</code> matches <code>aftersales-api</code>, but not <code>aftersalesman</code>. Matching ignores case, spaces, hyphens, and points. The home search does not follow symlinks or enter <code>.git</code>, <code>node_modules</code>, or a repository already found.</td>
     </tr>
     <tr>
       <td>3</td>
@@ -64,7 +65,7 @@ only when several repositories match the destination.
     <tr>
       <td>4</td>
       <th scope="row">Return</th>
-      <td>Return <code>{'{"path":"/absolute/repository/path"}'}</code>, or <code>{'{"status":"not found"}'}</code> after a complete search, or <code>{'{"status":"search incomplete"}'}</code> when the home search cannot finish without an exact match. Input and execution failures are errors, not resolution results.</td>
+      <td>Return <code>{'{"path":"/absolute/repository/path"}'}</code>, or <code>{'{"status":"not found"}'}</code> after a complete search, or <code>{'{"status":"search incomplete"}'}</code> when the home search cannot finish without an exact match. Missing project configuration and other execution failures are errors, not resolution results.</td>
     </tr>
   </tbody>
 </table>

@@ -7,7 +7,7 @@ or yield an explicit unresolved status.
 
 ## Success Criteria
 
-- A unique matching Git repository root from Codex's configured project paths
+- A unique matching Git repository root from the configured project paths
   is returned without scanning the home directory.
 - The fallback checks repositories beside configured projects before searching
   under the home directory, and stops when it finds an exact match.
