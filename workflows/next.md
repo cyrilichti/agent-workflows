@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Select one `agent-shaped` item from the configured provider and return only
-its identity. This is a standalone entry point.
+Select one `agent-shaped` item from the configured provider and return its
+identity and destination name. This is a standalone entry point.
 
 ---
 

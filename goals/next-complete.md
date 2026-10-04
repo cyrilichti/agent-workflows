@@ -10,8 +10,8 @@ returns no item.
 - The configured item provider was queried once without a destination scope.
 - The returned item is the first result of its provider-native filter for
   `agent-shaped` work.
-- A found response contains only `name`, `id`, and `url`; an empty response is
-  exactly `{ "status": "no eligible item" }`.
+- A found response contains only `name`, `id`, `url`, and `list`; an empty
+  response is exactly `{ "status": "no eligible item" }`.
 - No item, repository, plan, or delivery state was changed.
 
 ## Stop Conditions
