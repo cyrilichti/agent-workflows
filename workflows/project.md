@@ -11,7 +11,9 @@ standalone entry point.
 ## Required Context
 
 Load `../goals/resolve-local-project-complete.md` as this workflow's
-completion contract. Follow `../rules/user-facing-output.md`.
+completion contract.
+
+Follow `../rules/user-facing-output.md`.
 
 ---
 
