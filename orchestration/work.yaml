@@ -1,6 +1,6 @@
 id: work
 namespace: agent_workflows
-description: Select the next eligible item; later work stages are separate changes.
+description: Select the next eligible item and resolve its local project directory.
 tasks:
   - id: next
     type: io.kestra.plugin.core.http.Request
@@ -20,6 +20,32 @@ tasks:
     type: io.kestra.plugin.core.execution.Fail
     runIf: "{{ fromJson(outputs.next.body).status != 'completed' }}"
     errorMessage: 'Next did not complete. Inspect the response and trace; no automatic retry.'
+  - id: require_item
+    type: io.kestra.plugin.core.execution.Fail
+    runIf: "{{ fromJson(fromJson(outputs.next.body).text).status == 'no eligible item' }}"
+    errorMessage: 'Next found no eligible item.'
+  - id: resolve_local_project
+    type: io.kestra.plugin.core.http.Request
+    uri: '{{ envs.bridge_url }}/generate'
+    method: POST
+    contentType: text/plain
+    headers:
+      X-Request-Id: '{{ execution.id }}-resolve-local-project'
+      Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+    body: 'Execute /resolve-local-project with list: {{ fromJson(fromJson(outputs.next.body).text).list }}'
+    timeout: PT35M
+    options:
+      timeout:
+        connectTimeout: PT5S
+        readIdleTimeout: PT35M
+  - id: require_resolver_completed
+    type: io.kestra.plugin.core.execution.Fail
+    runIf: "{{ fromJson(outputs.resolve_local_project.body).status != 'completed' }}"
+    errorMessage: 'Local project resolution did not complete. Inspect the response and trace; no automatic retry.'
+  - id: require_project_directory
+    type: io.kestra.plugin.core.execution.Fail
+    runIf: "{{ fromJson(fromJson(outputs.resolve_local_project.body).text).path == null }}"
+    errorMessage: 'Local project directory was not resolved uniquely. Inspect the resolver status; no work stage will start.'
 outputs:
   - id: item
     type: JSON
@@ -27,3 +53,12 @@ outputs:
   - id: traceUrl
     type: STRING
     value: '{{ fromJson(outputs.next.body).traceUrl }}'
+  - id: projectDirectory
+    type: STRING
+    value: '{{ fromJson(fromJson(outputs.resolve_local_project.body).text).path }}'
+  - id: resolution
+    type: JSON
+    value: '{{ fromJson(fromJson(outputs.resolve_local_project.body).text) }}'
+  - id: resolutionTraceUrl
+    type: STRING
+    value: '{{ fromJson(outputs.resolve_local_project.body).traceUrl }}'

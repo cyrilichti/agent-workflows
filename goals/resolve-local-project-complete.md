@@ -7,8 +7,8 @@ an explicit unresolved status.
 
 ## Success Criteria
 
-- A unique matching directory from Codex's configured project paths is returned
-  without scanning the home directory.
+- A unique matching Git repository root from Codex's configured project paths
+  is returned without scanning the home directory.
 - The fallback search is bounded as specified by the resolver command.
 - Missing, multiple, invalid, or incomplete results return only a status and
   never an uncertain path.

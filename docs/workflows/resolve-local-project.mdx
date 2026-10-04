@@ -13,7 +13,11 @@ destination name. A successful response contains only an absolute path:
 
 The resolver compares directory names without case, whitespace, hyphens, or
 points. For example, `Agent workflows`, `agent-workflows`, and
-`agent.workflows` match the same name.
+`agent.workflows` match the same name. Exact matches take priority. A product
+name can also match a repository name at a separator boundary: `aftersales`
+matches `aftersales-api`, but not `aftersalesman`. It accepts only Git repository
+roots with a `.git` directory or file, including worktrees. If both
+`aftersales-api` and `aftersales-app` match, it returns `multiple matches`.
 
 It first checks existing project directories in Codex's `config.toml`, using
 `CODEX_HOME` when set and `~/.codex` otherwise. A unique match ends the search.

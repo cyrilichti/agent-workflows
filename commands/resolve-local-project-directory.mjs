@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFile, readdir, realpath, stat } from 'node:fs/promises';
+import { lstat, readFile, readdir, realpath, stat } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { basename, isAbsolute, join } from 'node:path';
 
@@ -10,6 +10,24 @@ const SKIP_DIRECTORIES = new Set(['.git', 'node_modules']);
 
 function normalize(name) {
   return name.toLowerCase().replace(/[\s.-]/gu, '');
+}
+
+function matchKind(directoryName, name) {
+  if (normalize(directoryName) === name) return 'exact';
+  const parts = directoryName.toLowerCase().split(/[\s.-]+/u).filter(Boolean);
+  let prefix = '';
+  for (const part of parts.slice(0, -1)) {
+    prefix += part;
+    if (prefix === name) return 'prefix';
+  }
+  return null;
+}
+
+function resultForMatches(matches) {
+  const preferred = matches.exact.size > 0 ? matches.exact : matches.prefix;
+  if (preferred.size === 1) return { path: [...preferred][0] };
+  if (preferred.size > 1) return { status: 'multiple matches' };
+  return null;
 }
 
 function projectPaths(config) {
@@ -24,31 +42,45 @@ function projectPaths(config) {
   return paths;
 }
 
+async function isRepository(path) {
+  try {
+    const marker = await lstat(join(path, '.git'));
+    return marker.isDirectory() || marker.isFile();
+  } catch (error) {
+    if (error.code === 'ENOENT') return false;
+    throw error;
+  }
+}
+
 async function configuredMatches(name, home) {
   const configPath = join(process.env.CODEX_HOME || join(home, '.codex'), 'config.toml');
   let config;
   try {
     config = await readFile(configPath, 'utf8');
   } catch (error) {
-    if (error.code === 'ENOENT') return [];
+    if (error.code === 'ENOENT') return { exact: new Set(), prefix: new Set() };
     throw error;
   }
 
-  const matches = new Set();
+  const matches = { exact: new Set(), prefix: new Set() };
   for (const path of projectPaths(config)) {
-    if (!isAbsolute(path) || normalize(basename(path)) !== name) continue;
+    if (!isAbsolute(path)) continue;
+    const kind = matchKind(basename(path), name);
+    if (!kind) continue;
     try {
-      if ((await stat(path)).isDirectory()) matches.add(await realpath(path));
+      if ((await stat(path)).isDirectory() && await isRepository(path)) {
+        matches[kind].add(await realpath(path));
+      }
     } catch (error) {
       if (error.code !== 'ENOENT') throw error;
     }
   }
-  return [...matches];
+  return matches;
 }
 
 async function fallbackMatches(name, home) {
   const queue = [{ path: home, depth: 0 }];
-  const matches = new Set();
+  const matches = { exact: new Set(), prefix: new Set() };
   let inspected = 0;
 
   while (queue.length > 0) {
@@ -56,9 +88,10 @@ async function fallbackMatches(name, home) {
     const { path, depth } = queue.shift();
     inspected += 1;
 
-    if (normalize(basename(path)) === name) {
-      matches.add(await realpath(path));
-      if (matches.size > 1) return { status: 'multiple matches' };
+    const kind = matchKind(basename(path), name);
+    if (kind && await isRepository(path)) {
+      matches[kind].add(await realpath(path));
+      if (matches.exact.size > 1) return { status: 'multiple matches' };
     }
     if (depth === MAX_DEPTH) continue;
 
@@ -78,7 +111,7 @@ async function fallbackMatches(name, home) {
     }
   }
 
-  return matches.size === 1 ? { path: [...matches][0] } : { status: 'not found' };
+  return resultForMatches(matches) || { status: 'not found' };
 }
 
 async function main() {
@@ -88,8 +121,8 @@ async function main() {
   }
   const home = homedir();
   const matches = await configuredMatches(normalize(list), home);
-  if (matches.length === 1) return { path: matches[0] };
-  if (matches.length > 1) return { status: 'multiple matches' };
+  const configuredResult = resultForMatches(matches);
+  if (configuredResult) return configuredResult;
   return fallbackMatches(normalize(list), home);
 }
 

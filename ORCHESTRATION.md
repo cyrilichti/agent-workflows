@@ -93,6 +93,12 @@ its Langfuse trace. If an HTTP response is lost, sending the request again may
 repeat the inference. Tasks and failed Langfuse deliveries are not retried
 automatically.
 
+The Kestra `work` flow calls `/next`, passes its `list` value to
+`/resolve-local-project`, and exposes `item`, `projectDirectory`, `resolution`,
+and both trace URLs. It stops if `/next` finds no eligible item, if either bridge
+call fails, or if directory resolution returns a status instead of one absolute
+path. No later work stage runs with an uncertain directory.
+
 Execution times out after 30 minutes by default (`REQUEST_TIMEOUT_MS`). A failed
 or interrupted task may already have changed files: inspect its outcome before
 submitting a new request. Kestra and Langfuse data persist in Docker volumes.
