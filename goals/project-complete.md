@@ -9,12 +9,12 @@ or yield an explicit unresolved status.
 
 - A unique matching Git repository root from Codex's configured project paths
   is returned without scanning the home directory.
-- The fallback search is bounded as specified by the resolver command.
+- The fallback checks repositories beside configured projects before searching
+  under the home directory, and stops when it finds an exact match.
 - Multiple candidate repositories are resolved using the complete item,
   frontend preference, and a stable final tie break.
-- An exact repository match is returned even when the fallback search cannot
-  inspect every directory. Without an exact match, incomplete searches return
-  a status.
+- Only directories with a `.git` file or directory at their root are eligible.
+  Without an exact match, incomplete home searches return a status.
 
 ## Stop Conditions
 

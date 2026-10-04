@@ -13,7 +13,7 @@ internal.
 ## Unresolved Format
 
 ```json
-{"status":"<not found|search limit reached|search incomplete>"}
+{"status":"<not found|search incomplete>"}
 ```
 
 An unresolved result has no `path`. A command failure is an error, not a JSON
