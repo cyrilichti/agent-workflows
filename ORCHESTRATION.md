@@ -105,9 +105,26 @@ automatically.
 The bridge returns HTTP 200 for completed inference, 502 for a failed inference,
 and 504 when the outcome is unknown. Error responses retain the trace URL in
 their JSON body, so Kestra can fail the HTTP task without a separate status
-check after each call. In `agent_workflows.work`, no eligible item skips project
-resolution; an unresolved project leaves `projectDirectory` empty for a later
-stage to handle conditionally.
+check after each call. In `agent_workflows.work`, the native `has-item` decision
+checks whether `next` returned a non-empty item identifier. Its `then` path
+resolves the project directory with `project`; its `else` path logs that no item
+is eligible and completes the flow. An unresolved project leaves
+`projectDirectory` empty for a later stage to handle conditionally.
+
+In the Kestra topology, open the `has-item` node's **More actions** menu and
+choose **Show a description** to consult “Un item a-t-il été sélectionné ?”,
+the rule, and the Oui/Non outcomes. Kestra displays the task identifier in the
+graph and the `then`/`else` labels on the branches.
+
+### Update an existing flow
+
+Initialization imports missing flows and preserves existing ones on restart.
+To apply a new revision of `agent_workflows.work`, open it in Kestra, select
+**Edit → Flow Code**, and compare its current source with
+[`orchestration/work.yaml`](./orchestration/work.yaml). Preserve any local edits
+while incorporating the new decision and its output expressions, then choose
+**Save** once the editor reports **Valid**. The previous source remains available
+under **Revisions**. Restarting the stack alone does not apply the new revision.
 
 Execution times out after 30 minutes by default (`REQUEST_TIMEOUT_MS`). A failed
 or interrupted task may already have changed files: inspect its outcome before
