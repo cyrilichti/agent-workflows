@@ -25,12 +25,21 @@ cp .env.example .env
 ```
 
 If `.env` already exists, edit it directly. Fill the secrets listed in
-[.env.example](./.env.example). For each `*_PASSWORD`, `NEXTAUTH_SECRET`,
-`LANGFUSE_SALT`, `LANGFUSE_ENCRYPTION_KEY`, `LANGFUSE_PUBLIC_KEY` and
-`LANGFUSE_SECRET_KEY`, generate a separate value:
+[.env.example](./.env.example). For each `*_PASSWORD` except
+`KESTRA_ADMIN_PASSWORD`, and for `NEXTAUTH_SECRET`, `LANGFUSE_SALT`,
+`LANGFUSE_ENCRYPTION_KEY`, `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY`,
+generate a separate value:
 
 ```bash
 openssl rand -hex 32
+```
+
+`KESTRA_ADMIN_PASSWORD` must contain at least eight characters, including one
+uppercase letter, one lowercase letter and one digit. Generate a compatible
+value separately:
+
+```bash
+printf 'Aa1-%s\n' "$(openssl rand -hex 30)"
 ```
 
 For `SECRET_BRIDGE_TOKEN`, generate a base64-encoded value:
@@ -72,7 +81,7 @@ Restart it after changing `.env`.
 | Service | Address | Credentials from `.env` |
 | --- | --- | --- |
 | Kestra | http://localhost:3000 | `KESTRA_ADMIN_EMAIL` / `KESTRA_ADMIN_PASSWORD` |
-| Langfuse | http://localhost:3001 | `local@example.test` / `LANGFUSE_ADMIN_PASSWORD` |
+| Langfuse | http://localhost:3001 | `LANGFUSE_ADMIN_EMAIL` / `LANGFUSE_ADMIN_PASSWORD` |
 | Bridge health | http://localhost:8787/health | None |
 
 Kestra reaches the bridge through `BRIDGE_URL`, which defaults to
