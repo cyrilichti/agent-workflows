@@ -16,21 +16,36 @@ tasks:
       timeout:
         connectTimeout: PT5S
         readIdleTimeout: PT35M
-  - id: project
-    type: io.kestra.plugin.core.http.Request
-    runIf: "{{ (fromJson(fromJson(outputs.next.body).text).id ?? '') != '' }}"
-    uri: '{{ envs.bridge_url }}/generate'
-    method: POST
-    contentType: text/plain
-    headers:
-      X-Request-Id: '{{ execution.id }}-project'
-      Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-    body: 'Execute /project with list: {{ fromJson(fromJson(outputs.next.body).text).list }} and item ID: {{ fromJson(fromJson(outputs.next.body).text).id }}'
-    timeout: PT35M
-    options:
-      timeout:
-        connectTimeout: PT5S
-        readIdleTimeout: PT35M
+  - id: has-item
+    type: io.kestra.plugin.core.flow.If
+    description: |
+      **Un item a-t-il été sélectionné ?**
+
+      Règle : `next` a renvoyé un item avec un identifiant non vide.
+
+      - **Oui** : exécuter `project` pour résoudre le répertoire local du projet.
+      - **Non** : terminer le flux sans exécuter `project`.
+    condition: "{{ (fromJson(fromJson(outputs.next.body).text).id ?? '') != '' }}"
+    then:
+      - id: project
+        type: io.kestra.plugin.core.http.Request
+        uri: '{{ envs.bridge_url }}/generate'
+        method: POST
+        contentType: text/plain
+        headers:
+          X-Request-Id: '{{ execution.id }}-project'
+          Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+        body: 'Execute /project with list: {{ fromJson(fromJson(outputs.next.body).text).list }} and item ID: {{ fromJson(fromJson(outputs.next.body).text).id }}'
+        timeout: PT35M
+        options:
+          timeout:
+            connectTimeout: PT5S
+            readIdleTimeout: PT35M
+    else:
+      - id: no-item
+        type: io.kestra.plugin.core.log.Log
+        description: Non — aucun item éligible ; terminer le flux.
+        message: Aucun item éligible ; le flux se termine sans résolution de projet.
 outputs:
   - id: item
     type: JSON
@@ -40,10 +55,10 @@ outputs:
     value: '{{ fromJson(outputs.next.body).traceUrl }}'
   - id: projectDirectory
     type: STRING
-    value: "{{ tasks.project.state != 'SKIPPED' ? (fromJson(fromJson(outputs.project.body).text).path ?? '') : '' }}"
+    value: "{{ outputs['has-item'].evaluationResult ? (fromJson(fromJson(outputs.project.body).text).path ?? '') : '' }}"
   - id: resolution
     type: JSON
-    value: "{{ tasks.project.state != 'SKIPPED' ? fromJson(fromJson(outputs.project.body).text) : fromJson('{}') }}"
+    value: "{{ outputs['has-item'].evaluationResult ? fromJson(fromJson(outputs.project.body).text) : fromJson('{}') }}"
   - id: resolutionTraceUrl
     type: STRING
-    value: "{{ tasks.project.state != 'SKIPPED' ? fromJson(outputs.project.body).traceUrl : '' }}"
+    value: "{{ outputs['has-item'].evaluationResult ? fromJson(outputs.project.body).traceUrl : '' }}"
