@@ -2,18 +2,34 @@
 
 ## Steps
 
-### 1. Initialize the Delivery Context
+### 1. Resolve Work Mode
 
-Follow `./delivery-context-standalone.md` and keep its plan, item, and delivery
-context.
+Set `work_mode` to `resumed` only when the user explicitly asks to resume.
 
-### 2. Resolve Work Mode
+### 2. Resolve the Delivery Context
 
-Set `work_mode` to `resumed` when the user explicitly asks to resume or the
-selected plan contains an `in_progress` or `completed` todo. Otherwise, set it
-to `new`.
+For `resumed`, follow `./delivery-context-standalone.md` and keep its plan,
+item, and delivery context.
 
-Do not infer or update todo states from Git history or local changes.
+For `new`:
+
+1. Resolve the configured item provider.
+2. Run `../commands/resolve-existing-item.md` with any supplied item reference
+   or title query and:
+
+   ```text
+   candidate_criteria:
+     status: open
+     label: agent-planned
+   fields: labels
+   ```
+
+3. Require the exact `agent-planned` label on the official item.
+4. Run `../commands/read-item-plan.md` for that item.
+5. Write the returned `plan_content` unchanged to the local `../plans/`
+   location defined by `../templates/plan.md`, using its filename rules.
+6. Create `../templates/delivery-context.md` with the local plan path and
+   complete official item context.
 
 ### 3. Follow Shared Execution
 

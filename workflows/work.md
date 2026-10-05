@@ -33,6 +33,10 @@ Preserve complete official item context when the caller supplies it. Both
 branches create or preserve `../templates/delivery-context.md`. Fail an
 incomplete caller handoff instead of switching it to standalone mode.
 
+Treat a caller handoff from `/ready` or `/inspect` with a complete delivery
+context as `resumed`. Treat the approved plan and item supplied by `/pick` as
+`new`.
+
 ---
 
 ## Safety

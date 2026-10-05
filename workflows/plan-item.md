@@ -46,5 +46,6 @@ item_id: official item ID
 label: agent-planned
 ```
 
-Require `applied: true`. Return the approved plan to the caller. Do not apply
-the label when publication or reading fails.
+Require `applied: true`. Add `agent-planned` to the preserved official item
+labels and return that updated item context with the approved plan. Do not
+apply the label when publication or reading fails.

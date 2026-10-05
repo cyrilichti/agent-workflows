@@ -31,7 +31,7 @@ query and:
 ```text
 candidate_criteria:
   status: open
-  label: agent-shaped
+  label: agent-planned
 fields: request_backlinks
 ```
 
