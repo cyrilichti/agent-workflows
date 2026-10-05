@@ -12,11 +12,10 @@ Run with:
 
 ## Steps
 
-### 1. Require the Plan Contract
+### 1. Keep the Plan Authority
 
-Require the authoritative plan file, name, Objective, Expected Outcome, todos
-with valid states, and global Validation. Treat its project-relative path as
-its canonical reference and its todo states as authoritative.
+Use the supplied or selected local plan unchanged. Treat its project-relative
+path as its canonical reference and its todo states as authoritative.
 
 Create or preserve `../templates/delivery-context.md`. Keep the canonical plan
 path as its only plan authority.

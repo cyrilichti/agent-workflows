@@ -55,11 +55,10 @@ Keep the complete created request record in the current execution context.
 
 ### 4. Link the Official Item
 
-Run `../commands/resolve-item-provider.md` with `context: item`, then run
-`../commands/link-request-to-item.md` with:
+Run `../commands/link-request-to-item.md` with:
 
 ```text
-provider: resolved item provider
+provider: item provider from the official item context
 item_id: official item ID
 request_kind: created request kind
 request_url: created request URL

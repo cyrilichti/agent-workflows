@@ -4,10 +4,7 @@
 tool: list_comments
 arguments:
   issueId: item ID or identifier
-  limit: 250
-  cursor: next cursor when present
 ```
 
-Follow every cursor until a comment beginning with the exact marker from
-`../../templates/item-plan-comment.md` is found or no page remains. Return the
-complete content after the marker and required blank line as `plan_content`.
+Return the complete content after the marker and required blank line from the
+comment identified by `../../templates/item-plan-comment.md` as `plan_content`.

@@ -15,5 +15,4 @@ Read the initial approved plan published on an official item.
 3. Return the complete content after the marker and its required blank line as
    `plan_content`.
 
-Stop when the provider operation fails or no identified plan comment exists.
 Do not modify the returned plan content.

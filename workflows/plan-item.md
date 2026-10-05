@@ -11,10 +11,8 @@ execution.
 
 ### 1. Preserve Official Context
 
-Require and preserve the supplied resolved item provider and the official
-item's exact ID and URL. Stop when any is missing; never resolve or reconstruct
-them. Use the conversation to complete only a missing objective, problem, or
-expected outcome.
+Preserve the supplied resolved item provider and complete official item
+context. Do not resolve them again.
 
 ### 2. Follow Shared Execution
 
@@ -50,5 +48,4 @@ label: agent-planned
 ```
 
 Require `applied: true`. Add `agent-planned` to the preserved official item
-labels and return that updated item context with the approved plan. Do not
-apply the label when publication or reading fails.
+labels and return that updated item context with the approved plan.

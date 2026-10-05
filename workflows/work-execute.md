@@ -66,5 +66,4 @@ context selection and then continues autonomously.
 
 - Do not mark a todo with staged changes `completed` before its commit succeeds.
 - Never use `--allow-empty` for a todo commit.
-- Push only after a non-empty todo commit. Do not invoke `/inspect` before
-  `/ready` passes.
+- Do not invoke `/inspect` before `/ready` passes.

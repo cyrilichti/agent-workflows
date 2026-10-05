@@ -13,18 +13,24 @@ item, and delivery context.
 
 For `new`:
 
-1. Resolve the configured item provider.
+1. Run `../commands/resolve-item-provider.md` with:
+
+   ```text
+   context: item
+   ```
+
 2. Run `../commands/resolve-existing-item.md` with any supplied item reference
    or title query and:
 
    ```text
+   provider: resolved item provider
    candidate_criteria:
      status: open
      label: agent-planned
    fields: labels
    ```
 
-3. Require the exact `agent-planned` label on the official item.
+3. Require the resolved item to contain `agent-planned`.
 4. Run `../commands/read-item-plan.md` for that item.
 5. Write the returned `plan_content` unchanged to the local `../plans/`
    location defined by `../templates/plan.md`, using its filename rules.

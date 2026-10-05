@@ -17,6 +17,6 @@ Load `../goals/plan-complete.md` once as this workflow's completion contract.
 
 ### 1. Follow One Context Branch
 
-When the caller supplies complete official item context, require its resolved
-item provider and follow `./plan-item.md`. Stop on an incomplete caller handoff.
-Otherwise, follow `./plan-standalone.md`.
+When the caller supplies official item context, follow `./plan-item.md` with
+that context and its supplied resolved provider. Otherwise, follow
+`./plan-standalone.md`.

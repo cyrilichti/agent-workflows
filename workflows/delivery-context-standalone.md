@@ -20,20 +20,28 @@ options:
 ```
 
 When none exists, report that no delivery plan is available and stop. Read the
-selection without modifying it and require `../templates/plan.md`.
+selection without modifying it.
 
 ### 2. Resolve the Official Item
 
-Resolve the configured item provider, then run
-`../commands/resolve-existing-item.md` with any supplied item reference or title
-query and:
+Run `../commands/resolve-item-provider.md` with:
 
 ```text
+context: item
+```
+
+Then run `../commands/resolve-existing-item.md` with any supplied item reference
+or title query and:
+
+```text
+provider: resolved item provider
 candidate_criteria:
   status: open
   label: agent-planned
-fields: request_backlinks
+fields: [labels, request_backlinks]
 ```
+
+Require the resolved item to contain `agent-planned`.
 
 ### 3. Return the Context
 

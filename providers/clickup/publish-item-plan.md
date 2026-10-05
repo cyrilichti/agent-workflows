@@ -8,5 +8,4 @@ arguments:
   comment_text: exact caller-provided plan comment
 ```
 
-Return the created comment result. Do not update the task or create another
-resource.
+Return the created comment result.
