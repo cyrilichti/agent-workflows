@@ -24,8 +24,8 @@ task_context: official item context plus supplied planning context
 entry_mode: workflow
 ```
 
-Return `needs-refinement` findings unchanged to the caller. Otherwise, keep the
-approved plan returned by that workflow and continue.
+Continue to Step 3 only with an approved plan. Return `needs-refinement`
+findings to the caller without publishing.
 
 ### 3. Publish the Approved Plan
 
