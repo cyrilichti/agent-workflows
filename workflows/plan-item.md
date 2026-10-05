@@ -20,7 +20,7 @@ Follow `./plan-confirm.md` with:
 
 ```text
 task_context: official item context plus supplied planning context
-entry_mode: workflow
+entry_mode: supplied entry mode
 ```
 
 The shared execution returns here only with an approved plan. Continue with

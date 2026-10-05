@@ -9,9 +9,11 @@ specialist, and resolves every material question before asking for approval.
 For an official item, it then publishes the approved plan in a dedicated
 comment and applies <code>agent-planned</code>.
 
-Standalone approval stops with the approved plan. When `/plan` is called by
-`/pick`, the approval also authorizes autonomous delivery and returns control
-to `/pick` so it can continue with `/work`.
+An explicit item ID, URL, or title is resolved as official item context. A
+direct invocation still uses plan-only approval: it may publish an official
+item plan, but it does not start delivery. When `/plan` is called by `/pick`,
+approval also authorizes autonomous delivery and returns control to `/pick` so
+it can continue with `/work`.
 
 ## How `/plan` reaches approval
 
@@ -88,7 +90,7 @@ to `/pick` so it can continue with `/work`.
   <div class="write-flow__step write-flow__step--human">
     <small>Outcome</small>
     <strong>Approved plan</strong>
-    <span>Autonomous delivery is authorized through successful <code>/inspect</code>. Merge remains a human decision.</span>
+    <span>Standalone mode stops after planning. Caller mode authorizes autonomous delivery through successful <code>/inspect</code>.</span>
   </div>
 </div>
 
@@ -134,7 +136,7 @@ to `/pick` so it can continue with `/work`.
     <tr>
       <td>4</td>
       <th scope="row">Approve</th>
-      <td>Present the complete plan and revise it until the human approves it. Standalone approval stops here; workflow approval returns to its caller with autonomous delivery authorized.</td>
+      <td>Present the complete plan and revise it until the human approves it. Standalone approval completes only planning; workflow approval returns to its caller with autonomous delivery authorized.</td>
     </tr>
     <tr>
       <td>5</td>

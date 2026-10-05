@@ -108,8 +108,8 @@ options:
 - Adjust plan
 ```
 
-State that standalone approval approves only the plan and does not start or
-authorize delivery.
+State that standalone approval approves the plan and, for an official item,
+its publication and label. It does not start or authorize delivery.
 
 On `Adjust plan`, give the adjustment to the active specialist, then repeat
 this step with the revised plan.
@@ -118,5 +118,4 @@ Continue only on the approval option for the current mode.
 
 ### 6. Finish
 
-Finish according to `../goals/plan-complete.md`: in `workflow` mode, return the
-approved plan to the calling workflow so it can continue; otherwise stop.
+Return the approved plan to the calling context branch.
