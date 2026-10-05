@@ -73,6 +73,7 @@ Keep the returned `resolved_target_status` for Step 5.
 Follow `./plan.md` with:
 
 ```text
+provider: resolved item provider
 item: complete official item context
 ```
 
