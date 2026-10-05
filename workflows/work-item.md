@@ -16,5 +16,6 @@ Follow `./work-confirm.md` with:
 ```text
 plan: approved plan
 item: complete official item context
-work_mode: new
+delivery_context: supplied delivery context, when available
+work_mode: work mode supplied by `/work`
 ```

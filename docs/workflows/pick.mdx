@@ -1,19 +1,21 @@
 ---
 title: /pick
-description: Select one agent-shaped item, approve its plan, and start autonomous delivery.
+description: Select one unplanned agent-shaped item, approve its plan, and start autonomous delivery.
 ---
 
-`/pick` resolves one official item, shows its current context, and sends it to
-planning. An approved plan starts autonomous delivery; an item containing
-multiple delivery units can be handed to `/refine` without changing it first.
+`/pick` resolves one official item. An item with `agent-planned` stops before
+planning and is left for `/work`. Otherwise, `/pick` requires `agent-shaped`,
+shows the current context, and sends it to planning. An approved plan starts
+autonomous delivery; an item containing multiple delivery units can be handed
+to `/refine` without changing it first.
 
 ## How `/pick` routes the item
 
-<div class="write-flow pick-flow" role="group" aria-label="The pick workflow resolves and summarizes one agent-shaped item, sends it to planning, then either starts autonomous work after human plan approval or asks the human whether to refine an item that contains multiple delivery units.">
+<div class="write-flow pick-flow" role="group" aria-label="The pick workflow resolves and summarizes one unplanned agent-shaped item, sends it to planning, then either starts autonomous work after human plan approval or asks the human whether to refine an item that contains multiple delivery units.">
   <div class="write-flow__step write-flow__step--assisted">
     <small>01 · Assisted</small>
     <strong>Pick item</strong>
-    <span>Resolve and show one open, provider-backed item labeled <code>agent-shaped</code>.</span>
+    <span>Resolve and show one open item labeled <code>agent-shaped</code> without <code>agent-planned</code>.</span>
   </div>
 
   <span class="write-flow__connector" aria-hidden="true">↓</span>
@@ -64,12 +66,12 @@ multiple delivery units can be handed to `/refine` without changing it first.
     <tr>
       <td>1</td>
       <th scope="row">Pick</th>
-      <td>Resolve and present one open official item whose labels include <code>agent-shaped</code>.</td>
+      <td>Resolve and present one open official item whose labels include <code>agent-shaped</code> but not <code>agent-planned</code>. Stop when it is already planned.</td>
     </tr>
     <tr>
       <td>2</td>
       <th scope="row">Plan</th>
-      <td>Run <code>/plan</code> and receive either an approved plan or concise <code>needs-refinement</code> findings.</td>
+      <td>Run <code>/plan</code>; an approved plan is published on the item and marked <code>agent-planned</code>, while oversized work returns concise <code>needs-refinement</code> findings.</td>
     </tr>
     <tr>
       <td>3</td>

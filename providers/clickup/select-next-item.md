@@ -3,7 +3,7 @@
 ```text
 tool: clickup_filter_tasks
 arguments:
-  tags: [agent-shaped]
+  tags: [agent-planned]
   include_closed: false
 ```
 

@@ -54,9 +54,11 @@ export const agentSkillCohorts = [
 export const skillUrl = (skill) =>
   `https://github.com/${skill.source}/tree/HEAD/${skillsLock.skills[skill.name].skillPath.replace("/SKILL.md", "")}`;
 
-`/work` executes an approved plan autonomously, one todo at a time. It routes
-each todo to the right specialist and hands the completed plan directly to
-`/ready` without another approval.
+`/work` requires an `agent-planned` item and executes its approved plan
+autonomously, one todo at a time. New standalone work copies the plan published
+on the item to the local plan location; resumed work keeps the current local
+plan. It routes each todo to the right specialist and hands the completed plan
+directly to `/ready` without another approval.
 
 ## How `/work` executes a plan
 
@@ -83,7 +85,7 @@ each todo to the right specialist and hands the completed plan directly to
     <div className="write-flow__step write-flow__step--focus">
       <small>03 · Autonomous</small>
       <strong>Validate and commit</strong>
-      <span>Commit the result, persist completion, and continue with the plan.</span>
+      <span>Commit and push the result, persist completion, and continue with the plan.</span>
     </div>
     <span className="write-flow__loop-return">Next todo</span>
   </div>
@@ -133,7 +135,7 @@ when none are needed.
     <tr>
       <td>1</td>
       <th scope="row">Initialize</th>
-      <td>For new work, start from a clean default branch, create and push one work branch, open one draft request, and link it to the item.</td>
+      <td>For new work, copy the published item plan locally, start from a clean default branch, create and push one work branch, open one draft request, and link it to the item.</td>
     </tr>
     <tr>
       <td>2</td>
@@ -148,7 +150,7 @@ when none are needed.
     <tr>
       <td>4</td>
       <th scope="row">Commit</th>
-      <td>Commit the result, persist todo completion immediately, and continue without pushing.</td>
+      <td>Commit the result, persist todo completion immediately, push the commit, and continue. A todo without a commit causes no push.</td>
     </tr>
     <tr>
       <td>5</td>

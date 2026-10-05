@@ -2,13 +2,15 @@
 
 ## Outcome
 
-One official item has been selected and summarized, then routed safely from
-its planning result.
+One official item is either recognized as already planned or summarized and
+routed from its planning result.
 
 ## Success Criteria
 
-- One `agent-shaped` item from the configured provider was selected from its
-  official current labels and its summary was shown.
+- Official current labels determined the route: an item with `agent-planned`
+  stopped before planning; otherwise one `agent-shaped` item was summarized.
+- The approved plan was published on the item and `agent-planned` was applied
+  before delivery started.
 - An approved plan caused the item to move to `in progress` before `/work`
   received the plan and updated official item context.
 - A `needs-refinement` result left the parent item unchanged by `/pick`,
@@ -21,6 +23,8 @@ its planning result.
 - Stop successfully after continuing with `/work` from an approved plan and a
   successful `in progress` transition.
 - Stop successfully after the selected `needs-refinement` outcome completes.
+- Stop successfully before planning when the selected item already contains
+  `agent-planned`.
 - Stop and report when a required operation fails.
 
 ## Human Validation

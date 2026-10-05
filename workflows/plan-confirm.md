@@ -27,8 +27,8 @@ context: task_context
 
 Continue on `refinement-not-needed`. On `needs-refinement`:
 
-- in `workflow` mode, return the findings to the caller, which owns any
-  refinement offer;
+- in `workflow` mode, return the findings through the context branch to the
+  caller that owns any refinement offer;
 - in `standalone` mode, report the findings and stop.
 
 ### 2. Resolve Planning Author
@@ -85,26 +85,32 @@ file: created plan path
 todo_count: number of created plan todos
 ```
 
-Then ask using `../templates/select-option.md` with:
+Set `approval_option` to `Approve plan and autonomous delivery` in `workflow`
+mode, or `Approve plan` in `standalone` mode.
+
+In `workflow` mode, state that approval authorizes non-empty commits, normal
+pushes, request creation and promotion, request comments, item transitions and
+labels, review publication, and corrective loops through successful `/inspect`.
+It never authorizes merge, completion, or `/done`.
+
+In `standalone` mode, state that approval approves the plan and, for an
+official item, its publication and label. It does not start or authorize
+delivery.
+
+Then ask once using `../templates/select-option.md` with:
 
 ```text
 question: What do you want to do with this plan?
 options:
-- Approve plan and autonomous delivery
+- <resolved approval option>
 - Adjust plan
 ```
 
 On `Adjust plan`, give the adjustment to the active specialist, then repeat
 this step with the revised plan.
 
-State that approval authorizes non-empty commits, normal pushes, request
-creation and promotion, request comments, item transitions and labels, review
-publication, and corrective loops through successful `/inspect`. It never
-authorizes merge, completion, or `/done`.
-
-Continue only on `Approve plan and autonomous delivery`.
+Continue only on `approval_option`.
 
 ### 6. Finish
 
-Finish according to `../goals/plan-complete.md`: return the approved plan in
-`workflow` mode; otherwise stop.
+Return the approved plan to the calling context branch.

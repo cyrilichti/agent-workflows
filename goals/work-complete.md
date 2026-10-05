@@ -7,8 +7,9 @@ continued through `/ready`.
 
 ## Success Criteria
 
-- Standalone work selects one authoritative plan and complete official item
-  before autonomous execution.
+- New standalone work selects an `agent-planned` item and materializes its
+  published plan locally before autonomous execution. Resumed standalone work
+  keeps its selected local plan.
 - New work starts from a clean `main` or `master`, runs `git pull --ff-only`,
   then creates and pushes one work branch and empty initialization commit,
   creates one draft request, and adds its URL to the official item.
@@ -25,7 +26,8 @@ continued through `/ready`.
   completes without a commit.
 - `/work` alone translates readiness gaps and blocking inspection findings into
   corrective todos with their source ID, HEAD SHA, and exact finding.
-- Todo commits are not pushed by `/work`.
+- Every non-empty todo commit is pushed immediately by `/work`; a todo without
+  a commit does not trigger a push.
 - A terminal plan with completed work hands `/ready` the same delivery context
   without another choice.
 - A plan whose todos are all `cancelled` stops without calling `/ready`.

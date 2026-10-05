@@ -26,16 +26,21 @@ Reuse these rules when already active from the caller; otherwise follow them:
 Follow exactly one branch:
 
 - follow `./work-item.md` when the caller supplies an approved plan and its
-  complete official item context;
+  complete `agent-planned` official item context;
 - otherwise, follow `./work-standalone.md`.
 
 Preserve complete official item context when the caller supplies it. Both
 branches create or preserve `../templates/delivery-context.md`. Fail an
 incomplete caller handoff instead of switching it to standalone mode.
 
+Treat a caller handoff from `/ready` or `/inspect` with a complete delivery
+context as `resumed`. Treat the approved plan and item supplied by `/pick` as
+`new`.
+
 ---
 
 ## Safety
 
 - Do not change item status.
-- Do not push todo commits or invoke `/inspect` before `/ready` passes.
+- Push each non-empty todo commit normally to the current branch upstream.
+- Do not invoke `/inspect` before `/ready` passes.
