@@ -2,7 +2,8 @@
 
 ## Purpose
 
-Resolve official-item planning context, then follow the shared execution.
+Use the supplied official-item planning context, then follow the shared
+execution.
 
 ---
 
