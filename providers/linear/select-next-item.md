@@ -3,7 +3,7 @@
 ```text
 tool: list_issues
 arguments:
-  label: agent-shaped
+  label: agent-planned
   includeArchived: false
   limit: 250
   fields: [id, title, url, project, status]

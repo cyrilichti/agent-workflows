@@ -22,3 +22,29 @@ Follow `./plan-confirm.md` with:
 task_context: official item context plus supplied planning context
 entry_mode: workflow
 ```
+
+Keep the approved plan returned by that workflow.
+
+### 3. Publish the Approved Plan
+
+Resolve the configured item provider. Read the exact complete approved plan
+from its authoritative file, then run `../commands/publish-item-plan.md` with:
+
+```text
+provider: resolved item provider
+item_id: official item ID
+plan_content: exact complete approved plan content
+```
+
+Run `../commands/read-item-plan.md` for the same item and require a returned
+`plan_content` before continuing. Then run `../commands/apply-item-label.md`
+with:
+
+```text
+provider: resolved item provider
+item_id: official item ID
+label: agent-planned
+```
+
+Require `applied: true`. Return the approved plan to the caller. Do not apply
+the label when publication or reading fails.
