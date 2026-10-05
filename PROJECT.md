@@ -17,10 +17,10 @@ Workflows keep the active context narrow. A top-level workflow selects a branch 
 | Workflow | Responsibility and handoff |
 | --- | --- |
 | `/write` | Qualifies, drafts, and saves one provider-backed item after human confirmation. |
-| `/pick` | Resolves an `agent-shaped` item, obtains an approved plan through `/plan`, then starts `/work`. If the item contains independent delivery units, it can offer `/refine` instead. |
-| `/plan` | Creates one authoritative plan for a single delivery unit or returns a need for refinement. |
+| `/pick` | Resolves an `agent-shaped` item, obtains an approved published plan through `/plan`, then starts `/work`. If the item contains independent delivery units, it can offer `/refine` instead. |
+| `/plan` | Creates one authoritative plan for a single delivery unit or returns a need for refinement. For an official item, it publishes the approved plan and applies `agent-planned`. |
 | `/refine` | Decomposes an oversized official item into confirmed child items without changing the parent. |
-| `/work` | Executes plan todos, records their state in the plan, commits completed changes, and hands the result to `/ready`. |
+| `/work` | Requires an `agent-planned` item, materializes its plan locally for new work, executes plan todos, pushes each non-empty todo commit, and hands the result to `/ready`. |
 | `/ready` | Rechecks the plan and delivery, sends gaps back to `/work`, then publishes the plan to the request and passes it to `/inspect`. |
 | `/inspect` | Reviews a fixed request snapshot, publishes findings, sends blocking findings back to `/work`, or marks the item inspected. |
 | `/done` | Handles a separate human-confirmed merge and completes the official item. |

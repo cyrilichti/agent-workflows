@@ -3,7 +3,8 @@ title: /next
 description: Select one eligible item and return its identity and destination.
 ---
 
-The `agent-shaped` label marks work an agent may take. `/next` selects the
+The `agent-planned` label marks work whose approved plan is available on its
+item. `/next` selects the
 first eligible item in the configured provider's returned page. It does not
 choose the most recently created or updated item: neither provider query
 specifies that ordering. The provider-specific status rules below narrow the
@@ -45,7 +46,7 @@ through the bridge. It needs no item reference.
     <tr>
       <td>1</td>
       <th scope="row">Filter</th>
-      <td>Linear selects the first unarchived issue in the returned page with the exact <code>agent-shaped</code> label and a <code>Backlog</code> or <code>Open</code> status. ClickUp selects a task tagged <code>agent-shaped</code> and excludes closed tasks.</td>
+      <td>Linear selects the first unarchived issue in the returned page with the exact <code>agent-planned</code> label and a <code>Backlog</code> or <code>Open</code> status. ClickUp selects a task tagged <code>agent-planned</code> and excludes closed tasks.</td>
     </tr>
     <tr>
       <td>2</td>

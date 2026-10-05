@@ -7,8 +7,9 @@ continued through `/ready`.
 
 ## Success Criteria
 
-- Standalone work selects one authoritative plan and complete official item
-  before autonomous execution.
+- New standalone work selects an `agent-planned` item and materializes its
+  published plan locally before autonomous execution. Resumed standalone work
+  keeps its selected local plan.
 - New work starts from a clean `main` or `master`, runs `git pull --ff-only`,
   then creates and pushes one work branch and empty initialization commit,
   creates one draft request, and adds its URL to the official item.

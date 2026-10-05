@@ -6,6 +6,8 @@ description: Turn one delivery unit into an approved implementation plan.
 `/plan` turns one task into an approved implementation plan. It first checks
 that the task is one coherent delivery unit, routes the work to the right
 specialist, and resolves every material question before asking for approval.
+For an official item, it then publishes the approved plan in a dedicated
+comment and applies <code>agent-planned</code>.
 
 ## How `/plan` reaches approval
 
@@ -129,6 +131,11 @@ specialist, and resolves every material question before asking for approval.
       <td>4</td>
       <th scope="row">Approve</th>
       <td>Present the complete plan and revise it until the human approves autonomous delivery.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Publish</th>
+      <td>For an official item, publish and read back the approved plan, then apply <code>agent-planned</code>.</td>
     </tr>
   </tbody>
 </table>

@@ -9,7 +9,7 @@ page contains no eligible item.
 
 - The configured item provider was queried once without a destination scope.
 - The returned item is the first eligible result from the provider's single
-  selection page for `agent-shaped` work.
+  selection page for `agent-planned` work.
 - A found response contains only `name`, `id`, `url`, and `list`; an empty
   response is exactly `{ "status": "no eligible item" }`.
 - No item, repository, plan, or delivery state was changed.

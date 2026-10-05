@@ -10,6 +10,8 @@ One task context produces an approved plan or `needs-refinement`.
   uses its project-relative file path as its canonical reference, and has
   no unresolved material question and has explicit user approval after its
   complete content and autonomous-delivery scope were shown.
+- For an official item, the approved plan is published in its dedicated
+  comment and read back before `agent-planned` is applied.
 - A `needs-refinement` result contains concise findings and creates no plan
   file.
 
