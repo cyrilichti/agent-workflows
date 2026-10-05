@@ -7,8 +7,8 @@ its planning result.
 
 ## Success Criteria
 
-- One `agent-shaped` item from the configured provider was selected from its
-  official current labels and its summary was shown.
+- One `agent-shaped` item without `agent-planned` was selected from its official
+  current labels and its summary was shown.
 - The approved plan was published on the item and `agent-planned` was applied
   before delivery started.
 - An approved plan caused the item to move to `in progress` before `/work`
@@ -23,6 +23,8 @@ its planning result.
 - Stop successfully after continuing with `/work` from an approved plan and a
   successful `in progress` transition.
 - Stop successfully after the selected `needs-refinement` outcome completes.
+- Stop successfully before planning when the selected item already contains
+  `agent-planned`.
 - Stop and report when a required operation fails.
 
 ## Human Validation

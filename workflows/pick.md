@@ -47,6 +47,9 @@ fields: labels
 Require the final official item to contain the exact `agent-shaped` label.
 Otherwise, identify the item, report that it is not ready for `/pick`, and stop.
 
+When the item already contains `agent-planned`, identify it, report that its
+plan is already available for `/work`, and stop before summarizing or planning.
+
 ### 3. Summarize Item
 
 Use the returned item and provider ID as the complete official item context.
