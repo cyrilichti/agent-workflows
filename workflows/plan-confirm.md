@@ -27,8 +27,8 @@ context: task_context
 
 Continue on `refinement-not-needed`. On `needs-refinement`:
 
-- in `workflow` mode, return the findings to the caller, which owns any
-  refinement offer;
+- in `workflow` mode, return the findings through the context branch to the
+  caller that owns any refinement offer;
 - in `standalone` mode, report the findings and stop.
 
 ### 2. Resolve Planning Author

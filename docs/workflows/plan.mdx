@@ -90,7 +90,7 @@ it can continue with `/work`.
   <div class="write-flow__step write-flow__step--human">
     <small>Outcome</small>
     <strong>Approved plan</strong>
-    <span>Standalone mode stops after planning. Caller mode authorizes autonomous delivery through successful <code>/inspect</code>.</span>
+    <span>Standalone mode does not start delivery. Caller mode authorizes autonomous delivery through successful <code>/inspect</code>.</span>
   </div>
 </div>
 
@@ -136,7 +136,7 @@ it can continue with `/work`.
     <tr>
       <td>4</td>
       <th scope="row">Approve</th>
-      <td>Present the complete plan and revise it until the human approves it. Standalone approval completes only planning; workflow approval returns to its caller with autonomous delivery authorized.</td>
+      <td>Present the complete plan and revise it until the human approves it. Standalone approval completes only <code>/plan</code>; workflow approval returns to its caller with autonomous delivery authorized.</td>
     </tr>
     <tr>
       <td>5</td>

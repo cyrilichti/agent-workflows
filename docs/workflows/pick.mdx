@@ -3,11 +3,11 @@ title: /pick
 description: Select one unplanned agent-shaped item, approve its plan, and start autonomous delivery.
 ---
 
-`/pick` resolves one official item that is `agent-shaped` but not yet
-`agent-planned`, shows its current context, and sends it to planning. An
-approved plan starts autonomous delivery; an item containing multiple delivery
-units can be handed to `/refine` without changing it first. An already planned
-item stops before planning and is left for `/work`.
+`/pick` resolves one official item. An item with `agent-planned` stops before
+planning and is left for `/work`. Otherwise, `/pick` requires `agent-shaped`,
+shows the current context, and sends it to planning. An approved plan starts
+autonomous delivery; an item containing multiple delivery units can be handed
+to `/refine` without changing it first.
 
 ## How `/pick` routes the item
 

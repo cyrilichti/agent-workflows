@@ -2,9 +2,10 @@
 
 ## Purpose
 
-Resolve and summarize one official item, create a plan via `/plan`, offer
-`/refine` on `needs-refinement`, or after plan approval move the item to
-in progress and continue with `/work`.
+Resolve one official item and stop when it is already planned. Otherwise,
+summarize it, create a plan via `/plan`, offer `/refine` on
+`needs-refinement`, or after plan approval move it to in progress and continue
+with `/work`.
 
 ---
 
@@ -44,11 +45,11 @@ candidate_criteria:
 fields: labels
 ```
 
-Require the final official item to contain the exact `agent-shaped` label.
-Otherwise, identify the item, report that it is not ready for `/pick`, and stop.
-
 When the item already contains `agent-planned`, identify it, report that its
 plan is already available for `/work`, and stop before summarizing or planning.
+
+Require the remaining item to contain the exact `agent-shaped` label.
+Otherwise, identify it, report that it is not ready for `/pick`, and stop.
 
 ### 3. Summarize Item
 
