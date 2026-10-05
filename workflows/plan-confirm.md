@@ -85,7 +85,7 @@ file: created plan path
 todo_count: number of created plan todos
 ```
 
-Then ask using `../templates/select-option.md` with:
+In `workflow` mode, ask using `../templates/select-option.md` with:
 
 ```text
 question: What do you want to do with this plan?
@@ -94,17 +94,29 @@ options:
 - Adjust plan
 ```
 
-On `Adjust plan`, give the adjustment to the active specialist, then repeat
-this step with the revised plan.
-
 State that approval authorizes non-empty commits, normal pushes, request
 creation and promotion, request comments, item transitions and labels, review
 publication, and corrective loops through successful `/inspect`. It never
 authorizes merge, completion, or `/done`.
 
-Continue only on `Approve plan and autonomous delivery`.
+In `standalone` mode, ask instead with:
+
+```text
+question: What do you want to do with this plan?
+options:
+- Approve plan
+- Adjust plan
+```
+
+State that standalone approval approves only the plan and does not start or
+authorize delivery.
+
+On `Adjust plan`, give the adjustment to the active specialist, then repeat
+this step with the revised plan.
+
+Continue only on the approval option for the current mode.
 
 ### 6. Finish
 
-Finish according to `../goals/plan-complete.md`: return the approved plan in
-`workflow` mode; otherwise stop.
+Finish according to `../goals/plan-complete.md`: in `workflow` mode, return the
+approved plan to the calling workflow so it can continue; otherwise stop.

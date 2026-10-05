@@ -9,9 +9,13 @@ specialist, and resolves every material question before asking for approval.
 For an official item, it then publishes the approved plan in a dedicated
 comment and applies <code>agent-planned</code>.
 
+Standalone approval stops with the approved plan. When `/plan` is called by
+`/pick`, the approval also authorizes autonomous delivery and returns control
+to `/pick` so it can continue with `/work`.
+
 ## How `/plan` reaches approval
 
-<div class="write-flow plan-flow" role="img" aria-label="The plan workflow resolves the task context and checks whether it is one delivery unit. Tasks containing multiple independent units exit with needs-refinement. Otherwise, a specialist drafts the plan, resolves material questions with the human, and revises the complete plan until the human approves autonomous delivery.">
+<div class="write-flow plan-flow" role="img" aria-label="The plan workflow resolves the task context and checks whether it is one delivery unit. Tasks containing multiple independent units exit with needs-refinement. Otherwise, a specialist drafts the plan, resolves material questions with the human, and revises the complete plan until the human approves it with the scope of the current entry mode.">
   <div class="write-flow__step write-flow__step--assisted">
     <small>01 · Assisted</small>
     <strong>Check delivery scope</strong>
@@ -74,7 +78,7 @@ comment and applies <code>agent-planned</code>.
     <div class="write-flow__step write-flow__step--human">
       <small>Human</small>
       <strong>Review plan</strong>
-      <span>Approve autonomous delivery or request an adjustment.</span>
+      <span>Approve the plan with the current entry mode's scope or request an adjustment.</span>
     </div>
     <span class="write-flow__loop-return">Adjust plan</span>
   </div>
@@ -130,7 +134,7 @@ comment and applies <code>agent-planned</code>.
     <tr>
       <td>4</td>
       <th scope="row">Approve</th>
-      <td>Present the complete plan and revise it until the human approves autonomous delivery.</td>
+      <td>Present the complete plan and revise it until the human approves it. Standalone approval stops here; workflow approval returns to its caller with autonomous delivery authorized.</td>
     </tr>
     <tr>
       <td>5</td>
