@@ -85,36 +85,31 @@ file: created plan path
 todo_count: number of created plan todos
 ```
 
-In `workflow` mode, ask using `../templates/select-option.md` with:
+Set `approval_option` to `Approve plan and autonomous delivery` in `workflow`
+mode, or `Approve plan` in `standalone` mode.
+
+In `workflow` mode, state that approval authorizes non-empty commits, normal
+pushes, request creation and promotion, request comments, item transitions and
+labels, review publication, and corrective loops through successful `/inspect`.
+It never authorizes merge, completion, or `/done`.
+
+In `standalone` mode, state that approval approves the plan and, for an
+official item, its publication and label. It does not start or authorize
+delivery.
+
+Then ask once using `../templates/select-option.md` with:
 
 ```text
 question: What do you want to do with this plan?
 options:
-- Approve plan and autonomous delivery
+- <resolved approval option>
 - Adjust plan
 ```
-
-State that approval authorizes non-empty commits, normal pushes, request
-creation and promotion, request comments, item transitions and labels, review
-publication, and corrective loops through successful `/inspect`. It never
-authorizes merge, completion, or `/done`.
-
-In `standalone` mode, ask instead with:
-
-```text
-question: What do you want to do with this plan?
-options:
-- Approve plan
-- Adjust plan
-```
-
-State that standalone approval approves the plan and, for an official item,
-its publication and label. It does not start or authorize delivery.
 
 On `Adjust plan`, give the adjustment to the active specialist, then repeat
 this step with the revised plan.
 
-Continue only on the approval option for the current mode.
+Continue only on `approval_option`.
 
 ### 6. Finish
 
