@@ -25,7 +25,8 @@ continued through `/ready`.
   completes without a commit.
 - `/work` alone translates readiness gaps and blocking inspection findings into
   corrective todos with their source ID, HEAD SHA, and exact finding.
-- Todo commits are not pushed by `/work`.
+- Every non-empty todo commit is pushed immediately by `/work`; a todo without
+  a commit does not trigger a push.
 - A terminal plan with completed work hands `/ready` the same delivery context
   without another choice.
 - A plan whose todos are all `cancelled` stops without calling `/ready`.
