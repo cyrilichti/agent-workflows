@@ -24,8 +24,8 @@ task_context: official item context plus supplied planning context
 entry_mode: workflow
 ```
 
-Continue to Step 3 only with an approved plan. Return `needs-refinement`
-findings to the caller without publishing.
+The shared execution returns here only with an approved plan. Continue with
+that plan.
 
 ### 3. Publish the Approved Plan
 
