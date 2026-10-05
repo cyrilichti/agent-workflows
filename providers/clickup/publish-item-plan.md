@@ -10,4 +10,3 @@ arguments:
 
 Return the created comment result. Do not update the task or create another
 resource.
-

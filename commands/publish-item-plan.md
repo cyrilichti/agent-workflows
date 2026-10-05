@@ -17,4 +17,3 @@ Publish one approved plan on an official item.
 
 Do not update the item description, labels, status, assignment, or any other
 field.
-

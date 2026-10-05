@@ -9,4 +9,3 @@ arguments:
 
 Return the created comment result. Do not update the issue or create another
 resource.
-

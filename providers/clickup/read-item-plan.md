@@ -11,4 +11,3 @@ arguments:
 Follow every continuation until a comment beginning with the exact marker from
 `../../templates/item-plan-comment.md` is found or no page remains. Return the
 complete content after the marker and required blank line as `plan_content`.
-

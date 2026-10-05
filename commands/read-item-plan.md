@@ -17,4 +17,3 @@ Read the initial approved plan published on an official item.
 
 Stop when the provider operation fails or no identified plan comment exists.
 Do not modify the returned plan content.
-
