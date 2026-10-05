@@ -26,7 +26,7 @@ Reuse these rules when already active from the caller; otherwise follow them:
 Follow exactly one branch:
 
 - follow `./work-item.md` when the caller supplies an approved plan and its
-  complete official item context;
+  complete `agent-planned` official item context;
 - otherwise, follow `./work-standalone.md`.
 
 Preserve complete official item context when the caller supplies it. Both
