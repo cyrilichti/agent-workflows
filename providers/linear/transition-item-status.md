@@ -34,5 +34,4 @@ arguments:
   state: exact resolved status ID or name
 ```
 
-Do not pass any other field. Return the successful mutation result with its
-resulting status when available, or the provider failure when the update fails.
+Return the resulting status or provider failure. Do not pass any other field.

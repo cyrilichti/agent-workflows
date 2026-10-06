@@ -10,12 +10,23 @@ Run `../commands/resolve-item-provider.md` with:
 context: item
 ```
 
-Then run `../commands/transition-item-status.md` with:
+Run `../commands/transition-item-status.md` to resolve the exact target:
 
 ```text
 provider: resolved item provider
 item_id: official item ID
 target_status: in progress
+mode: resolve
+```
+
+Then apply the transition with the same command:
+
+```text
+provider: resolved item provider
+item_id: official item ID
+target_status: in progress
+mode: apply
+resolved_target_status: exact status returned by resolution
 ```
 
 Stop before preparing the base branch when the transition fails. Replace the
