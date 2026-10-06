@@ -1,6 +1,7 @@
 import { homedir } from 'node:os';
 import { readFileSync } from 'node:fs';
 import { parseEnv } from 'node:util';
+import { MAX_TIMEOUT_MS } from '../execution/task-contract.mjs';
 
 /**
  * Load bridge settings without adding service secrets to the CLI environment.
@@ -32,8 +33,8 @@ export function loadBridgeConfig({
   }
   const timeoutMs = Number(env.REQUEST_TIMEOUT_MS || 1800000);
   const port = Number(env.BRIDGE_PORT || 8787);
-  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 1800000) {
-    throw new Error('REQUEST_TIMEOUT_MS must be 1–1800000.');
+  if (!Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > MAX_TIMEOUT_MS) {
+    throw new Error(`REQUEST_TIMEOUT_MS must be 1–${MAX_TIMEOUT_MS}.`);
   }
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new Error('Invalid BRIDGE_PORT.');
