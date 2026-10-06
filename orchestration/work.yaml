@@ -83,8 +83,8 @@ tasks:
               /work
 
               `/work` requires an `agent-planned` item and executes its approved plan
-              autonomously, one todo at a time. For new work, its common entry moves the
-              item to the exact resolved `in progress` status before initialization.
+              autonomously, one todo at a time. For new work, initialization moves the
+              item to the exact resolved `in progress` status before preparing the branch.
               Resumed work preserves the item status.
               New standalone work copies the plan published on the item to the local plan
               location; resumed work keeps the current local plan. It routes each todo to the

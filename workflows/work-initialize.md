@@ -2,7 +2,27 @@
 
 ## Steps
 
-### 1. Prepare the Base Branch
+### 1. Start the Item
+
+Run `../commands/resolve-item-provider.md` with:
+
+```text
+context: item
+```
+
+Then run `../commands/transition-item-status.md` with:
+
+```text
+provider: resolved item provider
+item_id: official item ID
+target_status: in progress
+```
+
+Stop before preparing the base branch when the transition fails. Replace the
+status in the official item context with the returned resulting status and
+preserve that updated item in the delivery context.
+
+### 2. Prepare the Base Branch
 
 Use the current checkout. Resolve the repository's default branch and require
 its name to be exactly `main` or `master`.
@@ -16,7 +36,7 @@ Stop on a failed switch or pull with its observed error. After both succeed,
 require a clean worktree and index before creating the work branch. If local
 changes remain, report them and stop without discarding them.
 
-### 2. Initialize the Branch
+### 3. Initialize the Branch
 
 Format the branch name with `../templates/branch-name.md` using:
 
@@ -29,7 +49,7 @@ item_type: official item type, when available
 Create and switch to the branch, create one empty initialization commit named
 from the plan, then push to the current push remote.
 
-### 3. Create the Draft Request
+### 4. Create the Draft Request
 
 Run `../commands/resolve-version-provider.md`, then
 `../commands/resolve-version-repository.md` with:
@@ -58,7 +78,7 @@ title: formatted draft request title
 
 Keep the complete created request record in the current execution context.
 
-### 4. Link the Official Item
+### 5. Link the Official Item
 
 Run `../commands/link-request-to-item.md` with:
 
@@ -70,7 +90,8 @@ request_url: created request URL
 plan_reference: project-relative authoritative plan file path
 ```
 
-Return the created branch and complete request record for the delivery context.
+Return the updated official item, created branch, and complete request record
+for the delivery context.
 
 ---
 
@@ -82,5 +103,5 @@ Return the created branch and complete request record for the delivery context.
 - Do not fetch separately, merge, rebase, or use another pull mode.
 - Do not run a general repository, provider, MCP capability, or backlink
   preflight.
-- Link only the newly created request and do not change item status.
+- Link only the newly created request.
 - Do not persist Git, provider, or request metadata in the plan.
