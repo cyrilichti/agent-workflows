@@ -1,7 +1,6 @@
 # Inspect Result
 
-Use when `/inspect` completes or stops after a blocked, unsupported, failed, or
-partial result.
+Use when `/inspect` completes.
 
 ## Format
 

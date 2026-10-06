@@ -104,10 +104,10 @@ tasks:
               timeout:
                 connectTimeout: PT5S
                 readIdleTimeout: PT59M55S
-          - id: qualify-work
+          - id: is-work-complete
             type: io.kestra.plugin.core.execution.Fail
             description: |
-              Qualify the terminal `/inspect` result.
+              Check whether the work chain completed successfully.
 
               Fail unless the final human-readable message confirms inspection
               publication and `agent-inspected` application for the selected item.

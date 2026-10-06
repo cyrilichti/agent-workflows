@@ -76,17 +76,6 @@ Require `applied: true`, then present `../templates/inspect-result.md` with
 `inspection published` and `agent-inspected applied` and finish according to
 `../goals/inspect-complete.md`.
 
-## Terminal Failures
-
-When a required operation fails or context is incomplete, present
-`../templates/inspect-result.md` with the observed request and item outcomes
-and stop. Report `not attempted` for label application when publication did
-not complete. After successful publication, preserve that observed result if
-label application fails. Use `Unavailable` for an identity or result that could
-not be resolved. Include `Remaining` only for an exact actionable request or
-item mutation. Do not emit this terminal result while restarting a stale
-snapshot or continuing through corrective `/work`.
-
 ## Safety
 
 - Limit inspection-owned mutations to publishing new review content and
