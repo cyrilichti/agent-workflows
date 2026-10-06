@@ -30,18 +30,23 @@ Set `work_mode` to `resumed` when the official item contains a `Draft PR:` or
 
 ### 3. Resolve the Delivery Context
 
-For `resumed`, read the local plan referenced by `Agent-Workflows-Plan:` in
-the backlink comment. When backlinks reference different plans, ask which
-referenced plan to use. Stop when the plan reference or local file is missing.
-Keep the item backlinks in the delivery context for `/ready` to resolve the
-exact request.
+For `resumed`:
 
-For `new`, run `../commands/read-item-plan.md` for the resolved item and write
-the returned `plan_content` unchanged to the local `../plans/` location defined
-by `../templates/plan.md`, using its filename rules.
+1. Select the plan reference from `Agent-Workflows-Plan:` in the backlink
+   comment. When backlinks reference different plans, ask which referenced
+   plan to use. Stop when the plan reference is missing.
+2. Read the referenced local plan. Stop when the local file is missing.
+3. Create `../templates/delivery-context.md` with the local plan path and
+   complete official item context, including its backlinks for `/ready` to
+   resolve the exact request.
 
-Create `../templates/delivery-context.md` with the local plan path and complete
-official item context.
+For `new`:
+
+1. Run `../commands/read-item-plan.md` for the resolved item.
+2. Write the returned `plan_content` unchanged to the local `../plans/`
+   location defined by `../templates/plan.md`, using its filename rules.
+3. Create `../templates/delivery-context.md` with the local plan path and
+   complete official item context.
 
 ### 4. Follow Shared Execution
 
