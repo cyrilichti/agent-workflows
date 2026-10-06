@@ -1,21 +1,34 @@
 id: work
 namespace: agent_workflows
-description: Select the next eligible item and resolve its local project directory.
+description: Select the next eligible item, resolve its local project, and execute its approved plan through inspection.
 tasks:
   - id: next
     type: io.kestra.plugin.core.http.Request
+    description: |
+      /next
+
+      The `agent-planned` label marks work whose approved plan is available on its
+      item. `/next` selects the
+      first eligible item in the configured provider's returned page. It does not
+      choose the most recently created or updated item: neither provider query
+      specifies that ordering. The provider-specific status rules below narrow the
+      eligible set.
     uri: '{{ envs.bridge_url }}/generate'
     method: POST
-    contentType: text/plain
+    contentType: application/json
     headers:
-      X-Request-Id: '{{ execution.id }}-next'
       Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-    body: 'Execute /next'
-    timeout: PT35M
+    body: >-
+      {{ {
+        "requestId": execution.id ~ "-next",
+        "prompt": "Execute /next",
+        "timeoutMs": 285000
+      } | toJson }}
+    timeout: PT5M
     options:
       timeout:
         connectTimeout: PT5S
-        readIdleTimeout: PT35M
+        readIdleTimeout: PT4M55S
   - id: has-item
     type: io.kestra.plugin.core.flow.If
     description: |
@@ -23,24 +36,99 @@ tasks:
 
       Règle : `next` a renvoyé un item avec un identifiant non vide.
 
-      - **Oui** : exécuter `project` pour résoudre le répertoire local du projet.
-      - **Non** : terminer le flux sans exécuter `project`.
+      - **Oui** : exécuter `project` pour résoudre le répertoire local du projet, puis `work` si un chemin est retourné.
+      - **Non** : terminer le flux sans exécuter `project` ni `work`.
     condition: "{{ (fromJson(fromJson(outputs.next.body).text).id ?? '') != '' }}"
     then:
       - id: project
         type: io.kestra.plugin.core.http.Request
+        description: |
+          /project
+
+          `/project` finds the local Git repository for a destination name (`list`) and
+          an exact item ID. Invoke it as `/project` or `$project` with both values, or let
+          the Kestra `work` flow call it after `/next` returns an item. It reads the item
+          only when several repositories match the destination. Configured project paths
+          take priority when available; the search continues when they are unavailable.
         uri: '{{ envs.bridge_url }}/generate'
         method: POST
-        contentType: text/plain
+        contentType: application/json
         headers:
-          X-Request-Id: '{{ execution.id }}-project'
           Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-        body: 'Execute /project with list: {{ fromJson(fromJson(outputs.next.body).text).list }} and item ID: {{ fromJson(fromJson(outputs.next.body).text).id }}'
-        timeout: PT35M
+        body: >-
+          {{ {
+            "requestId": execution.id ~ "-project",
+            "prompt": "Execute /project with list: " ~ fromJson(fromJson(outputs.next.body).text).list ~ " and item ID: " ~ fromJson(fromJson(outputs.next.body).text).id,
+            "timeoutMs": 285000
+          } | toJson }}
+        timeout: PT5M
         options:
           timeout:
             connectTimeout: PT5S
-            readIdleTimeout: PT35M
+            readIdleTimeout: PT4M55S
+      - id: has-project
+        type: io.kestra.plugin.core.flow.If
+        description: |
+          **Was a project directory resolved?**
+
+          Rule: `project` returned a nonempty `path`.
+
+          - **Yes**: execute `work` in that directory for the selected item.
+          - **No**: finish the flow without executing `work`.
+        condition: "{{ (fromJson(fromJson(outputs.project.body).text).path ?? '') != '' }}"
+        then:
+          - id: work
+            type: io.kestra.plugin.core.http.Request
+            description: |
+              /work
+
+              `/work` requires an `agent-planned` item and executes its approved plan
+              autonomously, one todo at a time. New standalone work copies the plan published
+              on the item to the local plan location; resumed work keeps the current local
+              plan. It routes each todo to the right specialist and hands the completed plan
+              directly to `/ready` without another approval.
+            uri: '{{ envs.bridge_url }}/generate'
+            method: POST
+            contentType: application/json
+            headers:
+              Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+            body: >-
+              {{ {
+                "requestId": execution.id ~ "-work",
+                "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ".",
+                "directory": fromJson(fromJson(outputs.project.body).text).path,
+                "timeoutMs": 3585000
+              } | toJson }}
+            timeout: PT1H
+            options:
+              timeout:
+                connectTimeout: PT5S
+                readIdleTimeout: PT59M55S
+          - id: qualify-work
+            type: io.kestra.plugin.core.execution.Fail
+            description: |
+              Qualify the terminal `/inspect` result.
+
+              Fail unless the final human-readable message confirms inspection
+              publication and `agent-inspected` application for the selected item.
+            condition: >-
+              {% set lines = fromJson(outputs.work.body).text | trim | split('\n') %}
+              {{ not (
+                (lines | length) >= 4
+                and lines[0] == "## Inspect result"
+                and (lines[2] contains "**Request ")
+                and (lines[2] | split(':** ') | last) == "inspection published"
+                and lines[3] == ("**Item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ":** agent-inspected applied")
+              ) }}
+            errorMessage: >-
+              The work chain did not confirm inspection publication and label
+              application for the selected item. Inspect its response and trace
+              before submitting another request.
+        else:
+          - id: no-project
+            type: io.kestra.plugin.core.log.Log
+            description: No — no project directory was resolved; finish the flow.
+            message: No project directory was resolved; the flow ends without executing work.
     else:
       - id: no-item
         type: io.kestra.plugin.core.log.Log
@@ -62,3 +150,9 @@ outputs:
   - id: resolutionTraceUrl
     type: STRING
     value: "{{ outputs['has-item'].evaluationResult ? fromJson(outputs.project.body).traceUrl : '' }}"
+  - id: workResult
+    type: JSON
+    value: "{{ outputs['has-item'].evaluationResult ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body) : fromJson('{}')) : fromJson('{}') }}"
+  - id: workTraceUrl
+    type: STRING
+    value: "{{ outputs['has-item'].evaluationResult ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body).traceUrl : '') : '' }}"
