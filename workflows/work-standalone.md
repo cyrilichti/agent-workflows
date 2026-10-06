@@ -31,10 +31,10 @@ Set `work_mode` to `resumed` when the official item contains a `Draft PR:` or
 ### 3. Resolve the Delivery Context
 
 For `resumed`, read the local plan referenced by `Agent-Workflows-Plan:` in
-the backlink comment and preserve its current content and todo states. When
-backlinks reference different plans, ask which referenced plan to use. Stop
-when the plan reference or local file is missing. Keep the item backlinks in
-the delivery context for `/ready` to resolve the exact request.
+the backlink comment. When backlinks reference different plans, ask which
+referenced plan to use. Stop when the plan reference or local file is missing.
+Keep the item backlinks in the delivery context for `/ready` to resolve the
+exact request.
 
 For `new`, run `../commands/read-item-plan.md` for the resolved item and write
 the returned `plan_content` unchanged to the local `../plans/` location defined
