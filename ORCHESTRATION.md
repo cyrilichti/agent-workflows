@@ -62,8 +62,9 @@ Choose a provider and enable execution:
 | `INFERENCE_ENABLED` | `true` | `true` |
 
 For Codex, optionally set `CODEX_WORKING_DIRECTORY` to an absolute project path.
-Otherwise, tasks run in your home directory (`~`). `CODEX_BIN` can specify the
-CLI executable path if it is not available on your `PATH`.
+An explicit value takes priority; otherwise, tasks run from the
+`agent-workflows` repository root. `CODEX_BIN` can specify the CLI executable
+path if it is not available on your `PATH`.
 
 ## Start
 
