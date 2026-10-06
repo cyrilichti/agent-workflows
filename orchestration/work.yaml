@@ -117,7 +117,7 @@ tasks:
                 (lines | length) >= 4
                 and lines[0] == "## Inspect result"
                 and (lines[2] contains "**Request ")
-                and (lines[2] | split(':') | last) == "** inspection published"
+                and (lines[2] | split(':') | last | trim) == "** inspection published"
                 and lines[3] == ("**Item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ":** agent-inspected applied")
               ) }}
             errorMessage: >-
