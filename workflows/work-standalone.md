@@ -36,19 +36,20 @@ For `resumed`:
    comment.
 2. Read the referenced local plan. Stop when the plan reference or local file
    is missing.
-3. Create `../templates/delivery-context.md` with the local plan path and
-   complete official item context, including its backlinks for `/ready` to
-   resolve the exact request.
 
 For `new`:
 
 1. Run `../commands/read-item-plan.md` for the resolved item.
 2. Write the returned `plan_content` unchanged to the local `../plans/`
    location defined by `../templates/plan.md`, using its filename rules.
-3. Create `../templates/delivery-context.md` with the local plan path and
-   complete official item context.
 
-### 4. Follow Shared Execution
+### 4. Create the Delivery Context
+
+Create `../templates/delivery-context.md` with the local plan path and complete
+official item context, including any backlinks for `/ready` to resolve the
+exact request.
+
+### 5. Follow Shared Execution
 
 Follow `./work-confirm.md` with:
 
