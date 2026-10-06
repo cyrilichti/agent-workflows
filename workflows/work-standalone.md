@@ -33,9 +33,9 @@ Set `work_mode` to `resumed` when the official item contains a `Draft PR:` or
 For `resumed`:
 
 1. Select the plan reference from `Agent-Workflows-Plan:` in the backlink
-   comment. When backlinks reference different plans, ask which referenced
-   plan to use. Stop when the plan reference is missing.
-2. Read the referenced local plan. Stop when the local file is missing.
+   comment.
+2. Read the referenced local plan. Stop when the plan reference or local file
+   is missing.
 3. Create `../templates/delivery-context.md` with the local plan path and
    complete official item context, including its backlinks for `/ready` to
    resolve the exact request.
