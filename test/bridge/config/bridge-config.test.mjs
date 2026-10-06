@@ -1,8 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
-import { homedir, tmpdir } from 'node:os';
+import { tmpdir } from 'node:os';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { loadBridgeConfig } from '../../../src/bridge/config/bridge-config.mjs';
+
+const projectRoot = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
 
 function envFile(t, extra = '') {
   const directory = mkdtempSync(`${tmpdir()}/bridge-config-`);
@@ -36,15 +40,30 @@ test('configuration preserves host CLI environment without injecting .env secret
 });
 
 test('configuration rejects invalid execution settings and missing API model', (t) => {
-  for (const extra of ['BRIDGE_PORT=0', 'REQUEST_TIMEOUT_MS=1800001', 'AI_PROVIDER=openai-api']) {
+  for (const extra of ['BRIDGE_PORT=0', 'REQUEST_TIMEOUT_MS=3600001', 'AI_PROVIDER=openai-api']) {
     assert.throws(() => loadBridgeConfig({ envFile: envFile(t, extra), environment: {} }));
   }
   const config = loadBridgeConfig({ envFile: envFile(t), environment: {} });
   assert.equal(config.providerOptions.model, undefined);
-  assert.equal(config.providerOptions.directory, homedir());
+  assert.equal(config.providerOptions.directory, projectRoot);
   const projectConfig = loadBridgeConfig({
-    envFile: envFile(t, 'CODEX_WORKING_DIRECTORY=/host/project\n'),
+    envFile: envFile(t, 'CODEX_WORKING_DIRECTORY=/host/project with spaces\n'),
     environment: {},
   });
-  assert.equal(projectConfig.providerOptions.directory, '/host/project');
+  assert.equal(projectConfig.providerOptions.directory, '/host/project with spaces');
+});
+
+test('empty working directory defaults to the project root outside the launch directory', (t) => {
+  const launchDirectory = mkdtempSync(`${tmpdir()}/bridge-launch-`);
+  t.after(() => rmSync(launchDirectory, { recursive: true, force: true }));
+  const previousDirectory = process.cwd();
+  t.after(() => process.chdir(previousDirectory));
+  process.chdir(launchDirectory);
+
+  const config = loadBridgeConfig({
+    envFile: envFile(t, 'CODEX_WORKING_DIRECTORY=\n'),
+    environment: {},
+  });
+
+  assert.equal(config.providerOptions.directory, projectRoot);
 });
