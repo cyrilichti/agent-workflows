@@ -1,7 +1,7 @@
-import { homedir } from 'node:os';
 import { readFileSync } from 'node:fs';
 import { parseEnv } from 'node:util';
 import { MAX_TIMEOUT_MS } from '../execution/task-contract.mjs';
+import { PROJECT_ROOT } from '../project-root.mjs';
 
 /**
  * Load bridge settings without adding service secrets to the CLI environment.
@@ -9,14 +9,14 @@ import { MAX_TIMEOUT_MS } from '../execution/task-contract.mjs';
  * @param {object} [options]
  * @param {string} [options.envFile='.env'] File containing bridge-specific settings.
  * @param {NodeJS.ProcessEnv} [options.environment=process.env] Host environment; overrides the file.
- * @param {string} [options.directory=homedir()] Default CLI working directory.
+ * @param {string} [options.directory=PROJECT_ROOT] Default CLI working directory.
  * @returns {object} Settings grouped by provider, HTTP, execution and tracing.
  * @throws {Error} If the file cannot be read or required settings are invalid.
  */
 export function loadBridgeConfig({
   envFile = '.env',
   environment = process.env,
-  directory = homedir(),
+  directory = PROJECT_ROOT,
 } = {}) {
   // Service secrets from .env must not be injected into the local CLI environment.
   const cliEnvironment = { ...environment };

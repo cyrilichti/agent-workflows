@@ -1,12 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   buildCodexArguments,
   parseCodexEvents,
   createCodexCliProvider,
 } from '../../../src/bridge/providers/codex-cli-provider.mjs';
+
+const projectRoot = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
 
 test('Codex events map to common result and usage', () => {
   const events = [
@@ -42,6 +46,8 @@ test('Codex uses an ephemeral task with local configuration and a working direct
   ])
     assert.ok(!args.includes(blocked));
   assert.equal(args.at(-1), '-');
+  const defaultArgs = buildCodexArguments(undefined, '');
+  assert.equal(defaultArgs[defaultArgs.indexOf('-C') + 1], projectRoot);
   const overridden = buildCodexArguments('selected', 'workspace', directory);
   assert.equal(overridden[overridden.indexOf('-m') + 1], 'selected');
   assert.ok(overridden.includes('forced_chatgpt_workspace_id="workspace"'));
@@ -77,39 +83,45 @@ test('Codex cancellation terminates the subprocess group', async (t) => {
   assert.equal(existsSync(marker), false);
 });
 
-test('local CLI receives host environment and cwd without a file-based auth prerequisite', async (t) => {
+test('local CLI uses the same default or explicit directory for -C and cwd', async (t) => {
   const { spawn } = await import('node:child_process');
   const dir = mkdtempSync(`${tmpdir()}/codex-local-`);
   t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const explicitDirectory = `${dir}/project with spaces`;
+  mkdirSync(explicitDirectory);
   const environment = {
     PATH: process.env.PATH,
     HOME: dir,
     CODEX_HOME: `${dir}/config`,
     SSH_AUTH_SOCK: '/host/agent',
   };
-  const provider = createCodexCliProvider({
-    environment,
-    directory: dir,
-    executable: '/custom/codex',
-    spawnImpl: (file, args, options) => {
-      assert.equal(file, '/custom/codex');
-      assert.equal(options.cwd, dir);
-      assert.deepEqual(options.env, environment);
-      assert.ok(args.includes('--ephemeral'));
-      return spawn(
-        process.execPath,
-        [
-          '-e',
-          `process.stdin.resume();process.stdin.on('end',()=>{
+  for (const directory of [undefined, explicitDirectory]) {
+    const expectedDirectory = directory || projectRoot;
+    const provider = createCodexCliProvider({
+      environment,
+      ...(directory ? { directory } : {}),
+      executable: '/custom/codex',
+      spawnImpl: (file, args, options) => {
+        assert.equal(file, '/custom/codex');
+        assert.equal(options.cwd, expectedDirectory);
+        assert.equal(args[args.indexOf('-C') + 1], expectedDirectory);
+        assert.deepEqual(options.env, environment);
+        assert.ok(args.includes('--ephemeral'));
+        return spawn(
+          process.execPath,
+          [
+            '-e',
+            `process.stdin.resume();process.stdin.on('end',()=>{
       console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:'OK'}}));
       console.log(JSON.stringify({type:'turn.completed'}));
     })`,
-        ],
-        options,
-      );
-    },
-  });
-  const result = await provider.generate('Hello', { signal: new AbortController().signal });
-  assert.equal(result.text, 'OK');
-  assert.equal(result.model, 'configured-default');
+          ],
+          options,
+        );
+      },
+    });
+    const result = await provider.generate('Hello', { signal: new AbortController().signal });
+    assert.equal(result.text, 'OK');
+    assert.equal(result.model, 'configured-default');
+  }
 });
