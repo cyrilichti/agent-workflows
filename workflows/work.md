@@ -41,6 +41,5 @@ context as `resumed`. Treat the approved plan and item supplied by `/pick` as
 
 ## Safety
 
-- Do not change item status.
 - Push each non-empty todo commit normally to the current branch upstream.
 - Do not invoke `/inspect` before `/ready` passes.

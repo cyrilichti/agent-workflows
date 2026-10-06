@@ -16,9 +16,10 @@ continued through `/ready`.
   clean, it creates and pushes one work branch and empty initialization commit,
   creates one draft request, and adds its URL to the official item.
 - Resumed work continues without branch or request recovery, another
-  initialization commit, or another item backlink.
-- Item status remains unchanged and no Git, provider, or request metadata is
-  added to the plan.
+  initialization commit, or another item backlink, preserving the item status.
+- New work moves the item to the exact resolved `in progress` status before
+  preparing the base branch, using the existing transition command.
+- No Git, provider, request, or status metadata is added to the plan.
 - Every todo state transition is persisted immediately in the authoritative
   plan file.
 - Every processed todo uses the active appropriate specialist and its routed
@@ -39,7 +40,8 @@ continued through `/ready`.
 - Stop successfully after handing completed work to `/ready` or when every todo
   is `cancelled`.
 - Stop and report when a required operation fails or a precondition is not
-  satisfied.
+  satisfied, including an unresolved or failed item activation before
+  preparing the base branch for new work.
 
 ## Human Validation
 

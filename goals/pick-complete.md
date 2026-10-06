@@ -11,8 +11,8 @@ routed from its planning result.
   stopped before planning; otherwise one `agent-shaped` item was summarized.
 - The approved plan was published on the item and `agent-planned` was applied
   before delivery started.
-- An approved plan caused the item to move to `in progress` before `/work`
-  received the plan and updated official item context.
+- An approved plan and the complete official item context returned by `/plan`
+  were handed directly to `/work`, which owns item activation.
 - A `needs-refinement` result left the parent item unchanged by `/pick`,
   honored the user's refinement choice, and stopped before implementation.
 - Observed provider results were reported without inferring a successful
@@ -20,8 +20,7 @@ routed from its planning result.
 
 ## Stop Conditions
 
-- Stop successfully after continuing with `/work` from an approved plan and a
-  successful `in progress` transition.
+- Stop successfully after continuing with `/work` from an approved plan.
 - Stop successfully after the selected `needs-refinement` outcome completes.
 - Stop successfully before planning when the selected item already contains
   `agent-planned`.

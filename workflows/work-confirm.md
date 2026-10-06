@@ -23,8 +23,8 @@ path as its only plan authority.
 ### 2. Resolve Initialization
 
 For `new`, follow `./work-initialize.md` with the authoritative plan and item.
-Keep the complete created request record returned by that branch with its exact
-branch identity in the delivery context.
+Keep the updated official item and complete created request record returned by
+that branch with its exact branch identity in the delivery context.
 
 For `resumed`, trust that the current branch is the correct work branch and
 that its draft request already exists. Do not:

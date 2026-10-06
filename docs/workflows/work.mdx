@@ -63,14 +63,14 @@ plan directly to `/ready` without another approval.
 
 ## How `/work` executes a plan
 
-<div className="write-flow work-flow" role="group" aria-label="The work workflow initializes a branch and draft request for new work, then loops through plan todos. For each todo it selects the appropriate specialist and skills, implements and validates the change, commits the result, and persists completion. When every todo is complete it continues automatically to the ready workflow. Readiness or inspection findings return later as corrective todos through the same execution loop.">
+<div className="write-flow work-flow" role="group" aria-label="New work initializes delivery. New or resumed work executes plan todos, then continues to ready. Findings return as corrective todos.">
   <div className="write-flow__step write-flow__step--focus">
     <small>01 · New work only</small>
     <strong>Initialize delivery</strong>
-    <span>Create the branch, initialization commit, draft request, and item backlink.</span>
+    <span>Move the item to <code>in progress</code> and create a branch with a linked draft request.</span>
   </div>
 
-  <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>New or resumed work</small>↓</span>
+  <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Initialized or resumed work</small>↓</span>
 
   <div className="write-flow__loop write-flow__loop--autonomous">
     <span className="write-flow__loop-title">Todo execution loop</span>
@@ -136,7 +136,7 @@ when none are needed.
     <tr>
       <td>1</td>
       <th scope="row">Initialize</th>
-      <td>For new work, copy the published item plan locally, start from a clean default branch, create and push one work branch, open one draft request, and link it to the item.</td>
+      <td>For new work, move the item to <code>in progress</code> and create a work branch with a linked draft request.</td>
     </tr>
     <tr>
       <td>2</td>
