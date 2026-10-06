@@ -18,9 +18,7 @@ continued through `/ready`.
 - Resumed work continues without branch or request recovery, another
   initialization commit, or another item backlink, preserving the item status.
 - New work moves the item to the exact resolved `in progress` status before
-  preparing the base branch, using the existing transition command. The
-  returned resulting status is preserved in the official item and delivery
-  contexts according to `../rules/mutation-response.md`.
+  preparing the base branch, using the existing transition command.
 - No Git, provider, request, or status metadata is added to the plan.
 - Every todo state transition is persisted immediately in the authoritative
   plan file.
