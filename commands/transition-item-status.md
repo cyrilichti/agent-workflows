@@ -34,7 +34,13 @@ Move one official item to `in progress`, `review`, or `done`.
 6. In `apply` mode with `resolved_target_status`, require it to still match an
    available candidate and do not ask another question. For `done`, the prior
    resolved target remains required.
-7. Use the adapter's apply operation to update only the status.
+7. For `in progress`, return a successful no-op when the current status is the
+   exact resolved target. Keep the existing successful no-op for an already
+   completed `done` transition.
+8. Use the adapter's apply operation to update only the status, then require
+   its authoritative read to return a resulting status that exactly matches
+   the resolved target. Treat a missing, failed, or mismatched confirmation as
+   a transition failure.
 
 For ambiguous `in progress` candidates in resolve mode, ask:
 
@@ -45,9 +51,9 @@ options:
   value: <provider status ID or name>
 ```
 
-Return `transitioned`, `already_at_target` for `done`, `previous_status`,
-`target_status`, `resolved_target_status`, `resulting_status`, and a `reason`
-on failure. An `in progress` read, resolution, or update failure stops; `review`
+Return `transitioned`, `already_at_target`, `previous_status`, `target_status`,
+`resolved_target_status`, `resulting_status`, and a `reason` on failure. An
+`in progress` read, resolution, update, or confirmation failure stops; `review`
 and `done` return their failure as best-effort results.
 
 Never update another item field.

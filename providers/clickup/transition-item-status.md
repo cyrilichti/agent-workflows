@@ -27,4 +27,15 @@ arguments:
   status: exact resolved status name
 ```
 
-Return the resulting status or provider failure. Do not pass any other field.
+Do not pass any other field. After the update succeeds, read the task again:
+
+```text
+tool: clickup_get_task
+arguments:
+  task_id: caller item ID
+  expand_statuses: true
+```
+
+Return the resulting status from this authoritative read. Return the provider
+failure when the update or confirmation read fails, or when the confirmation
+does not contain a status.

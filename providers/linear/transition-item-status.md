@@ -34,4 +34,14 @@ arguments:
   state: exact resolved status ID or name
 ```
 
-Return the resulting status or provider failure. Do not pass any other field.
+Do not pass any other field. After the update succeeds, read the issue again:
+
+```text
+tool: get_issue
+arguments:
+  id: caller item ID or identifier
+```
+
+Return the resulting status from this authoritative read. Return the provider
+failure when the update or confirmation read fails, or when the confirmation
+does not contain a status.
