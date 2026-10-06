@@ -27,15 +27,5 @@ arguments:
   status: exact resolved status name
 ```
 
-Do not pass any other field. After the update succeeds, read the task again:
-
-```text
-tool: clickup_get_task
-arguments:
-  task_id: caller item ID
-  expand_statuses: true
-```
-
-Return the resulting status from this authoritative read. Return the provider
-failure when the update or confirmation read fails, or when the confirmation
-does not contain a status.
+Do not pass any other field. Return the successful mutation result with its
+resulting status when available, or the provider failure when the update fails.

@@ -34,14 +34,5 @@ arguments:
   state: exact resolved status ID or name
 ```
 
-Do not pass any other field. After the update succeeds, read the issue again:
-
-```text
-tool: get_issue
-arguments:
-  id: caller item ID or identifier
-```
-
-Return the resulting status from this authoritative read. Return the provider
-failure when the update or confirmation read fails, or when the confirmation
-does not contain a status.
+Do not pass any other field. Return the successful mutation result with its
+resulting status when available, or the provider failure when the update fails.

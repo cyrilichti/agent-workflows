@@ -36,10 +36,9 @@ item_id: official item ID
 target_status: in progress
 ```
 
-Stop before initialization or implementation when the transition does not
-succeed or its resulting status is not confirmed. Replace the status in the
-official item context with the observed resulting status and preserve that
-updated item in the delivery context.
+Stop before initialization or implementation when the transition fails.
+Replace the status in the official item context with the returned resulting
+status and preserve that updated item in the delivery context.
 
 ### 3. Resolve Initialization
 

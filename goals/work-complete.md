@@ -17,11 +17,11 @@ continued through `/ready`.
   creates one draft request, and adds its URL to the official item.
 - Resumed work continues without branch or request recovery, another
   initialization commit, or another item backlink.
-- Every entry confirms the item at the exact resolved `in progress` status
+- Every entry moves the item to the exact resolved `in progress` status
   before initialization or implementation. An item already at that target
-  continues without a status write; otherwise the status-only update is read
-  back authoritatively, and the observed status is preserved in the official
-  item and delivery contexts.
+  continues without a status write; otherwise only its status is updated. The
+  returned resulting status is preserved in the official item and delivery
+  contexts according to `../rules/mutation-response.md`.
 - No Git, provider, request, or status metadata is added to the plan.
 - Every todo state transition is persisted immediately in the authoritative
   plan file.
@@ -43,8 +43,8 @@ continued through `/ready`.
 - Stop successfully after handing completed work to `/ready` or when every todo
   is `cancelled`.
 - Stop and report when a required operation fails or a precondition is not
-  satisfied, including an unresolved, failed, unconfirmed, or mismatched item
-  activation before initialization or implementation.
+  satisfied, including an unresolved or failed item activation before
+  initialization or implementation.
 
 ## Human Validation
 

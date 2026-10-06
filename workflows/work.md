@@ -41,7 +41,5 @@ context as `resumed`. Treat the approved plan and item supplied by `/pick` as
 
 ## Safety
 
-- Change only the item status through the shared activation in
-  `work-confirm.md`; do not change another item field.
 - Push each non-empty todo commit normally to the current branch upstream.
 - Do not invoke `/inspect` before `/ready` passes.

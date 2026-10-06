@@ -37,10 +37,8 @@ Move one official item to `in progress`, `review`, or `done`.
 7. For `in progress`, return a successful no-op when the current status is the
    exact resolved target. Keep the existing successful no-op for an already
    completed `done` transition.
-8. Use the adapter's apply operation to update only the status, then require
-   its authoritative read to return a resulting status that exactly matches
-   the resolved target. Treat a missing, failed, or mismatched confirmation as
-   a transition failure.
+8. Use the adapter's apply operation to update only the status. Return
+   according to `../rules/mutation-response.md`.
 
 For ambiguous `in progress` candidates in resolve mode, ask:
 
@@ -53,7 +51,7 @@ options:
 
 Return `transitioned`, `already_at_target`, `previous_status`, `target_status`,
 `resolved_target_status`, `resulting_status`, and a `reason` on failure. An
-`in progress` read, resolution, update, or confirmation failure stops; `review`
+`in progress` read, resolution, or update failure stops; `review`
 and `done` return their failure as best-effort results.
 
 Never update another item field.
