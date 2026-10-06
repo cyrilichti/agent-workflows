@@ -4,8 +4,7 @@
 
 Resolve one official item and stop when it is already planned. Otherwise,
 summarize it, create a plan via `/plan`, offer `/refine` on
-`needs-refinement`, or after plan approval move it to in progress and continue
-with `/work`.
+`needs-refinement`, or continue with `/work` after plan approval.
 
 ---
 
@@ -63,17 +62,6 @@ item: complete official item context
 
 ### 4. Create Plan
 
-Resolve the exact `in progress` status before the final plan confirmation:
-
-```text
-provider: resolved item provider
-item_id: resolved item ID
-target_status: in progress
-mode: resolve
-```
-
-Keep the returned `resolved_target_status` for Step 5.
-
 Follow `./plan.md` with:
 
 ```text
@@ -107,24 +95,11 @@ options:
 
   Then stop `/pick`.
 
-### 5. Start Item
-
-Run `../commands/transition-item-status.md` with:
-
-```text
-provider: resolved item provider
-item_id: resolved item ID
-target_status: in progress
-resolved_target_status: exact status resolved before plan approval
-```
-
-Report the updated item status.
-
-### 6. Continue with Work
+### 5. Continue with Work
 
 Follow `./work.md` in caller mode with:
 
 ```text
 plan: approved plan
-item: complete official item context with the observed updated status
+item: complete official item context returned by /plan
 ```
