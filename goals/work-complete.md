@@ -10,8 +10,10 @@ continued through `/ready`.
 - New standalone work selects an `agent-planned` item and materializes its
   published plan locally before autonomous execution. Resumed standalone work
   keeps its selected local plan.
-- New work starts from a clean `main` or `master`, runs `git pull --ff-only`,
-  then creates and pushes one work branch and empty initialization commit,
+- New work automatically switches the current checkout to the repository's
+  default `main` or `master` branch and runs `git pull --ff-only`, preserving
+  local changes and using no other worktree. Once the worktree and index are
+  clean, it creates and pushes one work branch and empty initialization commit,
   creates one draft request, and adds its URL to the official item.
 - Resumed work continues without branch or request recovery, another
   initialization commit, or another item backlink.
