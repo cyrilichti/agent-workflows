@@ -53,7 +53,7 @@ export class TaskExecutionService {
    * @throws {ProviderError} For invalid input, disabled or busy execution.
    */
   async executeTask(body) {
-    const { prompt, requestId } = validateTaskInput(body);
+    const { prompt, requestId, directory, timeoutMs = this.timeoutMs } = validateTaskInput(body);
     if (!this.enabled) {
       throw new ProviderError(
         'disabled',
@@ -78,7 +78,8 @@ export class TaskExecutionService {
       try {
         const result = validateTaskResult(
           await this.provider.generate(prompt, {
-            signal: AbortSignal.any([this.controller.signal, AbortSignal.timeout(this.timeoutMs)]),
+            signal: AbortSignal.any([this.controller.signal, AbortSignal.timeout(timeoutMs)]),
+            ...(directory !== undefined ? { directory } : {}),
           }),
         );
         Object.assign(outcome, {

@@ -106,17 +106,17 @@ export function createCodexCliProvider({
      * Run one CLI process group and terminate it on cancellation or excess output.
      *
      * @param {string} prompt Task instructions.
-     * @param {{ signal: AbortSignal }} options Cancellation and deadline signal.
+     * @param {{ signal: AbortSignal, directory?: string }} options Cancellation and per-call directory.
      * @returns {Promise<import('../execution/task-contract.mjs').TaskResult>}
      * @throws {ProviderError} For execution, authentication, cancellation or provider failures.
      */
-    async generate(prompt, { signal }) {
+    async generate(prompt, { signal, directory: taskDirectory = directory }) {
       if (signal.aborted) {
         throw new ProviderError('timeout', 'Execution cancelled before launch.');
       }
       return new Promise((resolve, reject) => {
-        const child = spawnImpl(executable, buildCodexArguments(model, workspace, directory), {
-          cwd: directory,
+        const child = spawnImpl(executable, buildCodexArguments(model, workspace, taskDirectory), {
+          cwd: taskDirectory,
           detached: true,
           stdio: ['pipe', 'pipe', 'ignore'],
           env: { ...environment },

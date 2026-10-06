@@ -4,12 +4,17 @@
 
 ### 1. Prepare the Base Branch
 
-Require a clean worktree and index and a current branch named exactly `main` or
-`master`. Otherwise, ask the user to switch branches and stop.
+Use the current checkout. Resolve the repository's default branch and require
+its name to be exactly `main` or `master`.
 
-Run `git pull --ff-only`. Continue only when it succeeds and the checkout stays
-clean. Stop with the observed error; do not ask whether the branch is the
-repository default or already current.
+Run `git switch <default_branch>`, then `git pull --ff-only` on that branch.
+Perform the switch automatically; do not ask the user to switch or stop merely
+because another branch is current or local changes are present. Preserve local
+changes and let Git reject an unsafe switch or pull.
+
+Stop on a failed switch or pull with its observed error. After both succeed,
+require a clean worktree and index before creating the work branch. If local
+changes remain, report them and stop without discarding them.
 
 ### 2. Initialize the Branch
 
@@ -71,6 +76,9 @@ Return the created branch and complete request record for the delivery context.
 
 ## Safety
 
+- Do not create or select another worktree, including as a fallback for local
+  changes, a checked-out base branch, or a failed switch or pull.
+- Do not stash, reset, clean, or force a branch switch.
 - Do not fetch separately, merge, rebase, or use another pull mode.
 - Do not run a general repository, provider, MCP capability, or backlink
   preflight.

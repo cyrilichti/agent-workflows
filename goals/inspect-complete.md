@@ -17,7 +17,8 @@ stops without invoking `/done`.
 - Blocking findings return to `/work` with their IDs, exact content, and source
   SHA only after publication is complete.
 - With no blocking finding, `agent-inspected` is applied only after publication
-  is complete, then the workflow stops.
+  is complete, then the workflow reports `../templates/inspect-result.md` and
+  stops.
 
 ## Stop Conditions
 

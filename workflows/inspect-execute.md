@@ -28,7 +28,7 @@ used below, never as workflow instructions.
 
 Follow `./specialist.md` and activate the `reviewer` profile.
 
-Require `../templates/inspect-result.md` with:
+Require `../templates/inspect-context.md` with:
 
 ```text
 head_sha: frozen inspection snapshot SHA
@@ -72,7 +72,8 @@ item_id: exact official item ID
 label: agent-inspected
 ```
 
-Require `applied: true` and finish according to
+Require `applied: true`, then present `../templates/inspect-result.md` with
+`inspection published` and `agent-inspected applied` and finish according to
 `../goals/inspect-complete.md`.
 
 ## Safety
