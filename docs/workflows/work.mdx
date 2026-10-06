@@ -58,17 +58,18 @@ export const skillUrl = (skill) =>
 autonomously, one todo at a time. Standalone work automatically resumes when the
 item contains a delivery backlink, keeping the referenced local plan and its
 todo states. Otherwise, it copies the published plan locally and initializes
-delivery. Every entry first moves the item to the resolved `in progress`
-status. It routes each todo to the right specialist and hands
-the completed plan directly to `/ready` without another approval.
+delivery. New work first moves the item to the resolved `in progress` status;
+resumed work preserves the item status. It routes each todo to the right
+specialist and hands the completed plan directly to `/ready` without another
+approval.
 
 ## How `/work` executes a plan
 
-<div className="write-flow work-flow" role="group" aria-label="The work workflow first moves the official item to in progress, initializes a branch and draft request for new work, then loops through plan todos. For each todo it selects the appropriate specialist and skills, implements and validates the change, commits the result, and persists completion. When every todo is complete it continues automatically to the ready workflow. Readiness or inspection findings return later as corrective todos through the same execution loop.">
+<div className="write-flow work-flow" role="group" aria-label="For new work, the work workflow moves the official item to in progress and initializes a branch and draft request. New or resumed work then loops through plan todos. For each todo it selects the appropriate specialist and skills, implements and validates the change, commits the result, and persists completion. When every todo is complete it continues automatically to the ready workflow. Readiness or inspection findings return later as corrective todos through the same execution loop.">
   <div className="write-flow__step write-flow__step--focus">
-    <small>01 · New or resumed work</small>
+    <small>01 · New work only</small>
     <strong>Start item</strong>
-    <span>Move the item to the exact <code>in progress</code> status before delivery changes.</span>
+    <span>Move the item to the exact <code>in progress</code> status before initialization.</span>
   </div>
 
   <span className="write-flow__connector" aria-hidden="true">↓</span>
@@ -145,7 +146,7 @@ when none are needed.
     <tr>
       <td>1</td>
       <th scope="row">Activate</th>
-      <td>Resolve the exact <code>in progress</code> target, skip the write when already there, or update only the status before delivery changes.</td>
+      <td>For new work, resolve the exact <code>in progress</code> target, skip the write when already there, or update only the status before initialization. Resumed work preserves the item status.</td>
     </tr>
     <tr>
       <td>2</td>

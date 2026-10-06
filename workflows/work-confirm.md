@@ -22,6 +22,9 @@ path as its only plan authority.
 
 ### 2. Start the Item
 
+Run this step only when `work_mode` is `new`. For `resumed`, continue with
+step 3, preserving the supplied item context.
+
 Run `../commands/resolve-item-provider.md` with:
 
 ```text
@@ -36,7 +39,7 @@ item_id: official item ID
 target_status: in progress
 ```
 
-Stop before initialization or implementation when the transition fails.
+Stop before initialization when the transition fails.
 Replace the status in the official item context with the returned resulting
 status and preserve that updated item in the delivery context.
 

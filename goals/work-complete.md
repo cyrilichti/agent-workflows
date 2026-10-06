@@ -16,10 +16,10 @@ continued through `/ready`.
   clean, it creates and pushes one work branch and empty initialization commit,
   creates one draft request, and adds its URL to the official item.
 - Resumed work continues without branch or request recovery, another
-  initialization commit, or another item backlink.
-- Every entry moves the item to the exact resolved `in progress` status
-  before initialization or implementation. An item already at that target
-  continues without a status write; otherwise only its status is updated. The
+  initialization commit, or another item backlink, preserving the item status.
+- New work moves the item to the exact resolved `in progress` status before
+  initialization. An item already at that target continues without a status
+  write; otherwise only its status is updated. The
   returned resulting status is preserved in the official item and delivery
   contexts according to `../rules/mutation-response.md`.
 - No Git, provider, request, or status metadata is added to the plan.
@@ -44,7 +44,7 @@ continued through `/ready`.
   is `cancelled`.
 - Stop and report when a required operation fails or a precondition is not
   satisfied, including an unresolved or failed item activation before
-  initialization or implementation.
+  initialization for new work.
 
 ## Human Validation
 
