@@ -58,26 +58,16 @@ export const skillUrl = (skill) =>
 autonomously, one todo at a time. Standalone work automatically resumes when the
 item contains a delivery backlink, keeping the referenced local plan and its
 todo states. Otherwise, it copies the published plan locally and initializes
-delivery. New work first moves the item to the resolved `in progress` status;
-resumed work preserves the item status. It routes each todo to the right
-specialist and hands the completed plan directly to `/ready` without another
-approval.
+delivery. It routes each todo to the right specialist and hands the completed
+plan directly to `/ready` without another approval.
 
 ## How `/work` executes a plan
 
-<div className="write-flow work-flow" role="group" aria-label="For new work, the work workflow moves the official item to in progress and initializes a branch and draft request. New or resumed work then loops through plan todos. For each todo it selects the appropriate specialist and skills, implements and validates the change, commits the result, and persists completion. When every todo is complete it continues automatically to the ready workflow. Readiness or inspection findings return later as corrective todos through the same execution loop.">
+<div className="write-flow work-flow" role="group" aria-label="New work initializes delivery. New or resumed work executes plan todos, then continues to ready. Findings return as corrective todos.">
   <div className="write-flow__step write-flow__step--focus">
     <small>01 · New work only</small>
-    <strong>Start item</strong>
-    <span>Move the item to the exact <code>in progress</code> status before preparing the branch.</span>
-  </div>
-
-  <span className="write-flow__connector" aria-hidden="true">↓</span>
-
-  <div className="write-flow__step write-flow__step--focus">
-    <small>02 · New work only</small>
     <strong>Initialize delivery</strong>
-    <span>Create the branch, initialization commit, draft request, and item backlink.</span>
+    <span>Move the item to <code>in progress</code> and create a branch with a linked draft request.</span>
   </div>
 
   <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Initialized or resumed work</small>↓</span>
@@ -85,7 +75,7 @@ approval.
   <div className="write-flow__loop write-flow__loop--autonomous">
     <span className="write-flow__loop-title">Todo execution loop</span>
     <div className="write-flow__step write-flow__step--focus">
-      <small>03 · Autonomous</small>
+      <small>02 · Autonomous</small>
       <strong>Implement one todo</strong>
       <span>Select the right specialist and route only the skills its activity triggers.</span>
     </div>
@@ -94,7 +84,7 @@ approval.
       <span className="write-flow__loop-line write-flow__loop-line--answer"></span>
     </div>
     <div className="write-flow__step write-flow__step--focus">
-      <small>04 · Autonomous</small>
+      <small>03 · Autonomous</small>
       <strong>Validate and commit</strong>
       <span>Commit and push the result, persist completion, and continue with the plan.</span>
     </div>
@@ -145,31 +135,26 @@ when none are needed.
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Activate</th>
-      <td>For new work, resolve and apply the <code>in progress</code> transition through the existing command before preparing the branch. Resumed work preserves the item status.</td>
+      <th scope="row">Initialize</th>
+      <td>For new work, move the item to <code>in progress</code> and create a work branch with a linked draft request.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Initialize</th>
-      <td>For new work, copy the published item plan locally, start from a clean default branch, create and push one work branch, open one draft request, and link it to the item.</td>
-    </tr>
-    <tr>
-      <td>3</td>
       <th scope="row">Route</th>
       <td>Select or reuse the most suitable specialist for the active todo and load only the skills its activity triggers.</td>
     </tr>
     <tr>
-      <td>4</td>
+      <td>3</td>
       <th scope="row">Execute</th>
       <td>Persist the todo as in progress, implement and validate only its scope, then stage only its changes.</td>
     </tr>
     <tr>
-      <td>5</td>
+      <td>4</td>
       <th scope="row">Commit</th>
       <td>Commit the result, persist todo completion immediately, push the commit, and continue. A todo without a commit causes no push.</td>
     </tr>
     <tr>
-      <td>6</td>
+      <td>5</td>
       <th scope="row">Ready</th>
       <td>When every todo is complete, continue automatically to <code>/ready</code>; later findings return through the same loop as corrective todos.</td>
     </tr>
