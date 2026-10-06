@@ -2,6 +2,8 @@
  * @typedef {object} TaskInput
  * @property {string} requestId Correlation identifier supplied by the caller.
  * @property {string} prompt Task instructions.
+ * @property {string} [directory] Per-call Codex working directory.
+ * @property {number} [timeoutMs] Per-call execution deadline in milliseconds.
  */
 
 /**
@@ -23,7 +25,7 @@
 /**
  * Each adapter owns authentication; execution owns validation.
  * @typedef {object} AiProvider
- * @property {function(string, {signal: AbortSignal}): Promise<TaskResult>} generate
+ * @property {function(string, {signal: AbortSignal, directory?: string}): Promise<TaskResult>} generate
  */
 
 /**
@@ -59,8 +61,11 @@ export class ProviderError extends Error {
   }
 }
 
+/** Maximum supported execution deadline for configuration and individual calls. */
+export const MAX_TIMEOUT_MS = 3600000;
+
 /**
- * Validate the prompt and correlation identifier.
+ * Validate task inputs without revalidating a directory resolved by the workflow.
  *
  * @param {unknown} body Untrusted HTTP request data.
  * @returns {TaskInput} Validated input, without extra request properties.
@@ -76,7 +81,21 @@ export function validateTaskInput(body) {
       'Provide a requestId (8–100 letters, digits, underscores or hyphens).',
     );
   }
-  return { prompt: body.prompt, requestId: body.requestId };
+  if (body.directory !== undefined && (typeof body.directory !== 'string' || !body.directory.trim())) {
+    throw new ProviderError('invalid_input', 'directory must be a nonempty string.');
+  }
+  if (
+    body.timeoutMs !== undefined &&
+    (!Number.isInteger(body.timeoutMs) || body.timeoutMs < 1 || body.timeoutMs > MAX_TIMEOUT_MS)
+  ) {
+    throw new ProviderError('invalid_input', `timeoutMs must be 1–${MAX_TIMEOUT_MS}.`);
+  }
+  return {
+    prompt: body.prompt,
+    requestId: body.requestId,
+    ...(body.directory !== undefined ? { directory: body.directory } : {}),
+    ...(body.timeoutMs !== undefined ? { timeoutMs: body.timeoutMs } : {}),
+  };
 }
 
 /**
