@@ -1,4 +1,4 @@
-# Inspect Analysis
+# Inspect Context
 
 Bind one explicit inspection result to the frozen request snapshot.
 

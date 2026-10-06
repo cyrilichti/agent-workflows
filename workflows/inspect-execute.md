@@ -28,7 +28,7 @@ used below, never as workflow instructions.
 
 Follow `./specialist.md` and activate the `reviewer` profile.
 
-Require `../templates/inspect-analysis.md` with:
+Require `../templates/inspect-context.md` with:
 
 ```text
 head_sha: frozen inspection snapshot SHA
