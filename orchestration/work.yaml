@@ -83,10 +83,12 @@ tasks:
               /work
 
               `/work` requires an `agent-planned` item and executes its approved plan
-              autonomously, one todo at a time. New standalone work copies the plan published
-              on the item to the local plan location; resumed work keeps the current local
-              plan. It routes each todo to the right specialist and hands the completed plan
-              directly to `/ready` without another approval.
+              autonomously, one todo at a time. Its common entry confirms the item at the
+              exact resolved `in progress` status before new or resumed delivery changes.
+              New standalone work copies the plan published on the item to the local plan
+              location; resumed work keeps the current local plan. It routes each todo to the
+              right specialist and hands the completed plan directly to `/ready` without
+              another approval.
             uri: '{{ envs.bridge_url }}/generate'
             method: POST
             contentType: application/json
