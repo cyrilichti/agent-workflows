@@ -7,9 +7,8 @@ continued through `/ready`.
 
 ## Success Criteria
 
-- New standalone work selects an `agent-planned` item and materializes its
-  published plan locally before autonomous execution. Resumed standalone work
-  keeps its selected local plan.
+- Standalone work resolves its mode and authoritative plan from the official
+  item's delivery backlinks through `../workflows/work-standalone.md`.
 - New work automatically switches the current checkout to the repository's
   default `main` or `master` branch and runs `git pull --ff-only`, preserving
   local changes and using no other worktree. Once the worktree and index are
