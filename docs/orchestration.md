@@ -48,11 +48,37 @@ authentication. It can also call the OpenAI API when configured to do so.
 </div>
 
 Kestra makes an authenticated HTTP `POST` to the host bridge at
-`/generate`. The request carries a text task, an `X-Request-Id`, and the
-shared bearer token. The bridge starts a fresh Codex CLI execution on the
-host or sends the task to the OpenAI API, returns a JSON result to Kestra,
+`/generate`. JSON requests carry `requestId`, `prompt`, and optional
+`directory` and `timeoutMs` fields with the shared bearer token. Existing text
+requests carry their ID in `X-Request-Id`. The bridge starts a fresh Codex CLI
+execution on the host or sends the task to the OpenAI API, returns a JSON result to Kestra,
 and sends a trace to Langfuse. The bridge must be running for Kestra to
 reach either provider.
+
+## Execute an approved plan
+
+The `agent_workflows.work` flow calls `/next`, then `/project` for the returned
+item, then `/work` in its resolved directory. No eligible item or no resolved
+path skips execution. The three HTTP operations have maximum task durations
+of 5 minutes, 5 minutes, and 1 hour, with shorter bridge deadlines to leave room
+for cancellation, tracing, and the response. See the
+[operation budgets](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#work-flow)
+for the exact values.
+
+`directory` applies only to the current Codex call; an omitted directory uses
+`CODEX_WORKING_DIRECTORY`, then the home directory. `timeoutMs` overrides
+`REQUEST_TIMEOUT_MS` for the current call and supports up to one hour. Expiration
+stops Codex and its tool subprocesses. Inspect any existing effects before
+submitting another request.
+
+The `work` call keeps `/work → /ready → /inspect` and correction loops in one
+Codex session. Its final human-readable inspection result confirms publication
+and application of `agent-inspected`; Kestra fails the flow if that successful
+result is missing. `/done` remains a separate human-confirmed action.
+
+The installer retains existing flows. Import the revised
+`orchestration/work.yaml` into the Kestra editor and save it to update a stored
+flow.
 
 ## Start the architecture locally
 

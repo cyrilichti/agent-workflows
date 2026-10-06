@@ -83,3 +83,20 @@ curation.
     </tr>
   </tbody>
 </table>
+
+## Final result
+
+After inspection publication and confirmed application of `agent-inspected`,
+`/inspect` reports the final `inspect-result` template:
+
+```markdown
+## Inspect result
+
+**Request <provider/repository#ID>:** inspection published
+**Item <ID>:** agent-inspected applied
+```
+
+A terminal blocker or partial result uses the same format with observed
+outcomes and `Remaining` only for an exact actionable request or item mutation.
+Correction loops continue through `/work` without a terminal result. The
+earlier snapshot analysis uses the separate `inspect-analysis` template.

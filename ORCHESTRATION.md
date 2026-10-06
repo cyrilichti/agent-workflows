@@ -106,12 +106,91 @@ The bridge returns HTTP 200 for completed inference, 502 for a failed inference,
 and 504 when the outcome is unknown. Error responses retain the trace URL in
 their JSON body, so Kestra can fail the HTTP task without a separate status
 check after each call. In `agent_workflows.work`, no eligible item skips project
-resolution; an unresolved project leaves `projectDirectory` empty for a later
-stage to handle conditionally.
+resolution and execution; an unresolved project skips execution.
 
-Execution times out after 30 minutes by default (`REQUEST_TIMEOUT_MS`). A failed
-or interrupted task may already have changed files: inspect its outcome before
-submitting a new request. Kestra and Langfuse data persist in Docker volumes.
+Execution times out after 30 minutes by default (`REQUEST_TIMEOUT_MS`, from 1
+to 3600000 ms). A JSON request can override the deadline for its own call. At
+expiration, the bridge kills the detached Codex process group, including its
+tool subprocesses, and attempts trace delivery once with a 5-second limit.
+A failed or interrupted task may already have changed files: inspect its
+outcome before submitting a new request. Kestra and Langfuse data persist in
+Docker volumes.
+
+## Bridge request fields
+
+Send `POST /generate` with `Content-Type: application/json` and the shared
+bearer token:
+
+```json
+{
+  "requestId": "execution-123-work",
+  "prompt": "Execute /work for item ICY-94.",
+  "directory": "/absolute/project/path",
+  "timeoutMs": 3585000
+}
+```
+
+`requestId` and `prompt` are required. `directory` and `timeoutMs` are optional:
+
+- `directory` passes directly to Codex's `-C` argument and subprocess `cwd`.
+  The bridge does not resolve or inspect the path again and does not change
+  its own working directory. When omitted, Codex uses
+  `CODEX_WORKING_DIRECTORY`, then the home directory.
+- `timeoutMs` accepts an integer from 1 to 3600000 and overrides
+  `REQUEST_TIMEOUT_MS` for that call only.
+
+Overrides do not change subsequent calls. `directory` applies to the Codex CLI
+provider; the OpenAI API provider has no local project execution. Existing
+`text/plain` calls still send their request ID through `X-Request-Id` and use
+the configured defaults. The response remains the existing JSON envelope,
+with the agent's final response in `text`.
+
+## Work flow
+
+`agent_workflows.work` keeps three bridge operations: `next`, `project`, and
+`work`. Its visible decisions skip `project` and `work` when no item is returned,
+and skip `work` when project resolution returns no path. `work` receives the
+exact selected item ID and the resolved path as `directory`.
+
+The existing `/work` workflow retrieves the approved plan published on the
+item and materializes it locally. One Codex session then executes
+`/work → /ready → /inspect`, including correction loops. Kestra does not launch
+separate sessions for those transitions. Merge through `/done` remains a
+separate human-confirmed action.
+
+| Operation | Bridge execution | HTTP idle wait | Kestra task ceiling |
+| --- | --- | --- | --- |
+| `next` | 285000 ms (4m45s) | 4m55s | 5m |
+| `project` | 285000 ms (4m45s) | 4m55s | 5m |
+| `work` | 3585000 ms (59m45s) | 59m55s | 1h |
+
+Each operation has a 5-second connection timeout. The reserve inside each
+ceiling leaves time for cancellation, trace delivery, and the HTTP response.
+The `work` deadline covers its entire session and does not renew at workflow
+transitions. Neither bridge calls nor failed operations are retried
+automatically.
+
+The final `/inspect` message follows `templates/inspect-result.md`. Success
+reports `inspection published` for the request and `agent-inspected applied`
+for the selected item, only after both operations are confirmed. Blocked or
+partial results report observed outcomes and an exact remaining action when
+known. The earlier analysis uses `templates/inspect-analysis.md`.
+
+Kestra's `qualify-work` control task reads the final Markdown response and
+fails the flow unless it matches that successful result for the selected item.
+An HTTP 200 confirms inference completion; this final qualification confirms
+the workflow's reported delivery outcome. The response and trace remain
+available in the `work` task outputs, including when qualification fails.
+
+Task descriptions start with `/next`, `/project`, and `/work`, followed by
+their documentation introductions. Open a task's description in Kestra to
+read it. `workResult` and `workTraceUrl` expose the work response and trace on
+successful flows; skipped work returns an empty object and an empty URL.
+
+The installer creates missing flows and retains existing ones. To update an
+existing `agent_workflows.work`, explicitly import `orchestration/work.yaml`
+through the Kestra flow editor, then save it. Restarting Compose alone does
+not replace the stored definition.
 
 To stop, press `Ctrl+C` in the bridge terminal, then run `docker compose down`.
 This keeps the saved data.
