@@ -145,7 +145,7 @@ tasks:
           description: Non — aucun item éligible ; terminer le flux.
           message: Aucun item éligible ; le flux se termine sans résolution de projet.
       error:
-        - id: invalid-next-response
+        - id: next-error
           type: io.kestra.plugin.core.execution.Fail
           errorMessage: Invalid /next response.
 outputs:
