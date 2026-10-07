@@ -171,10 +171,6 @@ tasks:
                 description: The project resolution response is missing or invalid.
                 errorMessage: 'Invalid /project response: expected a JSON object with a string path field.'
       no-item:
-        - id: label-no-item
-          type: io.kestra.plugin.core.execution.Labels
-          labels:
-            work-result: no-item
         - id: no-item
           type: io.kestra.plugin.core.log.Log
           description: Non — aucun item éligible ; terminer le flux.
