@@ -120,7 +120,7 @@ tasks:
                   timeout:
                     connectTimeout: PT5S
                     readIdleTimeout: PT59M55S
-              - id: has-work
+              - id: work-error
                 type: io.kestra.plugin.core.execution.Fail
                 description: Fail when the response does not use the expected template for the selected item.
                 condition: >-
@@ -139,7 +139,7 @@ tasks:
                 errorMessage: |-
                   Invalid /work response: expected the inspect-result template for the selected item. Received response:
                   {{ fromJson(outputs.work.body).text | default('No textual response received.') }}
-              - id: is-work-complete
+              - id: work-partial
                 type: io.kestra.plugin.core.execution.Fail
                 description: Warn when the response does not confirm inspection publication and agent-inspected application.
                 allowFailure: true
@@ -152,6 +152,16 @@ tasks:
                 errorMessage: |-
                   Work did not complete successfully. Received response:
                   {{ fromJson(outputs.work.body).text }}
+              - id: work-sucess
+                type: io.kestra.plugin.core.log.Log
+                description: Confirm successful inspection publication and agent-inspected application.
+                runIf: >-
+                  {% set lines = fromJson(outputs.work.body).text | split('\n') %}
+                  {{
+                    (lines[2] | split(':') | last | trim) == "** inspection published"
+                    and lines[3] == ("**Item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ":** agent-inspected applied")
+                  }}
+                message: Work completed successfully; inspection was published and agent-inspected was applied to the selected item.
             no-project:
               - id: project-required
                 type: io.kestra.plugin.core.execution.Fail
