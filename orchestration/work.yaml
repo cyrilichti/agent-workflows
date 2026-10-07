@@ -35,14 +35,14 @@ tasks:
     value: >-
       {{ outputs.next.body | toJson | jq('
         try (fromjson | .text | fromjson) catch null
-        | if . == {"status":"no eligible item"} then "empty"
+        | if . == {"status":"no eligible item"} then "no-item"
           elif type == "object" and (try (
             (.name | type) == "string" and (.name | test("\\S"))
             and (.id | type) == "string" and (.id | test("\\S"))
             and (.url | type) == "string" and (.url | test("\\S"))
             and (.list | type) == "string" and (.list | test("\\S"))
           ) catch false) then "item"
-          else "invalid"
+          else "error"
           end
       ') | first }}
     cases:
@@ -139,22 +139,22 @@ tasks:
               type: io.kestra.plugin.core.log.Log
               description: No — no project directory was resolved; finish the flow.
               message: No project directory was resolved; the flow ends without executing work.
-      empty:
+      no-item:
         - id: no-item
           type: io.kestra.plugin.core.log.Log
           description: Non — aucun item éligible ; terminer le flux.
           message: Aucun item éligible ; le flux se termine sans résolution de projet.
-    defaults:
-      - id: invalid-next-response
-        type: io.kestra.plugin.core.execution.Fail
-        errorMessage: Invalid /next response.
+      error:
+        - id: invalid-next-response
+          type: io.kestra.plugin.core.execution.Fail
+          errorMessage: Invalid /next response.
 outputs:
   - id: item
     type: JSON
-    value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'empty' ? fromJson(fromJson(outputs.next.body).text) : fromJson('{}') }}"
+    value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'no-item' ? fromJson(fromJson(outputs.next.body).text) : fromJson('{}') }}"
   - id: traceUrl
     type: STRING
-    value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'empty' ? fromJson(outputs.next.body).traceUrl : '' }}"
+    value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'no-item' ? fromJson(outputs.next.body).traceUrl : '' }}"
   - id: projectDirectory
     type: STRING
     value: "{{ outputs['has-item'].value == 'item' ? (fromJson(fromJson(outputs.project.body).text).path ?? '') : '' }}"
