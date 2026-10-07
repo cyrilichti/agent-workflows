@@ -30,132 +30,143 @@ tasks:
         connectTimeout: PT5S
         readIdleTimeout: PT4M55S
   - id: has-item
-    type: io.kestra.plugin.core.flow.If
-    description: |
-      **Un item a-t-il été sélectionné ?**
+    type: io.kestra.plugin.core.flow.Switch
+    description: Continue for a valid item, stop when no item is eligible, and fail otherwise.
+    value: >-
+      {{ outputs.next.body | toJson | jq('
+        try (fromjson | .text | fromjson) catch null
+        | if . == {"status":"no eligible item"} then "no-item"
+          elif type == "object" and (try (
+            (.name | type) == "string" and (.name | test("\\S"))
+            and (.id | type) == "string" and (.id | test("\\S"))
+            and (.url | type) == "string" and (.url | test("\\S"))
+            and (.list | type) == "string" and (.list | test("\\S"))
+          ) catch false) then "item"
+          else "error"
+          end
+      ') | first }}
+    cases:
+      item:
+        - id: project
+          type: io.kestra.plugin.core.http.Request
+          description: |
+            /project
 
-      Règle : `next` a renvoyé un item avec un identifiant non vide.
+            `/project` finds the local Git repository for a destination name (`list`) and
+            an exact item ID. Invoke it as `/project` or `$project` with both values, or let
+            the Kestra `work` flow call it after `/next` returns an item. It reads the item
+            only when several repositories match the destination. Configured project paths
+            take priority when available; the search continues when they are unavailable.
+          uri: '{{ envs.bridge_url }}/generate'
+          method: POST
+          contentType: application/json
+          headers:
+            Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+          body: >-
+            {{ {
+              "requestId": execution.id ~ "-project",
+              "prompt": "Execute /project with list: " ~ fromJson(fromJson(outputs.next.body).text).list ~ " and item ID: " ~ fromJson(fromJson(outputs.next.body).text).id,
+              "timeoutMs": 285000
+            } | toJson }}
+          timeout: PT5M
+          options:
+            timeout:
+              connectTimeout: PT5S
+              readIdleTimeout: PT4M55S
+        - id: has-project
+          type: io.kestra.plugin.core.flow.If
+          description: |
+            **Was a project directory resolved?**
 
-      - **Oui** : exécuter `project` pour résoudre le répertoire local du projet, puis `work` si un chemin est retourné.
-      - **Non** : terminer le flux sans exécuter `project` ni `work`.
-    condition: "{{ (fromJson(fromJson(outputs.next.body).text).id ?? '') != '' }}"
-    then:
-      - id: project
-        type: io.kestra.plugin.core.http.Request
-        description: |
-          /project
+            Rule: `project` returned a nonempty `path`.
 
-          `/project` finds the local Git repository for a destination name (`list`) and
-          an exact item ID. Invoke it as `/project` or `$project` with both values, or let
-          the Kestra `work` flow call it after `/next` returns an item. It reads the item
-          only when several repositories match the destination. Configured project paths
-          take priority when available; the search continues when they are unavailable.
-        uri: '{{ envs.bridge_url }}/generate'
-        method: POST
-        contentType: application/json
-        headers:
-          Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-        body: >-
-          {{ {
-            "requestId": execution.id ~ "-project",
-            "prompt": "Execute /project with list: " ~ fromJson(fromJson(outputs.next.body).text).list ~ " and item ID: " ~ fromJson(fromJson(outputs.next.body).text).id,
-            "timeoutMs": 285000
-          } | toJson }}
-        timeout: PT5M
-        options:
-          timeout:
-            connectTimeout: PT5S
-            readIdleTimeout: PT4M55S
-      - id: has-project
-        type: io.kestra.plugin.core.flow.If
-        description: |
-          **Was a project directory resolved?**
+            - **Yes**: execute `work` in that directory for the selected item.
+            - **No**: finish the flow without executing `work`.
+          condition: "{{ (fromJson(fromJson(outputs.project.body).text).path ?? '') != '' }}"
+          then:
+            - id: work
+              type: io.kestra.plugin.core.http.Request
+              description: |
+                /work
 
-          Rule: `project` returned a nonempty `path`.
+                `/work` requires an `agent-planned` item and executes its approved plan
+                autonomously, one todo at a time. For new work, initialization moves the
+                item to the exact resolved `in progress` status before preparing the branch.
+                Resumed work preserves the item status.
+                New standalone work copies the plan published on the item to the local plan
+                location; resumed work keeps the current local plan. It routes each todo to the
+                right specialist and hands the completed plan directly to `/ready` without
+                another approval.
+              uri: '{{ envs.bridge_url }}/generate'
+              method: POST
+              contentType: application/json
+              headers:
+                Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+              body: >-
+                {{ {
+                  "requestId": execution.id ~ "-work",
+                  "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ".",
+                  "directory": fromJson(fromJson(outputs.project.body).text).path,
+                  "timeoutMs": 3585000
+                } | toJson }}
+              timeout: PT1H
+              options:
+                timeout:
+                  connectTimeout: PT5S
+                  readIdleTimeout: PT59M55S
+            - id: is-work-complete
+              type: io.kestra.plugin.core.execution.Fail
+              description: |
+                Check whether the work chain completed successfully.
 
-          - **Yes**: execute `work` in that directory for the selected item.
-          - **No**: finish the flow without executing `work`.
-        condition: "{{ (fromJson(fromJson(outputs.project.body).text).path ?? '') != '' }}"
-        then:
-          - id: work
-            type: io.kestra.plugin.core.http.Request
-            description: |
-              /work
-
-              `/work` requires an `agent-planned` item and executes its approved plan
-              autonomously, one todo at a time. For new work, initialization moves the
-              item to the exact resolved `in progress` status before preparing the branch.
-              Resumed work preserves the item status.
-              New standalone work copies the plan published on the item to the local plan
-              location; resumed work keeps the current local plan. It routes each todo to the
-              right specialist and hands the completed plan directly to `/ready` without
-              another approval.
-            uri: '{{ envs.bridge_url }}/generate'
-            method: POST
-            contentType: application/json
-            headers:
-              Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-            body: >-
-              {{ {
-                "requestId": execution.id ~ "-work",
-                "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ".",
-                "directory": fromJson(fromJson(outputs.project.body).text).path,
-                "timeoutMs": 3585000
-              } | toJson }}
-            timeout: PT1H
-            options:
-              timeout:
-                connectTimeout: PT5S
-                readIdleTimeout: PT59M55S
-          - id: is-work-complete
-            type: io.kestra.plugin.core.execution.Fail
-            description: |
-              Check whether the work chain completed successfully.
-
-              Fail unless the final human-readable message confirms inspection
-              publication and `agent-inspected` application for the selected item.
-            condition: >-
-              {% set lines = fromJson(outputs.work.body).text | trim | split('\n') %}
-              {{ not (
-                (lines | length) >= 4
-                and lines[0] == "## Inspect result"
-                and (lines[2] contains "**Request ")
-                and (lines[2] | split(':') | last | trim) == "** inspection published"
-                and lines[3] == ("**Item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ":** agent-inspected applied")
-              ) }}
-            errorMessage: >-
-              The work chain did not confirm inspection publication and label
-              application for the selected item. Inspect its response and trace
-              before submitting another request.
-        else:
-          - id: no-project
-            type: io.kestra.plugin.core.log.Log
-            description: No — no project directory was resolved; finish the flow.
-            message: No project directory was resolved; the flow ends without executing work.
-    else:
-      - id: no-item
-        type: io.kestra.plugin.core.log.Log
-        description: Non — aucun item éligible ; terminer le flux.
-        message: Aucun item éligible ; le flux se termine sans résolution de projet.
+                Fail unless the final human-readable message confirms inspection
+                publication and `agent-inspected` application for the selected item.
+              condition: >-
+                {% set lines = fromJson(outputs.work.body).text | trim | split('\n') %}
+                {{ not (
+                  (lines | length) >= 4
+                  and lines[0] == "## Inspect result"
+                  and (lines[2] contains "**Request ")
+                  and (lines[2] | split(':') | last | trim) == "** inspection published"
+                  and lines[3] == ("**Item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ":** agent-inspected applied")
+                ) }}
+              errorMessage: >-
+                The work chain did not confirm inspection publication and label
+                application for the selected item. Inspect its response and trace
+                before submitting another request.
+          else:
+            - id: no-project
+              type: io.kestra.plugin.core.log.Log
+              description: No — no project directory was resolved; finish the flow.
+              message: No project directory was resolved; the flow ends without executing work.
+      no-item:
+        - id: no-item
+          type: io.kestra.plugin.core.log.Log
+          description: Non — aucun item éligible ; terminer le flux.
+          message: Aucun item éligible ; le flux se termine sans résolution de projet.
+      error:
+        - id: next-error
+          type: io.kestra.plugin.core.execution.Fail
+          errorMessage: Invalid /next response.
 outputs:
   - id: item
     type: JSON
-    value: '{{ fromJson(fromJson(outputs.next.body).text) }}'
+    value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'no-item' ? fromJson(fromJson(outputs.next.body).text) : fromJson('{}') }}"
   - id: traceUrl
     type: STRING
-    value: '{{ fromJson(outputs.next.body).traceUrl }}'
+    value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'no-item' ? fromJson(outputs.next.body).traceUrl : '' }}"
   - id: projectDirectory
     type: STRING
-    value: "{{ outputs['has-item'].evaluationResult ? (fromJson(fromJson(outputs.project.body).text).path ?? '') : '' }}"
+    value: "{{ outputs['has-item'].value == 'item' ? (fromJson(fromJson(outputs.project.body).text).path ?? '') : '' }}"
   - id: resolution
     type: JSON
-    value: "{{ outputs['has-item'].evaluationResult ? fromJson(fromJson(outputs.project.body).text) : fromJson('{}') }}"
+    value: "{{ outputs['has-item'].value == 'item' ? fromJson(fromJson(outputs.project.body).text) : fromJson('{}') }}"
   - id: resolutionTraceUrl
     type: STRING
-    value: "{{ outputs['has-item'].evaluationResult ? fromJson(outputs.project.body).traceUrl : '' }}"
+    value: "{{ outputs['has-item'].value == 'item' ? fromJson(outputs.project.body).traceUrl : '' }}"
   - id: workResult
     type: JSON
-    value: "{{ outputs['has-item'].evaluationResult ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body) : fromJson('{}')) : fromJson('{}') }}"
+    value: "{{ outputs['has-item'].value == 'item' ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body) : fromJson('{}')) : fromJson('{}') }}"
   - id: workTraceUrl
     type: STRING
-    value: "{{ outputs['has-item'].evaluationResult ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body).traceUrl : '') : '' }}"
+    value: "{{ outputs['has-item'].value == 'item' ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body).traceUrl : '') : '' }}"
