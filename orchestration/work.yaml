@@ -120,26 +120,46 @@ tasks:
                   timeout:
                     connectTimeout: PT5S
                     readIdleTimeout: PT59M55S
-              - id: is-work-complete
-                type: io.kestra.plugin.core.execution.Fail
-                description: |
-                  Check whether the work chain completed successfully.
-
-                  Fail unless the final human-readable message confirms inspection
-                  publication and `agent-inspected` application for the selected item.
-                condition: >-
-                  {% set lines = fromJson(outputs.work.body).text | trim | split('\n') %}
-                  {{ not (
-                    (lines | length) >= 4
-                    and lines[0] == "## Inspect result"
-                    and (lines[2] contains "**Request ")
-                    and (lines[2] | split(':') | last | trim) == "** inspection published"
-                    and lines[3] == ("**Item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ":** agent-inspected applied")
-                  ) }}
-                errorMessage: >-
-                  The work chain did not confirm inspection publication and label
-                  application for the selected item. Inspect its response and trace
-                  before submitting another request.
+              - id: is-success
+                type: io.kestra.plugin.core.flow.Switch
+                description: Route the work response to error, partial, or success.
+                value: >-
+                  {{ {
+                    "response": fromJson(outputs.work.body).text,
+                    "item": fromJson(fromJson(outputs.next.body).text).id
+                  } | toJson | jq('
+                    try (
+                      (.response | split("\n")) as $lines
+                      | ($lines[0] == "## Inspect result"
+                        and $lines[1] == ""
+                        and ($lines[2] | test("^\\*\\*Request \\S.*:\\*\\* \\S.*$"))
+                        and ($lines[3] | capture("^\\*\\*Item (?<id>\\S+):\\*\\* \\S.*$").id) == .item
+                      ) as $valid
+                      | if $valid | not then "error"
+                        elif ($lines[2] | endswith(":** inspection published"))
+                          and $lines[3] == ("**Item " + .item + ":** agent-inspected applied") then "success"
+                        else "partial"
+                        end
+                    ) catch "error"
+                  ') | first }}
+                cases:
+                  error:
+                    - id: work-error
+                      type: io.kestra.plugin.core.execution.Fail
+                      errorMessage: |-
+                        Invalid /work response: expected the inspect-result template for the selected item. Received response:
+                        {{ fromJson(outputs.work.body).text | default('No textual response received.') }}
+                  partial:
+                    - id: work-partial
+                      type: io.kestra.plugin.core.execution.Fail
+                      allowFailure: true
+                      errorMessage: |-
+                        Work did not complete successfully. Received response:
+                        {{ fromJson(outputs.work.body).text }}
+                  success:
+                    - id: work-sucess
+                      type: io.kestra.plugin.core.log.Log
+                      message: Work completed successfully; inspection was published and agent-inspected was applied to the selected item.
             no-project:
               - id: project-required
                 type: io.kestra.plugin.core.execution.Fail
@@ -154,7 +174,8 @@ tasks:
         - id: no-item
           type: io.kestra.plugin.core.log.Log
           description: Non — aucun item éligible ; terminer le flux.
-          message: Aucun item éligible ; le flux se termine sans résolution de projet.
+          level: INFO
+          message: 'no-item: aucun item éligible ; le flux se termine sans résolution de projet.'
       error:
         - id: next-error
           type: io.kestra.plugin.core.execution.Fail
