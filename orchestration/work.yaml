@@ -120,26 +120,70 @@ tasks:
                   timeout:
                     connectTimeout: PT5S
                     readIdleTimeout: PT59M55S
-              - id: is-work-complete
-                type: io.kestra.plugin.core.execution.Fail
-                description: |
-                  Check whether the work chain completed successfully.
-
-                  Fail unless the final human-readable message confirms inspection
-                  publication and `agent-inspected` application for the selected item.
-                condition: >-
-                  {% set lines = fromJson(outputs.work.body).text | trim | split('\n') %}
-                  {{ not (
-                    (lines | length) >= 4
-                    and lines[0] == "## Inspect result"
-                    and (lines[2] contains "**Request ")
-                    and (lines[2] | split(':') | last | trim) == "** inspection published"
-                    and lines[3] == ("**Item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ":** agent-inspected applied")
-                  ) }}
-                errorMessage: >-
-                  The work chain did not confirm inspection publication and label
-                  application for the selected item. Inspect its response and trace
-                  before submitting another request.
+              - id: classify-work-result
+                type: io.kestra.plugin.core.flow.Switch
+                description: Distinguish successful, unfinished, and unusable work responses.
+                value: >-
+                  {{ {
+                    "response": fromJson(outputs.work.body).text,
+                    "item": fromJson(fromJson(outputs.next.body).text).id
+                  } | toJson | jq('
+                    (.response // "") as $response
+                    | ($response | sub("[\\r\\n]+$"; "") | split("\\n")) as $lines
+                    | (try ($lines[2] | capture("^\\*\\*Request (?<identity>.+):\\*\\* (?<result>\\S(?:.*\\S)?)$")) catch null) as $request
+                    | (try ($lines[3] | capture("^\\*\\*Item (?<identity>.+):\\*\\* (?<result>\\S(?:.*\\S)?)$")) catch null) as $item
+                    | (try (
+                        ($lines | length) == 4
+                        or (
+                          ($lines | length) == 6
+                          and $lines[4] == ""
+                          and ($lines[5] | test("^\\*\\*Remaining:\\*\\* \\S(?:.*\\S)?$"))
+                        )
+                      ) catch false) as $hasValidEnding
+                    | if (
+                        ($lines[0] // "") == "## Inspect result"
+                        and ($lines[1] // null) == ""
+                        and $request != null
+                        and ($request.identity | test("\\S"))
+                        and ($request.result | test("\\S"))
+                        and $item != null
+                        and $item.identity == .item
+                        and ($item.result | test("\\S"))
+                        and $hasValidEnding
+                      ) then
+                        if (
+                          $request.result == "inspection published"
+                          and $item.result == "agent-inspected applied"
+                        ) then "success" else "warning" end
+                      else "error"
+                      end
+                  ') | first }}
+                cases:
+                  success:
+                    - id: work-succeeded
+                      type: io.kestra.plugin.core.log.Log
+                      message: Work completed successfully; inspection was published and agent-inspected was applied to the selected item.
+                  warning:
+                    - id: log-unfinished-work
+                      type: io.kestra.plugin.core.log.Log
+                      level: WARN
+                      message: |-
+                        Work did not complete successfully. Received response:
+                        {{ fromJson(outputs.work.body).text }}
+                    - id: unfinished-work
+                      type: io.kestra.plugin.core.execution.Exit
+                      state: WARNING
+                      description: The work response used the expected template but did not confirm successful completion.
+                  error:
+                    - id: invalid-work-result
+                      type: io.kestra.plugin.core.execution.Fail
+                      errorMessage: |-
+                        The work result cannot be evaluated because its response is missing or does not use the expected template. Received response:
+                        {% if fromJson(outputs.work.body).text is empty %}
+                        No textual response received.
+                        {% else %}
+                        {{ fromJson(outputs.work.body).text }}
+                        {% endif %}
             no-project:
               - id: project-required
                 type: io.kestra.plugin.core.execution.Fail
