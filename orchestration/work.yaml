@@ -168,16 +168,16 @@ outputs:
     value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'no-item' ? fromJson(outputs.next.body).traceUrl : '' }}"
   - id: projectDirectory
     type: STRING
-    value: "{{ outputs['has-item'].value == 'item' ? (fromJson(fromJson(outputs.project.body).text).path ?? '') : '' }}"
+    value: "{{ outputs['has-item'].value == 'item' and outputs['has-project'].value == 'project' ? fromJson(fromJson(outputs.project.body).text).path : '' }}"
   - id: resolution
     type: JSON
-    value: "{{ outputs['has-item'].value == 'item' ? fromJson(fromJson(outputs.project.body).text) : fromJson('{}') }}"
+    value: "{{ outputs['has-item'].value == 'item' ? (outputs['has-project'].value == 'project' or outputs['has-project'].value == 'no-project' ? fromJson(fromJson(outputs.project.body).text) : fromJson('{}')) : fromJson('{}') }}"
   - id: resolutionTraceUrl
     type: STRING
-    value: "{{ outputs['has-item'].value == 'item' ? fromJson(outputs.project.body).traceUrl : '' }}"
+    value: "{{ outputs['has-item'].value == 'item' and (outputs['has-project'].value == 'project' or outputs['has-project'].value == 'no-project') ? fromJson(outputs.project.body).traceUrl : '' }}"
   - id: workResult
     type: JSON
-    value: "{{ outputs['has-item'].value == 'item' ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body) : fromJson('{}')) : fromJson('{}') }}"
+    value: "{{ outputs['has-item'].value == 'item' and outputs['has-project'].value == 'project' ? fromJson(outputs.work.body) : fromJson('{}') }}"
   - id: workTraceUrl
     type: STRING
-    value: "{{ outputs['has-item'].value == 'item' ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body).traceUrl : '') : '' }}"
+    value: "{{ outputs['has-item'].value == 'item' and outputs['has-project'].value == 'project' ? fromJson(outputs.work.body).traceUrl : '' }}"
