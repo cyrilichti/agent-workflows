@@ -51,8 +51,6 @@ body: pull request body, normalized to an empty string when null or absent
 url: pull request HTML URL
 ```
 
-Pass every value as a separate process argument. Do not invoke a shell, open an
-editor, push or fork a branch, assign reviewers, override maintainer settings,
-or recover with another transport.
+Pass every value as a separate process argument.
 
 Native draft behavior depends on `--draft`, not the `Draft:` prefix.
