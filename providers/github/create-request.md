@@ -3,26 +3,39 @@
 Create exactly one draft pull request with:
 
 ```text
-command: gh api
+command: gh
 arguments:
-  - --hostname
-  - caller repository host
-  - --method
-  - POST
-  - --input
-  - -
-  - repos/<owner>/<repo>/pulls
-stdin JSON:
-  title: caller title beginning with "Draft:"
-  head: caller source branch
-  base: caller target branch
-  draft: true
+  - pr
+  - create
+  - --repo
+  - <caller repository host>/<caller repository owner>/<caller repository repo>
+  - --head
+  - caller source branch
+  - --base
+  - caller target branch
+  - --title
+  - caller title beginning with "Draft:"
+  - --body
+  - empty string
+  - --draft
 ```
 
-Do not send a body, reviewers, or maintainer settings. Require a successful
-exit and exactly one returned pull request with a numeric `number`, native
-draft state, and `html_url`. Do not search or retry if creation fails or its
-result is ambiguous.
+Require a successful exit and exactly one pull-request URL matching the caller
+host and repository. Extract its numeric number, then observe it once with:
+
+```text
+command: gh
+arguments:
+  - api
+  - --hostname
+  - caller repository host
+  - repos/<owner>/<repo>/pulls/<number>
+```
+
+Require the observed number to match the extracted number, `state: open`,
+`draft: true`, and the caller's source and target branches. Stop if creation
+fails or the created request cannot be identified or observed; do not search
+or retry.
 
 Normalize:
 
@@ -38,4 +51,6 @@ body: pull request body, normalized to an empty string when null or absent
 url: pull request HTML URL
 ```
 
-Native draft behavior depends on `draft: true`, not the `Draft:` prefix.
+Pass every value as a separate process argument.
+
+Native draft behavior depends on `--draft`, not the `Draft:` prefix.
