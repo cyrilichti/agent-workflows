@@ -31,13 +31,7 @@ tasks:
         readIdleTimeout: PT4M55S
   - id: has-item
     type: io.kestra.plugin.core.flow.Switch
-    description: |
-      **Un item a-t-il été sélectionné ?**
-
-      Règle : `next` a renvoyé un item avec un identifiant non vide.
-
-      - **Oui** : exécuter `project` pour résoudre le répertoire local du projet, puis `work` si un chemin est retourné.
-      - **Non** : terminer le flux sans exécuter `project` ni `work`.
+    description: Continue for a valid item, stop when no item is eligible, and fail otherwise.
     value: >-
       {{ outputs.next.body | toJson | jq('
         try (fromjson | .text | fromjson) catch null
@@ -157,22 +151,22 @@ tasks:
 outputs:
   - id: item
     type: JSON
-    value: '{{ fromJson(fromJson(outputs.next.body).text) }}'
+    value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'empty' ? fromJson(fromJson(outputs.next.body).text) : fromJson('{}') }}"
   - id: traceUrl
     type: STRING
-    value: '{{ fromJson(outputs.next.body).traceUrl }}'
+    value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'empty' ? fromJson(outputs.next.body).traceUrl : '' }}"
   - id: projectDirectory
     type: STRING
-    value: "{{ outputs['has-item'].evaluationResult ? (fromJson(fromJson(outputs.project.body).text).path ?? '') : '' }}"
+    value: "{{ outputs['has-item'].value == 'item' ? (fromJson(fromJson(outputs.project.body).text).path ?? '') : '' }}"
   - id: resolution
     type: JSON
-    value: "{{ outputs['has-item'].evaluationResult ? fromJson(fromJson(outputs.project.body).text) : fromJson('{}') }}"
+    value: "{{ outputs['has-item'].value == 'item' ? fromJson(fromJson(outputs.project.body).text) : fromJson('{}') }}"
   - id: resolutionTraceUrl
     type: STRING
-    value: "{{ outputs['has-item'].evaluationResult ? fromJson(outputs.project.body).traceUrl : '' }}"
+    value: "{{ outputs['has-item'].value == 'item' ? fromJson(outputs.project.body).traceUrl : '' }}"
   - id: workResult
     type: JSON
-    value: "{{ outputs['has-item'].evaluationResult ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body) : fromJson('{}')) : fromJson('{}') }}"
+    value: "{{ outputs['has-item'].value == 'item' ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body) : fromJson('{}')) : fromJson('{}') }}"
   - id: workTraceUrl
     type: STRING
-    value: "{{ outputs['has-item'].evaluationResult ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body).traceUrl : '') : '' }}"
+    value: "{{ outputs['has-item'].value == 'item' ? (outputs['has-project'].evaluationResult ? fromJson(outputs.work.body).traceUrl : '') : '' }}"
