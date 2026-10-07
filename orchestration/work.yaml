@@ -129,7 +129,7 @@ tasks:
                     "item": fromJson(fromJson(outputs.next.body).text).id
                   } | toJson | jq('
                     (.response // "") as $response
-                    | ($response | sub("[\\r\\n]+$"; "") | split("\\n")) as $lines
+                    | ($response | sub("[\\r\\n]+$"; "") | split("\n")) as $lines
                     | (try ($lines[2] | capture("^\\*\\*Request (?<identity>.+):\\*\\* (?<result>\\S(?:.*\\S)?)$")) catch null) as $request
                     | (try ($lines[3] | capture("^\\*\\*Item (?<identity>.+):\\*\\* (?<result>\\S(?:.*\\S)?)$")) catch null) as $item
                     | (try (

@@ -160,3 +160,29 @@ when none are needed.
     </tr>
   </tbody>
 </table>
+
+## Kestra execution results
+
+The Kestra `work` flow evaluates the final text returned by `/work` against the
+existing inspect-result template. It records one of these outcomes:
+
+| Situation | Execution state | Diagnostic |
+| --- | --- | --- |
+| No eligible item | `SUCCESS` | An `INFO` message reports `no-item`, and the execution receives the `work-result: no-item` label. |
+| Complete template with `inspection published` and `agent-inspected applied` for the selected item | `SUCCESS` | Work completed successfully. |
+| Complete template for the selected item without both success results | `WARNING` | The warning log includes the complete response. |
+| Missing or incomplete template, missing text, or a result for another item | `FAILED` | The failure includes the received text or reports that no text was received. |
+
+A recognized template contains the `## Inspect result` heading, a non-empty
+request identity and result, and a non-empty result for the selected item. The
+optional `Remaining` line is accepted. Calls that stop before returning this
+template are therefore classified as `FAILED`.
+
+In Kestra's Executions view, filter on the label key `work-result` and value
+`no-item` to isolate runs that ended without selecting an item. Other
+successful executions do not receive this label.
+
+The Compose installer preserves a flow that already exists in Kestra. After
+updating this repository, import `orchestration/work.yaml` again from Kestra's
+Flows view to update the installed `agent_workflows/work` flow; restarting the
+stack alone does not replace it.
