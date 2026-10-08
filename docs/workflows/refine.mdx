@@ -4,16 +4,17 @@ description: Split one oversized work item into confirmed child items without ch
 ---
 
 `/refine` decomposes one oversized official item into autonomous child items.
-The parent stays unchanged, and no child is created before the human confirms
-the complete decomposition.
+It completes the same item context in both entry modes, including comments,
+before assessing or drafting. The parent stays unchanged, and no child is
+created before the human confirms the complete decomposition.
 
 ## How `/refine` decomposes an item
 
-<div class="write-flow refine-flow" role="img" aria-label="The refine workflow confirms that an official item needs refinement, then loops between drafting and validating autonomous child items. It previews the complete decomposition for human adjustment, confirmation, or cancellation. After confirmation, it creates the children, labels, and blocking relations without changing the parent.">
+<div class="write-flow refine-flow" role="img" aria-label="The refine workflow completes the official item context, confirms that multiple useful units can be delivered or verified separately, then loops between drafting and validating child items. It prefers vertical feature slices and allows justified progressive migration sequences. It previews the complete decomposition for human adjustment, confirmation, or cancellation. After confirmation, it creates the children, labels, and blocking relations without changing the parent and reports partial failures after continuing feasible operations.">
   <div class="write-flow__step write-flow__step--assisted">
-    <small>01 · Standalone only</small>
-    <strong>Check refinement need</strong>
-    <span>Confirm that the item contains multiple autonomous delivery units.</span>
+    <small>01 · Assisted</small>
+    <strong>Complete and assess context</strong>
+    <span>Reuse known fields, read only missing information, and confirm that multiple useful units exist.</span>
   </div>
 
   <div class="plan-flow__scope">
@@ -22,7 +23,7 @@ the complete decomposition.
       <div class="write-flow__step write-flow__step--focus">
         <small>02 · Assisted</small>
         <strong>Draft child items</strong>
-        <span>Cover the parent scope exactly once with autonomous vertical slices.</span>
+        <span>Cover the parent scope exactly once with vertical feature slices or a justified progressive sequence.</span>
       </div>
     </section>
     <section class="plan-flow__scope-path">
@@ -82,7 +83,7 @@ the complete decomposition.
   <div class="write-flow__step write-flow__step--assisted">
     <small>05 · Workflow</small>
     <strong>Create confirmed decomposition</strong>
-    <span>Create the children, required labels, and blocking relations. Keep the parent unchanged.</span>
+    <span>Keep feasible operations running, report successes and failures separately, and leave the parent unchanged.</span>
   </div>
 </div>
 
@@ -90,14 +91,14 @@ the complete decomposition.
 
 <div class="workflow-links">
   <a href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown">
-    <small>Standalone only</small>
+    <small>Assessment</small>
     <strong>planning-and-task-breakdown <span aria-hidden="true">↗</span></strong>
-    <span>Check whether the selected item contains multiple autonomous delivery units.</span>
+    <span>Check whether the selected item contains multiple useful units that can be delivered or verified separately.</span>
   </a>
   <a href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-tickets">
     <small>Decomposition</small>
     <strong>to-tickets <span aria-hidden="true">↗</span></strong>
-    <span>Draft vertical child items and only their genuine blocking relations.</span>
+    <span>Prefer vertical feature slices and allow justified expansion, migration, and removal sequences.</span>
   </a>
 </div>
 
@@ -108,12 +109,12 @@ the complete decomposition.
     <tr>
       <td>1</td>
       <th scope="row">Assess</th>
-      <td>In standalone mode, stop without changes when the item is already one coherent delivery unit.</td>
+      <td>Reuse supplied context, read only missing supported information, and stop without changes when the item is one indivisible delivery unit.</td>
     </tr>
     <tr>
       <td>2</td>
       <th scope="row">Draft</th>
-      <td>Use one specialist to draft at least two autonomous children that cover the parent scope exactly once.</td>
+      <td>Use one specialist to draft at least two useful children that cover the parent scope exactly once, preferring vertical feature slices and allowing justified progressive migrations.</td>
     </tr>
     <tr>
       <td>3</td>
@@ -128,7 +129,7 @@ the complete decomposition.
     <tr>
       <td>5</td>
       <th scope="row">Create</th>
-      <td>Create confirmed children in order, copy <code>agent-shaped</code> when required, persist valid blocking relations, and report every result.</td>
+      <td>Require creation prerequisites first, then create confirmed children in order, copy <code>agent-shaped</code> when required, persist valid blocking relations, continue feasible operations after individual failures, and report successful and failed results separately.</td>
     </tr>
   </tbody>
 </table>
