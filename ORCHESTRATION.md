@@ -13,7 +13,6 @@ your local files, configuration, authentication, tools and integrations.
 - Docker with Docker Compose 2.24+.
 - For the default Codex provider: Codex CLI installed and authenticated with
   `codex login`, with support for `codex exec --ephemeral --json`.
-  The `work` flow also requires `--output-schema` support.
 
 Run the commands below from the repository root.
 
@@ -114,36 +113,6 @@ stage to handle conditionally.
 Execution times out after 30 minutes by default (`REQUEST_TIMEOUT_MS`). A failed
 or interrupted task may already have changed files: inspect its outcome before
 submitting a new request. Kestra and Langfuse data persist in Docker volumes.
-
-## Work delivery result
-
-The `work` HTTP task opts into `resultContract: { "type": "inspect", "itemId":
-"<selected item ID>" }`. The bridge constrains the provider's final response
-with a JSON schema: Codex CLI receives `--output-schema`, and the API provider
-uses strict Responses `text.format`. Other tasks retain their text contract.
-
-The bridge validates the complete result and exact selected item, then renders
-the human-readable `## Inspect result` block with fixed English status markers.
-Explanations remain in the user's language. The HTTP response includes a
-`deliveryResult` containing the observed states and a derived `outcome`.
-Kestra's `is-success` reads that outcome rather than parsing Markdown.
-
-Success requires complete observed publication or complete inspection without
-findings, together with confirmed label application on the selected item.
-Valid incomplete, failed, unapplied, or unobserved delivery states produce
-`partial` and Kestra `WARNING`. Invalid schema, missing identities for completed
-inspection, or a wrong item produce `invalid_output` and HTTP 502. Inference
-completion alone never establishes delivery success. Provider/network failures
-keep the shared bridge error policy; no delivery action is automatically retried.
-
-After upgrading, restart the host bridge and update the saved Kestra `work`
-flow from `orchestration/work.yaml`. The startup installer creates absent flows
-only; it preserves existing flows and UI edits. Save a new revision and start
-a new execution to use the new contract. Upgrade the bridge before the flow;
-an older bridge cannot return `deliveryResult` and the new flow fails closed.
-
-API mode still sends `tools: []` and cannot perform repository or provider
-mutations; schema support does not enable delivery execution for that adapter.
 
 To stop, press `Ctrl+C` in the bridge terminal, then run `docker compose down`.
 This keeps the saved data.

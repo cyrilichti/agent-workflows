@@ -59,11 +59,6 @@ run `../commands/resolve-request.md` for the same request ID and carried source
 branch with `require_non_draft: true` and `fields: delivery_state`. If the
 observed request head no longer equals the frozen SHA, restart from Step 1.
 
-Set the observed request outcome to `inspection completed without findings`
-when the complete inspection contains no findings. Set it to `inspection
-published` only when complete finding publication for the frozen SHA is
-observed, including findings already published for that same SHA.
-
 When any blocking finding exists, create one
 `delivery_context.source_findings` record defined by
 `../templates/delivery-context.md` for every current blocking finding, using
@@ -79,7 +74,7 @@ label: agent-inspected
 ```
 
 Require `applied: true`, then present `../templates/inspect-result.md` with
-the observed request outcome and `agent-inspected applied` and finish according to
+`inspection published` and `agent-inspected applied` and finish according to
 `../goals/inspect-complete.md`.
 
 ## Safety

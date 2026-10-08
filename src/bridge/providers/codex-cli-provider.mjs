@@ -1,7 +1,4 @@
 import { spawn } from 'node:child_process';
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import { ProviderError } from '../execution/task-contract.mjs';
 import { PROJECT_ROOT } from '../project-root.mjs';
 
@@ -12,10 +9,9 @@ import { PROJECT_ROOT } from '../project-root.mjs';
  * @param {string | undefined} model Optional override of the configured model.
  * @param {string} workspace Optional ChatGPT workspace restriction.
  * @param {string} [directory=PROJECT_ROOT] Working directory for the task.
- * @param {string} [outputSchemaPath] Schema constraining the final response.
  * @returns {string[]} Arguments passed directly to spawn, without a shell.
  */
-export function buildCodexArguments(model, workspace, directory = PROJECT_ROOT, outputSchemaPath) {
+export function buildCodexArguments(model, workspace, directory = PROJECT_ROOT) {
   const args = [
     'exec',
     '--json',
@@ -32,7 +28,6 @@ export function buildCodexArguments(model, workspace, directory = PROJECT_ROOT, 
   if (workspace) {
     args.push('-c', `forced_chatgpt_workspace_id=${JSON.stringify(workspace)}`);
   }
-  if (outputSchemaPath) args.push('--output-schema', outputSchemaPath);
   return [...args, '-'];
 }
 
@@ -111,88 +106,77 @@ export function createCodexCliProvider({
      * Run one CLI process group and terminate it on cancellation or excess output.
      *
      * @param {string} prompt Task instructions.
-     * @param {{ signal: AbortSignal, directory?: string, outputSchema?: object }} options Cancellation, directory and optional final response schema.
+     * @param {{ signal: AbortSignal, directory?: string }} options Cancellation and per-call directory.
      * @returns {Promise<import('../execution/task-contract.mjs').TaskResult>}
      * @throws {ProviderError} For execution, authentication, cancellation or provider failures.
      */
-    async generate(prompt, { signal, directory: taskDirectory = directory, outputSchema }) {
+    async generate(prompt, { signal, directory: taskDirectory = directory }) {
       if (signal.aborted) {
         throw new ProviderError('timeout', 'Execution cancelled before launch.');
       }
-      let schemaDirectory;
-      try {
-        let schemaPath;
-        if (outputSchema) {
-          schemaDirectory = mkdtempSync(join(tmpdir(), 'agent-workflows-schema-'));
-          schemaPath = join(schemaDirectory, 'result.json');
-          writeFileSync(schemaPath, JSON.stringify(outputSchema));
-        }
-        return await new Promise((resolve, reject) => {
-          const child = spawnImpl(executable, buildCodexArguments(model, workspace, taskDirectory, schemaPath), {
-            cwd: taskDirectory,
-            detached: true,
-            stdio: ['pipe', 'pipe', 'ignore'],
-            env: { ...environment },
-          });
-          let output = '';
-          let failure;
-          /** Terminate the detached process group, including tools started by Codex. */
-          const terminateProcessGroup = () => {
-            try {
-              process.kill(-child.pid, 'SIGKILL');
-            } catch {
-              // The process may already have exited or failed to spawn.
-            }
-          };
-          /** Record cancellation before terminating the subprocess. */
-          const abort = () => {
-            failure = new ProviderError(
-              'timeout',
-              'Execution cancelled; remote outcome may be unknown. Inspect its effects before starting another request.',
-            );
-            terminateProcessGroup();
-          };
-          signal.addEventListener('abort', abort, { once: true });
-          if (signal.aborted) {
-            abort();
-          }
-          child.stdout.on('data', (chunk) => {
-            output += chunk;
-            if (Buffer.byteLength(output) > 32 * 1024 * 1024) {
-              failure = new ProviderError('output_limit', 'Codex output exceeded the local limit.');
-              terminateProcessGroup();
-            }
-          });
-          child.stdin.on('error', () => {
-            // Early exit can close stdin; process events determine the final outcome.
-          });
-          child.on('error', () => {
-            failure = new ProviderError('codex_start', 'Codex could not start.');
-          });
-          child.on('close', (code) => {
-            signal.removeEventListener('abort', abort);
-            if (failure) {
-              return reject(failure);
-            }
-            if (code !== 0) {
-              return reject(
-                new ProviderError(
-                  'codex_error',
-                  'Codex exited without success. Check login, quota and model access.',
-                ),
-              );
-            }
-            try {
-              resolve(parseCodexEvents(output, model || 'configured-default'));
-            } catch (error) {
-              reject(error);
-            }
-          });
-          child.stdin.end(prompt);
+      return new Promise((resolve, reject) => {
+        const child = spawnImpl(executable, buildCodexArguments(model, workspace, taskDirectory), {
+          cwd: taskDirectory,
+          detached: true,
+          stdio: ['pipe', 'pipe', 'ignore'],
+          env: { ...environment },
         });
-      } finally {
-        if (schemaDirectory) rmSync(schemaDirectory, { recursive: true, force: true });
-      }
+        let output = '';
+        let failure;
+        /** Terminate the detached process group, including tools started by Codex. */
+        const terminateProcessGroup = () => {
+          try {
+            process.kill(-child.pid, 'SIGKILL');
+          } catch {
+            // The process may already have exited or failed to spawn.
+          }
+        };
+        /** Record cancellation before terminating the subprocess. */
+        const abort = () => {
+          failure = new ProviderError(
+            'timeout',
+            'Execution cancelled; remote outcome may be unknown. Inspect its effects before starting another request.',
+          );
+          terminateProcessGroup();
+        };
+        signal.addEventListener('abort', abort, { once: true });
+        if (signal.aborted) {
+          abort();
+        }
+        child.stdout.on('data', (chunk) => {
+          output += chunk;
+          if (Buffer.byteLength(output) > 32 * 1024 * 1024) {
+            failure = new ProviderError('output_limit', 'Codex output exceeded the local limit.');
+            terminateProcessGroup();
+          }
+        });
+        child.stdin.on('error', () => {
+          // Early exit can close stdin; process events determine the final outcome.
+        });
+        child.on('error', () => {
+          failure = new ProviderError('codex_start', 'Codex could not start.');
+        });
+        child.on('close', (code) => {
+          signal.removeEventListener('abort', abort);
+          if (failure) {
+            return reject(failure);
+          }
+          if (code !== 0) {
+            return reject(
+              new ProviderError(
+                'codex_error',
+                'Codex exited without success. Check login, quota and model access.',
+              ),
+            );
+          }
+          try {
+            resolve(parseCodexEvents(output, model || 'configured-default'));
+          } catch (error) {
+            reject(error);
+          }
+        });
+        child.stdin.end(prompt);
+      });
     },
   };
 }

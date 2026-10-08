@@ -113,10 +113,6 @@ tasks:
                     "requestId": execution.id ~ "-work",
                     "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ".",
                     "directory": fromJson(fromJson(outputs.project.body).text).path,
-                    "resultContract": {
-                      "type": "inspect",
-                      "itemId": fromJson(fromJson(outputs.next.body).text).id
-                    },
                     "timeoutMs": 3585000
                   } | toJson }}
                 timeout: PT1H
@@ -129,22 +125,40 @@ tasks:
                 description: Route the work response to error, partial, or success.
                 value: >-
                   {{ {
-                    "response": fromJson(outputs.work.body),
+                    "response": fromJson(outputs.work.body).text,
                     "item": fromJson(fromJson(outputs.next.body).text).id
                   } | toJson | jq('
-                    if .response.status != "completed"
-                      or .response.deliveryResult.itemId != .item then "error"
-                    elif .response.deliveryResult.outcome == "success" then "success"
-                    elif .response.deliveryResult.outcome == "partial" then "partial"
-                    else "error"
-                    end
+                    try (
+                      (.response | gsub("\r\n?"; "\n") | split("\n")
+                        | map(sub("[ \t]+$"; ""))) as $lines
+                      | ($lines | index("## Inspect result")) as $start
+                      | if $start == null then "error"
+                        else $lines[$start:$start + 4] as $result
+                        | ($result[2] | capture("^\\*\\*Request \\S.*:\\*\\* (?<status>\\S.*)$") // {}) as $request
+                        | ($result[3] | capture("^\\*\\*Item (?:\\[(?<linked>[^]]+)\\]\\([^)]*\\)|(?<plain>\\S+)):\\*\\* (?<status>\\S.*)$") // {}) as $item
+                        | ($request.status // "" | sub(" [—–-] \\S.*$"; "")) as $request_status
+                        | ($item.status // "" | sub("^`agent-inspected` "; "agent-inspected ")
+                          | sub(" [—–-] \\S.*$"; "")) as $item_status
+                        | if $result[1] != ""
+                          or (["inspection published", "inspection completed without findings", "inspection incomplete", "inspection failed", "inspection not attempted", "unobserved"]
+                            | index($request_status)) == null
+                          or (["agent-inspected applied", "agent-inspected not applied", "unobserved"]
+                            | index($item_status)) == null
+                          or ($item.linked // $item.plain // "") != .item then "error"
+                          elif (["inspection published", "inspection completed without findings"]
+                            | index($request_status)) != null
+                            and $item_status == "agent-inspected applied" then "success"
+                          else "partial"
+                          end
+                        end
+                    ) catch "error"
                   ') | first }}
                 cases:
                   error:
                     - id: work-error
                       type: io.kestra.plugin.core.execution.Fail
                       errorMessage: |-
-                        Invalid /work response: expected a validated deliveryResult for the selected item. Received response:
+                        Invalid /work response: expected the inspect-result template for the selected item. Received response:
                         {{ fromJson(outputs.work.body).text | default('No textual response received.') }}
                   partial:
                     - id: work-partial

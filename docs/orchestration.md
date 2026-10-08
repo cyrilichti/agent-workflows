@@ -54,13 +54,6 @@ host or sends the task to the OpenAI API, returns a JSON result to Kestra,
 and sends a trace to Langfuse. The bridge must be running for Kestra to
 reach either provider.
 
-For `work`, the bridge constrains and validates the final inspection states,
-then assembles a stable Markdown result for the user. Kestra reads the validated
-delivery outcome rather than matching wording in that text. A complete
-inspection (with published findings or no findings) and confirmed
-`agent-inspected` application are required for success. See the
-[work result contract and upgrade procedure](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#work-delivery-result).
-
 ## Start the architecture locally
 
 You need Node.js 24+, npm, and Docker with Compose 2.24+. To use the local

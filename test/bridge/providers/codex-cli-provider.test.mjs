@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdirSync, mkdtempSync, writeFileSync, rmSync, readFileSync, existsSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -123,33 +123,5 @@ test('local CLI uses the same default or explicit directory for -C and cwd', asy
     const result = await provider.generate('Hello', { signal: new AbortController().signal });
     assert.equal(result.text, 'OK');
     assert.equal(result.model, 'configured-default');
-  }
-});
-
-test('CLI receives a readable output schema and removes it after success or failure', async () => {
-  const { spawn } = await import('node:child_process');
-  const schema = { type: 'object', properties: { outcome: { type: 'string' } },
-    required: ['outcome'], additionalProperties: false };
-  for (const failure of [false, true, 'launch']) {
-    let schemaPath;
-    const provider = createCodexCliProvider({
-      spawnImpl: (_file, args, options) => {
-        schemaPath = args[args.indexOf('--output-schema') + 1];
-        assert.deepEqual(JSON.parse(readFileSync(schemaPath, 'utf8')), schema);
-        assert.equal(args.at(-1), '-');
-        if (failure === 'launch') throw new Error('launch failed');
-        return spawn(process.execPath, ['-e', `process.stdin.resume();process.stdin.on('end',()=>{
-          if (${failure}) process.exit(1);
-          console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:'{}'}}));
-          console.log(JSON.stringify({type:'turn.completed'}));
-        });`], options);
-      },
-    });
-    const running = provider.generate('Execute workflow', {
-      signal: new AbortController().signal, outputSchema: schema,
-    });
-    if (failure) await assert.rejects(running);
-    else assert.equal((await running).text, '{}');
-    assert.equal(existsSync(schemaPath), false);
   }
 });
