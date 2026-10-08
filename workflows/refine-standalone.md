@@ -17,14 +17,14 @@ provider: resolved item provider
 reference: user-provided provider item ID, when available
 fields:
   - comments
-  - acceptance criteria
   - labels
   - linked resources
   - attachments
 ```
 
-Use the returned item and provider ID as the complete official parent item
-context. Present with `../templates/ticket-summary.md`:
+Apply the complete refinement context contract from `./refine.md`. Use the
+returned item and provider ID as the complete official parent item context.
+Present with `../templates/ticket-summary.md`:
 
 ```text
 item: complete official parent item
