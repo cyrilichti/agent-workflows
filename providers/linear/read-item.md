@@ -6,10 +6,10 @@ arguments:
   id: item ID or identifier
 ```
 
-Return the issue's title, description, state, team, project, and URL. Return its
-assignee only when `assignment` is requested. When `labels` are requested,
-return every current issue label name from the same issue response as exact
-labels.
+Return the issue's title, description, state, native status type, team, project,
+and URL. Return its assignee only when `assignment` is requested. When `labels`
+are requested, return every current issue label name from the same issue
+response as exact labels.
 
 Set `includeRelations: true` when linked resources are requested. For comments
 or `request_backlinks`, call `list_comments` once, follow every cursor, and
