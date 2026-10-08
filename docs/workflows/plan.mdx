@@ -7,7 +7,8 @@ description: Turn one delivery unit into an approved implementation plan.
 that the task is one coherent delivery unit, routes the work to the right
 specialist, and resolves every material question before asking for approval.
 For an official item, an approved result then publishes the plan in a dedicated
-comment and applies <code>agent-planned</code>. A
+comment, requires a successful publication response, and applies
+<code>agent-planned</code>. A
 <code>needs-refinement</code> result returns its findings directly to the caller
 without publishing or labeling the item.
 
@@ -143,7 +144,7 @@ it can continue with `/work`.
     <tr>
       <td>5</td>
       <th scope="row">Publish</th>
-      <td>For an official item, publish and read back the approved plan, then apply <code>agent-planned</code>.</td>
+      <td>For an official item, publish the approved plan, require the mutation response to identify the created comment, then apply <code>agent-planned</code>. Stop before labeling when publication fails or is inconclusive.</td>
     </tr>
   </tbody>
 </table>
