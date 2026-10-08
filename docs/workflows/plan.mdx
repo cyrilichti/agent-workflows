@@ -6,8 +6,10 @@ description: Turn one delivery unit into an approved implementation plan.
 `/plan` turns one task into an approved implementation plan. It first checks
 that the task is one coherent delivery unit, routes the work to the right
 specialist, and resolves every material question before asking for approval.
-For an official item, it then publishes the approved plan in a dedicated
-comment and applies <code>agent-planned</code>.
+For an official item, an approved result then publishes the plan in a dedicated
+comment and applies <code>agent-planned</code>. A
+<code>needs-refinement</code> result returns its findings directly to the caller
+without publishing or labeling the item.
 
 An explicit item ID, URL, or title is resolved as official item context. A
 direct invocation still uses plan-only approval: it may publish an official
@@ -121,7 +123,7 @@ it can continue with `/work`.
     <tr>
       <td>1</td>
       <th scope="row">Assess</th>
-      <td>Continue for one delivery unit or return <code>needs-refinement</code> without creating a plan.</td>
+      <td>Continue for one delivery unit or return <code>needs-refinement</code> through the active context branch without creating or publishing a plan.</td>
     </tr>
     <tr>
       <td>2</td>

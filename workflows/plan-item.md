@@ -23,8 +23,10 @@ task_context: official item context plus supplied planning context
 entry_mode: supplied entry mode
 ```
 
-The shared execution returns here only with an approved plan. Continue with
-that plan.
+On `needs-refinement`, return the exact findings immediately to the caller. Do
+not publish a plan or apply `agent-planned`.
+
+On an approved plan, continue to Step 3 with that plan.
 
 ### 3. Publish the Approved Plan
 
