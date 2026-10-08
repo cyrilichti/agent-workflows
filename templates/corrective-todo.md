@@ -4,7 +4,7 @@ Use only in `/work` to translate one `/ready` gap or blocking `/inspect`
 finding into persisted plan work.
 
 ```yaml
-- id: correction-<workflow>-<source-id-slug>
+- id: correction-<workflow>-<source-id-slug>-<full-source-head-sha>
   content: <one-sentence actionable correction>
   status: pending
   source:
