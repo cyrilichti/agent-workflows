@@ -17,6 +17,7 @@ provider: resolved item provider
 item_id: official item ID
 target_status: in progress
 mode: resolve
+official_item: complete official item context
 ```
 
 Then apply the transition with the same command:
@@ -27,6 +28,7 @@ item_id: official item ID
 target_status: in progress
 mode: apply
 resolved_target_status: exact status returned by resolution
+status_resolution: complete status resolution returned by resolution
 ```
 
 Stop before preparing the base branch when the transition fails. Replace the

@@ -2,12 +2,19 @@
 
 ## Read
 
+Reuse the caller's official current status and destination when supplied. When
+complete normalized `status_resolution` is not supplied, obtain the available
+statuses and any missing or stale item data with:
+
 ```text
 tool: clickup_get_task
 arguments:
   task_id: caller item ID
   expand_statuses: true
 ```
+
+When the supplied current status still matches the returned statuses, keep it
+instead of replacing it with another item projection.
 
 Return the current and available statuses as `id`, `name`, and `category`:
 

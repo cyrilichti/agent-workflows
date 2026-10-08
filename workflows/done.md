@@ -24,13 +24,12 @@ Reuse these rules when already active from the caller; otherwise follow them:
 
 Follow exactly one branch:
 
-- follow `./done-confirm.md` when the caller supplies one complete
-  `completion_context` following `../templates/done-context.md`, with
-  `entry_mode: caller`;
+- follow `./done-confirm.md` when the caller supplies a `completion_context`,
+  with `entry_mode: caller`;
 - otherwise, follow `./done-standalone.md`.
 
-Fail an explicit but incomplete caller handoff instead of switching it to
-standalone mode.
+The selected branch owns validation of its input context. Never switch an
+explicit caller handoff to standalone mode.
 
 ---
 

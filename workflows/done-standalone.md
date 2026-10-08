@@ -23,7 +23,9 @@ Run `../commands/read-item.md` with:
 ```text
 provider: resolved item provider
 item_id: selected provider item ID
-fields: request_backlinks
+fields:
+  - labels
+  - request_backlinks
 ```
 
 Keep the complete official item.
@@ -55,7 +57,8 @@ Keep the exact returned request.
 
 ### 3. Follow Shared Completion
 
-Project the resolved records through `../templates/done-context.md`, then
+Project the resolved records through `../templates/done-context.md`, including
+the official item's labels, current status, and status destination, then
 follow `./done-confirm.md` with:
 
 ```text

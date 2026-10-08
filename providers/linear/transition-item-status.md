@@ -2,7 +2,8 @@
 
 ## Read
 
-Read the issue, then its team statuses:
+When the caller supplies an official item with a current status and team
+destination, reuse those fields. Otherwise read the issue:
 
 ```text
 tool: get_issue
@@ -10,11 +11,17 @@ arguments:
   id: caller item ID or identifier
 ```
 
+Then list the destination team's statuses:
+
 ```text
 tool: list_issue_statuses
 arguments:
-  team: returned issue team name or ID
+  team: supplied or returned issue team name or ID
 ```
+
+Match the current status to the listed statuses to normalize its `id`, `name`,
+and `category`. When the supplied status or destination no longer matches the
+provider result, read the issue once and normalize from that current record.
 
 Return the current and available statuses as `id`, `name`, and `category`:
 
@@ -23,7 +30,10 @@ Return the current and available statuses as `id`, `name`, and `category`:
 - `active`: Linear type `started`, excluding review;
 - `other`: every remaining status.
 
-Return the provider failure when either read fails.
+Return the provider failure when any required provider read fails.
+
+When the shared command supplies complete normalized `status_resolution`, the
+read operation is omitted.
 
 ## Apply
 
