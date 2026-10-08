@@ -83,3 +83,9 @@ curation.
     </tr>
   </tbody>
 </table>
+
+After the exact request and item are resolved, both successful and blocked
+inspections return the same `Inspect result` format with the observed
+publication and label outcomes. A failed or unconfirmed publication stops the
+workflow before corrective work or label application. Kestra classifies a
+recognized incomplete result as `WARNING`.
