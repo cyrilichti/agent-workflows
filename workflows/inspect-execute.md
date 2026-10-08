@@ -43,21 +43,27 @@ to the frozen SHA; otherwise report the exact failure and stop.
 ### 3. Reconcile and Publish
 
 Run `../commands/reconcile-inspection-publication.md` against the frozen review
-activity. When it returns unseen findings, publish only those findings through
+activity. When it returns `publish`, publish only its `unseen_findings` through
 `../commands/publish-review.md` with `verdict: none`. Finding severity controls
 the delivery loop, not the provider review verdict.
 
-When the command reports that the same-head publication is already complete,
-do not publish again. When publication returns `stale`, discard the result and
-restart from Step 1. On `unsupported`, `failed`, or `unobserved`, present
+When the command returns `completed_without_findings`, perform no publication.
+When it returns `published`, keep the observed same-head publication and do not
+publish again. When publication returns `stale`, discard the result and restart
+from Step 1. On `unsupported`, `failed`, or `unobserved`, present
 `../templates/inspect-result.md`, then stop.
 
 ### 4. Continue or Complete
 
-Reuse the publication result's delivery state. When no publication occurred,
-run `../commands/resolve-request.md` for the same request ID and carried source
+When publication occurred, reuse its result's delivery state. Otherwise, run
+`../commands/resolve-request.md` for the same request ID and carried source
 branch with `require_non_draft: true` and `fields: delivery_state`. If the
 observed request head no longer equals the frozen SHA, restart from Step 1.
+
+Set the observed request outcome to `inspection completed without findings`
+only for `completed_without_findings`. Set it to `inspection published` when
+publication succeeded in this run or `published` observed every finding for
+the frozen SHA.
 
 When any blocking finding exists, create one
 `delivery_context.source_findings` record defined by
@@ -73,8 +79,8 @@ item_id: exact official item ID
 label: agent-inspected
 ```
 
-Require `applied: true`, then present `../templates/inspect-result.md` with
-`inspection published` and `agent-inspected applied` and finish according to
+Require `applied: true`, then present `../templates/inspect-result.md` with the
+observed request outcome and `agent-inspected applied`, and finish according to
 `../goals/inspect-complete.md`.
 
 ## Safety

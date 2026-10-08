@@ -140,7 +140,7 @@ tasks:
                           or ($request.status // "") == ""
                           or ($item.status // "") == ""
                           or ($item.linked // $item.plain // "") != .item then "error"
-                          elif ($request.status | test("^inspection published($| [—–-] \\S.*$)"))
+                          elif ($request.status | test("^(inspection published|inspection completed without findings)($| [—–-] \\S.*$)"))
                             and ($item.status | sub("^`agent-inspected` "; "agent-inspected ")
                               | test("^agent-inspected applied($| [—–-] \\S.*$)")) then "success"
                           else "partial"
@@ -165,7 +165,7 @@ tasks:
                   success:
                     - id: work-sucess
                       type: io.kestra.plugin.core.log.Log
-                      message: Work completed successfully; inspection was published and agent-inspected was applied to the selected item.
+                      message: Work completed successfully; inspection completed and agent-inspected was applied to the selected item.
             no-project:
               - id: project-required
                 type: io.kestra.plugin.core.execution.Fail

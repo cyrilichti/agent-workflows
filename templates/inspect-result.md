@@ -29,7 +29,11 @@ and official item.
 - Keep both identities visible.
 - Identities may be plain text or Markdown links; keep the exact item ID in
   the link text.
-- Use `inspection published` and `agent-inspected applied` for confirmed success.
+- Use `inspection published` when finding publication is observed, including
+  complete same-SHA publication observed before this run. Use `inspection
+  completed without findings` when the complete inspection has no findings and
+  performs no publication. Pair either confirmed request result with
+  `agent-inspected applied` for confirmed success.
 - The `agent-inspected` label may use inline code formatting. Keep additional
   context after the result block; when adding a short comment to a result line,
   separate it from the confirmation with a dash.
