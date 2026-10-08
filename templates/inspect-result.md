@@ -1,6 +1,7 @@
 # Inspect Result
 
-Use when `/inspect` completes.
+Use whenever `/inspect` completes or stops after resolving the exact request
+and official item.
 
 ## Format
 
@@ -16,6 +17,11 @@ Use when `/inspect` completes.
 ## Rules
 
 - Report observed states rather than intended states.
+- Use the same format for failures and incomplete outcomes. Report the
+  publication outcome and label state actually observed. Use
+  `agent-inspected not applied` when this run stopped before applying the label,
+  and `unobserved` when an attempted operation's outcome could not be confirmed.
+  Put failure details after the result block.
 - Start the final response directly with `## Inspect result`, including when
   completing the `/work` delivery chain. Put any additional context after the
   result block.

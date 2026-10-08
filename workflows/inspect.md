@@ -11,6 +11,7 @@ inspection label.
 ## Required Context
 
 Load `../goals/inspect-complete.md` once as this workflow's completion contract.
+Load `../templates/inspect-result.md` once as its terminal response contract.
 
 Reuse these rules when already active from the caller; otherwise follow them:
 
