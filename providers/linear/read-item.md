@@ -11,6 +11,10 @@ assignee only when `assignment` is requested. When `labels` are requested,
 return every current issue label name from the same issue response as exact
 labels.
 
+When `eligibility` is requested, return the issue's native `statusType` and set
+`closed: true` only when it is `completed` or `canceled`; otherwise set
+`closed: false`. Stop when `statusType` is absent.
+
 Set `includeRelations: true` when linked resources are requested. For comments
 or `request_backlinks`, call `list_comments` once, follow every cursor, and
 return the requested comments and `Draft PR:` or `Draft MR:` URLs. Stop when

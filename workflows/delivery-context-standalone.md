@@ -38,6 +38,8 @@ provider: resolved item provider
 candidate_criteria:
   status: open
   label: agent-planned
+eligibility_criteria:
+  status: open
 fields: [labels, request_backlinks]
 ```
 

@@ -18,6 +18,8 @@
    candidate_criteria:
      status: open
      label: agent-planned
+   eligibility_criteria:
+     status: open
    fields: [labels, comments, request_backlinks]
    ```
 
