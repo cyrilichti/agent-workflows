@@ -80,5 +80,5 @@ Require `applied: true`, then present `../templates/inspect-result.md` with
 ## Safety
 
 - Limit inspection-owned mutations to publishing new review content and
-  applying the final item label. Delegate code, commit, branch, and plan
-  changes to `/work`.
+  applying the final item label. Delegate code, commit, branch, and corrective
+  todo changes to `/work`.
