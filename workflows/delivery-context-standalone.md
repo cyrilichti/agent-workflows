@@ -40,12 +40,19 @@ candidate_criteria:
   label: agent-planned
 eligibility_criteria:
   status: open
-fields: [labels, request_backlinks]
+fields: [labels, comments, request_backlinks]
 ```
 
 Require the resolved item to contain `agent-planned`.
 
-### 3. Return the Context
+### 3. Establish the Plan and Item Association
+
+Apply the standalone association rule in `../templates/delivery-context.md` to
+the selected plan and official item, using the complete comments returned by
+the existing item read. Stop before delivery when the association is missing
+or contradictory.
+
+### 4. Return the Context
 
 Return the selected plan, complete official item, and a new
 `../templates/delivery-context.md` containing both.

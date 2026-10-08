@@ -45,13 +45,21 @@ For `new`:
 2. Write the returned `plan_content` unchanged to the local `../plans/`
    location defined by `../templates/plan.md`, using its filename rules.
 
-### 4. Create the Delivery Context
+### 4. Establish the Plan and Item Association
+
+Apply the standalone association rule in `../templates/delivery-context.md` to
+the resolved local plan and official item. For `resumed`, use the complete
+backlink comment already read with the item. For `new`, treat the unchanged
+plan content read from that same official item as association evidence. Also
+check every Ticket reference present in the plan and stop on a contradiction.
+
+### 5. Create the Delivery Context
 
 Create `../templates/delivery-context.md` with the local plan path and complete
 official item context, including any backlinks for `/ready` to resolve the
 exact request.
 
-### 5. Follow Shared Execution
+### 6. Follow Shared Execution
 
 Follow `./work-confirm.md` with:
 
