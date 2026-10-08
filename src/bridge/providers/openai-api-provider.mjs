@@ -56,11 +56,11 @@ export function createOpenAiApiProvider({
      * Send one bounded Responses API request without retrying it.
      *
      * @param {string} prompt Task instructions.
-     * @param {{ signal: AbortSignal }} options Cancellation and deadline signal.
+     * @param {{ signal: AbortSignal, outputSchema?: object }} options Deadline signal and optional final response schema.
      * @returns {Promise<import('../execution/task-contract.mjs').TaskResult>}
      * @throws {ProviderError} For execution, authentication, cancellation or provider failures.
      */
-    async generate(prompt, { signal }) {
+    async generate(prompt, { signal, outputSchema }) {
       let key = configuredKey?.trim();
       if (!key) {
         try {
@@ -87,6 +87,9 @@ export function createOpenAiApiProvider({
             max_output_tokens: 1024,
             store: false,
             tools: [],
+            ...(outputSchema ? { text: { format: {
+              type: 'json_schema', name: 'inspect_result', strict: true, schema: outputSchema,
+            } } } : {}),
           }),
         });
       } catch {

@@ -4,6 +4,7 @@
  * @property {string} prompt Task instructions.
  * @property {string} [directory] Per-call Codex working directory.
  * @property {number} [timeoutMs] Per-call execution deadline in milliseconds.
+ * @property {{type: 'inspect', itemId: string}} [resultContract] Opt-in delivery result contract.
  */
 
 /**
@@ -25,7 +26,7 @@
 /**
  * Each adapter owns authentication; execution owns validation.
  * @typedef {object} AiProvider
- * @property {function(string, {signal: AbortSignal, directory?: string}): Promise<TaskResult>} generate
+ * @property {function(string, {signal: AbortSignal, directory?: string, outputSchema?: object}): Promise<TaskResult>} generate
  */
 
 /**
@@ -42,6 +43,7 @@
  * @property {string} [endedAt] ISO timestamp.
  * @property {number} [durationMs] Elapsed execution time.
  * @property {string} [text] Final response text.
+ * @property {object} [deliveryResult] Validated inspection states and derived delivery outcome.
  * @property {{code: string, message: string}} [error] Safe failure details.
  * @property {TokenUsage} [usage] Observed provider usage.
  * @property {string} [providerRequestId] Provider-side identifier.
@@ -90,11 +92,20 @@ export function validateTaskInput(body) {
   ) {
     throw new ProviderError('invalid_input', `timeoutMs must be 1–${MAX_TIMEOUT_MS}.`);
   }
+  if (body.resultContract !== undefined && (
+    !body.resultContract || body.resultContract.type !== 'inspect'
+    || typeof body.resultContract.itemId !== 'string'
+    || !body.resultContract.itemId.trim() || /[\r\n]/.test(body.resultContract.itemId)
+    || Object.keys(body.resultContract).length !== 2
+  )) {
+    throw new ProviderError('invalid_input', 'resultContract must specify type inspect and the exact itemId.');
+  }
   return {
     prompt: body.prompt,
     requestId: body.requestId,
     ...(body.directory !== undefined ? { directory: body.directory } : {}),
     ...(body.timeoutMs !== undefined ? { timeoutMs: body.timeoutMs } : {}),
+    ...(body.resultContract !== undefined ? { resultContract: body.resultContract } : {}),
   };
 }
 

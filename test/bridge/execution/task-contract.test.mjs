@@ -13,3 +13,14 @@ test('input validation rejects malformed correlation IDs and invalid prompts', (
   ])
     assert.throws(() => validateTaskInput(body), { code: 'invalid_input' });
 });
+
+test('delivery result contract is explicit and binds one exact item', () => {
+  const resultContract = { type: 'inspect', itemId: 'ICY-108' };
+  assert.deepEqual(validateTaskInput({ ...input, resultContract }).resultContract, resultContract);
+  assert.ok(!Object.hasOwn(validateTaskInput(input), 'resultContract'));
+  for (const invalid of [null, {}, 'inspect', { ...resultContract, itemId: '' },
+    { ...resultContract, itemId: 'ICY-108\nICY-999' }, { ...resultContract, type: 'work' },
+    { ...resultContract, outcome: 'success' }]) {
+    assert.throws(() => validateTaskInput({ ...input, resultContract: invalid }), { code: 'invalid_input' });
+  }
+});

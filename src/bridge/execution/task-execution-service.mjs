@@ -1,5 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { ProviderError, validateTaskInput, validateTaskResult } from './task-contract.mjs';
+import { inspectResultPrompt, inspectResultSchema, presentInspectResult } from './inspect-result.mjs';
 
 /** Coordinate one inference at a time and attempt its trace once. */
 export class TaskExecutionService {
@@ -31,6 +32,7 @@ export class TaskExecutionService {
       model: outcome.model,
       status: outcome.status,
       text: outcome.text ?? null,
+      ...(outcome.deliveryResult ? { deliveryResult: outcome.deliveryResult } : {}),
       error: outcome.error ?? null,
       usage: outcome.usage ?? null,
       durationMs: outcome.durationMs ?? null,
@@ -53,7 +55,7 @@ export class TaskExecutionService {
    * @throws {ProviderError} For invalid input, disabled or busy execution.
    */
   async executeTask(body) {
-    const { prompt, requestId, directory, timeoutMs = this.timeoutMs } = validateTaskInput(body);
+    const { prompt, requestId, directory, resultContract, timeoutMs = this.timeoutMs } = validateTaskInput(body);
     if (!this.enabled) {
       throw new ProviderError(
         'disabled',
@@ -77,14 +79,18 @@ export class TaskExecutionService {
     try {
       try {
         const result = validateTaskResult(
-          await this.provider.generate(prompt, {
+          await this.provider.generate(resultContract ? inspectResultPrompt(prompt, resultContract.itemId) : prompt, {
             signal: AbortSignal.any([this.controller.signal, AbortSignal.timeout(timeoutMs)]),
             ...(directory !== undefined ? { directory } : {}),
+            ...(resultContract ? { outputSchema: inspectResultSchema(resultContract.itemId) } : {}),
           }),
         );
+        const presentation = resultContract
+          ? presentInspectResult(result.text, resultContract.itemId)
+          : { text: result.text };
         Object.assign(outcome, {
           status: 'completed',
-          text: result.text,
+          ...presentation,
           model: result.model,
           usage: result.usage,
           providerRequestId: result.requestId,

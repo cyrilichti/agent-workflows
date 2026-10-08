@@ -29,9 +29,23 @@ and official item.
 - Keep both identities visible.
 - Identities may be plain text or Markdown links; keep the exact item ID in
   the link text.
-- Use `inspection published` and `agent-inspected applied` for confirmed success.
+- Use `inspection published` only when complete finding publication is observed
+  for the final inspected snapshot. Use `inspection completed without findings`
+  when the complete inspection has no findings and performs no publication.
+  Pair either result with `agent-inspected applied` for confirmed success.
+- Keep these status markers exactly as written in English. Put localized
+  explanations after the result block.
 - The `agent-inspected` label may use inline code formatting. Keep additional
   context after the result block; when adding a short comment to a result line,
   separate it from the confirmation with a dash.
 - Include `Remaining` only when the workflow supplies one exact actionable
   mutation.
+
+## Constrained Transport
+
+When the caller supplies an inspection result schema, return the observed
+states and explanation through that schema. The bridge validates the selected
+item, classifies the delivery outcome, and renders the Markdown format above.
+The schema and fixed status wording are owned by
+`../src/bridge/execution/inspect-result.mjs`. Ordinary interactive workflows
+continue to present this Markdown template directly.

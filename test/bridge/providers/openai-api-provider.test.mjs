@@ -133,3 +133,27 @@ test('API mode accepts its configured environment token without requiring a key 
     'OK',
   );
 });
+
+test('API delivery mode sends a strict Responses schema without changing ordinary calls', async () => {
+  const schema = { type: 'object', properties: { itemId: { type: 'string', enum: ['ICY-108'] } },
+    required: ['itemId'], additionalProperties: false };
+  let calls = 0;
+  const provider = createOpenAiApiProvider({
+    model: 'test', key: 'test-only',
+    fetchImpl: async (_url, options) => {
+      calls++;
+      const body = JSON.parse(options.body);
+      assert.deepEqual(body.text, { format: {
+        type: 'json_schema', name: 'inspect_result', strict: true, schema,
+      } });
+      assert.deepEqual(body.tools, []);
+      return Response.json({ status: 'completed', output: [
+        { type: 'message', content: [{ type: 'output_text', text: '{"itemId":"ICY-108"}' }] },
+      ] });
+    },
+  });
+  assert.equal((await provider.generate('Execute workflow', {
+    signal: new AbortController().signal, outputSchema: schema,
+  })).text, '{"itemId":"ICY-108"}');
+  assert.equal(calls, 1);
+});
