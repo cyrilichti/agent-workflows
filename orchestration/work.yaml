@@ -134,13 +134,15 @@ tasks:
                       | ($lines | index("## Inspect result")) as $start
                       | if $start == null then "error"
                         else $lines[$start:$start + 4] as $result
-                        | ($result[1] == ""
-                          and ($result[2] | test("^\\*\\*Request \\S.*:\\*\\* \\S.*$"))
-                          and ($result[3] | capture("^\\*\\*Item (?<id>\\S+):\\*\\* \\S.*$").id) == .item
-                        ) as $valid
-                        | if $valid | not then "error"
-                          elif ($result[2] | endswith(":** inspection published"))
-                            and $result[3] == ("**Item " + .item + ":** agent-inspected applied") then "success"
+                        | ($result[2] | capture("^\\*\\*Request \\S.*:\\*\\* (?<status>\\S.*)$") // {}) as $request
+                        | ($result[3] | capture("^\\*\\*Item (?:\\[(?<linked>[^]]+)\\]\\([^)]*\\)|(?<plain>\\S+)):\\*\\* (?<status>\\S.*)$") // {}) as $item
+                        | if $result[1] != ""
+                          or ($request.status // "") == ""
+                          or ($item.status // "") == ""
+                          or ($item.linked // $item.plain // "") != .item then "error"
+                          elif ($request.status | test("^inspection published($| [—–-] \\S.*$)"))
+                            and ($item.status | sub("^`agent-inspected` "; "agent-inspected ")
+                              | test("^agent-inspected applied($| [—–-] \\S.*$)")) then "success"
                           else "partial"
                           end
                         end
