@@ -5,6 +5,11 @@
 Run with one `completion_context` following `../templates/done-context.md` and
 `entry_mode: caller` or `standalone` set by `/done`.
 
+This branch owns completion sequencing, eligibility, confirmation, mutation
+limits, and stop decisions. Commands own their provider operations and
+normalized mutation results; the goal owns terminal outcomes; templates own
+context and output formats.
+
 ---
 
 ## Steps
@@ -128,3 +133,11 @@ Replace the item's affected status fields with the mutation result.
 
 Present `../templates/done-result.md`. After an observed merge, only the item
 transition may remain.
+
+---
+
+## Safety
+
+- After confirmation, mutate only the exact request and its item.
+- Never modify work or request content, deploy, release, tag, retry, roll back,
+  or invoke another workflow.

@@ -57,8 +57,7 @@ Keep the exact returned request.
 
 ### 3. Follow Shared Completion
 
-Project the resolved records through `../templates/done-context.md`, including
-the official item's labels, current status, and status destination, then
+Project the resolved records through `../templates/done-context.md`, then
 follow `./done-confirm.md` with:
 
 ```text

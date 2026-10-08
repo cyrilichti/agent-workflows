@@ -30,12 +30,3 @@ Follow exactly one branch:
 
 The selected branch owns validation of its input context. Never switch an
 explicit caller handoff to standalone mode.
-
----
-
-## Safety
-
-- After confirmation, mutate only the exact request and its item as defined by
-  the completion branch.
-- Never modify work or request content, deploy, release, tag, retry, roll back,
-  or invoke another workflow.

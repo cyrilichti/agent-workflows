@@ -3,9 +3,12 @@ title: /done
 description: Squash-merge one exact request, then complete its official item.
 ---
 
-`/done` is a separate, explicitly invoked completion workflow. It resolves the
-item and exact request, verifies that inspection and merge requirements still
-hold, then asks once before changing anything.
+`/done` is a separate, explicitly invoked completion workflow. Standalone
+entry resolves the item and request; caller entry reuses their exact context.
+Available item labels and status data are carried forward, while a minimal
+caller packet is completed with one item read. The shared completion branch
+then verifies the inspection and merge requirements and asks once before
+changing anything.
 
 ## How `/done` completes delivery
 
@@ -51,7 +54,7 @@ work, deploys, releases, retries, or invokes another workflow.
     <tr>
       <td>1</td>
       <th scope="row">Preflight</th>
-      <td>Read the current item and exact request, require <code>agent-inspected</code>, and verify the remaining completion operations.</td>
+      <td>Reuse or complete the current item context, require <code>agent-inspected</code>, and verify the remaining completion operations for the exact request.</td>
     </tr>
     <tr>
       <td>2</td>
