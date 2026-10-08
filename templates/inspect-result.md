@@ -16,6 +16,9 @@ Use when `/inspect` completes.
 ## Rules
 
 - Report observed states rather than intended states.
+- Start the final response directly with `## Inspect result`, including when
+  completing the `/work` delivery chain. Put any additional context after the
+  result block.
 - Lead with the observed request and item results without another subheading.
 - Keep both identities visible.
 - Use `inspection published` and `agent-inspected applied` for confirmed success.
