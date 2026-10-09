@@ -161,8 +161,8 @@ hero:
   <section class="landing-section landing-lifecycle" aria-labelledby="lifecycle-title">
     <p class="landing-eyebrow">One governed delivery chain</p>
     <h2 id="lifecycle-title">From ticket to merge, one continuous workflow.</h2>
-    <p class="landing-lifecycle__intro">Start with a new or existing ticket. Agent Workflows carries its context through planning, implementation, and review—routing the right skills at each step while you decide when to merge.</p>
-    <div class="delivery-map" role="img" aria-label="Agent Workflows lifecycle: shape a ticket, plan the work, start autonomous delivery, loop between delivery and review until no blocking findings remain, then make a human merge decision.">
+    <p class="landing-lifecycle__intro">Shape the ticket with your agent and approve the plan. Then start delivery yourself or let an orchestrator select ready, planned work. Implementation, checks, and review continue autonomously until the change is ready for your merge decision.</p>
+    <div class="delivery-map" role="img" aria-label="Agent Workflows lifecycle: shape a ticket with a person, approve the plan, trigger delivery either personally or through an orchestrator, loop through implementation, checks, review, and correction, then make a human merge decision.">
       <div class="delivery-map__stages">
         <article class="delivery-stage delivery-stage--assisted">
           <header><span>01</span><small>Assisted</small></header>
@@ -170,15 +170,16 @@ hero:
           <code>/write · /refine</code>
         </article>
         <span class="delivery-connector" aria-hidden="true">→</span>
-        <article class="delivery-stage delivery-stage--assisted">
-          <header><span>02</span><small>Assisted</small></header>
+        <article class="delivery-stage delivery-stage--assisted delivery-stage--approval">
+          <header><span>02</span><small>Human approval</small></header>
           <h3>Plan</h3>
           <code>/pick · /plan</code>
         </article>
         <span class="delivery-connector" aria-hidden="true">→</span>
-        <div class="delivery-map__start">
-          <span class="delivery-map__human-mark" aria-hidden="true"></span>
-          <div><small>Human</small><strong>Start</strong></div>
+        <div class="delivery-map__trigger">
+          <small>Start delivery</small>
+          <strong>Person or orchestrator</strong>
+          <div class="delivery-map__trigger-options" aria-hidden="true"><span>Person</span><span>Orchestrator</span></div>
         </div>
         <span class="delivery-connector" aria-hidden="true">→</span>
         <div class="delivery-loop">
@@ -194,7 +195,7 @@ hero:
             <code>/inspect</code>
           </article>
           <div class="delivery-loop__lines" aria-hidden="true"><span class="delivery-loop__line delivery-loop__line--forward"></span><span class="delivery-loop__line delivery-loop__line--return"></span></div>
-          <span class="delivery-loop__return-label">Blocking findings</span>
+          <span class="delivery-loop__return-label">Findings return for correction</span>
         </div>
         <span class="delivery-connector" aria-hidden="true">→</span>
         <div class="delivery-map__merge">
