@@ -11,18 +11,6 @@ items without changing the parent.
 
 Load `../goals/refine-complete.md` once as this workflow's completion contract.
 
-A complete refinement context contains:
-
-- the official parent core fields, including acceptance criteria present in
-  its content;
-- current labels and complete comments;
-- linked resources and attachments when the provider supports them.
-
-For either entry mode, preserve supplied fields and known empty results. Run
-`../commands/read-item.md` only for missing information, then add only the
-missing fields to the parent context. Mark unsupported information explicitly
-as unavailable. Stop when supported required information cannot be read.
-
 Reuse these rules when already active from the caller; otherwise follow them:
 
 - `../rules/user-facing-output.md`;

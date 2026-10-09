@@ -4,17 +4,18 @@ description: Split one oversized work item into confirmed child items without ch
 ---
 
 `/refine` decomposes one oversized official item into autonomous child items.
-It completes the same item context in both entry modes, including comments,
-before assessing or drafting. The parent stays unchanged, and no child is
-created before the human confirms the complete decomposition.
+Direct invocation reads the complete item context, including comments, before
+assessing the need for decomposition. When called from `/pick`, it reuses the
+complete context and assessment returned by `/plan`. The parent stays unchanged,
+and no child is created before the human confirms the complete decomposition.
 
 ## How `/refine` decomposes an item
 
-<div class="write-flow refine-flow" role="img" aria-label="The refine workflow completes the official item context, confirms that multiple useful units can be delivered or verified separately, then loops between drafting and validating child items. It prefers vertical feature slices and allows justified progressive migration sequences. It previews the complete decomposition for human adjustment, confirmation, or cancellation. After confirmation, it creates the children, labels, and blocking relations without changing the parent and reports partial failures after continuing feasible operations.">
+<div class="write-flow refine-flow" role="img" aria-label="Direct refinement reads the complete official item context and assesses whether multiple useful units can be delivered or verified separately. Caller mode reuses the complete context and assessment returned by plan and starts drafting directly. The workflow then loops between drafting and validating child items. It prefers vertical feature slices and allows justified progressive migration sequences. It previews the complete decomposition for human adjustment, confirmation, or cancellation. After confirmation, it creates the children, labels, and blocking relations without changing the parent and reports partial failures after continuing feasible operations.">
   <div class="write-flow__step write-flow__step--assisted">
-    <small>01 · Assisted</small>
+    <small>01 · Standalone only</small>
     <strong>Complete and assess context</strong>
-    <span>Reuse known fields, read only missing information, and confirm that multiple useful units exist.</span>
+    <span>Read the complete item context and confirm that multiple useful units exist. Caller mode reuses the assessment from /plan.</span>
   </div>
 
   <div class="plan-flow__scope">
@@ -109,7 +110,7 @@ created before the human confirms the complete decomposition.
     <tr>
       <td>1</td>
       <th scope="row">Assess</th>
-      <td>Reuse supplied context, read only missing supported information, and stop without changes when the item is one indivisible delivery unit.</td>
+      <td>In standalone mode, read the complete context and stop without changes when the item is one indivisible delivery unit. Caller mode reuses the complete context and assessment from <code>/plan</code>.</td>
     </tr>
     <tr>
       <td>2</td>

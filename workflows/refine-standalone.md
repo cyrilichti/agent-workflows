@@ -22,8 +22,12 @@ fields:
   - attachments
 ```
 
-Apply the complete refinement context contract from `./refine.md`. Use the
-returned item and provider ID as the complete official parent item context.
+Require the official core fields, including acceptance criteria present in
+the item content, current labels, complete comments, and supported linked
+resources and attachments. Mark unsupported information explicitly as
+unavailable. Stop when supported required information cannot be read.
+
+Use the returned item and provider ID as the complete official parent context.
 Present with `../templates/ticket-summary.md`:
 
 ```text
