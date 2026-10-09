@@ -5,13 +5,6 @@
 A shared workflow for delivering changes with your coding agent or through
 autonomous orchestration.
 
-## Work with your agent
-
-Shape a ticket, approve the plan, and start delivery from your agent's chat.
-The agent implements, checks, and reviews the change for your merge decision.
-
-Explore the [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
-
 ## Orchestrate delivery
 
 Let an orchestrator select prepared tickets with approved plans and run
@@ -25,6 +18,13 @@ Follow the [orchestration guide](./ORCHESTRATION.md) to set up the delivery loop
   <source media="(prefers-color-scheme: light)" srcset="./public/readme-orchestration-light.gif">
   <img src="./public/readme-orchestration-light.gif" alt="Prepared tickets move through Build, Test, and Review before the resulting increments await a human merge decision.">
 </picture>
+
+## Work with your agent
+
+Shape a ticket, approve the plan, and start delivery from your agent's chat.
+The agent implements, checks, and reviews the change for your merge decision.
+
+Explore the [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
 
 ## Quick start
 
