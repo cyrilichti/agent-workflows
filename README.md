@@ -14,16 +14,6 @@ npx skills add cyrilichti/agent-workflows --skill agent-workflows
 
 Then run `/agent-workflows` once to install or update the system in your project.
 
-## What it feels like
-
-[![Animated preview of Agent Workflows: shape an AI search ticket, approve the plan, build and review the change, then merge and complete the Linear ticket.](./public/readme-workflow-demo.gif)](https://cyrilichti.github.io/agent-workflows/)
-
-[Open the full demo](https://cyrilichti.github.io/agent-workflows/) to explore each step and its behind-the-scenes details.
-
-Agent Workflows installs into your project's `.agents/` context. See the
-[installation guide](https://cyrilichti.github.io/agent-workflows/installation/)
-for provider setup and update behaviour.
-
 ## Work with your existing tools
 
 | Work items | Version control |

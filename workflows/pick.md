@@ -66,8 +66,9 @@ provider: resolved item provider
 item: complete official item context
 ```
 
-On an approved plan, keep the official item context returned by `/plan` and
-continue to Step 5.
+Keep the official item context returned by `/plan` for either outcome.
+
+On an approved plan, continue to Step 5.
 
 On `needs-refinement`, report the findings and explain that no plan can be
 created yet, then ask using
