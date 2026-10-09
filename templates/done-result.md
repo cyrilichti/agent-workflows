@@ -1,7 +1,6 @@
 # Done Result
 
-Use when `/done` completes or stops after a blocked, unsupported, failed, or
-partial result.
+Format a terminal `/done` result supplied by the workflow.
 
 ## Format
 

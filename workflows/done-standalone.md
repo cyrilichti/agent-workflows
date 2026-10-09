@@ -19,7 +19,9 @@ Run `../commands/read-item.md` with:
 ```text
 provider: resolved item provider
 item_id: selected provider item ID
-fields: request_backlinks
+fields:
+  - labels
+  - request_backlinks
 ```
 
 Keep the complete official item.

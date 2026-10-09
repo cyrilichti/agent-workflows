@@ -5,19 +5,24 @@
 Run with one `completion_context` following `../templates/done-context.md` and
 `entry_mode: caller` or `standalone` set by `/done`.
 
+This branch owns completion sequencing, eligibility, confirmation, mutation
+limits, and stop decisions. Commands own their provider operations and
+normalized mutation results; the goal owns terminal outcomes; templates own
+context and output formats.
+
 ---
 
 ## Steps
 
 ### 1. Validate Context
 
-Require a complete Done Context and a valid `entry_mode`, then set `item` and
-`request` to the packet's two sections. Fail invalid context without switching
-entry mode or resolving a substitute.
+Validate the Done Context shape defined by `../templates/done-context.md` and a
+valid `entry_mode`, then set `item` and `request` to the packet's two sections.
+Fail invalid required identities or request data without switching entry mode
+or resolving a substitute.
 
-### 2. Prepare and Confirm
-
-Run `../commands/read-item.md` with:
+When the reusable item fields are absent or incomplete, run
+`../commands/read-item.md` once with:
 
 ```text
 provider: item.provider
@@ -26,10 +31,16 @@ fields:
   - labels
 ```
 
-Require the complete current label set. On a failed or incomplete read,
-present `../templates/done-result.md` with the observed item reason and
-`Request: not attempted`, then stop. When `agent-inspected` is absent, report
-the item as waiting for that label and the request as not attempted, then stop.
+Replace the item section with the returned official identity, labels, current
+status, and status destination. On a failed or incomplete read, present
+`../templates/done-result.md` with the observed item reason and
+`Request: not attempted`, then stop.
+
+### 2. Prepare and Confirm
+
+Require the complete current label set. When `agent-inspected` is absent,
+report the item as waiting for that label and the request as not attempted,
+then stop.
 
 Run `../commands/transition-item-status.md` with:
 
@@ -38,10 +49,11 @@ provider: item.provider
 item_id: item.item_id
 target_status: done
 mode: resolve
+official_item: item
 ```
 
-On failed or ambiguous resolution, present `../templates/done-result.md` and
-stop.
+Keep the returned `status_resolution`. On failed or ambiguous resolution,
+present `../templates/done-result.md` and stop.
 
 For an open request with any `merge_status` other than `mergeable`, present
 `../templates/done-result.md` with the observed status, its blocker when
@@ -112,9 +124,20 @@ item_id: item.item_id
 target_status: done
 mode: apply
 resolved_target_status: exact confirmed target
+status_resolution: complete resolution returned before confirmation
 ```
+
+Replace the item's affected status fields with the mutation result.
 
 ### 5. Report
 
 Present `../templates/done-result.md`. After an observed merge, only the item
 transition may remain.
+
+---
+
+## Safety
+
+- After confirmation, mutate only the exact request and its item.
+- Never modify work or request content, deploy, release, tag, retry, roll back,
+  or invoke another workflow.

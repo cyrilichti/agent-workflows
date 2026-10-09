@@ -8,6 +8,9 @@ Compact caller packet for `/done`.
 item:
   provider: <resolved item provider>
   item_id: <official provider item ID>
+  labels: <complete current label set, when available>
+  status: <current official status, when available>
+  destination: <provider status destination, when available>
 request:
   provider: <resolved version provider>
   repository: <resolved repository>
@@ -23,6 +26,11 @@ request:
 
 ## Rules
 
-- Project only these fields from official records. Never carry review content.
+- Project only these fields from official records. Never carry descriptions,
+  comment collections, or review content.
 - Keep provider-native identities unchanged.
-- All fields except `merge_blocker` are required.
+- `item.provider`, `item.item_id`, and every request field except
+  `merge_blocker` are required. `item.labels`, `item.status`, and
+  `item.destination` are reusable fields: supply all three together when they
+  are available from the current workflow run, or omit them so the completion
+  branch reads the official item once.
