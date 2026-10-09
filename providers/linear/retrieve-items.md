@@ -35,6 +35,12 @@ Use `list_issues` with the caller's resolved `team` and `state`. Do not pass
 
 Use the same fields, plus `team` and `project` only for destination.
 
+## Labeled Candidate Criteria
+
+For a supplied `label` without `status`, call `list_issues` with the exact label
+name, `includeArchived: false`, the requested display fields, and the caller
+limit. Do not filter by status, pass `assignee`, or follow a cursor.
+
 ## Open Labeled Candidate Criteria
 
 For `status: open` with a supplied `label`, call `list_issues` with the exact

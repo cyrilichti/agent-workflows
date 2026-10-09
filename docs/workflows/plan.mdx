@@ -125,7 +125,7 @@ it can continue with `/work`.
     <tr>
       <td>1</td>
       <th scope="row">Assess</th>
-      <td>Continue for one delivery unit or return <code>needs-refinement</code> without creating a plan.</td>
+      <td>Continue for one delivery unit or return <code>needs-refinement</code> through the active context branch without creating or publishing a plan.</td>
     </tr>
     <tr>
       <td>2</td>
@@ -145,7 +145,7 @@ it can continue with `/work`.
     <tr>
       <td>5</td>
       <th scope="row">Publish</th>
-      <td>For an official item, publish and read back the approved plan, then apply <code>agent-planned</code>.</td>
+      <td>For an official item, publish the approved plan, require the mutation response to identify the created comment, then apply <code>agent-planned</code>. Stop before labeling when publication fails or is inconclusive.</td>
     </tr>
   </tbody>
 </table>

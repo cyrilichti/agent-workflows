@@ -46,9 +46,11 @@ item_id: official item ID
 plan_content: exact complete approved plan content
 ```
 
-Run `../commands/read-item-plan.md` with the supplied resolved item provider and
-the same official item ID, and require a returned `plan_content` before
-continuing. Then run `../commands/apply-item-label.md` with:
+Require `published: true` from the publication mutation response. Stop on a
+failed or inconclusive response. Do not reread item comments or compare the
+published content after the mutation.
+
+Then run `../commands/apply-item-label.md` with:
 
 ```text
 provider: supplied resolved item provider
