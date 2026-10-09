@@ -9,9 +9,9 @@ routed from its planning result.
 
 - Official current labels determined the route: an item with `agent-planned`
   stopped before planning; otherwise one `agent-shaped` item was summarized.
-- The initial official item resolution enforced the open-status condition once
-  for reference, title-search, and candidate-selection entries. An ineligible
-  item stopped before summary and planning without a later status recheck.
+- `/pick` enforced the open-status condition once on the initially resolved
+  official item for reference, title-search, and candidate-selection entries.
+  An item whose openness was not confirmed stopped before summary and planning.
 - The approved plan was published on the item and `agent-planned` was applied
   before delivery started.
 - An approved plan and the complete official item context returned by `/plan`

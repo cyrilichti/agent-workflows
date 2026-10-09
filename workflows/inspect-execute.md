@@ -43,15 +43,13 @@ to the frozen SHA; otherwise report the exact failure and stop.
 ### 3. Reconcile and Publish
 
 Run `../commands/reconcile-inspection-publication.md` against the frozen review
-activity. When it returns `publish`, publish only its `unseen_findings` through
+activity. When `unseen_findings` is nonempty, publish only those findings through
 `../commands/publish-review.md` with `verdict: none`. Finding severity controls
 the delivery loop, not the provider review verdict.
 
-When the command returns `completed_without_findings`, perform no publication.
-When it returns `published`, keep the observed same-head publication and do not
-publish again. When publication returns `stale`, discard the result and restart
-from Step 1. On `unsupported`, `failed`, or `unobserved`, present
-`../templates/inspect-result.md`, then stop.
+When `unseen_findings` is empty, continue to Step 4. When publication returns
+`stale`, discard the result and restart from Step 1. On `unsupported`, `failed`,
+or `unobserved`, present `../templates/inspect-result.md`, then stop.
 
 ### 4. Continue or Complete
 
@@ -61,9 +59,9 @@ branch with `require_non_draft: true` and `fields: delivery_state`. If the
 observed request head no longer equals the frozen SHA, restart from Step 1.
 
 Set the observed request outcome to `inspection completed without findings`
-only for `completed_without_findings`. Set it to `inspection published` when
-publication succeeded in this run or `published` observed every finding for
-the frozen SHA.
+when the complete inspection has no findings. Otherwise, set it to `inspection
+published` after every finding is observed for the frozen SHA, through prior
+review activity or successful publication in this run.
 
 When any blocking finding exists, create one
 `delivery_context.source_findings` record defined by

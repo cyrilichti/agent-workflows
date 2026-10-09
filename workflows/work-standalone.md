@@ -14,12 +14,12 @@
    candidate_criteria:
      status: open
      label: agent-planned
-   eligibility_criteria:
-     status: open
    fields: [labels, comments, request_backlinks]
    ```
 
-3. Require the resolved item to contain `agent-planned`.
+3. Require the resolved item's `closed` field to be `false` and its labels to
+   contain `agent-planned`. Otherwise, identify the item, report the unmet
+   condition, and stop before resolving its plan.
 
 ### 2. Resolve Work Mode
 
@@ -43,11 +43,9 @@ For `new`:
 
 ### 4. Establish the Plan and Item Association
 
-Apply the standalone association rule in `../templates/delivery-context.md` to
-the resolved local plan and official item. For `resumed`, use the complete
-backlink comment already read with the item. For `new`, treat the unchanged
-plan content read from that same official item as association evidence. Also
-check every Ticket reference present in the plan and stop on a contradiction.
+Apply Step 3 of `./delivery-context-standalone.md` to the resolved local plan
+and official item, using the comments and plan content already read in this
+run.
 
 ### 5. Create the Delivery Context
 

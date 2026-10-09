@@ -12,7 +12,8 @@ Read one official item from a configured provider.
 
 1. Load `../providers/<provider>/read-item.md`. If the file is missing, stop.
 2. Follow the loaded operation to retrieve the core item fields: title,
-   description, status, destination, and link when available.
+   description, status, normalized `closed` (`true`, `false`, or `null` when
+   unavailable), destination, and link when available.
 3. Retrieve the caller-requested fields when the provider supports them.
 4. Return the official item and its provider ID to the caller.
 
@@ -23,10 +24,5 @@ read the complete current label set.
 When comments or `request_backlinks` are requested, retrieve all comments once
 and return the requested comments and backlink URLs. Stop without returning the
 item when the comments are incomplete.
-
-When `eligibility` is requested, return the provider's native status type or
-closed indicator and a normalized `closed` boolean derived only from that
-native value. Stop without returning the item when openness cannot be
-determined without guessing from a workspace-specific status name.
 
 If the item cannot be found or read, stop without substituting a search result.

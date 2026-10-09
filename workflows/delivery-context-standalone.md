@@ -34,19 +34,27 @@ provider: resolved item provider
 candidate_criteria:
   status: open
   label: agent-planned
-eligibility_criteria:
-  status: open
 fields: [labels, comments, request_backlinks]
 ```
 
-Require the resolved item to contain `agent-planned`.
+Require the resolved item's `closed` field to be `false` and its labels to
+contain `agent-planned`. Otherwise, identify the item, report the unmet
+condition, and stop before creating the delivery context.
 
 ### 3. Establish the Plan and Item Association
 
-Apply the standalone association rule in `../templates/delivery-context.md` to
-the selected plan and official item, using the complete comments returned by
-the existing item read. Stop before delivery when the association is missing
-or contradictory.
+Establish the selected plan's association with the official item from at least
+one of:
+
+- an `Agent-Workflows-Plan:` comment matching the canonical local plan path;
+- the plan's exact Ticket ID and URL both matching the official item;
+- unchanged plan content read from that same item's approved-plan comment
+  during this run.
+
+Use the comments and plan content already read in this run. Check every
+available plan backlink and Ticket reference for a contradiction with the
+selected pair. Stop before creating the delivery context when the association
+is missing or contradictory.
 
 ### 4. Return the Context
 

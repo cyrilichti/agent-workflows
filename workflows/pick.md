@@ -36,14 +36,12 @@ reference: supplied exact provider ID or native URL, when available
 query: supplied approximate title, when available
 candidate_criteria:
   label: agent-shaped
-eligibility_criteria:
-  status: open
 fields: labels
 ```
 
-When the returned official item is ineligible because it is not open, identify
-it, report its observed status and that it cannot continue through `/pick`, and
-stop before summarizing or planning.
+Require the returned official item's `closed` field to be `false`. Otherwise,
+identify the item, report its observed status or unavailable openness, and stop
+before summarizing or planning.
 
 When the item already contains `agent-planned`, identify it, report that its
 plan is already available for `/work`, and stop before summarizing or planning.
