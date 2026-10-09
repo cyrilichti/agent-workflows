@@ -14,6 +14,7 @@ routed from its planning result.
 - Refinement: the `needs-refinement` result leaves the parent unchanged by
   `/pick`, honors the selected refinement outcome, and stops before
   implementation.
-- Ineligible: an item whose openness or `agent-shaped` label is not confirmed
-  is identified and stopped before summary or planning.
+- Ineligible: the item's openness is not confirmed, or an item without
+  `agent-planned` does not have a confirmed `agent-shaped` label. The item is
+  identified and stopped before summary or planning.
 - Stopped: a required operation failure is reported from its observed result.
