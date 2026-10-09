@@ -13,7 +13,6 @@ Return one item from the configured provider without an item reference.
    without a project, team, list, or assignee scope. Apply the provider's
    eligibility rule to the returned page and use its first eligible result.
    Do not follow another page or read individual items.
-3. Return the selected item's `{name, id, url, list}`, or
-   `{ "status": "no eligible item" }` when the call returns no match. A failed
-   call or a selected item without a destination name is an error, not an empty
-   result.
+3. Return the selected item's `name`, `id`, `url`, and `list`, or a no-match
+   result. A failed call or a selected item without a destination name is an
+   error, not a no-match result.
