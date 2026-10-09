@@ -94,14 +94,49 @@ hero:
           </section>
         </div>
         <div id="hero-orchestrated-panel" class="hero-use-cases__panel" role="tabpanel" aria-labelledby="hero-orchestrated-tab" data-hero-use-panel data-hero-view="orchestration" data-hero-tagline="Watch ready, planned tickets move through implementation, checks, review, and correction until each increment awaits your merge decision." data-hero-link-label="See orchestration setup" data-hero-link-href="/agent-workflows/orchestration/" hidden>
-          <section class="orchestration-demo orchestration-demo--intro" aria-label="An autonomous delivery overview">
+          <section class="orchestration-demo" aria-label="Ready and planned tickets move from New ticket through Work to a reviewed Increment, then the orchestrator selects the next ticket" data-orchestration-demo>
             <div class="orchestration-demo__bar">
               <span>autonomous delivery</span>
               <span>ready + planned</span>
             </div>
-            <div class="orchestration-demo__intro">
-              <strong>Follow delivery, not prompts.</strong>
-              <p>An orchestrator selects the next eligible ticket and keeps the governed delivery loop moving.</p>
+            <div class="orchestration-demo__body">
+              <div class="orchestration-demo__flow">
+                <article class="orchestration-step" data-orchestration-step="ticket">
+                  <span class="orchestration-step__signal" aria-hidden="true"></span>
+                  <small>Ready + planned</small>
+                  <h3>New ticket</h3>
+                </article>
+                <span class="orchestration-arrow" data-orchestration-step="to-work" aria-hidden="true">→</span>
+                <article class="orchestration-step orchestration-step--work" data-orchestration-step="work">
+                  <span class="orchestration-step__signal" aria-hidden="true"></span>
+                  <small>Implement · check · review</small>
+                  <h3>Work</h3>
+                  <span class="orchestration-step__correction">Correction ↺</span>
+                </article>
+                <span class="orchestration-arrow" data-orchestration-step="to-increment" aria-hidden="true">→</span>
+                <article class="orchestration-step" data-orchestration-step="increment">
+                  <span class="orchestration-step__signal" aria-hidden="true"></span>
+                  <small>Reviewed change</small>
+                  <h3>Increment</h3>
+                </article>
+              </div>
+              <div class="orchestration-return" data-orchestration-step="return" aria-hidden="true">
+                <span>Next ticket</span>
+              </div>
+              <div class="orchestration-conveyor" data-orchestration-conveyor aria-hidden="true">
+                <span class="orchestration-conveyor__belt"></span>
+              </div>
+              <div class="orchestration-output">
+                <div>
+                  <small>Produced increments</small>
+                  <span class="orchestration-output__increments" data-orchestration-increments></span>
+                </div>
+                <strong>Human merge decision</strong>
+              </div>
+              <div class="orchestration-demo__controls">
+                <span aria-live="polite" data-orchestration-status>Ready for the next ticket.</span>
+                <button type="button" aria-pressed="false" data-orchestration-pause>Pause</button>
+              </div>
             </div>
           </section>
         </div>
