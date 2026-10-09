@@ -2,11 +2,23 @@
 
 **Turn prepared work into reviewed code. Keep the final say.**
 
-Use Agent Workflows in two ways: work directly with your coding agent to shape,
-plan, and deliver a change, or let an orchestrator select prepared, planned
-tickets and run their delivery loop. You approve the plan and decide what gets
-merged. Between those decisions, the system implements, checks, reviews, and
-corrects the change until reviewed code is ready.
+A shared workflow for delivering changes with your coding agent or through
+autonomous orchestration.
+
+## Work with your agent
+
+Shape a ticket, approve the plan, and start delivery from your agent's chat.
+The agent implements, checks, and reviews the change for your merge decision.
+
+Explore the [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
+
+## Orchestrate delivery
+
+Let an orchestrator select prepared tickets with approved plans and run
+implementation, checks, review, and correction. Each reviewed change awaits
+your merge decision.
+
+Follow the [orchestration guide](./ORCHESTRATION.md) to set up the delivery loop.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./public/readme-orchestration-dark.gif">
@@ -33,11 +45,6 @@ for setup options.
 See [provider setup](https://cyrilichti.github.io/agent-workflows/providers/) for the required integrations.
 
 ## Documentation
-
-Explore the [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/)
-to see how work moves from a ticket to a merge decision. To run planned tickets
-through the autonomous delivery loop, follow the
-[orchestration guide](./ORCHESTRATION.md).
 
 To start the documentation development server, install dependencies with
 `npm ci`, then run `npm run doc`.
