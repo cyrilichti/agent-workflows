@@ -26,6 +26,12 @@ The agent implements, checks, and reviews the change for your merge decision.
 
 Explore the [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./public/readme-agent-dark.jpg">
+  <source media="(prefers-color-scheme: light)" srcset="./public/readme-agent-light.jpg">
+  <img src="./public/readme-agent-light.jpg" alt="Shape a ticket with your agent, approve its plan, start delivery yourself or through an orchestrator, loop through delivery and review, then decide what to merge.">
+</picture>
+
 ## Quick start
 
 ```bash
