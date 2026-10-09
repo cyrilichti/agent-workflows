@@ -5,27 +5,14 @@
 Completed work is checked directly against its plan, repaired through `/work`
 when necessary, then promoted and handed to `/inspect` autonomously.
 
-## Success Criteria
+## Terminal Outcomes
 
-- The authoritative plan is terminal and has completed work.
-- The current work branch is clean, has a safe upstream state, and remains
-  unchanged through its planned global validation.
-- The complete branch diff is coherent with the plan's Objective and Expected
-  Outcome without performing an independent code review.
-- Concrete delivery gaps return to resumed `/work` with stable finding IDs,
-  exact explanations, and the verified HEAD SHA.
-- Passing work pushes only when needed, applies the complete authoritative plan
-  as the exact request body, removes the leading `Draft:` title prefix and
-  draft state, and attempts the item review transition.
-- Every required request mutation is observed before `/inspect` receives the
-  same delivery context.
-
-## Stop Conditions
-
-- Stop only for an exact operational blocker. Delivery gaps continue through
-  `/work`; successful promotion continues through `/inspect`.
-
-## Human Validation
-
-The standalone plan, item, and exact-request selections, or a complete caller
-handoff, authorize readiness. No promotion confirmation is required.
+- Corrective: every concrete delivery gap is bound to a stable finding ID, its
+  exact explanation, and the verified HEAD SHA before the same delivery
+  context returns to resumed `/work`.
+- Promoted: the planned validation passed, the exact authoritative plan is the
+  request body, the request is observed open and non-draft at the verified
+  HEAD, and the same delivery context is handed to `/inspect` after the item
+  review transition was attempted.
+- Stopped: the exact operational blocker is reported without treating a
+  delivery gap as terminal or claiming an unobserved promotion.

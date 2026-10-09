@@ -36,6 +36,8 @@ handoff instead of switching it to standalone mode.
 
 ## Safety
 
+- The standalone plan, item, and exact-request selections, or a complete caller
+  handoff, authorize readiness and promotion without another confirmation.
 - `/ready` may modify the authoritative plan only as needed for its readiness
   activity. `/work` remains responsible for code changes, corrective todo
   execution, and commits.
