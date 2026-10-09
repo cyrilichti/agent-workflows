@@ -1671,6 +1671,10 @@ a.write-flow__step:hover {
   align-items: stretch;
 }
 
+.sl-markdown-content .write-flow__loop > :is(.write-flow__step, .write-flow__loop-lines) {
+  margin-block: 0;
+}
+
 .write-flow__loop-title,
 .write-flow__loop-return {
   position: absolute;
@@ -1687,6 +1691,7 @@ a.write-flow__step:hover {
 }
 
 .write-flow__loop .write-flow__step {
+  height: 100%;
   min-height: 8rem;
 }
 
