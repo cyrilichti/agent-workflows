@@ -213,12 +213,14 @@ if (orchestrationDemo) {
   function showOrchestrationStatic() {
     clearOrchestrationTimer()
     running = false
+    paused = false
     phaseElements.forEach((element) => element.classList.add('is-active'))
     conveyor.classList.remove('is-active')
     produced = Math.max(produced, 2)
     renderIncrements()
     status.textContent = 'Ready, planned tickets produce reviewed increments for a human merge decision.'
     pauseButton.disabled = true
+    pauseButton.setAttribute('aria-pressed', 'false')
     pauseButton.textContent = 'Reduced motion'
   }
 

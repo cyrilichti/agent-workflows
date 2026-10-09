@@ -134,7 +134,7 @@ hero:
                 <strong>Human merge decision</strong>
               </div>
               <div class="orchestration-demo__controls">
-                <span aria-live="polite" data-orchestration-status>Ready for the next ticket.</span>
+                <span data-orchestration-status>Ready for the next ticket.</span>
                 <button type="button" aria-pressed="false" data-orchestration-pause>Pause</button>
               </div>
             </div>
