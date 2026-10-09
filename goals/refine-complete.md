@@ -5,7 +5,7 @@
 One official parent item remains unchanged after refinement assessment or one
 confirmed child decomposition attempt.
 
-## Success Criteria
+## Terminal Outcomes
 
 Report exactly one outcome:
 
@@ -20,16 +20,5 @@ Report exactly one outcome:
   required label, or relation failed; report created child titles, provider
   IDs, links when available, and required label results, failed child titles
   and failures, and created and failed relations separately.
-
-## Stop Conditions
-
-Stop without mutation when a creation prerequisite is missing. After creation
-starts, record individual child, required-label, and relation failures, continue
-every operation whose prerequisites remain satisfied, and stop only after
-reporting one valid outcome.
-
-## Human Validation
-
-Require explicit confirmation of the complete latest decomposition before any
-provider mutation. Adjustment requires a new preview and confirmation; partial
-confirmation is unsupported.
+- `stopped`: a creation prerequisite is missing before the first mutation; no
+  child was created.

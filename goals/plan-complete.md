@@ -4,25 +4,14 @@
 
 One task context produces an approved plan or `needs-refinement`.
 
-## Success Criteria
+## Terminal Outcomes
 
-- An approved plan follows `../templates/plan.md`, exists under `../plans/`,
-  uses its project-relative file path as its canonical reference, and has
-  no unresolved material question and has explicit user approval after its
-  complete content and the current mode's approval scope were shown.
-- Standalone approval authorizes only completing `/plan`; it does not start
-  delivery. Workflow approval returns the plan to its caller with autonomous
-  delivery authorized.
-- For an official item, only an approved plan is published in its dedicated
-  comment. A successful mutation response identifies the created comment before
-  `agent-planned` is applied; a failed or inconclusive response stops first.
-- A `needs-refinement` result contains concise findings, returns through the
-  official-item branch unchanged, and creates no plan file, plan comment, or
-  label mutation.
-- The plan-reading operation remains available for workflows that retrieve a
-  previously published plan; publication does not use it as a readback.
-
-## Stop Conditions
-
-- Stop successfully after returning or reporting either valid outcome.
-- Stop and report when a required operation fails.
+- Approved: the plan follows `../templates/plan.md`, has no unresolved material
+  question, exists under `../plans/` at its canonical project-relative path,
+  and has explicit approval for the current entry mode. For an official item,
+  its dedicated publication and `agent-planned` label are observed before the
+  plan returns.
+- Needs refinement: concise findings return without a plan file, plan comment,
+  label mutation, or change to the official item context.
+- Stopped: a required operation failure is reported without claiming an
+  approved or published plan.

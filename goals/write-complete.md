@@ -4,19 +4,11 @@
 
 Exactly one confirmed item has been saved through the configured item provider.
 
-## Success Criteria
+## Terminal Outcomes
 
-- The saved item contains the confirmed title and Markdown body.
-- Only the workflow performed provider mutations.
-- The result states whether the `agent-shaped` label was applied.
-- The outcome was presented with `../templates/write-result.md`.
-
-## Stop Conditions
-
-- Stop successfully when all success criteria are satisfied.
-- Stop and report when the item cannot be saved.
-- Report a label application failure in the successful save result.
-
-## Human Validation
-
-The title and body require explicit confirmation before saving.
+- Complete: the saved item contains the confirmed title and Markdown body,
+  `agent-shaped` is applied, and `../templates/write-result.md` presents the
+  observed item and label result.
+- Saved with label failure: the confirmed item is saved and the same result
+  identifies why `agent-shaped` was not applied.
+- Stopped: the item could not be saved and no successful save is reported.

@@ -30,3 +30,13 @@ Follow exactly one branch:
 - otherwise, follow `./inspect-standalone.md`.
 
 Fail an incomplete caller handoff instead of switching it to standalone mode.
+
+---
+
+## Safety
+
+- The standalone plan, item, and request selections, or a complete caller
+  handoff, authorize inspection and publication without finding curation or
+  publication confirmation. A standalone caller must already possess the
+  ignored plan file.
+- Do not invoke `/done`.

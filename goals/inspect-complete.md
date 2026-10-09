@@ -6,31 +6,14 @@ One exact request snapshot is inspected autonomously, with any findings
 published. Blocking findings return to `/work`; a passing inspection applies
 `agent-inspected` and stops without invoking `/done`.
 
-## Success Criteria
+## Terminal Outcomes
 
-- Caller context is preserved, while standalone inspection selects one local
-  authoritative plan, complete official item, and exact open, non-draft request
-  before autonomous execution.
-- One complete inspection result is bound to one frozen head SHA.
-- Every valid finding is published once for that SHA; prior same-SHA
-  publications are observed instead of duplicated.
-- Blocking findings return to `/work` with their IDs, exact content, and source
-  SHA only after publication is complete.
-- With no blocking finding, `agent-inspected` is applied only after any
-  required publication is complete, then the workflow reports
-  `../templates/inspect-result.md` and stops.
-
-## Stop Conditions
-
-- Continue through `/work` after complete publication of blocking findings.
-- Complete after the final label is applied with no blocking finding.
-- Restart from a fresh snapshot after a stale publication boundary.
-- Stop on incomplete context, inconsistent prior publication, publication
-  failure, or label failure.
-
-## Human Validation
-
-The standalone plan, item, and request selections, or complete caller handoff,
-authorize inspection and publication. A standalone caller must already possess
-the ignored plan file. No finding curation, publication confirmation, or
-`/done` choice is requested.
+- Corrective: every valid finding for the frozen HEAD is observed as published
+  once before blocking findings return to `/work` with their IDs, exact
+  content, and source SHA.
+- Complete: no blocking finding remains, `agent-inspected` is observed on the
+  item after any required publication, and `../templates/inspect-result.md` is
+  presented without invoking `/done`.
+- Stopped: incomplete context, inconsistent prior publication, publication
+  failure, or label failure is reported without claiming inspection
+  completion.
