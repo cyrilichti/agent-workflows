@@ -9,7 +9,7 @@ Create one draft request through the configured version-control provider.
   remote.
 - `source_branch`: pushed work branch.
 - `target_branch`: merge target branch.
-- `title`: confirmed title beginning with `Draft:`.
+- `title`: confirmed title.
 
 ## Steps
 

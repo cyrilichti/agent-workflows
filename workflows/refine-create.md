@@ -9,7 +9,14 @@ children and blocking edges from the latest confirmed preview.
 
 ## Steps
 
-### 1. Create Children
+### 1. Require Creation Prerequisites
+
+Before the first provider mutation, require the resolved provider, the official
+parent ID and destination, every confirmed child's stable reference, title,
+and body, and every confirmed blocking edge. Stop without creating any child
+when one of these prerequisites is missing.
+
+### 2. Create Children
 
 For each child in preview order, run `../commands/create-child-item.md` once
 with:
@@ -25,7 +32,7 @@ content:
 Map results to local references. Record failures and continue without
 replacement.
 
-### 2. Apply Required Child Labels
+### 3. Apply Required Child Labels
 
 Check whether the official parent item contains the exact `agent-shaped`
 label. When it does, run `../commands/apply-item-label.md` once for every
@@ -40,10 +47,10 @@ label: agent-shaped
 Record the label result against each child. Record failures and continue. When
 the parent does not contain `agent-shaped`, do not run a label operation.
 
-### 3. Create Blocking Relations
+### 4. Create Blocking Relations
 
 Group every confirmed `blocking_ref` by its `blocked_ref`, then resolve both
-only through successful Step 1 results. For each group whose blocked child and
+only through successful Step 2 results. For each group whose blocked child and
 at least one blocking child were created, run
 `../commands/create-blocking-relations.md` once with:
 
@@ -58,7 +65,9 @@ Record every edge with a missing endpoint without a provider call. Do not call
 the command when no blocker in the group was created. Record operation failures
 and continue.
 
-### 4. Finish
+### 5. Finish
 
-Finish according to `../goals/refine-complete.md` using observed child, required
-label, and relation results.
+After the first child creation call, do not stop for a child creation, required
+label, or relation failure. Continue every operation whose prerequisites are
+satisfied, then finish according to `../goals/refine-complete.md` using the
+observed child, required label, and relation results.

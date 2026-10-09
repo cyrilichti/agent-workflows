@@ -1,6 +1,6 @@
 # Done Preflight
 
-Use before `/done` asks for its one mutation confirmation.
+Format the completion state and remaining mutations supplied by `/done`.
 
 ## Format
 
@@ -23,4 +23,3 @@ Item: <ID and observed or resolved state>
   target supplied by the workflow.
 - Use bold inline labels rather than section headings.
 - List only remaining mutations.
-- Leave confirmation to the workflow's following `select-option.md` call.

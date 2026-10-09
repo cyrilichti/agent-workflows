@@ -2,8 +2,8 @@
 
 ## Purpose
 
-Select one `agent-planned` item from the configured provider and return its
-identity and destination name. This is a standalone entry point.
+Run the configured provider's next-item selection and return its formatted
+result. This is a standalone entry point.
 
 ---
 
@@ -18,11 +18,7 @@ Follow `../rules/user-facing-output.md`.
 
 ### 1. Resolve Item Provider
 
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
+Run `../commands/resolve-item-provider.md`.
 
 ### 2. Select the Next Item
 
@@ -31,9 +27,6 @@ Run `../commands/select-next-item.md` with:
 ```text
 provider: resolved item provider
 ```
-
-No item reference, title, project, team, list, or assignee is required from
-the caller.
 
 ### 3. Return the Result
 

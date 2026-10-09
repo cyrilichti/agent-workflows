@@ -49,7 +49,8 @@ the delivery loop, not the provider review verdict.
 
 When the command reports that the same-head publication is already complete,
 do not publish again. When publication returns `stale`, discard the result and
-restart from Step 1. Stop on `unsupported`, `failed`, or `unobserved`.
+restart from Step 1. On `unsupported`, `failed`, or `unobserved`, present
+`../templates/inspect-result.md`, then stop.
 
 ### 4. Continue or Complete
 

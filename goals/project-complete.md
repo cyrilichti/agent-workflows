@@ -7,15 +7,14 @@ or yield an explicit unresolved status.
 
 ## Success Criteria
 
-- A unique matching Git repository root from the configured project paths
-  is returned without scanning the home directory.
-- The fallback checks repositories beside configured projects before searching
-  under the home directory, and stops when it finds an exact match. Missing or
-  unreadable project configuration does not stop the home search.
-- Multiple candidate repositories are resolved using the complete item,
-  frontend preference, and a stable final tie break.
-- Only directories with a `.git` file or directory at their root are eligible.
-  Without an exact match, incomplete home searches return a status.
+- A resolved result is one absolute canonical path to a directory with a
+  `.git` file or directory at its root.
+- Configured projects outrank neighboring repositories, which outrank home
+  repositories; exact name matches outrank prefix matches within that order.
+- Multiple equally ranked repositories are resolved using the complete item,
+  frontend preference, and a stable lexicographic final tie break.
+- An unresolved result distinguishes `not found` from `search incomplete` and
+  contains no path.
 
 ## Stop Conditions
 

@@ -8,24 +8,20 @@ Resolve update-only context, then follow the shared execution.
 
 ### 1. Collect Item Expression
 
-Reuse an available provider item ID or title query from the workflow activation
-context. Otherwise ask for the item title or a short title search phrase. Do
-not continue until this input exists.
+Reuse an available provider item ID, native URL, or title query from the
+workflow activation context. Otherwise ask for the item title or a short title
+search phrase. Do not continue until this input exists.
 
 ### 2. Resolve Provider and Item
 
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
+Run `../commands/resolve-item-provider.md`.
 
 Then run `../commands/resolve-existing-item.md` with:
 
 ```text
 provider: resolved item provider
-reference: user-provided provider item ID, when available
-query: collected title query, when no item ID is available
+reference: user-provided provider item ID or native URL, when available
+query: collected title query, when no direct reference is available
 ```
 
 Identify the resolved item to the user using its title, status, and link when
