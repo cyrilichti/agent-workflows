@@ -25,10 +25,17 @@ editUrl: false
 hero:
   layout: media-left
   title: Turn tickets into reviewed code.
-  tagline: Agent Workflows routes the right skills from ticket to plan, code, and review—automating the delivery loop while you keep the final say on merge.
+  tagline: Watch ready, planned tickets move through implementation, checks, review, and correction until each increment awaits your merge decision.
   image:
     html: |-
-      <section class="workflow-demo" aria-label="A ticket-to-merge conversation demo" data-workflow-demo>
+      <section class="hero-use-cases" aria-label="Agent Workflows delivery modes" data-hero-use-cases>
+        <noscript><style>.hero-use-cases__panel { opacity: 1; }</style></noscript>
+        <div class="hero-use-cases__tabs" role="tablist" aria-label="Choose a delivery mode">
+          <button id="hero-orchestrated-tab" type="button" role="tab" aria-selected="true" aria-controls="hero-orchestrated-panel" data-hero-use-tab>Autonomous delivery orchestration</button>
+          <button id="hero-agent-tab" type="button" role="tab" aria-selected="false" aria-controls="hero-agent-panel" tabindex="-1" data-hero-use-tab>Work with your agent</button>
+        </div>
+        <div id="hero-agent-panel" class="hero-use-cases__panel" role="tabpanel" aria-labelledby="hero-agent-tab" data-hero-use-panel data-hero-view="conversation" data-hero-tagline="Shape the ticket with your agent, approve the plan, and let delivery continue autonomously until reviewed code is ready for your merge decision." data-hero-link-label="See the conversational workflow" data-hero-link-href="/agent-workflows/workflows/" hidden>
+          <section class="workflow-demo" aria-label="A ticket-to-merge conversation demo" data-workflow-demo>
         <div class="workflow-demo__bar">
           <span class="workflow-demo__lights" aria-hidden="true"><i></i><i></i><i></i></span>
           <span>agent-workflows / demo</span>
@@ -85,13 +92,23 @@ hero:
             </ul></div>
           </article>
         </div>
+          </section>
+        </div>
+        <div id="hero-orchestrated-panel" class="hero-use-cases__panel" role="tabpanel" aria-labelledby="hero-orchestrated-tab" data-hero-use-panel data-hero-view="orchestration" data-hero-tagline="Watch ready, planned tickets move through implementation, checks, review, and correction until each increment awaits your merge decision." data-hero-link-label="See orchestration setup" data-hero-link-href="/agent-workflows/orchestration/">
+          <div id="autonomous-delivery" data-autonomous-delivery>
+            <section class="aw-workshop" aria-label="Autonomous delivery orchestration">
+              <svg class="aw-scene" role="img" aria-label="A flat white plan with dark lines enters an isometric conveyor. Build creates a white carton. Test gives it a warm kraft color. Review adds a green square with a white check mark to the top of the carton. Black LCD panels light up as the presses act. Finished increments land softly on the ground and fade away."></svg>
+              <footer class="aw-controls"><div class="aw-playback" role="status" aria-live="polite" data-playing="true"><span class="aw-playback-dot" aria-hidden="true"></span><span class="aw-playback-label">Playing</span></div><button class="aw-pause" type="button" aria-pressed="false">Pause</button></footer>
+            </section>
+          </div>
+        </div>
       </section>
   actions:
     - text: Install Agent Workflows
       link: /agent-workflows/installation/
       icon: right-arrow
-    - text: See the workflow
-      link: /agent-workflows/workflows/
+    - text: See orchestration setup
+      link: /agent-workflows/orchestration/
       icon: open-book
       variant: secondary
 ---
@@ -106,8 +123,8 @@ hero:
   <section class="landing-section landing-lifecycle" aria-labelledby="lifecycle-title">
     <p class="landing-eyebrow">One governed delivery chain</p>
     <h2 id="lifecycle-title">From ticket to merge, one continuous workflow.</h2>
-    <p class="landing-lifecycle__intro">Start with a new or existing ticket. Agent Workflows carries its context through planning, implementation, and review—routing the right skills at each step while you decide when to merge.</p>
-    <div class="delivery-map" role="img" aria-label="Agent Workflows lifecycle: shape a ticket, plan the work, start autonomous delivery, loop between delivery and review until no blocking findings remain, then make a human merge decision.">
+    <p class="landing-lifecycle__intro">Shape the ticket with your agent and approve the plan. Then start delivery yourself or let an orchestrator select ready, planned work. Implementation, checks, and review continue autonomously until the change is ready for your merge decision.</p>
+    <div class="delivery-map" role="img" aria-label="Agent Workflows lifecycle: shape a ticket with a person, approve the plan, trigger delivery either personally or through an orchestrator, loop through implementation, checks, review, and correction, then make a human merge decision.">
       <div class="delivery-map__stages">
         <article class="delivery-stage delivery-stage--assisted">
           <header><span>01</span><small>Assisted</small></header>
@@ -115,15 +132,14 @@ hero:
           <code>/write · /refine</code>
         </article>
         <span class="delivery-connector" aria-hidden="true">→</span>
-        <article class="delivery-stage delivery-stage--assisted">
-          <header><span>02</span><small>Assisted</small></header>
+        <article class="delivery-stage delivery-stage--assisted delivery-stage--approval">
+          <header><span>02</span><small>Human approval</small></header>
           <h3>Plan</h3>
           <code>/pick · /plan</code>
         </article>
         <span class="delivery-connector" aria-hidden="true">→</span>
-        <div class="delivery-map__start">
-          <span class="delivery-map__human-mark" aria-hidden="true"></span>
-          <div><small>Human</small><strong>Start</strong></div>
+        <div class="delivery-map__trigger">
+          <div><small>Human or orchestrator</small><strong>Start</strong></div>
         </div>
         <span class="delivery-connector" aria-hidden="true">→</span>
         <div class="delivery-loop">
@@ -139,7 +155,6 @@ hero:
             <code>/inspect</code>
           </article>
           <div class="delivery-loop__lines" aria-hidden="true"><span class="delivery-loop__line delivery-loop__line--forward"></span><span class="delivery-loop__line delivery-loop__line--return"></span></div>
-          <span class="delivery-loop__return-label">Blocking findings</span>
         </div>
         <span class="delivery-connector" aria-hidden="true">→</span>
         <div class="delivery-map__merge">
@@ -164,3 +179,4 @@ hero:
 </div>
 
 <script src="/agent-workflows/workflow-demo.js" defer></script>
+<script src="/agent-workflows/autonomous-delivery.js" defer></script>
