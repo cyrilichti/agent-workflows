@@ -2,17 +2,8 @@
 
 ## Read
 
-When the caller supplies an official item with a current status and team
-destination, list that team's statuses first:
-
-```text
-tool: list_issue_statuses
-arguments:
-  team: supplied issue team name or ID
-```
-
-Reuse the supplied projection only when this read succeeds and its current
-status matches one returned status. Otherwise read the issue once:
+Reuse the caller's official item from the current workflow run when it includes
+the current status and team. Otherwise read the issue:
 
 ```text
 tool: get_issue
@@ -20,22 +11,13 @@ arguments:
   id: caller item ID or identifier
 ```
 
-For a caller without a complete official item, or when the returned team
-differs from the supplied destination, list the returned current team's
-statuses:
+List that issue's team statuses:
 
 ```text
 tool: list_issue_statuses
 arguments:
-  team: returned issue team name or ID
+  team: reused or returned issue team name or ID
 ```
-
-When the issue still belongs to the supplied team and its first status-list
-read succeeded, reuse that list instead of reading it again. When that first
-read failed and the current issue still has the same team, return the original
-provider failure without retrying it. Normalize the supplied current status on
-direct reuse, or the returned issue status after fallback, against the
-applicable status list.
 
 Return the current and available statuses as `id`, `name`, and `category`:
 
@@ -44,8 +26,7 @@ Return the current and available statuses as `id`, `name`, and `category`:
 - `active`: Linear type `started`, excluding review;
 - `other`: every remaining status.
 
-Return the provider failure when any required fallback read or normalization
-fails.
+Return the provider failure when a required read or normalization fails.
 
 When the shared command supplies complete normalized `status_resolution`, the
 read operation is omitted.
