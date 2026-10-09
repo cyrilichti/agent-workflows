@@ -1,10 +1,30 @@
 # Agent Workflows
 
-**Automate the delivery loop. Keep the final say.**
+**Turn prepared work into reviewed code. Keep the final say.**
 
-[Install Agent Workflows](#quick-start) · [Explore the documentation](https://cyrilichti.github.io/agent-workflows/) · [See every workflow](https://cyrilichti.github.io/agent-workflows/workflows/)
+A shared workflow for delivering changes with your coding agent or through
+autonomous orchestration.
 
-![Agent Workflows delivery lifecycle: shape and plan work with assistance, start autonomous delivery as a human, loop between delivery and review until no blocking findings remain, then make a human merge decision.](./public/readme-lifecycle.svg)
+## Orchestrate delivery
+
+Let an orchestrator select prepared tickets with approved plans and run
+implementation, checks, review, and correction. Each reviewed change awaits
+your merge decision.
+
+Follow the [orchestration guide](./ORCHESTRATION.md) to set up the delivery loop.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./public/readme-orchestration-dark.gif">
+  <source media="(prefers-color-scheme: light)" srcset="./public/readme-orchestration-light.gif">
+  <img src="./public/readme-orchestration-light.gif" alt="Prepared tickets move through Build, Test, and Review before the resulting increments await a human merge decision.">
+</picture>
+
+## Work with your agent
+
+Shape a ticket, approve the plan, and start delivery from your agent's chat.
+The agent implements, checks, and reviews the change for your merge decision.
+
+Explore the [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
 
 ## Quick start
 
@@ -13,6 +33,8 @@ npx skills add cyrilichti/agent-workflows --skill agent-workflows
 ```
 
 Then run `/agent-workflows` once to install or update the system in your project.
+See the [installation guide](https://cyrilichti.github.io/agent-workflows/installation/)
+for setup options.
 
 ## Work with your existing tools
 
@@ -24,16 +46,8 @@ See [provider setup](https://cyrilichti.github.io/agent-workflows/providers/) fo
 
 ## Documentation
 
-Start with the [installation guide](https://cyrilichti.github.io/agent-workflows/installation/), then explore [provider setup](https://cyrilichti.github.io/agent-workflows/providers/) and the [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
-
 To start the documentation development server, install dependencies with
 `npm ci`, then run `npm run doc`.
-
-## Agent orchestration
-
-Run Kestra workflows with a local AI bridge and Langfuse traces. Follow the
-[orchestration guide](./ORCHESTRATION.md) to configure the services and
-run the demo.
 
 ## Community
 
