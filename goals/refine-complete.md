@@ -14,7 +14,8 @@ Report exactly one outcome:
 - `complete`: every confirmed child and relation was created and every required
   `agent-shaped` label was applied; report each child title, provider ID, link
   when available, its required label result, and each created relation;
-- `failed`: no child created; report every failed child title and failure;
+- `failed`: no child created; report every failed child title and failure
+  separately from any operation that could not be attempted;
 - `partially-failed`: at least one child was created but a child creation,
   required label, or relation failed; report created child titles, provider
   IDs, links when available, and required label results, failed child titles
@@ -22,7 +23,10 @@ Report exactly one outcome:
 
 ## Stop Conditions
 
-Stop after reporting one valid outcome or a required-operation failure.
+Stop without mutation when a creation prerequisite is missing. After creation
+starts, record individual child, required-label, and relation failures, continue
+every operation whose prerequisites remain satisfied, and stop only after
+reporting one valid outcome.
 
 ## Human Validation
 
