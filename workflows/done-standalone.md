@@ -4,11 +4,7 @@
 
 ### 1. Resolve the Official Item
 
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
+Run `../commands/resolve-item-provider.md`.
 
 Run `../commands/select-review-item.md` with:
 

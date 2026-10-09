@@ -18,11 +18,7 @@ Follow `../rules/user-facing-output.md`.
 
 ### 1. Resolve Item Provider
 
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
+Run `../commands/resolve-item-provider.md`.
 
 ### 2. Select the Next Item
 

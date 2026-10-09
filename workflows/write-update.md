@@ -14,11 +14,7 @@ not continue until this input exists.
 
 ### 2. Resolve Provider and Item
 
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
+Run `../commands/resolve-item-provider.md`.
 
 Then run `../commands/resolve-existing-item.md` with:
 
