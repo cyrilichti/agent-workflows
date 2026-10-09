@@ -2,19 +2,16 @@
 
 ## Outcome
 
-One eligible item from the provider's selection page is identified, or that
-page contains no eligible item.
+The configured provider's next-item selection result is returned without
+mutation.
 
 ## Success Criteria
 
-- The configured item provider was queried once without a destination scope.
-- The returned item is the first eligible result from the provider's single
-  selection page for `agent-planned` work.
-- A found response contains only `name`, `id`, `url`, and `list`; an empty
-  response is exactly `{ "status": "no eligible item" }`.
+- Selection follows `../commands/select-next-item.md`.
+- The result follows `../templates/next-result.md`.
 - No item, repository, plan, or delivery state was changed.
 
 ## Stop Conditions
 
-- Stop after returning the found or empty result.
-- Stop and report a provider error without returning an empty result.
+- Stop after formatting the selection result.
+- Stop and report an error returned by the selection command.
