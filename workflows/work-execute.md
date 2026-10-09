@@ -6,8 +6,8 @@
 
 When the delivery context contains `source_findings`, translate each finding
 through `../templates/corrective-todo.md` and append it to the authoritative
-plan. Persist the plan before clearing the carried findings. `/ready` and
-`/inspect` never modify the plan.
+plan. Persist the plan before clearing the carried findings. Only `/work`
+translates findings into corrective todos.
 
 ### 2. Execute Todos
 

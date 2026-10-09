@@ -2,9 +2,9 @@
 
 ## Outcome
 
-One exact request snapshot is inspected and published autonomously. Blocking
-findings return to `/work`; a passing inspection applies `agent-inspected` and
-stops without invoking `/done`.
+One exact request snapshot is inspected autonomously, with any findings
+published. Blocking findings return to `/work`; a passing inspection applies
+`agent-inspected` and stops without invoking `/done`.
 
 ## Success Criteria
 
@@ -16,9 +16,9 @@ stops without invoking `/done`.
   publications are observed instead of duplicated.
 - Blocking findings return to `/work` with their IDs, exact content, and source
   SHA only after publication is complete.
-- With no blocking finding, `agent-inspected` is applied only after publication
-  is complete, then the workflow reports `../templates/inspect-result.md` and
-  stops.
+- With no blocking finding, `agent-inspected` is applied only after any
+  required publication is complete, then the workflow reports
+  `../templates/inspect-result.md` and stops.
 
 ## Stop Conditions
 

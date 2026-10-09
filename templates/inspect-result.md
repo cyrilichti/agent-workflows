@@ -38,9 +38,5 @@ and official item.
 - Keep both identities visible.
 - Identities may be plain text or Markdown links; keep the exact item ID in
   the link text.
-- Use `inspection published` only for observed complete finding publication.
-  Use `inspection completed without findings` for complete inspection with no
-  findings and no publication. Pair either with `agent-inspected applied` for
-  confirmed success.
 - Include `Remaining` only when the workflow supplies one exact actionable
   mutation.

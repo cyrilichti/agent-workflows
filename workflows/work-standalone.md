@@ -17,7 +17,9 @@
    fields: [labels, comments, request_backlinks]
    ```
 
-3. Require the resolved item to contain `agent-planned`.
+3. Require the resolved item's `closed` field to be `false` and its labels to
+   contain `agent-planned`. Otherwise, identify the item, report the unmet
+   condition, and stop before resolving its plan.
 
 ### 2. Resolve Work Mode
 
@@ -39,13 +41,19 @@ For `new`:
 2. Write the returned `plan_content` unchanged to the local `../plans/`
    location defined by `../templates/plan.md`, using its filename rules.
 
-### 4. Create the Delivery Context
+### 4. Establish the Plan and Item Association
+
+Apply Step 3 of `./delivery-context-standalone.md` to the resolved local plan
+and official item, using the comments and plan content already read in this
+run.
+
+### 5. Create the Delivery Context
 
 Create `../templates/delivery-context.md` with the local plan path and complete
 official item context, including any backlinks for `/ready` to resolve the
 exact request.
 
-### 5. Follow Shared Execution
+### 6. Follow Shared Execution
 
 Follow `./work-confirm.md` with:
 

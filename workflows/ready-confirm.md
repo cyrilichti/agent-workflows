@@ -21,8 +21,7 @@ is available. Never search for or substitute another request.
 
 Reset every checkbox in the plan's global Validation to unchecked, then run
 every validation item regardless of its prior state. After each successful
-item, check its exact checkbox. Never check a failed or unexecuted item, and do
-not modify any other plan content.
+item, check its exact checkbox. Never check a failed or unexecuted item.
 
 Compare the complete committed diff against the request target with the
 Objective and Expected Outcome. Check only that the planned outcome was
@@ -32,7 +31,7 @@ For every validation failure or concrete delivery gap, create one
 `delivery_context.source_findings` record defined by
 `../templates/delivery-context.md` with `workflow: ready`, a stable finding ID,
 its exact explanation, and the verified local HEAD SHA. Then follow `./work.md`
-in resumed caller mode. Do not modify the plan in `/ready`.
+in resumed caller mode.
 
 ### 2. Recheck and Push
 

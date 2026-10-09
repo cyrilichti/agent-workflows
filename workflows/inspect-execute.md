@@ -43,21 +43,25 @@ to the frozen SHA; otherwise report the exact failure and stop.
 ### 3. Reconcile and Publish
 
 Run `../commands/reconcile-inspection-publication.md` against the frozen review
-activity. When it returns unseen findings, publish only those findings through
+activity. When `unseen_findings` is nonempty, publish only those findings through
 `../commands/publish-review.md` with `verdict: none`. Finding severity controls
 the delivery loop, not the provider review verdict.
 
-When the command reports that the same-head publication is already complete,
-do not publish again. When publication returns `stale`, discard the result and
-restart from Step 1. On `unsupported`, `failed`, or `unobserved`, present
-`../templates/inspect-result.md`, then stop.
+When `unseen_findings` is empty, continue to Step 4. When publication returns
+`stale`, discard the result and restart from Step 1. On `unsupported`, `failed`,
+or `unobserved`, present `../templates/inspect-result.md`, then stop.
 
 ### 4. Continue or Complete
 
-Reuse the publication result's delivery state. When no publication occurred,
-run `../commands/resolve-request.md` for the same request ID and carried source
+When publication occurred, reuse its result's delivery state. Otherwise, run
+`../commands/resolve-request.md` for the same request ID and carried source
 branch with `require_non_draft: true` and `fields: delivery_state`. If the
 observed request head no longer equals the frozen SHA, restart from Step 1.
+
+Set the observed request outcome to `inspection completed without findings`
+when the complete inspection has no findings. Otherwise, set it to `inspection
+published` after every finding is observed for the frozen SHA, through prior
+review activity or successful publication in this run.
 
 When any blocking finding exists, create one
 `delivery_context.source_findings` record defined by
@@ -73,12 +77,12 @@ item_id: exact official item ID
 label: agent-inspected
 ```
 
-Require `applied: true`, then present `../templates/inspect-result.md` with
-`inspection published` and `agent-inspected applied` and finish according to
+Require `applied: true`, then present `../templates/inspect-result.md` with the
+observed request outcome and `agent-inspected applied`, and finish according to
 `../goals/inspect-complete.md`.
 
 ## Safety
 
 - Limit inspection-owned mutations to publishing new review content and
-  applying the final item label. Delegate code, commit, branch, and plan
-  changes to `/work`.
+  applying the final item label. Delegate code, commit, branch, and corrective
+  todo changes to `/work`.
