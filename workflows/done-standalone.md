@@ -4,11 +4,7 @@
 
 ### 1. Resolve the Official Item
 
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
+Run `../commands/resolve-item-provider.md`.
 
 Run `../commands/select-review-item.md` with:
 
@@ -23,7 +19,9 @@ Run `../commands/read-item.md` with:
 ```text
 provider: resolved item provider
 item_id: selected provider item ID
-fields: request_backlinks
+fields:
+  - labels
+  - request_backlinks
 ```
 
 Keep the complete official item.

@@ -8,14 +8,23 @@ and official item.
 ```markdown
 ## Inspect result
 
-**Request <provider/repository#ID>:** <observed inspection publication result>
-**Item <ID>:** <observed label application result>
+**Request <provider/repository#ID>:** <request status>
+**Item <ID>:** <item status>
 
 **Remaining:** <exact request or item action; omit when none or no actionable next step is known>
 ```
 
 ## Rules
 
+- This result block is a fixed output contract. Copy the heading and field
+  names literally. Copy one status from the lists below exactly in English,
+  regardless of the response language. Do not translate, paraphrase, format,
+  or add comments inside a status. Put explanations after the result block.
+- Request statuses: `inspection published`, `inspection completed without findings`,
+  `inspection incomplete`, `inspection failed`, `inspection not attempted`,
+  `unobserved`.
+- Item statuses: `agent-inspected applied`, `agent-inspected not applied`,
+  `unobserved`.
 - Report observed states rather than intended states.
 - Use the same format for failures and incomplete outcomes. Report the
   publication outcome and label state actually observed. Use

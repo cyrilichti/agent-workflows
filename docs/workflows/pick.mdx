@@ -3,11 +3,13 @@ title: /pick
 description: Select one unplanned agent-shaped item, approve its plan, and start autonomous delivery.
 ---
 
-`/pick` resolves one official item. An item with `agent-planned` stops before
-planning and is left for `/work`. Otherwise, `/pick` requires `agent-shaped`,
-shows the current context, and sends it to planning. An approved plan starts
-autonomous delivery; an item containing multiple delivery units can be handed
-to `/refine` without changing it first.
+`/pick` resolves one official item and checks its provider-native status once,
+regardless of whether it was supplied by ID, native URL, title, or candidate
+selection. A closed item stops before summary and planning. An open item with
+`agent-planned` stops before planning and is left for `/work`. Otherwise,
+`/pick` requires `agent-shaped`, shows the current context, and sends it to
+planning. An approved plan starts autonomous delivery; an item containing
+multiple delivery units can be handed to `/refine` without changing it first.
 
 ## How `/pick` routes the item
 
@@ -66,7 +68,7 @@ to `/refine` without changing it first.
     <tr>
       <td>1</td>
       <th scope="row">Pick</th>
-      <td>Resolve and present one open official item whose labels include <code>agent-shaped</code> but not <code>agent-planned</code>. Stop when it is already planned.</td>
+      <td>Resolve one official item, require it to be open once for every entry mode, then present it when its labels include <code>agent-shaped</code> but not <code>agent-planned</code>. Stop before presentation when it is closed and before planning when it is already planned.</td>
     </tr>
     <tr>
       <td>2</td>

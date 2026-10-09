@@ -12,7 +12,7 @@ arguments:
   - --target-branch
   - caller target branch
   - --title
-  - caller title beginning with "Draft:"
+  - caller title
   - --description
   - empty string
   - --draft

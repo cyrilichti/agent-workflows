@@ -4,11 +4,7 @@
 
 ### 1. Resolve the Official Item
 
-1. Run `../commands/resolve-item-provider.md` with:
-
-   ```text
-   context: item
-   ```
+1. Run `../commands/resolve-item-provider.md`.
 
 2. Run `../commands/resolve-existing-item.md` with any supplied item reference
    or title query and:

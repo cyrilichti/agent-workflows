@@ -2,7 +2,8 @@
 
 ## Read
 
-Read the issue, then its team statuses:
+Reuse the caller's official item from the current workflow run when it includes
+the current status and team. Otherwise read the issue:
 
 ```text
 tool: get_issue
@@ -10,10 +11,12 @@ arguments:
   id: caller item ID or identifier
 ```
 
+List that issue's team statuses:
+
 ```text
 tool: list_issue_statuses
 arguments:
-  team: returned issue team name or ID
+  team: reused or returned issue team name or ID
 ```
 
 Return the current and available statuses as `id`, `name`, and `category`:
@@ -23,7 +26,10 @@ Return the current and available statuses as `id`, `name`, and `category`:
 - `active`: Linear type `started`, excluding review;
 - `other`: every remaining status.
 
-Return the provider failure when either read fails.
+Return the provider failure when a required read or normalization fails.
+
+When the shared command supplies complete normalized `status_resolution`, the
+read operation is omitted.
 
 ## Apply
 

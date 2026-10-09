@@ -5,18 +5,12 @@
 One exact request is merged and its official item is done, or the workflow
 stops with the exact observed blocker or declined mutation.
 
-## Success Criteria
+## Terminal Outcomes
 
-- Context comes from standalone resolution or one valid caller packet.
-- The official item has `agent-inspected` before completion is offered.
-- An open request is squash-merged only while unchanged and mergeable.
-- The item is done only after the request is observed as merged.
-- Results identify both records and any remaining request or item action.
-
-## Stop Conditions
-
-Stop after completion, declined confirmation, or an observed blocker.
-
-## Human Validation
-
-Require one mutation confirmation unless nothing remains to change.
+- Complete: the exact request is observed as merged and its official item is
+  observed as done.
+- Stopped: the exact observed blocker or declined completion is returned
+  without claiming an unobserved change.
+- Partial: when the request is observed as merged but the item cannot be moved
+  to done, the item transition is the only remaining action.
+- Every outcome identifies both records and their observed results.

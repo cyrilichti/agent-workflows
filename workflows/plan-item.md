@@ -9,10 +9,18 @@ execution.
 
 ## Steps
 
-### 1. Preserve Official Context
+### 1. Complete Official Context
 
-Preserve the supplied resolved item provider and complete official item
-context. Do not resolve them again.
+Preserve the supplied resolved item provider and official item context. Do not
+resolve them again. Before assessment, require the official core fields,
+including acceptance criteria present in the item content, current labels,
+complete comments, and supported linked resources and attachments.
+
+Preserve supplied fields and known empty results. Run
+`../commands/read-item.md` with the resolved provider, official item ID, and
+only the missing fields, then add only those fields to the official context.
+Mark unsupported information explicitly as unavailable. Stop when supported
+required information cannot be read.
 
 ### 2. Follow Shared Execution
 
@@ -23,8 +31,9 @@ task_context: official item context plus supplied planning context
 entry_mode: supplied entry mode
 ```
 
-The shared execution returns here only with an approved plan. Continue with
-that plan.
+On `needs-refinement`, return the exact findings and completed official item
+context to the caller without publishing a plan or applying a label. Otherwise,
+continue only with an approved plan.
 
 ### 3. Publish the Approved Plan
 
@@ -37,9 +46,11 @@ item_id: official item ID
 plan_content: exact complete approved plan content
 ```
 
-Run `../commands/read-item-plan.md` with the supplied resolved item provider and
-the same official item ID, and require a returned `plan_content` before
-continuing. Then run `../commands/apply-item-label.md` with:
+Require `published: true` from the publication mutation response. Stop on a
+failed or inconclusive response. Do not reread item comments or compare the
+published content after the mutation.
+
+Then run `../commands/apply-item-label.md` with:
 
 ```text
 provider: supplied resolved item provider

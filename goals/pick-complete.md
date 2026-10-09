@@ -9,6 +9,9 @@ routed from its planning result.
 
 - Official current labels determined the route: an item with `agent-planned`
   stopped before planning; otherwise one `agent-shaped` item was summarized.
+- The initial official item resolution enforced the open-status condition once
+  for reference, title-search, and candidate-selection entries. An ineligible
+  item stopped before summary and planning without a later status recheck.
 - The approved plan was published on the item and `agent-planned` was applied
   before delivery started.
 - An approved plan and the complete official item context returned by `/plan`
@@ -24,6 +27,8 @@ routed from its planning result.
 - Stop successfully after the selected `needs-refinement` outcome completes.
 - Stop successfully before planning when the selected item already contains
   `agent-planned`.
+- Stop successfully before summarizing when the initially resolved item is not
+  open.
 - Stop and report when a required operation fails.
 
 ## Human Validation

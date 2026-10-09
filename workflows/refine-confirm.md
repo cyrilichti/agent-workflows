@@ -24,7 +24,11 @@ item-identified technical context read-only.
 
 Have it load `../skills/to-tickets/SKILL.md` completely and run only Steps 1–3
 through `Draft vertical slices`. Require a provider-neutral draft containing at
-least two autonomous vertical slices that cover the parent scope exactly once.
+least two useful children that can be delivered or verified separately and
+cover the parent scope exactly once. Prefer vertical slices for features.
+Allow a justified expansion, migration, and removal sequence when one wide
+change cannot remain valid as independent vertical slices. Do not split one
+indivisible unit to reach two children; return `refinement-not-needed` instead.
 Each child has a stable reference, meaningful title, and free-form Markdown
 body that communicates:
 

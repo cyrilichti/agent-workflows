@@ -24,11 +24,7 @@ selection without modifying it.
 
 ### 2. Resolve the Official Item
 
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
+Run `../commands/resolve-item-provider.md`.
 
 Then run `../commands/resolve-existing-item.md` with any supplied item reference
 or title query and:

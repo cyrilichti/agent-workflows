@@ -2,12 +2,19 @@
 
 ## Read
 
+When complete normalized `status_resolution` is not supplied, obtain the
+current task and its available statuses with:
+
 ```text
 tool: clickup_get_task
 arguments:
   task_id: caller item ID
   expand_statuses: true
 ```
+
+Reuse a supplied official current status only when it matches the task's
+returned current status. Otherwise normalize the returned current status. Use
+the returned expanded statuses as the available statuses in both cases.
 
 Return the current and available statuses as `id`, `name`, and `category`:
 
