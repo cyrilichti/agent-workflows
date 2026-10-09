@@ -10,11 +10,7 @@ Resolve create-only context, then follow the shared execution.
 
 ### 1. Resolve Provider
 
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
+Run `../commands/resolve-item-provider.md`.
 
 ### 2. Resolve Destination
 
