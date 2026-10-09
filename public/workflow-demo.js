@@ -1,4 +1,52 @@
-const demo = document.querySelector('[data-workflow-demo]')
+const heroUseCases = document.querySelector('[data-hero-use-cases]')
+const demo = heroUseCases?.querySelector('[data-workflow-demo]')
+
+if (heroUseCases) {
+  const tabs = [...heroUseCases.querySelectorAll('[data-hero-use-tab]')]
+  const panels = [...heroUseCases.querySelectorAll('[data-hero-use-panel]')]
+  const hero = heroUseCases.closest('.hero')
+  const tagline = hero?.querySelector('.tagline')
+  const secondaryAction = hero?.querySelector('.actions a:nth-child(2)')
+
+  function selectUseCase(nextTab, moveFocus = false) {
+    tabs.forEach((tab) => {
+      const selected = tab === nextTab
+      tab.setAttribute('aria-selected', String(selected))
+      tab.tabIndex = selected ? 0 : -1
+      if (selected && moveFocus) tab.focus()
+    })
+
+    panels.forEach((panel) => {
+      const selected = panel.id === nextTab.getAttribute('aria-controls')
+      panel.hidden = !selected
+      if (!selected) return
+      if (tagline) tagline.textContent = panel.dataset.heroTagline
+      if (secondaryAction) {
+        secondaryAction.textContent = panel.dataset.heroLinkLabel
+        secondaryAction.href = panel.dataset.heroLinkHref
+      }
+      window.dispatchEvent(new CustomEvent('hero-use-case-change', {
+        detail: { view: panel.dataset.heroView },
+      }))
+    })
+  }
+
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => selectUseCase(tab))
+    tab.addEventListener('keydown', (event) => {
+      let nextIndex
+      if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length
+      else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length
+      else if (event.key === 'Home') nextIndex = 0
+      else if (event.key === 'End') nextIndex = tabs.length - 1
+      else return
+      event.preventDefault()
+      selectUseCase(tabs[nextIndex], true)
+    })
+  })
+
+  selectUseCase(tabs.find((tab) => tab.getAttribute('aria-selected') === 'true') ?? tabs[0])
+}
 
 if (demo) {
   const scenes = [...demo.querySelectorAll('[data-demo-scene]')]
@@ -87,14 +135,18 @@ if (demo) {
     }, 38)
   }
 
-  function setMode() {
-    if (reducedMotion.matches) showStatic()
+  function setMode(activeView = 'conversation') {
+    if (activeView !== 'conversation' || reducedMotion.matches) showStatic()
     else {
       demo.classList.add('workflow-demo--animated')
       showScene(0)
     }
   }
 
-  reducedMotion.addEventListener('change', setMode)
+  window.addEventListener('hero-use-case-change', (event) => setMode(event.detail.view))
+  reducedMotion.addEventListener('change', () => {
+    const conversationPanel = demo.closest('[data-hero-use-panel]')
+    setMode(conversationPanel?.hidden ? 'orchestration' : 'conversation')
+  })
   setMode()
 }

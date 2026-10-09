@@ -28,7 +28,13 @@ hero:
   tagline: Agent Workflows routes the right skills from ticket to plan, code, and review—automating the delivery loop while you keep the final say on merge.
   image:
     html: |-
-      <section class="workflow-demo" aria-label="A ticket-to-merge conversation demo" data-workflow-demo>
+      <section class="hero-use-cases" aria-label="Agent Workflows delivery modes" data-hero-use-cases>
+        <div class="hero-use-cases__tabs" role="tablist" aria-label="Choose a delivery mode">
+          <button id="hero-agent-tab" type="button" role="tab" aria-selected="true" aria-controls="hero-agent-panel" data-hero-use-tab>Work with your agent</button>
+          <button id="hero-orchestrated-tab" type="button" role="tab" aria-selected="false" aria-controls="hero-orchestrated-panel" tabindex="-1" data-hero-use-tab>Observe autonomous delivery</button>
+        </div>
+        <div id="hero-agent-panel" class="hero-use-cases__panel" role="tabpanel" aria-labelledby="hero-agent-tab" data-hero-use-panel data-hero-view="conversation" data-hero-tagline="Shape the ticket with your agent, approve the plan, and let delivery continue autonomously until reviewed code is ready for your merge decision." data-hero-link-label="See the conversational workflow" data-hero-link-href="/agent-workflows/workflows/">
+          <section class="workflow-demo" aria-label="A ticket-to-merge conversation demo" data-workflow-demo>
         <div class="workflow-demo__bar">
           <span class="workflow-demo__lights" aria-hidden="true"><i></i><i></i><i></i></span>
           <span>agent-workflows / demo</span>
@@ -84,6 +90,20 @@ hero:
               <li><span>Integration</span><p>Linear records the completed ticket.</p></li>
             </ul></div>
           </article>
+        </div>
+          </section>
+        </div>
+        <div id="hero-orchestrated-panel" class="hero-use-cases__panel" role="tabpanel" aria-labelledby="hero-orchestrated-tab" data-hero-use-panel data-hero-view="orchestration" data-hero-tagline="Watch ready, planned tickets move through implementation, checks, review, and correction until each increment awaits your merge decision." data-hero-link-label="See orchestration setup" data-hero-link-href="/agent-workflows/orchestration/" hidden>
+          <section class="orchestration-demo orchestration-demo--intro" aria-label="An autonomous delivery overview">
+            <div class="orchestration-demo__bar">
+              <span>autonomous delivery</span>
+              <span>ready + planned</span>
+            </div>
+            <div class="orchestration-demo__intro">
+              <strong>Follow delivery, not prompts.</strong>
+              <p>An orchestrator selects the next eligible ticket and keeps the governed delivery loop moving.</p>
+            </div>
+          </section>
         </div>
       </section>
   actions:
