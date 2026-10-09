@@ -2508,6 +2508,10 @@ a.dispatch-node--link:focus-visible {
     gap: 2rem;
   }
 
+  .write-flow__loop .write-flow__step {
+    height: auto;
+  }
+
   .write-flow__loop-lines {
     display: none;
   }
