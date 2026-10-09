@@ -136,13 +136,18 @@ tasks:
                         else $lines[$start:$start + 4] as $result
                         | ($result[2] | capture("^\\*\\*Request \\S.*:\\*\\* (?<status>\\S.*)$") // {}) as $request
                         | ($result[3] | capture("^\\*\\*Item (?:\\[(?<linked>[^]]+)\\]\\([^)]*\\)|(?<plain>\\S+)):\\*\\* (?<status>\\S.*)$") // {}) as $item
+                        | ($request.status // "" | sub(" [—–-] \\S.*$"; "")) as $request_status
+                        | ($item.status // "" | sub("^`agent-inspected` "; "agent-inspected ")
+                          | sub(" [—–-] \\S.*$"; "")) as $item_status
                         | if $result[1] != ""
-                          or ($request.status // "") == ""
-                          or ($item.status // "") == ""
+                          or (["inspection published", "inspection completed without findings", "inspection incomplete", "inspection failed", "inspection not attempted", "unobserved"]
+                            | index($request_status)) == null
+                          or (["agent-inspected applied", "agent-inspected not applied", "unobserved"]
+                            | index($item_status)) == null
                           or ($item.linked // $item.plain // "") != .item then "error"
-                          elif ($request.status | test("^inspection published($| [—–-] \\S.*$)"))
-                            and ($item.status | sub("^`agent-inspected` "; "agent-inspected ")
-                              | test("^agent-inspected applied($| [—–-] \\S.*$)")) then "success"
+                          elif (["inspection published", "inspection completed without findings"]
+                            | index($request_status)) != null
+                            and $item_status == "agent-inspected applied" then "success"
                           else "partial"
                           end
                         end
@@ -165,7 +170,7 @@ tasks:
                   success:
                     - id: work-sucess
                       type: io.kestra.plugin.core.log.Log
-                      message: Work completed successfully; inspection was published and agent-inspected was applied to the selected item.
+                      message: Work completed successfully; inspection completed and agent-inspected was applied to the selected item.
             no-project:
               - id: project-required
                 type: io.kestra.plugin.core.execution.Fail
