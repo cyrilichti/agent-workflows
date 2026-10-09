@@ -7,13 +7,13 @@ Use when creating the draft merge request for a selected plan.
 With an official item:
 
 ```text
-Draft: <item-id>: <plan-name>
+<item-id>: <plan-name>
 ```
 
 Without an official item:
 
 ```text
-Draft: <plan-name>
+<plan-name>
 ```
 
 ## Rules

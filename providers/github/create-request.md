@@ -14,7 +14,7 @@ arguments:
   - --base
   - caller target branch
   - --title
-  - caller title beginning with "Draft:"
+  - caller title
   - --body
   - empty string
   - --draft
@@ -53,4 +53,4 @@ url: pull request HTML URL
 
 Pass every value as a separate process argument.
 
-Native draft behavior depends on `--draft`, not the `Draft:` prefix.
+Native draft behavior depends on `--draft`.
