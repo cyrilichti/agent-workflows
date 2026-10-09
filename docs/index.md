@@ -25,15 +25,16 @@ editUrl: false
 hero:
   layout: media-left
   title: Turn tickets into reviewed code.
-  tagline: Agent Workflows routes the right skills from ticket to plan, code, and review—automating the delivery loop while you keep the final say on merge.
+  tagline: Watch ready, planned tickets move through implementation, checks, review, and correction until each increment awaits your merge decision.
   image:
     html: |-
       <section class="hero-use-cases" aria-label="Agent Workflows delivery modes" data-hero-use-cases>
+        <noscript><style>.hero-use-cases__panel { opacity: 1; }</style></noscript>
         <div class="hero-use-cases__tabs" role="tablist" aria-label="Choose a delivery mode">
-          <button id="hero-agent-tab" type="button" role="tab" aria-selected="true" aria-controls="hero-agent-panel" data-hero-use-tab>Work with your agent</button>
-          <button id="hero-orchestrated-tab" type="button" role="tab" aria-selected="false" aria-controls="hero-orchestrated-panel" tabindex="-1" data-hero-use-tab>Observe autonomous delivery</button>
+          <button id="hero-orchestrated-tab" type="button" role="tab" aria-selected="true" aria-controls="hero-orchestrated-panel" data-hero-use-tab>Autonomous delivery orchestration</button>
+          <button id="hero-agent-tab" type="button" role="tab" aria-selected="false" aria-controls="hero-agent-panel" tabindex="-1" data-hero-use-tab>Work with your agent</button>
         </div>
-        <div id="hero-agent-panel" class="hero-use-cases__panel" role="tabpanel" aria-labelledby="hero-agent-tab" data-hero-use-panel data-hero-view="conversation" data-hero-tagline="Shape the ticket with your agent, approve the plan, and let delivery continue autonomously until reviewed code is ready for your merge decision." data-hero-link-label="See the conversational workflow" data-hero-link-href="/agent-workflows/workflows/">
+        <div id="hero-agent-panel" class="hero-use-cases__panel" role="tabpanel" aria-labelledby="hero-agent-tab" data-hero-use-panel data-hero-view="conversation" data-hero-tagline="Shape the ticket with your agent, approve the plan, and let delivery continue autonomously until reviewed code is ready for your merge decision." data-hero-link-label="See the conversational workflow" data-hero-link-href="/agent-workflows/workflows/" hidden>
           <section class="workflow-demo" aria-label="A ticket-to-merge conversation demo" data-workflow-demo>
         <div class="workflow-demo__bar">
           <span class="workflow-demo__lights" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -93,60 +94,21 @@ hero:
         </div>
           </section>
         </div>
-        <div id="hero-orchestrated-panel" class="hero-use-cases__panel" role="tabpanel" aria-labelledby="hero-orchestrated-tab" data-hero-use-panel data-hero-view="orchestration" data-hero-tagline="Watch ready, planned tickets move through implementation, checks, review, and correction until each increment awaits your merge decision." data-hero-link-label="See orchestration setup" data-hero-link-href="/agent-workflows/orchestration/" hidden>
-          <section class="orchestration-demo" aria-label="Ready and planned tickets move from New ticket through Work to a reviewed Increment, then the orchestrator selects the next ticket" data-orchestration-demo>
-            <div class="orchestration-demo__bar">
-              <span>autonomous delivery</span>
-              <span>ready + planned</span>
-            </div>
-            <div class="orchestration-demo__body">
-              <div class="orchestration-demo__flow">
-                <article class="orchestration-step" data-orchestration-step="ticket">
-                  <span class="orchestration-step__signal" aria-hidden="true"></span>
-                  <small>Ready + planned</small>
-                  <h3>New ticket</h3>
-                </article>
-                <span class="orchestration-arrow" data-orchestration-step="to-work" aria-hidden="true">→</span>
-                <article class="orchestration-step orchestration-step--work" data-orchestration-step="work">
-                  <span class="orchestration-step__signal" aria-hidden="true"></span>
-                  <small>Implement · check · review</small>
-                  <h3>Work</h3>
-                  <span class="orchestration-step__correction">Correction ↺</span>
-                </article>
-                <span class="orchestration-arrow" data-orchestration-step="to-increment" aria-hidden="true">→</span>
-                <article class="orchestration-step" data-orchestration-step="increment">
-                  <span class="orchestration-step__signal" aria-hidden="true"></span>
-                  <small>Reviewed change</small>
-                  <h3>Increment</h3>
-                </article>
-              </div>
-              <div class="orchestration-return" data-orchestration-step="return" aria-hidden="true">
-                <span>Next ticket</span>
-              </div>
-              <div class="orchestration-conveyor" data-orchestration-conveyor aria-hidden="true">
-                <span class="orchestration-conveyor__belt"></span>
-              </div>
-              <div class="orchestration-output">
-                <div>
-                  <small>Produced increments</small>
-                  <span class="orchestration-output__increments" data-orchestration-increments></span>
-                </div>
-                <strong>Human merge decision</strong>
-              </div>
-              <div class="orchestration-demo__controls">
-                <span data-orchestration-status>Ready for the next ticket.</span>
-                <button type="button" aria-pressed="false" data-orchestration-pause>Pause</button>
-              </div>
-            </div>
-          </section>
+        <div id="hero-orchestrated-panel" class="hero-use-cases__panel" role="tabpanel" aria-labelledby="hero-orchestrated-tab" data-hero-use-panel data-hero-view="orchestration" data-hero-tagline="Watch ready, planned tickets move through implementation, checks, review, and correction until each increment awaits your merge decision." data-hero-link-label="See orchestration setup" data-hero-link-href="/agent-workflows/orchestration/">
+          <div id="autonomous-delivery" data-autonomous-delivery>
+            <section class="aw-workshop" aria-label="Autonomous delivery orchestration">
+              <svg class="aw-scene" role="img" aria-label="A flat white plan with dark lines enters an isometric conveyor. Build creates a white carton. Test gives it a warm kraft color. Review adds a green square with a white check mark to the top of the carton. Black LCD panels light up as the presses act. Finished increments land softly on the ground and fade away."></svg>
+              <footer class="aw-controls"><div class="aw-playback" role="status" aria-live="polite" data-playing="true"><span class="aw-playback-dot" aria-hidden="true"></span><span class="aw-playback-label">Playing</span></div><button class="aw-pause" type="button" aria-pressed="false">Pause</button></footer>
+            </section>
+          </div>
         </div>
       </section>
   actions:
     - text: Install Agent Workflows
       link: /agent-workflows/installation/
       icon: right-arrow
-    - text: See the workflow
-      link: /agent-workflows/workflows/
+    - text: See orchestration setup
+      link: /agent-workflows/orchestration/
       icon: open-book
       variant: secondary
 ---
@@ -177,9 +139,7 @@ hero:
         </article>
         <span class="delivery-connector" aria-hidden="true">→</span>
         <div class="delivery-map__trigger">
-          <small>Start delivery</small>
-          <strong>Person or orchestrator</strong>
-          <div class="delivery-map__trigger-options" aria-hidden="true"><span>Person</span><span>Orchestrator</span></div>
+          <div><small>Human or orchestrator</small><strong>Start</strong></div>
         </div>
         <span class="delivery-connector" aria-hidden="true">→</span>
         <div class="delivery-loop">
@@ -195,7 +155,6 @@ hero:
             <code>/inspect</code>
           </article>
           <div class="delivery-loop__lines" aria-hidden="true"><span class="delivery-loop__line delivery-loop__line--forward"></span><span class="delivery-loop__line delivery-loop__line--return"></span></div>
-          <span class="delivery-loop__return-label">Findings return for correction</span>
         </div>
         <span class="delivery-connector" aria-hidden="true">→</span>
         <div class="delivery-map__merge">
@@ -220,3 +179,4 @@ hero:
 </div>
 
 <script src="/agent-workflows/workflow-demo.js" defer></script>
+<script src="/agent-workflows/autonomous-delivery.js" defer></script>
