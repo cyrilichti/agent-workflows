@@ -4,11 +4,7 @@
 
 ### 1. Start the Item
 
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
+Run `../commands/resolve-item-provider.md`.
 
 Run `../commands/transition-item-status.md` to resolve the exact target:
 

@@ -27,12 +27,8 @@ caller.
 
 Otherwise, when the request explicitly identifies an existing official item by
 provider ID, native URL, or title, run `../commands/resolve-item-provider.md`
-with the following input. Treat a quoted title supplied as the object of the
-plan request as an explicit item title query.
-
-```text
-context: item
-```
+and treat a quoted title supplied as the object of the plan request as an
+explicit item title query.
 
 Then run `../commands/resolve-existing-item.md` with the supplied value as
 `reference` or `query` and:

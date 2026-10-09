@@ -22,11 +22,7 @@ Follow `../rules/mutation-response.md`.
 
 ### 1. Resolve Context Provider
 
-Run `../commands/resolve-item-provider.md` with:
-
-```text
-context: item
-```
+Run `../commands/resolve-item-provider.md`.
 
 ### 2. Resolve Item
 
