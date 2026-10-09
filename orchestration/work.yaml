@@ -75,7 +75,7 @@ tasks:
               readIdleTimeout: PT4M55S
         - id: has-project
           type: io.kestra.plugin.core.flow.Switch
-          description: Continue for a valid project path, fail when project setup is required, and fail otherwise.
+          description: Continue for a nonblank string path, stop for a documented unresolved status, and fail for an invalid response.
           value: >-
             {{ outputs.project.body | toJson | jq('
               try (fromjson | .text | fromjson) catch null
@@ -83,7 +83,8 @@ tasks:
                   (.path | type) == "string" and (.path | test("\\S"))
                 ) catch false) then "project"
                 elif type == "object" and (try (
-                  (.path | type) == "string"
+                  ((.status == "not found") or (.status == "search incomplete"))
+                  and (has("path") | not)
                 ) catch false) then "no-project"
                 else "error"
                 end
@@ -174,13 +175,13 @@ tasks:
             no-project:
               - id: project-required
                 type: io.kestra.plugin.core.execution.Fail
-                description: No local project was resolved; project setup and configuration are required.
-                errorMessage: No local project is configured for this item. Set up and configure the project before running the flow again.
+                description: Project resolution returned a documented unresolved status.
+                errorMessage: "{{ fromJson(fromJson(outputs.project.body).text).status == 'not found' ? 'No local project was found for this item. Set up or configure the project before running the flow again.' : 'The local project search did not complete. Restore search availability before running the flow again.' }}"
             error:
               - id: project-error
                 type: io.kestra.plugin.core.execution.Fail
                 description: The project resolution response is missing or invalid.
-                errorMessage: 'Invalid /project response: expected a JSON object with a string path field.'
+                errorMessage: 'Invalid /project response: expected a nonblank string path or a documented unresolved status without a path.'
       no-item:
         - id: no-item
           type: io.kestra.plugin.core.log.Log
