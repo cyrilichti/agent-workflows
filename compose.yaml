@@ -118,14 +118,12 @@ services:
       - ./src/install.mjs:/app/src/install.mjs:ro
       - ./orchestration/demo.yaml:/app/orchestration/demo.yaml:ro
       - ./orchestration/work.yaml:/app/orchestration/work.yaml:ro
-      - ./orchestration/work_loop.yaml:/app/orchestration/work_loop.yaml:ro
       - type: bind
         source: ./agent-workflows.yaml
         target: /app/agent-workflows.yaml
         read_only: true
         bind:
           create_host_path: false
-      - ./node_modules/js-yaml:/app/node_modules/js-yaml:ro
     networks: [workflow]
   langfuse-web:
     image: langfuse/langfuse:4.48.0@sha256:8c1b80ed7735be587974d603af0f6e0247b33d3b56c7d5ab9d2337aec313efa0

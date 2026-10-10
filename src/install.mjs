@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
-// Retain UI edits by default; the bundled work_loop is managed by repository configuration.
+// Retain UI edits to demo; the bundled work flow is managed by repository configuration.
 /**
  * Import one workflow only if absent, preserving edits to an existing workflow.
  *
@@ -84,19 +84,8 @@ async function main() {
   const configuration = readFileSync(new URL('../agent-workflows.yaml', import.meta.url), 'utf8');
   for (const { namespace, id, file, managed = false } of [
     { namespace: 'demo', id: 'demo', file: 'demo.yaml' },
-    { namespace: 'agent_workflows', id: 'work', file: 'work.yaml' },
-    { namespace: 'agent_workflows', id: 'work_loop', file: 'work_loop.yaml', managed: true },
+    { namespace: 'agent_workflows', id: 'work', file: 'work.yaml', managed: true },
   ]) {
-    if (id === 'work_loop') {
-      await uploadNamespaceFile({
-        url: process.env.KESTRA_URL,
-        email: process.env.KESTRA_ADMIN_EMAIL,
-        password: process.env.KESTRA_ADMIN_PASSWORD,
-        namespace,
-        path: 'agent-workflows.yaml',
-        contents: configuration,
-      });
-    }
     const status = await installWorkflow({
       url: process.env.KESTRA_URL,
       email: process.env.KESTRA_ADMIN_EMAIL,
@@ -106,6 +95,16 @@ async function main() {
       managed,
       workflow: readFileSync(new URL(`../orchestration/${file}`, import.meta.url), 'utf8'),
     });
+    if (id === 'work') {
+      await uploadNamespaceFile({
+        url: process.env.KESTRA_URL,
+        email: process.env.KESTRA_ADMIN_EMAIL,
+        password: process.env.KESTRA_ADMIN_PASSWORD,
+        namespace,
+        path: 'agent-workflows.yaml',
+        contents: configuration,
+      });
+    }
     console.log(`Workflow ${namespace}/${id} ${status}. Kestra: http://localhost:3000.`);
   }
 }

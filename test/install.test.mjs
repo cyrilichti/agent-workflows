@@ -38,7 +38,7 @@ test('restarting retains the existing workflow without overwriting edits', async
   );
   assert.equal(calls, 1);
 });
-test('the work flow is imported under its own namespace and retained later', async () => {
+test('the work flow is imported under its own namespace and updated later', async () => {
   const calls = [];
   const options = {
     ...config,
@@ -50,17 +50,18 @@ test('the work flow is imported under its own namespace and retained later', asy
       return new Response('{}', { status: calls.length === 1 ? 404 : 200 });
     },
   };
-  assert.equal(await installWorkflow(options), 'created');
+  assert.equal(await installWorkflow({ ...options, managed: true }), 'created');
   assert.equal(calls[0].url, 'http://kestra:8080/api/v1/main/flows/agent_workflows/work');
   assert.equal(calls[1].request.body, options.workflow);
   const existing = await installWorkflow({
     ...options,
+    managed: true,
     fetchImpl: async (url) => {
       assert.equal(url, calls[0].url);
       return Response.json({ id: 'work', revision: 3 });
     },
   });
-  assert.equal(existing, 'retained');
+  assert.equal(existing, 'updated');
 });
 test('authentication and server failures do not trigger creation', async () => {
   for (const status of [401, 403, 500, 503]) {
@@ -105,24 +106,23 @@ test('missing credentials fail before any HTTP call', async () => {
   );
 });
 
-test('managed controllers are updated without replacing the work flow', async () => {
+test('managed work flow is updated', async () => {
   const calls = [];
   const fetchImpl = async (url, options) => {
     calls.push({ url, options });
-    return Response.json({ id: 'work_loop' });
+    return Response.json({ id: 'work' });
   };
-  assert.equal(await installWorkflow({ ...config, namespace: 'agent_workflows', id: 'work_loop', managed: true, fetchImpl }), 'updated');
-  assert.equal(calls[1].url, 'http://kestra:8080/api/v1/main/flows/agent_workflows/work_loop');
+  assert.equal(await installWorkflow({ ...config, namespace: 'agent_workflows', id: 'work', managed: true, fetchImpl }), 'updated');
+  assert.equal(calls[1].url, 'http://kestra:8080/api/v1/main/flows/agent_workflows/work');
   assert.equal(calls[1].options.method, 'PUT');
   assert.equal(calls[1].options.body, config.workflow);
-  assert.equal(await installWorkflow({ ...config, namespace: 'agent_workflows', id: 'work', fetchImpl }), 'retained');
-  assert.equal(calls.length, 3);
+  assert.equal(calls.length, 2);
 });
 
-test('managed controllers are created on first installation', async () => {
+test('managed work flow is created on first installation', async () => {
   const calls = [];
   assert.equal(await installWorkflow({
-    ...config, namespace: 'agent_workflows', id: 'work_loop', managed: true,
+    ...config, namespace: 'agent_workflows', id: 'work', managed: true,
     fetchImpl: async (url, options) => {
       calls.push({ url, options });
       return new Response('{}', { status: calls.length === 1 ? 404 : 200 });
@@ -134,7 +134,7 @@ test('managed controllers are created on first installation', async () => {
 test('managed flow update failures are reported', async () => {
   let calls = 0;
   await assert.rejects(installWorkflow({
-    ...config, namespace: 'agent_workflows', id: 'work_loop', managed: true,
+    ...config, namespace: 'agent_workflows', id: 'work', managed: true,
     fetchImpl: async () => new Response('{}', { status: ++calls === 1 ? 200 : 422 }),
   }), /import failed \(HTTP 422\)/);
 });
