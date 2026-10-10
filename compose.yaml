@@ -119,7 +119,12 @@ services:
       - ./orchestration/demo.yaml:/app/orchestration/demo.yaml:ro
       - ./orchestration/work.yaml:/app/orchestration/work.yaml:ro
       - ./orchestration/work_loop.yaml:/app/orchestration/work_loop.yaml:ro
-      - ./agent-workflows.yaml:/app/agent-workflows.yaml:ro
+      - type: bind
+        source: ./agent-workflows.yaml
+        target: /app/agent-workflows.yaml
+        read_only: true
+        bind:
+          create_host_path: false
       - ./node_modules/js-yaml:/app/node_modules/js-yaml:ro
     networks: [workflow]
   langfuse-web:

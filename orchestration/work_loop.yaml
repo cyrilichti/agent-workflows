@@ -17,9 +17,10 @@ tasks:
         flowId: work
         wait: true
         transmitFailed: false
+        allowFailure: true
       - id: cycle-result
         type: io.kestra.plugin.core.log.Log
         message: >-
-          Work cycle {{ outputs['work-cycle'].executionId }} finished with state
-          {{ outputs['work-cycle'].state }}. Inspect the child execution for task logs,
+          Work cycle {{ outputs['work-cycle'].executionId is defined ? outputs['work-cycle'].executionId : 'unavailable (see work-cycle logs)' }} finished with state
+          {{ outputs['work-cycle'].state is defined ? outputs['work-cycle'].state : 'ERROR' }}. Inspect the child execution for task logs,
           responses, and trace URLs. The next cycle starts after the configured delay.
