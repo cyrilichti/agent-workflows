@@ -1,63 +1,70 @@
 # Agent Workflows
 
-**Turn prepared work into reviewed code. Keep the final say.**
+**Turn a ticket into reviewed code. Keep the final say.**
 
-A shared workflow for delivering changes with your coding agent or through
-autonomous orchestration.
+[Documentation](https://cyrilichti.github.io/agent-workflows/) · [Installation](https://cyrilichti.github.io/agent-workflows/installation/) · [Workflows](https://cyrilichti.github.io/agent-workflows/workflows/) · [Orchestration](https://cyrilichti.github.io/agent-workflows/orchestration/)
 
-## Orchestrate delivery
+Use the same delivery workflows with your agent or through orchestration. This no-code approach takes approved plans to reviewed code, while you keep the final merge decision.
 
-Let an orchestrator select prepared tickets with approved plans and run
-implementation, checks, review, and correction. Each reviewed change awaits
-your merge decision.
+## Orchestrate delivery or code with your agent
 
-Follow the [orchestration guide](./ORCHESTRATION.md) to set up the delivery loop.
+<table>
+  <tr>
+    <td width="48%" valign="middle">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="./public/readme-orchestration-dark.png">
+        <source media="(prefers-color-scheme: light)" srcset="./public/readme-orchestration-light.png">
+        <img width="100%" src="./public/readme-orchestration-light.png" alt="The documentation home page illustration: plans move along an isometric conveyor through Build, Test, and Review, becoming reviewed changes.">
+      </picture>
+    </td>
+    <td valign="middle">
+      <h3>Orchestrate delivery</h3>
+      <p>Approve a plan, then let orchestration pick up the prepared work. It carries the change through delivery and review, then brings it back for your merge decision.</p>
+      <p><a href="https://cyrilichti.github.io/agent-workflows/orchestration/">Set up orchestration →</a></p>
+    </td>
+  </tr>
+</table>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./public/readme-orchestration-dark.gif">
-  <source media="(prefers-color-scheme: light)" srcset="./public/readme-orchestration-light.gif">
-  <img src="./public/readme-orchestration-light.gif" alt="Prepared tickets move through Build, Test, and Review before the resulting increments await a human merge decision.">
-</picture>
+<table>
+  <tr>
+    <td width="48%" valign="middle">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="./public/readme-agent-demo-dark.png">
+        <source media="(prefers-color-scheme: light)" srcset="./public/readme-agent-demo-light.png">
+        <img width="100%" src="./public/readme-agent-demo-light.png" alt="The documentation demo shows an AI search ticket conversation and, behind the scenes, the /write workflow selecting a focused skill.">
+      </picture>
+    </td>
+    <td valign="middle">
+      <h3>Code with your agent</h3>
+      <p>Describe your goal in natural language. A focused workflow guides the conversation and selects the right skill for each step, from shaping the ticket to delivery.</p>
+      <p><a href="https://cyrilichti.github.io/agent-workflows/workflows/">Explore the workflows →</a></p>
+    </td>
+  </tr>
+</table>
 
-## Work with your agent
+## Install in your project
 
-Shape a ticket, approve the plan, and start delivery from your agent's chat.
-The agent implements, checks, and reviews the change for your merge decision.
-
-Explore the [workflow reference](https://cyrilichti.github.io/agent-workflows/workflows/).
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./public/readme-agent-dark.jpg">
-  <source media="(prefers-color-scheme: light)" srcset="./public/readme-agent-light.jpg">
-  <img src="./public/readme-agent-light.jpg" alt="Shape a ticket with your agent, approve its plan, start delivery yourself or through an orchestrator, loop through delivery and review, then decide what to merge.">
-</picture>
-
-## Quick start
+From the root of a Git project, install the bootstrap skill:
 
 ```bash
 npx skills add cyrilichti/agent-workflows --skill agent-workflows
 ```
 
-Then run `/agent-workflows` once to install or update the system in your project.
-See the [installation guide](https://cyrilichti.github.io/agent-workflows/installation/)
-for setup options.
+Then invoke `/agent-workflows` in your coding agent to install or update the workflow instructions and choose your providers. Follow the [installation guide](https://cyrilichti.github.io/agent-workflows/installation/) for prerequisites and setup.
 
-## Work with your existing tools
+## Connect your tools
 
-| Work items | Version control |
+| Responsibility | Supported providers |
 | --- | --- |
-| Linear · ClickUp | GitHub · GitLab |
+| Tickets and plans | Linear, ClickUp |
+| Pull or merge requests | GitHub, GitLab |
+| AI tasks in orchestration | Codex CLI, OpenAI API |
 
-See [provider setup](https://cyrilichti.github.io/agent-workflows/providers/) for the required integrations.
+See [provider setup](https://cyrilichti.github.io/agent-workflows/providers/) to get started.
 
-## Documentation
+## Contribute
 
-To start the documentation development server, install dependencies with
-`npm ci`, then run `npm run doc`.
-
-## Community
-
-New workflows and skill integrations are welcome. Read [Contributing](./CONTRIBUTING.md), [Support](./SUPPORT.md), [Security](./SECURITY.md), and the [Code of Conduct](./CODE_OF_CONDUCT.md).
+Read [Contributing](./CONTRIBUTING.md) to propose a workflow or improve an existing one. For help or responsible reporting, see [Support](./SUPPORT.md) and [Security](./SECURITY.md). Community participation follows the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## License
 
