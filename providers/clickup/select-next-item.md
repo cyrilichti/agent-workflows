@@ -7,8 +7,7 @@ arguments:
   include_closed: false
 ```
 
-Apply the eligibility contract in `../../commands/select-next-item.md` using
-the returned status name. Trim surrounding whitespace and compare
+Use the returned status name. Trim surrounding whitespace and compare
 case-insensitively against these waiting-to-start names: `Open`, `To Do`,
 `Todo`, `Backlog`, `Not Started`, and `Awaiting Start`. Match whole names;
 other or missing names do not establish eligibility. In particular,
