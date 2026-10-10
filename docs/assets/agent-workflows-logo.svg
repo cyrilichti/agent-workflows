@@ -1,4 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <path d="m8 23 24-14 24 14-24 14z" fill="#16243b"/>
-  <path d="m8 34 24 14 24-14v11L32 59 8 45z" fill="#4d7ff0"/>
+  <defs>
+    <linearGradient id="flow" x1="0" y1="0" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16243b"/>
+      <stop offset="0.5" stop-color="#3159a2"/>
+      <stop offset="1" stop-color="#4d7ff0"/>
+    </linearGradient>
+  </defs>
+  <path d="M8 9.5V44c0 4.418 3.582 8 8 8s8-3.582 8-8V22c0-4.418 3.582-8 8-8s8 3.582 8 8v22c0 4.418 3.582 8 8 8s8-3.582 8-8V9.5" fill="none" stroke="url(#flow)" stroke-width="9" stroke-linecap="butt" stroke-linejoin="round"/>
 </svg>

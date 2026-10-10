@@ -1,12 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="4 4 56 56">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="3 5 58 52">
+  <defs>
+    <linearGradient id="light" x1="0" y1="0" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16243b"/>
+      <stop offset="0.5" stop-color="#3159a2"/>
+      <stop offset="1" stop-color="#4d7ff0"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="0" y1="0" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.5" stop-color="#b7ccff"/>
+      <stop offset="1" stop-color="#85aaff"/>
+    </linearGradient>
+  </defs>
   <style>
-    .top { fill: #16243b; }
-    .lower { fill: #4d7ff0; }
+    .dark { display: none; }
     @media (prefers-color-scheme: dark) {
-      .top { fill: #ffffff; }
-      .lower { fill: #85aaff; }
+      .light { display: none; }
+      .dark { display: inline; }
     }
   </style>
-  <path class="top" d="m8 23 24-14 24 14-24 14z"/>
-  <path class="lower" d="m8 34 24 14 24-14v11L32 59 8 45z"/>
+  <path class="light" d="M8 9.5V44c0 4.418 3.582 8 8 8s8-3.582 8-8V22c0-4.418 3.582-8 8-8s8 3.582 8 8v22c0 4.418 3.582 8 8 8s8-3.582 8-8V9.5" fill="none" stroke="url(#light)" stroke-width="9" stroke-linecap="butt" stroke-linejoin="round"/>
+  <path class="dark" d="M8 9.5V44c0 4.418 3.582 8 8 8s8-3.582 8-8V22c0-4.418 3.582-8 8-8s8 3.582 8 8v22c0 4.418 3.582 8 8 8s8-3.582 8-8V9.5" fill="none" stroke="url(#dark)" stroke-width="9" stroke-linecap="butt" stroke-linejoin="round"/>
 </svg>
