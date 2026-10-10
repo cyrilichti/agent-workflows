@@ -1,4 +1,4 @@
-# Agent Workflows
+# <picture><source media="(prefers-color-scheme: dark)" srcset="./docs/assets/agent-workflows-logo-dark.svg"><img src="./docs/assets/agent-workflows-logo.svg" width="36" height="36" alt=""></picture> Agent Workflows
 
 **Turn a ticket into reviewed code. Keep the final say.**
 

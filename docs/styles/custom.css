@@ -5,6 +5,17 @@
   --sl-content-width: 48rem;
 }
 
+/* Keep the product mark visible when the theme collapses the site title. */
+.site-title {
+  display: flex;
+}
+
+@media (max-width: 63.99rem) {
+  .site-title span {
+    display: none;
+  }
+}
+
 :root[data-theme="dark"] {
   --sl-color-bg: #08090a;
   --sl-color-bg-nav: rgba(8, 9, 10, 0.88);

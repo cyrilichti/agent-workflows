@@ -9,6 +9,12 @@ export default defineConfig({
   integrations: [
     starlight({
       title: 'Agent Workflows',
+      logo: {
+        light: './docs/assets/agent-workflows-logo.svg',
+        dark: './docs/assets/agent-workflows-logo-dark.svg',
+        alt: '',
+      },
+      favicon: '/favicon.svg',
       description:
         'Move from work item to merged request with workflows that select the right skills, keep mutations explicit, and synchronize your providers.',
       customCss: ['./docs/styles/custom.css'],
