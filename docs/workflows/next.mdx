@@ -3,12 +3,13 @@ title: /next
 description: Select one eligible item and return its identity and destination.
 ---
 
-The `agent-planned` label marks work whose approved plan is available on its
-item. `/next` selects the
-first eligible item in the configured provider's returned page. It does not
+The `agent-planned` label or tag marks work whose approved plan is available on
+its item. The [shared selection contract](https://github.com/cyrilichti/agent-workflows/blob/main/commands/select-next-item.md)
+defines eligibility: planned work waiting to start. `/next` selects the first
+eligible item in the configured provider's first returned page. It does not
 choose the most recently created or updated item: neither provider query
-specifies that ordering. The provider-specific status rules below narrow the
-eligible set.
+specifies that ordering. Each adapter maps provider statuses to that shared
+rule using the selection response.
 
 Invoke it as `/next` or `$next`, or let the Kestra `work` workflow call it
 through the bridge. It needs no item reference.
@@ -27,7 +28,7 @@ through the bridge. It needs no item reference.
   <div class="write-flow__step write-flow__step--focus">
     <small>02 · Select</small>
     <strong>Query once</strong>
-    <span>Apply the provider's eligibility rule and take the first eligible result.</span>
+    <span>Map provider statuses to the shared eligibility rule and take the first eligible result.</span>
   </div>
 
   <span class="write-flow__connector" aria-hidden="true">↓</span>
@@ -46,7 +47,7 @@ through the bridge. It needs no item reference.
     <tr>
       <td>1</td>
       <th scope="row">Filter</th>
-      <td>Linear selects the first unarchived issue in the returned page with the exact <code>agent-planned</code> label and a <code>Backlog</code> or <code>Open</code> status. ClickUp selects a task tagged <code>agent-planned</code> and excludes closed tasks.</td>
+      <td>Both providers filter for <code>agent-planned</code> work. The <a href="https://github.com/cyrilichti/agent-workflows/blob/main/providers/linear/select-next-item.md">Linear adapter</a> maps native waiting status types; the <a href="https://github.com/cyrilichti/agent-workflows/blob/main/providers/clickup/select-next-item.md">ClickUp adapter</a> maps <code>Open</code> and equivalent waiting names. Already-started, terminal, or unrecognized states are skipped. Selection preserves provider order and stops at the first page, even when more pages exist.</td>
     </tr>
     <tr>
       <td>2</td>
