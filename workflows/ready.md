@@ -14,8 +14,7 @@ Load `../goals/ready-complete.md` once as this workflow's completion contract.
 Reuse these rules when already active from the caller; otherwise follow them:
 
 - `../rules/user-facing-output.md`;
-- `../rules/mutation-response.md`;
-- `../rules/validation-execution.md`.
+- `../rules/mutation-response.md`.
 
 ---
 
