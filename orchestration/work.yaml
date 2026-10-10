@@ -1,5 +1,5 @@
 id: work
-namespace: agent_workflows
+namespace: agent-workflows
 description: |
   This flow processes eligible items **one at a time**. It selects an approved
   item, resolves its local Git repository, and runs its plan through `/work`,

@@ -64,7 +64,7 @@ export async function installDemoWorkflow(options) {
 async function main() {
   for (const { namespace, id, file } of [
     { namespace: 'demo', id: 'demo', file: 'demo.yaml' },
-    { namespace: 'agent_workflows', id: 'work', file: 'work.yaml' },
+    { namespace: 'agent-workflows', id: 'work', file: 'work.yaml' },
   ]) {
     const status = await installWorkflow({
       url: process.env.KESTRA_URL,
