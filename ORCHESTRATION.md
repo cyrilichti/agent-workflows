@@ -106,7 +106,7 @@ automatically.
 The bridge returns HTTP 200 for completed inference, 502 for a failed inference,
 and 504 when the outcome is unknown. Error responses retain the trace URL in
 their JSON body, so Kestra can fail the HTTP task without a separate status
-check after each call. In `agent_workflows.work`, no eligible item skips project
+check after each call. In `agent-workflows.work`, no eligible item skips project
 resolution; an unresolved project leaves `projectDirectory` empty for a later
 stage to handle conditionally.
 

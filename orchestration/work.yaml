@@ -1,216 +1,369 @@
 id: work
-namespace: agent_workflows
-description: Select the next eligible item, resolve its local project, and execute its approved plan through inspection.
-tasks:
-  - id: next
-    type: io.kestra.plugin.core.http.Request
+namespace: agent-workflows
+description: |
+  This flow processes eligible items **one at a time**. It selects an approved
+  item, resolves its local Git repository, and runs its plan through `/work`,
+  `/ready`, and `/inspect`. Each completed, empty, or failed cycle waits before
+  the next selection. Kill the execution in Kestra to stop the loop; a second
+  concurrent execution is rejected.
+
+  | Step | Execution |
+  | --- | --- |
+  | 1. Select | `/next` returns the first eligible `agent-planned` item or reports that none is available. |
+  | 2. Resolve | For a selected item, `/project` returns its local repository path or an explicit unresolved result. |
+  | 3. Deliver | `/work` executes the approved plan and continues through `/ready` and `/inspect`. Readiness gaps and blocking findings return to `/work` before this cycle ends. |
+  | 4. Check | Accept completion only when the inspection result names the selected item and confirms inspection plus `agent-inspected`. Record incomplete or invalid results as failures. |
+  | 5. Wait | `sleep` waits `intervalSeconds` (default `300`), then another selection starts. |
+  | 6. Stop | Kill this execution in Kestra to stop the loop. Merge and `/done` remain human decisions. |
+inputs:
+  - id: intervalSeconds
+    type: STRING
     description: |
-      /next
+      **Delay between cycles**, in whole seconds. Defaults to `300` (five
+      minutes). The next `/next` call starts only after the current cycle and
+      this delay have finished.
+    validator: '^[1-9][0-9]*$'
+    defaults: "300"
+concurrency:
+  limit: 1
+  behavior: FAIL
+tasks:
+  - id: loop
+    type: io.kestra.plugin.core.flow.LoopUntil
+    description: |
+      This loop runs one attempt and one delay at a time. Its condition stays
+      false, so the Kestra execution continues until it is killed manually.
 
-      The `agent-planned` label marks work whose approved plan is available on its
-      item. `/next` selects the
-      first eligible item in the configured provider's returned page. It does not
-      choose the most recently created or updated item: neither provider query
-      specifies that ordering. The provider-specific status rules below narrow the
-      eligible set.
-    uri: '{{ envs.bridge_url }}/generate'
-    method: POST
-    contentType: application/json
-    headers:
-      Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-    body: >-
-      {{ {
-        "requestId": execution.id ~ "-next",
-        "prompt": "Execute /next",
-        "timeoutMs": 285000
-      } | toJson }}
-    timeout: PT5M
-    options:
-      timeout:
-        connectTimeout: PT5S
-        readIdleTimeout: PT4M55S
-  - id: has-item
-    type: io.kestra.plugin.core.flow.Switch
-    description: Continue for a valid item, stop when no item is eligible, and fail otherwise.
-    value: >-
-      {{ outputs.next.body | toJson | jq('
-        try (fromjson | .text | fromjson) catch null
-        | if . == {"status":"no eligible item"} then "no-item"
-          elif type == "object" and (try (
-            (.name | type) == "string" and (.name | test("\\S"))
-            and (.id | type) == "string" and (.id | test("\\S"))
-            and (.url | type) == "string" and (.url | test("\\S"))
-            and (.list | type) == "string" and (.list | test("\\S"))
-          ) catch false) then "item"
-          else "error"
-          end
-      ') | first }}
-    cases:
-      item:
-        - id: project
-          type: io.kestra.plugin.core.http.Request
-          description: |
-            /project
+      | Step | Execution |
+      | --- | --- |
+      | 1. Start | Run `start` to select and process at most one item. |
+      | 2. Wait | Run `sleep` after the attempt finishes, including when it found no item or failed. |
+      | 3. Repeat | Return to `/next` only after the delay. No cycles overlap. |
+    condition: '{{ false }}'
+    checkFrequency:
+      interval: PT0.001S
+    tasks:
+      - id: start
+        type: io.kestra.plugin.core.flow.AllowFailure
+        description: |
+          This attempt selects at most one approved item, resolves its local
+          repository, and runs its plan. `AllowFailure` lets the enclosing
+          loop reach `sleep` even when this attempt fails.
 
-            `/project` finds the local Git repository for a destination name (`list`) and
-            an exact item ID. Invoke it as `/project` or `$project` with both values, or let
-            the Kestra `work` flow call it after `/next` returns an item. It reads the item
-            only when several repositories match the destination. Configured project paths
-            take priority when available; the search continues when they are unavailable.
-          uri: '{{ envs.bridge_url }}/generate'
-          method: POST
-          contentType: application/json
-          headers:
-            Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-          body: >-
-            {{ {
-              "requestId": execution.id ~ "-project",
-              "prompt": "Execute /project with list: " ~ fromJson(fromJson(outputs.next.body).text).list ~ " and item ID: " ~ fromJson(fromJson(outputs.next.body).text).id,
-              "timeoutMs": 285000
-            } | toJson }}
-          timeout: PT5M
-          options:
-            timeout:
-              connectTimeout: PT5S
-              readIdleTimeout: PT4M55S
-        - id: has-project
-          type: io.kestra.plugin.core.flow.Switch
-          description: Continue for a nonblank string path, stop for a documented unresolved status, and fail for an invalid response.
-          value: >-
-            {{ outputs.project.body | toJson | jq('
-              try (fromjson | .text | fromjson) catch null
-              | if type == "object" and (try (
-                  (.path | type) == "string" and (.path | test("\\S"))
-                ) catch false) then "project"
-                elif type == "object" and (try (
-                  ((.status == "not found") or (.status == "search incomplete"))
-                  and (has("path") | not)
-                ) catch false) then "no-project"
-                else "error"
-                end
-            ') | first }}
-          cases:
-            project:
-              - id: work
-                type: io.kestra.plugin.core.http.Request
-                description: |
-                  /work
+          | Step | Execution |
+          | --- | --- |
+          | 1. Select | Call `/next` and validate its result. An empty result ends this attempt. |
+          | 2. Resolve | For an item, call `/project` and require a usable repository path. |
+          | 3. Deliver | Call `/work` in that repository and classify the inspection result. |
+          | 4. Finish | On failure, skip remaining steps and retain the failure in Kestra logs. `sleep` runs before another attempt; the failed step is not retried within this attempt. |
+        tasks:
+          - id: next
+            type: io.kestra.plugin.core.http.Request
+            description: |
+              The `agent-planned` label marks work whose approved plan is available on its
+              item. `/next` selects the
+              first eligible item in the configured provider's returned page. It does not
+              choose the most recently created or updated item: neither provider query
+              specifies that ordering. The provider-specific status rules below narrow the
+              eligible set.
 
-                  `/work` requires an `agent-planned` item and executes its approved plan
-                  autonomously, one todo at a time. For new work, initialization moves the
-                  item to the exact resolved `in progress` status before preparing the branch.
-                  Resumed work preserves the item status.
-                  New standalone work copies the plan published on the item to the local plan
-                  location; resumed work keeps the current local plan. It routes each todo to the
-                  right specialist and hands the completed plan directly to `/ready` without
-                  another approval.
-                uri: '{{ envs.bridge_url }}/generate'
-                method: POST
-                contentType: application/json
-                headers:
-                  Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                body: >-
-                  {{ {
-                    "requestId": execution.id ~ "-work",
-                    "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ".",
-                    "directory": fromJson(fromJson(outputs.project.body).text).path,
-                    "timeoutMs": 3585000
-                  } | toJson }}
-                timeout: PT1H
-                options:
-                  timeout:
-                    connectTimeout: PT5S
-                    readIdleTimeout: PT59M55S
-              - id: is-success
-                type: io.kestra.plugin.core.flow.Switch
-                description: Route the work response to error, partial, or success.
-                value: >-
-                  {{ {
-                    "response": fromJson(outputs.work.body).text,
-                    "item": fromJson(fromJson(outputs.next.body).text).id
-                  } | toJson | jq('
-                    try (
-                      (.response | gsub("\r\n?"; "\n") | split("\n")
-                        | map(sub("[ \t]+$"; ""))) as $lines
-                      | ($lines | index("## Inspect result")) as $start
-                      | if $start == null then "error"
-                        else $lines[$start:$start + 4] as $result
-                        | ($result[2] | capture("^\\*\\*Request \\S.*:\\*\\* (?<status>\\S.*)$") // {}) as $request
-                        | ($result[3] | capture("^\\*\\*Item (?:\\[(?<linked>[^]]+)\\]\\([^)]*\\)|(?<plain>\\S+)):\\*\\* (?<status>\\S.*)$") // {}) as $item
-                        | ($request.status // "" | sub(" [—–-] \\S.*$"; "")) as $request_status
-                        | ($item.status // "" | sub("^`agent-inspected` "; "agent-inspected ")
-                          | sub(" [—–-] \\S.*$"; "")) as $item_status
-                        | if $result[1] != ""
-                          or (["inspection published", "inspection completed without findings", "inspection incomplete", "inspection failed", "inspection not attempted", "unobserved"]
-                            | index($request_status)) == null
-                          or (["agent-inspected applied", "agent-inspected not applied", "unobserved"]
-                            | index($item_status)) == null
-                          or ($item.linked // $item.plain // "") != .item then "error"
-                          elif (["inspection published", "inspection completed without findings"]
-                            | index($request_status)) != null
-                            and $item_status == "agent-inspected applied" then "success"
-                          else "partial"
-                          end
+              | Step | Execution |
+              | --- | --- |
+              | 1. Configure | Read the Linear or ClickUp provider from `agent-workflows.yaml`; no item reference is needed. |
+              | 2. Filter | Linear selects the first unarchived issue in the returned page with the exact `agent-planned` label and a `Backlog` or `Open` status. ClickUp selects a task tagged `agent-planned` and excludes closed tasks. |
+              | 3. Return | A found item returns only `{"name":"…","id":"…","url":"…","list":"…"}`. `list` is the Linear project name or ClickUp list name. No match returns `{"status":"no eligible item"}`; a missing destination or provider failure is an error. |
+              | 4. Stop | Selection ends without reading another item, creating a plan, changing the ticket, or starting delivery. `/work` starts delivery for the selected item. |
+            uri: '{{ envs.bridge_url }}/generate'
+            method: POST
+            contentType: application/json
+            headers:
+              Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+            body: >-
+              {{ {
+                "requestId": execution.id ~ "-next-" ~ uuid(),
+                "prompt": "Execute /next",
+                "timeoutMs": 285000
+              } | toJson }}
+            timeout: PT5M
+            options:
+              timeout:
+                connectTimeout: PT5S
+                readIdleTimeout: PT4M55S
+          - id: has-item
+            type: io.kestra.plugin.core.flow.Switch
+            description: |
+              This switch validates the structured `/next` response before
+              attempting repository resolution.
+
+              | Result | Execution |
+              | --- | --- |
+              | Item | Nonblank `name`, `id`, `url`, and `list` route to `project`. |
+              | No item | Exactly `{"status":"no eligible item"}` routes to `no-item`; skip `/project` and `/work`. |
+              | Invalid | Any malformed or unexpected response routes to `next-error`. |
+            value: >-
+              {{ outputs.next.body | toJson | jq('
+                try (fromjson | .text | fromjson) catch null
+                | if . == {"status":"no eligible item"} then "no-item"
+                  elif type == "object" and (try (
+                    (.name | type) == "string" and (.name | test("\\S"))
+                    and (.id | type) == "string" and (.id | test("\\S"))
+                    and (.url | type) == "string" and (.url | test("\\S"))
+                    and (.list | type) == "string" and (.list | test("\\S"))
+                  ) catch false) then "item"
+                  else "error"
+                  end
+              ') | first }}
+            cases:
+              item:
+                - id: project
+                  type: io.kestra.plugin.core.http.Request
+                  description: |
+                    `/project` finds the local Git repository for a destination name (`list`) and
+                    an exact item ID. Invoke it as `/project` or `$project` with both values, or let
+                    the Kestra `work` flow call it after `/next` returns an item. It reads the item
+                    only when several repositories match the destination. Configured project paths
+                    take priority when available; each selected search tier is completed so
+                    competing exact matches can be resolved independently of discovery order.
+
+                    | Step | Execution |
+                    | --- | --- |
+                    | 1. Require | Reject a missing or blank `list` or exact item ID before searching. |
+                    | 2. Search | Search configured project directories first, then neighboring repositories and the home directory if needed. Complete the first matching tier, retain all exact matches when present, and otherwise retain prefix matches. |
+                    | 3. Choose | For several matches, use the complete item to identify the primary repository, then apply stable tie breaks. |
+                    | 4. Return | Return one absolute path, `not found`, or `search incomplete`. Invalid input or a failed search is an error. |
+                  uri: '{{ envs.bridge_url }}/generate'
+                  method: POST
+                  contentType: application/json
+                  headers:
+                    Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                  body: >-
+                    {{ {
+                      "requestId": execution.id ~ "-project-" ~ uuid(),
+                      "prompt": "Execute /project with list: " ~ fromJson(fromJson(outputs.next.body).text).list ~ " and item ID: " ~ fromJson(fromJson(outputs.next.body).text).id,
+                      "timeoutMs": 285000
+                    } | toJson }}
+                  timeout: PT5M
+                  options:
+                    timeout:
+                      connectTimeout: PT5S
+                      readIdleTimeout: PT4M55S
+                - id: has-project
+                  type: io.kestra.plugin.core.flow.Switch
+                  description: |
+                    This switch accepts a verified local repository path or
+                    records why `/project` could not resolve one. It never
+                    passes an invalid directory to `/work`.
+
+                    | Result | Execution |
+                    | --- | --- |
+                    | Resolved | A nonblank `path` routes to `work` in that directory. |
+                    | Unresolved | `not found` or `search incomplete` without a path routes to `project-required`. |
+                    | Invalid | Any other result routes to `project-error`. |
+                  value: >-
+                    {{ outputs.project.body | toJson | jq('
+                      try (fromjson | .text | fromjson) catch null
+                      | if type == "object" and (try (
+                          (.path | type) == "string" and (.path | test("\\S"))
+                        ) catch false) then "project"
+                        elif type == "object" and (try (
+                          ((.status == "not found") or (.status == "search incomplete"))
+                          and (has("path") | not)
+                        ) catch false) then "no-project"
+                        else "error"
                         end
-                    ) catch "error"
-                  ') | first }}
-                cases:
-                  error:
-                    - id: work-error
-                      type: io.kestra.plugin.core.execution.Fail
-                      errorMessage: |-
-                        Invalid /work response: expected the inspect-result template for the selected item. Received response:
-                        {{ fromJson(outputs.work.body).text | default('No textual response received.') }}
-                  partial:
-                    - id: work-partial
-                      type: io.kestra.plugin.core.execution.Fail
-                      allowFailure: true
-                      errorMessage: |-
-                        Work did not complete successfully. Received response:
-                        {{ fromJson(outputs.work.body).text }}
-                  success:
-                    - id: work-sucess
-                      type: io.kestra.plugin.core.log.Log
-                      message: Work completed successfully; inspection completed and agent-inspected was applied to the selected item.
-            no-project:
-              - id: project-required
-                type: io.kestra.plugin.core.execution.Fail
-                description: Project resolution returned a documented unresolved status.
-                errorMessage: "{{ fromJson(fromJson(outputs.project.body).text).status == 'not found' ? 'No local project was found for this item. Set up or configure the project before running the flow again.' : 'The local project search did not complete. Restore search availability before running the flow again.' }}"
-            error:
-              - id: project-error
-                type: io.kestra.plugin.core.execution.Fail
-                description: The project resolution response is missing or invalid.
-                errorMessage: 'Invalid /project response: expected a nonblank string path or a documented unresolved status without a path.'
-      no-item:
-        - id: no-item
-          type: io.kestra.plugin.core.log.Log
-          description: Non — aucun item éligible ; terminer le flux.
-          level: INFO
-          message: 'no-item: aucun item éligible ; le flux se termine sans résolution de projet.'
-      error:
-        - id: next-error
-          type: io.kestra.plugin.core.execution.Fail
-          errorMessage: Invalid /next response.
-outputs:
-  - id: item
-    type: JSON
-    value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'no-item' ? fromJson(fromJson(outputs.next.body).text) : fromJson('{}') }}"
-  - id: traceUrl
-    type: STRING
-    value: "{{ outputs['has-item'].value == 'item' or outputs['has-item'].value == 'no-item' ? fromJson(outputs.next.body).traceUrl : '' }}"
-  - id: projectDirectory
-    type: STRING
-    value: "{{ outputs['has-item'].value == 'item' and outputs['has-project'].value == 'project' ? fromJson(fromJson(outputs.project.body).text).path : '' }}"
-  - id: resolution
-    type: JSON
-    value: "{{ outputs['has-item'].value == 'item' ? (outputs['has-project'].value == 'project' or outputs['has-project'].value == 'no-project' ? fromJson(fromJson(outputs.project.body).text) : fromJson('{}')) : fromJson('{}') }}"
-  - id: resolutionTraceUrl
-    type: STRING
-    value: "{{ outputs['has-item'].value == 'item' and (outputs['has-project'].value == 'project' or outputs['has-project'].value == 'no-project') ? fromJson(outputs.project.body).traceUrl : '' }}"
-  - id: workResult
-    type: JSON
-    value: "{{ outputs['has-item'].value == 'item' and outputs['has-project'].value == 'project' ? fromJson(outputs.work.body) : fromJson('{}') }}"
-  - id: workTraceUrl
-    type: STRING
-    value: "{{ outputs['has-item'].value == 'item' and outputs['has-project'].value == 'project' ? fromJson(outputs.work.body).traceUrl : '' }}"
+                    ') | first }}
+                  cases:
+                    project:
+                      - id: work
+                        type: io.kestra.plugin.core.http.Request
+                        description: |
+                          `/work` requires an `agent-planned` item and executes its approved plan
+                          autonomously, one todo at a time. Standalone work automatically resumes when the
+                          item contains a delivery backlink, keeping the referenced local plan and its
+                          todo states. Otherwise, it copies the published plan locally and initializes
+                          delivery. It routes each todo to the right specialist and hands the completed
+                          plan directly to `/ready` without another approval.
+
+                          | Step | Execution |
+                          | --- | --- |
+                          | 1. Initialize | For new work, move the item to `in progress` and create a work branch with a linked draft request. |
+                          | 2. Route | Select or reuse the most suitable specialist for the active todo and load only the skills its activity triggers. |
+                          | 3. Execute | Persist the todo as in progress, implement and validate only its scope, then stage only its changes. |
+                          | 4. Commit | Commit the result, persist todo completion immediately, push the commit, and continue. A todo without a commit causes no push. |
+                          | 5. Ready | When every todo is complete, continue automatically to `/ready`; later findings return through the same loop as corrective todos. `/ready` verifies the completed branch against the approved plan, returns concrete gaps to `/work`, then promotes passing work for review. |
+                          | 6. Inspect | `/ready` continues automatically to `/inspect` after the required request updates are observed. `/inspect` reviews one frozen request snapshot and head SHA, publishes each unseen valid finding once, and returns blocking findings to `/work`. When none remain, it applies `agent-inspected` and stops without invoking `/done`. |
+                          | 7. Report | Kestra checks the bridge's `## Inspect result` for this same item before recording completion. Merge and `/done` remain human decisions. |
+                        uri: '{{ envs.bridge_url }}/generate'
+                        method: POST
+                        contentType: application/json
+                        headers:
+                          Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                        body: >-
+                          {{ {
+                            "requestId": execution.id ~ "-work-" ~ uuid(),
+                            "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ".",
+                            "directory": fromJson(fromJson(outputs.project.body).text).path,
+                            "timeoutMs": 3585000
+                          } | toJson }}
+                        timeout: PT1H
+                        options:
+                          timeout:
+                            connectTimeout: PT5S
+                            readIdleTimeout: PT59M55S
+                      - id: is-success
+                        type: io.kestra.plugin.core.flow.Switch
+                        description: |
+                          This switch checks the bridge's `## Inspect result`
+                          against the selected item. It records completion
+                          only when inspection succeeded and the item has the
+                          `agent-inspected` label.
+
+                          | Result | Execution |
+                          | --- | --- |
+                          | Success | Inspection was published or completed without findings, and `agent-inspected` was applied to the selected item. Route to `work-sucess`. |
+                          | Partial | A valid result reports unfinished work or inspection. Route to `work-partial` and retain the result for follow-up. |
+                          | Invalid | The result is absent, malformed, or names another item. Route to `work-error`. |
+                        value: >-
+                          {{ {
+                            "response": fromJson(outputs['work'].body).text,
+                            "item": fromJson(fromJson(outputs.next.body).text).id
+                          } | toJson | jq('
+                            try (
+                              (.response | gsub("\r\n?"; "\n") | split("\n")
+                                | map(sub("[ \t]+$"; ""))) as $lines
+                              | ($lines | index("## Inspect result")) as $start
+                              | if $start == null then "error"
+                                else $lines[$start:$start + 4] as $result
+                                | ($result[2] | capture("^\\*\\*Request \\S.*:\\*\\* (?<status>\\S.*)$") // {}) as $request
+                                | ($result[3] | capture("^\\*\\*Item (?:\\[(?<linked>[^]]+)\\]\\([^)]*\\)|(?<plain>\\S+)):\\*\\* (?<status>\\S.*)$") // {}) as $item
+                                | ($request.status // "" | sub(" [—–-] \\S.*$"; "")) as $request_status
+                                | ($item.status // "" | sub("^`agent-inspected` "; "agent-inspected ")
+                                  | sub(" [—–-] \\S.*$"; "")) as $item_status
+                                | if $result[1] != ""
+                                  or (["inspection published", "inspection completed without findings", "inspection incomplete", "inspection failed", "inspection not attempted", "unobserved"]
+                                    | index($request_status)) == null
+                                  or (["agent-inspected applied", "agent-inspected not applied", "unobserved"]
+                                    | index($item_status)) == null
+                                  or ($item.linked // $item.plain // "") != .item then "error"
+                                  elif (["inspection published", "inspection completed without findings"]
+                                    | index($request_status)) != null
+                                    and $item_status == "agent-inspected applied" then "success"
+                                  else "partial"
+                                  end
+                                end
+                            ) catch "error"
+                          ') | first }}
+                        cases:
+                          error:
+                            - id: work-error
+                              type: io.kestra.plugin.core.execution.Fail
+                              description: |
+                                This task records an invalid `/work` response
+                                for the selected item. The enclosing `start`
+                                block lets the loop continue after the delay.
+
+                                | Step | Execution |
+                                | --- | --- |
+                                | 1. Fail | Reject a missing, malformed, or mismatched inspection result. |
+                                | 2. Diagnose | Include the received text in the error, then continue to `sleep`. |
+                              errorMessage: |-
+                                Invalid /work response: expected the inspect-result template for the selected item. Received response:
+                                {{ fromJson(outputs['work'].body).text | default('No textual response received.') }}
+                          partial:
+                            - id: work-partial
+                              type: io.kestra.plugin.core.execution.Fail
+                              description: |
+                                This task records a valid but incomplete
+                                `/work` result. The item is not reported as
+                                completed unless inspection succeeded and
+                                `agent-inspected` was applied.
+
+                                | Step | Execution |
+                                | --- | --- |
+                                | 1. Record | Include the bridge's returned result in the task log for follow-up. |
+                                | 2. Continue | Allow `sleep` and later cycles to run. |
+                              allowFailure: true
+                              errorMessage: |-
+                                Work did not complete successfully. Received response:
+                                {{ fromJson(outputs['work'].body).text }}
+                          success:
+                            - id: work-sucess
+                              type: io.kestra.plugin.core.log.Log
+                              description: |
+                                This task records a completed item only after
+                                the inspection result confirms that inspection
+                                was published or completed without findings and
+                                `agent-inspected` was applied.
+
+                                | Step | Execution |
+                                | --- | --- |
+                                | 1. Log | Record the successful inspection result for the selected item. |
+                                | 2. Continue | Run `sleep` before selecting another item. |
+                              message: Work completed successfully; inspection completed and agent-inspected was applied to the selected item.
+                    no-project:
+                      - id: project-required
+                        type: io.kestra.plugin.core.execution.Fail
+                        description: |
+                          This task records an explicit unresolved repository
+                          result from `/project`. `/work` cannot run without a
+                          verified local path, but the loop continues later.
+
+                          | Result | Execution |
+                          | --- | --- |
+                          | `not found` | Report that the local project must be created or configured. |
+                          | `search incomplete` | Report that local repository search must be restored. |
+                          | After failure | Run `sleep`, then allow another selection. |
+                        errorMessage: "{{ fromJson(fromJson(outputs.project.body).text).status == 'not found' ? 'No local project was found for this item. Set up or configure the project before running the flow again.' : 'The local project search did not complete. Restore search availability before running the flow again.' }}"
+                    error:
+                      - id: project-error
+                        type: io.kestra.plugin.core.execution.Fail
+                        description: |
+                          This task rejects a malformed `/project` response.
+                          Only a nonblank `path` or a documented unresolved
+                          status can be used to choose the next branch.
+
+                          | Step | Execution |
+                          | --- | --- |
+                          | 1. Fail | Reject any other response instead of passing an unverified directory to `/work`. |
+                          | 2. Continue | Record the error and let the loop reach `sleep`. |
+                        errorMessage: 'Invalid /project response: expected a nonblank string path or a documented unresolved status without a path.'
+              no-item:
+                - id: no-item
+                  type: io.kestra.plugin.core.log.Log
+                  description: |
+                    This task records that `/next` found no eligible item in
+                    the provider page it inspected. An empty selection is a
+                    normal outcome for this cycle.
+
+                    | Step | Execution |
+                    | --- | --- |
+                    | 1. Skip | Do not call `/project` or `/work`. |
+                    | 2. Log | Record the empty selection without treating it as an error. |
+                    | 3. Continue | Run `sleep`, then query the provider again. |
+                  level: INFO
+                  message: 'no-item: aucun item éligible ; ce cycle se termine sans résolution de projet.'
+              error:
+                - id: next-error
+                  type: io.kestra.plugin.core.execution.Fail
+                  description: |
+                    This task rejects a successful `/next` HTTP response whose
+                    content is neither a complete item nor the exact
+                    `no eligible item` result. HTTP failures are recorded by
+                    `next` itself.
+
+                    | Step | Execution |
+                    | --- | --- |
+                    | 1. Fail | Record the invalid content as a failed attempt. |
+                    | 2. Continue | Run `sleep` before another selection. |
+                  errorMessage: Invalid /next response.
+      - id: sleep
+        type: io.kestra.plugin.core.flow.Sleep
+        description: |
+          This task waits after each attempt before the loop calls `/next`
+          again. It ensures that selection never overlaps the previous item.
+
+          | Step | Execution |
+          | --- | --- |
+          | 1. Wait | Sleep for `intervalSeconds`, default `300` seconds (five minutes). |
+          | 2. Repeat | After completed work, an empty selection, or a failure, return to `/next` only when this delay finishes. |
+        duration: "PT{{ inputs.intervalSeconds }}S"
