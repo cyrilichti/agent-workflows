@@ -8,33 +8,39 @@ Use the same delivery workflows with your agent or through orchestration. This n
 
 ## Orchestrate delivery or code with your agent
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./public/readme-orchestration-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="./public/readme-orchestration-light.png">
-  <img align="left" width="480" hspace="12" src="./public/readme-orchestration-light.png" alt="The documentation home page illustration: plans move along an isometric conveyor through Build, Test, and Review, becoming reviewed changes.">
-</picture>
+<table>
+  <tr>
+    <td width="48%" valign="middle">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="./public/readme-orchestration-dark.png">
+        <source media="(prefers-color-scheme: light)" srcset="./public/readme-orchestration-light.png">
+        <img width="100%" src="./public/readme-orchestration-light.png" alt="The documentation home page illustration: plans move along an isometric conveyor through Build, Test, and Review, becoming reviewed changes.">
+      </picture>
+    </td>
+    <td valign="middle">
+      <h3>Orchestrate delivery</h3>
+      <p>Approve a plan, then let orchestration pick up the prepared work. It carries the change through delivery and review, then brings it back for your merge decision.</p>
+      <p><a href="https://cyrilichti.github.io/agent-workflows/orchestration/">Set up orchestration →</a></p>
+    </td>
+  </tr>
+</table>
 
-### Orchestrate delivery
-
-Approve a plan, then let orchestration pick up the prepared work. It carries the change through delivery and review, then brings it back for your merge decision.
-
-[Set up orchestration →](https://cyrilichti.github.io/agent-workflows/orchestration/)
-
-<br clear="all"><br>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./public/readme-agent-demo-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="./public/readme-agent-demo-light.png">
-  <img align="left" width="480" hspace="12" src="./public/readme-agent-demo-light.png" alt="The documentation demo shows an AI search ticket conversation and, behind the scenes, the /write workflow selecting a focused skill.">
-</picture>
-
-### Code with your agent
-
-Describe your goal in natural language. A focused workflow guides the conversation and selects the right skill for each step, from shaping the ticket to delivery.
-
-[Explore the workflows →](https://cyrilichti.github.io/agent-workflows/workflows/)
-
-<br clear="all"><br>
+<table>
+  <tr>
+    <td width="48%" valign="middle">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="./public/readme-agent-demo-dark.png">
+        <source media="(prefers-color-scheme: light)" srcset="./public/readme-agent-demo-light.png">
+        <img width="100%" src="./public/readme-agent-demo-light.png" alt="The documentation demo shows an AI search ticket conversation and, behind the scenes, the /write workflow selecting a focused skill.">
+      </picture>
+    </td>
+    <td valign="middle">
+      <h3>Code with your agent</h3>
+      <p>Describe your goal in natural language. A focused workflow guides the conversation and selects the right skill for each step, from shaping the ticket to delivery.</p>
+      <p><a href="https://cyrilichti.github.io/agent-workflows/workflows/">Explore the workflows →</a></p>
+    </td>
+  </tr>
+</table>
 
 ## Install in your project
 
