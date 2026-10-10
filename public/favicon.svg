@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="3 5 58 52">
+  <defs>
+    <linearGradient id="light" x1="0" y1="0" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16243b"/>
+      <stop offset="0.5" stop-color="#3159a2"/>
+      <stop offset="1" stop-color="#4d7ff0"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="0" y1="0" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.5" stop-color="#b7ccff"/>
+      <stop offset="1" stop-color="#85aaff"/>
+    </linearGradient>
+  </defs>
+  <style>
+    .dark { display: none; }
+    @media (prefers-color-scheme: dark) {
+      .light { display: none; }
+      .dark { display: inline; }
+    }
+  </style>
+  <path class="light" d="M8 9.5V44c0 4.418 3.582 8 8 8s8-3.582 8-8V22c0-4.418 3.582-8 8-8s8 3.582 8 8v22c0 4.418 3.582 8 8 8s8-3.582 8-8V9.5" fill="none" stroke="url(#light)" stroke-width="9" stroke-linecap="butt" stroke-linejoin="round"/>
+  <path class="dark" d="M8 9.5V44c0 4.418 3.582 8 8 8s8-3.582 8-8V22c0-4.418 3.582-8 8-8s8 3.582 8 8v22c0 4.418 3.582 8 8 8s8-3.582 8-8V9.5" fill="none" stroke="url(#dark)" stroke-width="9" stroke-linecap="butt" stroke-linejoin="round"/>
+</svg>
