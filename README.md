@@ -54,13 +54,52 @@ Then invoke `/agent-workflows` in your coding agent to install or update the wor
 
 ## Connect your tools
 
-| Responsibility | Supported providers |
-| --- | --- |
-| Tickets and plans | Linear, ClickUp |
-| Pull or merge requests | GitHub, GitLab |
-| AI tasks in orchestration | Codex CLI, OpenAI API |
+Choose a work tracker and a code host. Orchestration also needs an AI provider.
 
-See [provider setup](https://cyrilichti.github.io/agent-workflows/providers/) to get started.
+<table width="100%">
+  <thead>
+    <tr><th width="10%" align="center">Logo</th><th width="90%" align="left">Provider and use</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td width="10%" align="center"><img src="./public/provider-logos/linear.svg" width="28" height="28" alt="Linear logo"></td>
+      <td><strong>Linear</strong> — Manage tickets and approved plans; workflows update comments, labels, and status.</td>
+    </tr>
+    <tr>
+      <td width="10%" align="center"><img src="./public/provider-logos/clickup.svg" width="28" height="28" alt="ClickUp logo"></td>
+      <td><strong>ClickUp</strong> — Manage tasks and approved plans; workflows update comments, tags, and status.</td>
+    </tr>
+    <tr>
+      <td width="10%" align="center">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="./public/provider-logos/github-dark.svg">
+          <img src="./public/provider-logos/github.svg" width="28" height="28" alt="GitHub logo">
+        </picture>
+      </td>
+      <td><strong>GitHub</strong> — Create branches and pull requests, and review changes where your code lives.</td>
+    </tr>
+    <tr>
+      <td width="10%" align="center"><img src="./public/provider-logos/gitlab.svg" width="28" height="28" alt="GitLab logo"></td>
+      <td><strong>GitLab</strong> — Create branches and merge requests, and review changes where your code lives.</td>
+    </tr>
+    <tr>
+      <td width="10%" align="center"><img src="./public/provider-logos/codex.svg" width="28" height="28" alt="Codex logo"></td>
+      <td><strong>Codex CLI</strong> — Run orchestration's AI tasks locally with your authenticated CLI.</td>
+    </tr>
+    <tr>
+      <td width="10%" align="center">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="./public/provider-logos/openai-dark.svg">
+          <img src="./public/provider-logos/openai.svg" width="28" height="28" alt="OpenAI logo">
+        </picture>
+      </td>
+      <td><strong>OpenAI API</strong> — Run orchestration's AI tasks with an API key and configured model.</td>
+    </tr>
+  </tbody>
+</table>
+
+[Set up work and code providers →](https://cyrilichti.github.io/agent-workflows/providers/) ·
+[Configure orchestration →](https://cyrilichti.github.io/agent-workflows/orchestration/)
 
 ## Contribute
 
