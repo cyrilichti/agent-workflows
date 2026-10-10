@@ -16,7 +16,7 @@ tasks:
     checkFrequency:
       interval: PT0.001S
     tasks:
-      - id: work-cycle
+      - id: work
         type: io.kestra.plugin.core.flow.AllowFailure
         tasks:
           - id: next
@@ -108,7 +108,7 @@ tasks:
                     ') | first }}
                   cases:
                     project:
-                      - id: work
+                      - id: run-work
                         type: io.kestra.plugin.core.http.Request
                         description: |
                           /work
@@ -143,7 +143,7 @@ tasks:
                         description: Route the work response to error, partial, or success.
                         value: >-
                           {{ {
-                            "response": fromJson(outputs.work.body).text,
+                            "response": fromJson(outputs['run-work'].body).text,
                             "item": fromJson(fromJson(outputs.next.body).text).id
                           } | toJson | jq('
                             try (
@@ -177,14 +177,14 @@ tasks:
                               type: io.kestra.plugin.core.execution.Fail
                               errorMessage: |-
                                 Invalid /work response: expected the inspect-result template for the selected item. Received response:
-                                {{ fromJson(outputs.work.body).text | default('No textual response received.') }}
+                                {{ fromJson(outputs['run-work'].body).text | default('No textual response received.') }}
                           partial:
                             - id: work-partial
                               type: io.kestra.plugin.core.execution.Fail
                               allowFailure: true
                               errorMessage: |-
                                 Work did not complete successfully. Received response:
-                                {{ fromJson(outputs.work.body).text }}
+                                {{ fromJson(outputs['run-work'].body).text }}
                           success:
                             - id: work-sucess
                               type: io.kestra.plugin.core.log.Log
@@ -209,6 +209,6 @@ tasks:
                 - id: next-error
                   type: io.kestra.plugin.core.execution.Fail
                   errorMessage: Invalid /next response.
-      - id: cycle-delay
+      - id: sleep
         type: io.kestra.plugin.core.flow.Sleep
         duration: "PT{{ inputs.intervalSeconds }}S"
