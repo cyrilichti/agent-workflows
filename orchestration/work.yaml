@@ -7,19 +7,21 @@ description: |
 
   1. **Select** an item with `/next`.
   2. **Resolve** its local Git repository with `/project`.
-  3. **Execute** its approved plan with `/work`, which continues through
-     `/ready` and `/inspect`.
+  3. **Deliver and inspect** its approved plan with `/work`, `/ready`, and
+     `/inspect`. Readiness gaps and blocking review findings are corrected
+     within that delivery before this Kestra cycle ends.
   4. **Wait** for `intervalSeconds`, then start another cycle.
 
   | Cycle outcome | What happens next |
   | --- | --- |
-  | Work completed | Record the inspection result, then wait. |
+  | Work completed | Require a successful inspection result for the selected item, then wait. |
   | No eligible item | Skip project resolution and work, then wait. |
   | Error | Keep the failure in Kestra logs, then wait. |
 
   **Control:** The delay defaults to **300 seconds (five minutes)**. Cycles do
-  not overlap; a second concurrent execution is rejected. **Kill this
-  execution in Kestra** to stop the loop.
+  not overlap; a second concurrent execution is rejected. This flow does not
+  merge the request or invoke `/done`: those remain human decisions. **Kill
+  this execution in Kestra** to stop the loop.
 inputs:
   - id: intervalSeconds
     type: STRING
@@ -36,7 +38,7 @@ tasks:
   - id: loop
     type: io.kestra.plugin.core.flow.LoopUntil
     description: |
-      **Repeat sequentially:** run `work`, then `sleep`, then start the next
+      **Repeat sequentially:** run `start`, then `sleep`, then start the next
       iteration at `/next`. The condition remains false, so this Kestra
       execution stays open until it is **killed manually**. No new cycle starts
       while the current item is being processed.
@@ -44,33 +46,40 @@ tasks:
     checkFrequency:
       interval: PT0.001S
     tasks:
-      - id: work
+      - id: start
         type: io.kestra.plugin.core.flow.AllowFailure
         description: |
-          **One attempt:** select an item, resolve its repository, and execute
-          its approved plan.
+          **One attempt:** call `/next`, resolve the selected item's local Git
+          repository with `/project`, then call `/work` in that directory.
 
           - **Success or no item:** finish this attempt and continue to `sleep`.
           - **Failure:** skip the remaining steps of this attempt and retain
             the failure in Kestra logs. `AllowFailure` still lets `sleep` run,
-            so the next cycle can start.
+            so the next selection can start after the delay. It does not retry
+            a failed step inside the same attempt.
         tasks:
           - id: next
             type: io.kestra.plugin.core.http.Request
             description: |
-              **Select the next eligible item** through the authenticated
-              bridge. This is a read-only provider query.
+              **Select the next approved item.** The authenticated bridge runs
+              `/next` without an item reference. It reads the Linear or
+              ClickUp provider from `agent-workflows.yaml` and makes **one**
+              filtered selection query.
 
-              - **ClickUp:** first task tagged `agent-planned`, excluding closed tasks.
-              - **Linear:** first unarchived `agent-planned` issue in `Backlog`
-                or `Open`.
+              - **ClickUp:** first task in the returned page tagged
+                `agent-planned`, excluding closed tasks.
+              - **Linear:** first unarchived issue in the returned page with
+                the **exact** `agent-planned` label and `Backlog` or `Open`
+                status.
               - **Selection order:** first eligible result in the returned
-                page; creation and update times do not determine priority.
+                page. Neither provider query requests creation-time or
+                update-time ordering.
 
-              **Returns:** `name`, `id`, `url`, and destination `list`, or
-              `{"status":"no eligible item"}`. A missing destination or
-              provider failure is an error. Selection does not read another
-              item, create a plan, or change item state.
+              **Result:** exactly `name`, `id`, `url`, and `list` for a match;
+              `list` is the Linear project or ClickUp list name. No match
+              returns `{"status":"no eligible item"}`. A missing destination
+              or provider failure is an error. Selection does not read another
+              item, create a plan, change the item, or start delivery.
             uri: '{{ envs.bridge_url }}/generate'
             method: POST
             contentType: application/json
@@ -115,19 +124,25 @@ tasks:
                 - id: project
                   type: io.kestra.plugin.core.http.Request
                   description: |
-                    **Resolve the selected item's local Git repository** using
-                    its exact ID and destination name (`list`). Search order:
+                    **Resolve one local Git repository** by calling `/project`
+                    with the selected item's exact `id` and destination
+                    `list`. Both are required; missing or blank values are
+                    errors. Search available repositories in this order:
 
                     1. Configured project paths.
                     2. Repositories beside those paths.
                     3. Repositories under the home directory.
 
-                    Complete the first matching tier before choosing: exact
-                    destination matches outrank prefix matches. Read the item
-                    only when multiple repositories still match; use its
-                    objective to choose the primary repository and stable tie
-                    breaks when needed. **Returns** one absolute `path`, or
-                    `not found` / `search incomplete`. A path is never guessed.
+                    **Complete the first matching tier** before choosing, so
+                    discovery order does not decide between competing matches.
+                    Keep all exact destination matches when any exist;
+                    otherwise keep prefix matches. Only for multiple matches,
+                    read the complete item to identify its primary repository
+                    and apply stable tie breaks if needed.
+
+                    **Result:** one absolute repository `path`, `not found`,
+                    or `search incomplete`. Invalid input or a failed search
+                    is an error. Never infer a repository from a missing path.
                   uri: '{{ envs.bridge_url }}/generate'
                   method: POST
                   contentType: application/json
@@ -149,7 +164,7 @@ tasks:
                   description: |
                     **Validate the `/project` result before running `/work`.**
 
-                    - **Resolved:** nonblank `path` → `run-work` in that directory.
+                    - **Resolved:** nonblank `path` → `work` in that directory.
                     - **Unresolved:** `not found` or `search incomplete` →
                       `project-required`, with the reason recorded.
                     - **Unexpected response:** missing or invalid fields →
@@ -169,31 +184,43 @@ tasks:
                     ') | first }}
                   cases:
                     project:
-                      - id: run-work
+                      - id: work
                         type: io.kestra.plugin.core.http.Request
                         description: |
-                          **Execute the approved plan** for the selected
-                          `agent-planned` item in the repository found by
-                          `/project`.
+                          **Deliver the selected `agent-planned` item** in the
+                          repository resolved by `/project`. `/work` executes
+                          its approved plan autonomously, one todo at a time.
 
-                          - **New work:** move the item to `in progress`, copy
-                            its published plan locally, and create a branch
-                            with a linked draft request.
-                          - **Resumed work:** follow the delivery backlink;
-                            keep the current item status and authoritative
-                            local plan.
-                          - **Delivery:** complete todos one by one with the
-                            appropriate specialist. Validate each result,
-                            persist todo completion, and commit and push when
-                            there is a commit. Then use `/ready` to verify and
-                            promote the request and `/inspect` to publish
-                            findings or apply `agent-inspected`. Readiness
-                            gaps and blocking findings return to `/work` as
-                            corrective todos.
+                          | Stage | Documented behavior |
+                          | --- | --- |
+                          | Initialize | For new work, move the item to `in progress`, copy its published plan locally, and create a work branch with a linked draft request. If a delivery backlink exists, resume its authoritative local plan and todo states without resetting the item status. |
+                          | Route | Select or reuse the most suitable specialist for the active todo. Load only skills triggered by that activity; the specialist may work directly when none apply. |
+                          | Execute | Persist the todo as in progress, implement and validate only its scope, then stage only its changes. |
+                          | Commit | Commit the result, persist todo completion immediately, and push the commit. A todo without a commit causes **no push**. |
+                          | Ready | Once every todo is complete, continue automatically to `/ready` without another approval. |
 
-                          The bridge returns an `## Inspect result` for
-                          `is-success` to verify; an incomplete run is not
-                          treated as completed work.
+                          **Readiness and inspection:** `/ready` requires a
+                          terminal plan, complete delivery, and one clean
+                          branch that is neither behind nor diverged. It runs
+                          only planned validation and compares the complete
+                          branch with the plan's Objective and Expected
+                          Outcome. Concrete gaps return to `/work` as
+                          corrective todos. When validation passes, `/ready`
+                          pushes if needed, publishes the complete plan to the
+                          request, marks it ready for review, and continues to
+                          `/inspect` after observing the required updates.
+
+                          `/inspect` reviews one frozen request snapshot and
+                          head SHA, publishes each unseen valid finding once,
+                          and returns blocking findings to `/work`. Corrected
+                          work passes through `/ready` and receives a new
+                          inspection snapshot. With no blocking finding it
+                          applies `agent-inspected` and stops; merge and
+                          `/done` remain human decisions.
+
+                          **Bridge result:** `## Inspect result` is checked by
+                          `is-success` for this same item. An incomplete
+                          outcome is not reported as completed work.
                         uri: '{{ envs.bridge_url }}/generate'
                         method: POST
                         contentType: application/json
@@ -226,7 +253,7 @@ tasks:
                             names a different item; fail visibly.
                         value: >-
                           {{ {
-                            "response": fromJson(outputs['run-work'].body).text,
+                            "response": fromJson(outputs['work'].body).text,
                             "item": fromJson(fromJson(outputs.next.body).text).id
                           } | toJson | jq('
                             try (
@@ -262,11 +289,11 @@ tasks:
                                 **Invalid `/work` result.** The reply lacks a
                                 valid inspection result for the selected item.
                                 Fail this task and include the received text in
-                                the error for diagnosis. The enclosing `work`
+                                the error for diagnosis. The enclosing `start`
                                 block still allows `sleep` and another cycle.
                               errorMessage: |-
                                 Invalid /work response: expected the inspect-result template for the selected item. Received response:
-                                {{ fromJson(outputs['run-work'].body).text | default('No textual response received.') }}
+                                {{ fromJson(outputs['work'].body).text | default('No textual response received.') }}
                           partial:
                             - id: work-partial
                               type: io.kestra.plugin.core.execution.Fail
@@ -279,7 +306,7 @@ tasks:
                               allowFailure: true
                               errorMessage: |-
                                 Work did not complete successfully. Received response:
-                                {{ fromJson(outputs['run-work'].body).text }}
+                                {{ fromJson(outputs['work'].body).text }}
                           success:
                             - id: work-sucess
                               type: io.kestra.plugin.core.log.Log
