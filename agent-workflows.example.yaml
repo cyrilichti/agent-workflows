@@ -11,8 +11,3 @@ mcp:
   # Supported values: github, gitlab
   version:
     provider: gitlab
-
-# Delay after each completed Kestra work cycle, in whole seconds.
-orchestration:
-  workLoop:
-    intervalSeconds: 300

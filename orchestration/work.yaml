@@ -5,7 +5,7 @@ inputs:
   - id: intervalSeconds
     type: STRING
     validator: '^[1-9][0-9]*$'
-    defaults: "{{ yaml(read('agent-workflows.yaml')).orchestration.workLoop.intervalSeconds | default(300) }}"
+    defaults: "300"
 concurrency:
   limit: 1
   behavior: FAIL

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { installDemoWorkflow, installWorkflow, uploadNamespaceFile } from '../src/install.mjs';
+import { installDemoWorkflow, installWorkflow } from '../src/install.mjs';
 const config = {
   url: 'http://kestra:8080',
   email: 'local@example.test',
@@ -38,7 +38,7 @@ test('restarting retains the existing workflow without overwriting edits', async
   );
   assert.equal(calls, 1);
 });
-test('the work flow is imported under its own namespace and updated later', async () => {
+test('the work flow is imported under its own namespace and retained later', async () => {
   const calls = [];
   const options = {
     ...config,
@@ -50,18 +50,17 @@ test('the work flow is imported under its own namespace and updated later', asyn
       return new Response('{}', { status: calls.length === 1 ? 404 : 200 });
     },
   };
-  assert.equal(await installWorkflow({ ...options, managed: true }), 'created');
+  assert.equal(await installWorkflow(options), 'created');
   assert.equal(calls[0].url, 'http://kestra:8080/api/v1/main/flows/agent_workflows/work');
   assert.equal(calls[1].request.body, options.workflow);
   const existing = await installWorkflow({
     ...options,
-    managed: true,
     fetchImpl: async (url) => {
       assert.equal(url, calls[0].url);
       return Response.json({ id: 'work', revision: 3 });
     },
   });
-  assert.equal(existing, 'updated');
+  assert.equal(existing, 'retained');
 });
 test('authentication and server failures do not trigger creation', async () => {
   for (const status of [401, 403, 500, 503]) {
@@ -104,57 +103,4 @@ test('missing credentials fail before any HTTP call', async () => {
     }),
     /Configure KESTRA/,
   );
-});
-
-test('managed work flow is updated', async () => {
-  const calls = [];
-  const fetchImpl = async (url, options) => {
-    calls.push({ url, options });
-    return Response.json({ id: 'work' });
-  };
-  assert.equal(await installWorkflow({ ...config, namespace: 'agent_workflows', id: 'work', managed: true, fetchImpl }), 'updated');
-  assert.equal(calls[1].url, 'http://kestra:8080/api/v1/main/flows/agent_workflows/work');
-  assert.equal(calls[1].options.method, 'PUT');
-  assert.equal(calls[1].options.body, config.workflow);
-  assert.equal(calls.length, 2);
-});
-
-test('managed work flow is created on first installation', async () => {
-  const calls = [];
-  assert.equal(await installWorkflow({
-    ...config, namespace: 'agent_workflows', id: 'work', managed: true,
-    fetchImpl: async (url, options) => {
-      calls.push({ url, options });
-      return new Response('{}', { status: calls.length === 1 ? 404 : 200 });
-    },
-  }), 'created');
-  assert.equal(calls[1].options.method, 'POST');
-});
-
-test('managed flow update failures are reported', async () => {
-  let calls = 0;
-  await assert.rejects(installWorkflow({
-    ...config, namespace: 'agent_workflows', id: 'work', managed: true,
-    fetchImpl: async () => new Response('{}', { status: ++calls === 1 ? 200 : 422 }),
-  }), /import failed \(HTTP 422\)/);
-});
-
-test('project configuration is uploaded unchanged as a namespace file', async () => {
-  const contents = 'orchestration:\n  workLoop:\n    intervalSeconds: 17\n';
-  let observed;
-  await uploadNamespaceFile({ ...config, namespace: 'agent_workflows', path: 'agent-workflows.yaml', contents,
-    fetchImpl: async (url, options) => {
-      observed = { url, options };
-      return new Response('', { status: 200 });
-    },
-  });
-  assert.equal(observed.url, 'http://kestra:8080/api/v1/main/namespaces/agent_workflows/files?path=agent-workflows.yaml');
-  assert.equal(observed.options.method, 'POST');
-  assert.equal((await observed.options.body.get('fileContent').text()), contents);
-});
-
-test('namespace upload failures are reported', async () => {
-  await assert.rejects(uploadNamespaceFile({ ...config, namespace: 'agent_workflows', path: 'agent-workflows.yaml', contents: '',
-    fetchImpl: async () => new Response('', { status: 422 }),
-  }), /namespace file upload failed \(HTTP 422\)/);
 });
