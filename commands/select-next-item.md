@@ -9,8 +9,7 @@ Return one item from the configured provider without an item reference.
 ## Eligibility
 
 Only items with the exact `agent-planned` label or tag that are waiting to
-start are eligible. Work already in progress or in a terminal state is
-ineligible. Each provider adapter translates this rule into its status
+start are eligible. Each provider adapter translates this rule into its status
 vocabulary using only the selection response; skip items whose waiting state
 cannot be established.
 
