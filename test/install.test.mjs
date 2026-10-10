@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { installDemoWorkflow, installWorkflow, renderWorkLoop } from '../src/install.mjs';
+import { installDemoWorkflow, installWorkflow, uploadNamespaceFile } from '../src/install.mjs';
 const config = {
   url: 'http://kestra:8080',
   email: 'local@example.test',
@@ -139,22 +139,22 @@ test('managed flow update failures are reported', async () => {
   }), /import failed \(HTTP 422\)/);
 });
 
-const loopTemplate = 'id: work_loop\nnamespace: agent_workflows\ntasks:\n  - id: loop\n    checkFrequency:\n      interval: PT5M\n';
-
-test('loop interval defaults to five minutes and supports YAML overrides', () => {
-  for (const source of ['', 'mcp: {item: {provider: linear}}', 'orchestration: {workLoop: {}}']) {
-    assert.match(renderWorkLoop(loopTemplate, source), /interval: PT300S/);
-  }
-  assert.match(renderWorkLoop(loopTemplate, 'orchestration:\n  workLoop:\n    intervalSeconds: 17\n'), /interval: PT17S/);
-  assert.match(renderWorkLoop(loopTemplate, 'orchestration: {workLoop: {intervalSeconds: 60}}'), /interval: PT60S/);
+test('project configuration is uploaded unchanged as a namespace file', async () => {
+  const contents = 'orchestration:\n  workLoop:\n    intervalSeconds: 17\n';
+  let observed;
+  await uploadNamespaceFile({ ...config, namespace: 'agent_workflows', path: 'agent-workflows.yaml', contents,
+    fetchImpl: async (url, options) => {
+      observed = { url, options };
+      return new Response('', { status: 200 });
+    },
+  });
+  assert.equal(observed.url, 'http://kestra:8080/api/v1/main/namespaces/agent_workflows/files?path=agent-workflows.yaml');
+  assert.equal(observed.options.method, 'POST');
+  assert.equal((await observed.options.body.get('fileContent').text()), contents);
 });
 
-test('invalid interval values and malformed mappings are rejected', () => {
-  for (const value of ['0', '-1', '1.5', '"300"', 'null', 'true', '[]', '{}', '2147483648']) {
-    assert.throws(() => renderWorkLoop(loopTemplate, `orchestration: {workLoop: {intervalSeconds: ${value}}}`), /intervalSeconds/);
-  }
-  for (const source of ['[]', 'orchestration: null', 'orchestration: []', 'orchestration: {workLoop: false}', 'orchestration: {workLoop: null}', 'orchestration: {workLoop: []}']) {
-    assert.throws(() => renderWorkLoop(loopTemplate, source), /YAML mapping/);
-  }
-  assert.throws(() => renderWorkLoop(loopTemplate, 'orchestration: [unclosed'), /end of the stream/);
+test('namespace upload failures are reported', async () => {
+  await assert.rejects(uploadNamespaceFile({ ...config, namespace: 'agent_workflows', path: 'agent-workflows.yaml', contents: '',
+    fetchImpl: async () => new Response('', { status: 422 }),
+  }), /namespace file upload failed \(HTTP 422\)/);
 });

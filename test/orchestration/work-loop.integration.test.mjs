@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { setTimeout as delay } from 'node:timers/promises';
 import { load, dump } from 'js-yaml';
-import { installWorkflow, renderWorkLoop } from '../../src/install.mjs';
+import { installWorkflow, uploadNamespaceFile } from '../../src/install.mjs';
 
 const url = process.env.KESTRA_TEST_URL;
 const email = process.env.KESTRA_ADMIN_EMAIL;
@@ -84,12 +84,15 @@ test('Kestra repeats every outcome, deploys intervals, and stops on kill', { ski
   controller.namespace = namespace;
   controller.tasks[0].tasks[0].namespace = namespace;
   const deploy = async seconds => {
-    const workflow = renderWorkLoop(dump(controller), `orchestration: {workLoop: {intervalSeconds: ${seconds}}}`);
+    const workflow = dump(controller);
     const validation = await api('/flows/validate', { method: 'POST', headers: { 'Content-Type': 'application/x-yaml' }, body: workflow });
     assert.ok(validation.every(result => !result.constraints && !result.exception), JSON.stringify(validation));
+    await uploadNamespaceFile({ url, email, password, namespace, path: 'agent-workflows.yaml',
+      contents: `orchestration: {workLoop: {intervalSeconds: ${seconds}}}` });
     const status = await installWorkflow({ url, email, password, namespace, id: 'work_loop', workflow, managed: true });
     const deployed = await api(`/flows/${namespace}/work_loop`);
-    assert.equal(deployed.tasks[0].checkFrequency.interval, `PT${seconds}S`);
+    assert.equal(deployed.tasks[0].checkFrequency.interval, 'PT0.001S');
+    assert.equal(deployed.tasks[0].tasks.at(-1).duration, 'PT{{ inputs.intervalSeconds }}S');
     return status;
   };
   let active;

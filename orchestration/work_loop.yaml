@@ -1,6 +1,12 @@
 id: work_loop
 namespace: agent_workflows
-description: Run work cycles sequentially until this controller execution is killed in Kestra. Managed by the installer; configure its delay in agent-workflows.yaml.
+description: Run work cycles sequentially until this controller execution is killed in Kestra. Configure its delay in agent-workflows.yaml.
+inputs:
+  - id: intervalSeconds
+    type: INT
+    min: 1
+    max: 2147483647
+    defaults: "{{ yaml(read('agent-workflows.yaml')).orchestration.workLoop.intervalSeconds | default(300) }}"
 concurrency:
   limit: 1
   behavior: FAIL
@@ -9,7 +15,7 @@ tasks:
     type: io.kestra.plugin.core.flow.LoopUntil
     condition: '{{ false }}'
     checkFrequency:
-      interval: PT5M
+      interval: PT0.001S
     tasks:
       - id: work-cycle
         type: io.kestra.plugin.core.flow.Subflow
@@ -24,3 +30,6 @@ tasks:
           Work cycle {{ outputs['work-cycle'].executionId is defined ? outputs['work-cycle'].executionId : 'unavailable (see work-cycle logs)' }} finished with state
           {{ outputs['work-cycle'].state is defined ? outputs['work-cycle'].state : 'ERROR' }}. Inspect the child execution for task logs,
           responses, and trace URLs. The next cycle starts after the configured delay.
+      - id: cycle-delay
+        type: io.kestra.plugin.core.flow.Sleep
+        duration: "PT{{ inputs.intervalSeconds }}S"

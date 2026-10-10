@@ -18,16 +18,13 @@ Run the commands below from the repository root.
 
 ## Configure
 
-Install the host dependencies and create your configuration once:
+Create your configuration once:
 
 ```bash
-npm ci
 cp .env.example .env
-cp agent-workflows.example.yaml agent-workflows.yaml
 ```
 
-If either configuration file already exists, edit it directly. Select your item
-and version providers in `agent-workflows.yaml`. Fill the secrets listed in
+If `.env` already exists, edit it directly. Fill the secrets listed in
 [.env.example](./.env.example). For each `*_PASSWORD` except
 `KESTRA_ADMIN_PASSWORD`, and for `NEXTAUTH_SECRET`, `LANGFUSE_SALT`,
 `LANGFUSE_ENCRYPTION_KEY`, `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY`,
@@ -92,71 +89,6 @@ Kestra reaches the bridge through `BRIDGE_URL`, which defaults to
 `http://host.docker.internal:8787`. The example configuration listens on
 `0.0.0.0` so containers can connect; keep this port accessible only to trusted
 clients. Task requests require the shared token.
-
-## Continuous work
-
-`agent_workflows.work_loop` repeatedly runs the existing `agent_workflows.work`
-flow. In Kestra, open **Flows**, select namespace `agent_workflows`, open
-`work_loop`, and choose **Execute**. The controller starts one child execution
-at a time and waits after it finishes, including success, failure, and no
-eligible item. Only one controller execution can run at a time.
-
-Configure the delay in the repository's `agent-workflows.yaml`:
-
-```yaml
-orchestration:
-  workLoop:
-    intervalSeconds: 300
-```
-
-The value must be an integer between 1 and 2147483647 seconds. Omitting the
-setting uses 300 seconds (five minutes). The installer validates configuration
-before importing flows. After editing it, redeploy the managed controller:
-
-```bash
-docker compose run --rm workflow-init
-```
-
-The installer updates `work_loop` from the repository and this configuration.
-It preserves existing `work` and `demo` flows, including edits made in Kestra.
-To apply a new delay to an active loop, kill its current execution and execute
-`work_loop` again; running executions retain their original flow revision.
-
-To stop the loop, open its running execution in Kestra and choose **Kill**.
-Wait for the controller to reach `KILLED` before starting another execution.
-Killing the controller prevents further cycles. An AI task already accepted
-by the bridge may still finish and change files; inspect that child's result
-before restarting.
-
-Each cycle remains a separate `work` execution with its own final state, task
-logs, responses, and trace information. The controller's `cycle-result` logs
-record the child execution ID and state. When Kestra cannot collect a child's
-outputs, `work-cycle` logs retain its execution link and collection error while
-`cycle-result` reports `ERROR`. Open that child to inspect a failed
-cycle and use its trace URLs to find the corresponding Langfuse requests.
-Failed cycles remain failed even while the controller continues. Kestra and
-Langfuse data persist in their Docker volumes; normal retention settings apply.
-
-The controller retains iteration history while running. For long-running
-installations, periodically kill and restart it to bound the active execution's
-history. The standalone `work` flow remains available for a single cycle.
-
-### Verify the loop against Kestra
-
-The integration test deploys the bundled controller and `work` flow in a unique
-test namespace, with a local fixture bridge. It makes no AI requests. It checks
-success, failure, no-item results, sequential execution, delays, cancellation,
-and redeployment, then removes its test flows while keeping execution history.
-With Kestra running, export `KESTRA_ADMIN_EMAIL` and `KESTRA_ADMIN_PASSWORD`
-from your local configuration, then run:
-
-```bash
-KESTRA_TEST_URL=http://localhost:3000 node --test test/orchestration/work-loop.integration.test.mjs
-```
-
-Kestra must reach the fixture server through `host.docker.internal`; override
-`KESTRA_TEST_BRIDGE_HOST` when using another network layout. The test is skipped
-in the regular unit suite unless `KESTRA_TEST_URL` is set.
 
 ## Execution behavior
 

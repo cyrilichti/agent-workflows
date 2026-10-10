@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { load, dump } from 'js-yaml';
 
 // Retain UI edits by default; the bundled work_loop is managed by repository configuration.
 /**
@@ -52,23 +51,22 @@ export async function installWorkflow({ url, email, password, workflow, namespac
   return existing.ok ? 'updated' : 'created';
 }
 
-/** Render the managed controller using a positive, whole-second interval. */
-export function renderWorkLoop(workflow, configuration) {
-  const config = load(configuration) ?? {};
-  const orchestration = config.orchestration;
-  const loop = orchestration?.workLoop;
-  for (const [name, value] of [['configuration', config], ['orchestration', orchestration], ['orchestration.workLoop', loop]]) {
-    if (value !== undefined && (value === null || typeof value !== 'object' || Array.isArray(value))) {
-      throw new Error(`${name} must be a YAML mapping.`);
-    }
+/** Upload the raw project configuration for Kestra expressions in this namespace. */
+export async function uploadNamespaceFile({ url, email, password, namespace, path, contents, fetchImpl = fetch }) {
+  if (!url || !email || !password) {
+    throw new Error('Configure KESTRA_URL, KESTRA_ADMIN_EMAIL and KESTRA_ADMIN_PASSWORD.');
   }
-  const seconds = loop?.intervalSeconds === undefined ? 300 : loop.intervalSeconds;
-  if (!Number.isSafeInteger(seconds) || seconds <= 0 || seconds > 2147483647) {
-    throw new Error('orchestration.workLoop.intervalSeconds must be an integer between 1 and 2147483647.');
+  const body = new FormData();
+  body.append('fileContent', new Blob([contents], { type: 'application/x-yaml' }), path);
+  const response = await fetchImpl(`${url}/api/v1/main/namespaces/${namespace}/files?path=${encodeURIComponent(path)}`, {
+    method: 'POST',
+    headers: { Authorization: 'Basic ' + Buffer.from(`${email}:${password}`).toString('base64') },
+    body,
+    signal: AbortSignal.timeout(30000),
+  });
+  if (!response.ok) {
+    throw new Error(`Kestra namespace file upload failed (HTTP ${response.status}). Check docker compose logs kestra.`);
   }
-  const flow = load(workflow);
-  flow.tasks.find(task => task.id === 'loop').checkFrequency.interval = `PT${seconds}S`;
-  return dump(flow, { lineWidth: -1, noRefs: true });
 }
 
 /** Keep the existing demo installer interface for callers. */
@@ -84,12 +82,21 @@ export async function installDemoWorkflow(options) {
  */
 async function main() {
   const configuration = readFileSync(new URL('../agent-workflows.yaml', import.meta.url), 'utf8');
-  const loop = renderWorkLoop(readFileSync(new URL('../orchestration/work_loop.yaml', import.meta.url), 'utf8'), configuration);
   for (const { namespace, id, file, managed = false } of [
     { namespace: 'demo', id: 'demo', file: 'demo.yaml' },
     { namespace: 'agent_workflows', id: 'work', file: 'work.yaml' },
-    { namespace: 'agent_workflows', id: 'work_loop', managed: true },
+    { namespace: 'agent_workflows', id: 'work_loop', file: 'work_loop.yaml', managed: true },
   ]) {
+    if (id === 'work_loop') {
+      await uploadNamespaceFile({
+        url: process.env.KESTRA_URL,
+        email: process.env.KESTRA_ADMIN_EMAIL,
+        password: process.env.KESTRA_ADMIN_PASSWORD,
+        namespace,
+        path: 'agent-workflows.yaml',
+        contents: configuration,
+      });
+    }
     const status = await installWorkflow({
       url: process.env.KESTRA_URL,
       email: process.env.KESTRA_ADMIN_EMAIL,
@@ -97,7 +104,7 @@ async function main() {
       namespace,
       id,
       managed,
-      workflow: managed ? loop : readFileSync(new URL(`../orchestration/${file}`, import.meta.url), 'utf8'),
+      workflow: readFileSync(new URL(`../orchestration/${file}`, import.meta.url), 'utf8'),
     });
     console.log(`Workflow ${namespace}/${id} ${status}. Kestra: http://localhost:3000.`);
   }
