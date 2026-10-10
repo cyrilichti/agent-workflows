@@ -78,7 +78,7 @@ test('Kestra repeats work in one flow after every outcome and stops on kill', { 
     assert.ok(validation.every(result => !result.constraints && !result.exception), JSON.stringify(validation));
     const status = await installWorkflow({ url, email, password, namespace, id: 'work', workflow, managed: true });
     await uploadNamespaceFile({ url, email, password, namespace, path: 'agent-workflows.yaml',
-      contents: `orchestration: {workLoop: {intervalSeconds: ${seconds}}}` });
+      contents: seconds === undefined ? 'mcp: {}' : `orchestration: {workLoop: {intervalSeconds: ${seconds}}}` });
     return status;
   };
   let active;
@@ -162,6 +162,18 @@ test('Kestra repeats work in one flow after every outcome and stops on kill', { 
       await waitFor(() => api(`/executions/${id}`), () => callsFor(id).length >= 2, 'updated delay cycles');
       const calls = callsFor(id);
       assert.ok(calls[1].time - calls[0].time >= 2900);
+    } finally {
+      if (active === id) await stop(id);
+    }
+  });
+  await t.test('missing interval uses the five-minute default', async () => {
+    assert.equal(await deploy(), 'updated');
+    outcome = 'no-item';
+    const id = await start();
+    try {
+      const execution = await waitFor(() => api(`/executions/${id}`), () => callsFor(id).length >= 1,
+        'default interval execution');
+      assert.equal(String(execution.inputs.intervalSeconds), '300');
     } finally {
       if (active === id) await stop(id);
     }
