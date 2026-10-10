@@ -11,9 +11,10 @@ publication.
 
 ## Steps
 
-1. Treat a finding as already published only when one observed review activity
-   entry contains its exact ID and `head_sha` marker.
+1. Treat a finding as already published when its exact ID and `head_sha`
+   marker occur in the review activity, or when its `Source review` identifies
+   an existing entry in that activity.
 2. Return every other finding as `unseen_findings` in its original order.
 
-Never match activity from another SHA or infer a finding from unstructured
-prose.
+Only `/inspect` decides whether an existing human comment describes a current
+defect; this command only prevents duplicate publication.
