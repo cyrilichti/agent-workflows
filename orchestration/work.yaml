@@ -12,12 +12,14 @@ concurrency:
 tasks:
   - id: loop
     type: io.kestra.plugin.core.flow.LoopUntil
+    description: Repeat work cycles sequentially until the execution is stopped in Kestra.
     condition: '{{ false }}'
     checkFrequency:
       interval: PT0.001S
     tasks:
       - id: work
         type: io.kestra.plugin.core.flow.AllowFailure
+        description: Process one eligible item, allowing failures so the next cycle can still run.
         tasks:
           - id: next
             type: io.kestra.plugin.core.http.Request
@@ -211,4 +213,5 @@ tasks:
                   errorMessage: Invalid /next response.
       - id: sleep
         type: io.kestra.plugin.core.flow.Sleep
+        description: Wait the configured interval after each cycle before selecting another item.
         duration: "PT{{ inputs.intervalSeconds }}S"
