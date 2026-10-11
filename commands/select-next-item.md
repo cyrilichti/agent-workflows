@@ -8,30 +8,21 @@ Return one item from the configured provider without an item reference.
 
 ## Eligibility
 
-Only items with the exact `agent-planned` label or tag are eligible when they
-are waiting to start, or are in review without the exact `agent-inspected`
-label or tag. Each provider adapter translates waiting and review into its
-status vocabulary and returns normalized first-page candidates. Skip work in progress,
-terminal states, and states whose eligibility cannot be established.
-
-Require complete labels or tags for every waiting or review candidate; a
-missing collection is an error, not evidence that `agent-inspected` is absent.
-An explicit empty collection is complete and has no `agent-planned` label.
+Select `agent-planned` items waiting to start, or in review without
+`agent-inspected`. Provider adapters normalize statuses from the selection
+response; skip states whose eligibility cannot be established.
 
 ## Steps
 
-1. Load `../providers/<provider>/select-next-item.md`. Stop when it is missing.
-2. Run its single filtered selection call across the configured provider,
-   without a project, team, list, or assignee scope. Receive candidates with `name`, `id`, `url`, `list`,
+1. Load `../providers/<provider>/select-next-item.md`; stop when missing.
+   Run its single filtered call without project, team, list, or assignee scope.
+2. Use only its first-page candidates: `name`, `id`, `url`, `list`,
    `status_category` (`waiting`, `review`, or `other`), `labels`, and
-   `updated_at` (epoch milliseconds). Apply this command's eligibility rule
-   to those candidates.
-   Do not follow another page or read individual items.
-3. Require each eligible candidate's normalized `updated_at` to be a finite
-   nonnegative integer. If any eligible item has a missing or invalid timestamp,
-   stop with an error because ordering cannot be established. Select the
-   smallest timestamp; equal timestamps retain the original provider order.
-   When no eligible item exists, return a no-match result.
-4. Return the selected item's `name`, `id`, `url`, and `list`, or a no-match
-   result. A failed call or a selected item without a destination name is an
-   error, not a no-match result.
+   `updated_at` (epoch milliseconds). Apply the eligibility rule above.
+3. Choose the eligible candidate with the oldest `updated_at`; retain provider
+   order for equal timestamps. Return no match when none qualifies.
+4. Return its `name`, `id`, `url`, and `list`. A failed call, incomplete candidate
+   labels, invalid eligible timestamp, or missing selected destination is an
+   error.
+
+Do not follow another page or read individual items.
