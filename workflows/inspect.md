@@ -4,7 +4,7 @@
 
 Independently inspect one exact open request snapshot, publish every valid
 finding, and either return blocking findings to `/work` or apply the final
-inspection label.
+inspection label and transition the item to review.
 
 ---
 

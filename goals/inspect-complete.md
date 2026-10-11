@@ -4,7 +4,8 @@
 
 One exact request snapshot is inspected autonomously, with any findings
 published. Blocking findings return to `/work`; a passing inspection applies
-`agent-inspected` and stops without invoking `/done`.
+`agent-inspected`, transitions the item to review, and stops without invoking
+`/done`.
 
 ## Terminal Outcomes
 
@@ -12,8 +13,8 @@ published. Blocking findings return to `/work`; a passing inspection applies
   once before blocking findings return to `/work` with their IDs, exact
   content, and source SHA.
 - Complete: no blocking finding remains, `agent-inspected` is observed on the
-  item after any required publication, and `../templates/inspect-result.md` is
-  presented without invoking `/done`.
+  item after any required publication, the review transition succeeds, and
+  `../templates/inspect-result.md` is presented without invoking `/done`.
 - Stopped: incomplete context, inconsistent prior publication, publication
-  failure, or label failure is reported without claiming inspection
+  failure, label failure, or review transition failure is reported without claiming inspection
   completion.

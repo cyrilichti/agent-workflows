@@ -10,12 +10,19 @@ arguments:
 Use the returned status name. Trim surrounding whitespace and compare
 case-insensitively against these waiting-to-start names: `Open`, `To Do`,
 `Todo`, `Backlog`, `Not Started`, and `Awaiting Start`. Match whole names;
-other or missing names do not establish eligibility. In particular,
-`In Progress`, review, done, closed, canceled, and ambiguous custom statuses
-are skipped. `include_closed: false` is a query filter, not a waiting-state
-check.
+other or missing names do not establish waiting eligibility. Map a status to review
+when its name clearly identifies review.
+`In Progress`, done, closed, canceled, and ambiguous custom statuses are
+skipped. `include_closed: false` is a query filter, not an eligibility check.
 
-From the first returned page, select the first qualifying task in provider
-order. Return its `id`, `name`, `url`, and list name as `list`. Return no match
-when that page has no qualifying task, even when later pages exist. A missing
-list name on the selected task is an error.
+Return the first page as normalized candidates, preserving provider order:
+
+- `name`, `id`, `url`, `list`: task name, task ID, URL, and list name;
+- `status_category`: `waiting`, `review`, or `other` from the mapping above;
+- `labels`: the complete `tags` array's exact `name` values;
+- `updated_at`: `date_updated` converted from a Unix millisecond timestamp
+  string to a finite nonnegative integer.
+
+Represent absent or malformed label collections and timestamps as `null`.
+Preserve a missing destination as `null`. Return the provider failure when the
+selection call fails.

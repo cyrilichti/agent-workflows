@@ -8,19 +8,21 @@ Return one item from the configured provider without an item reference.
 
 ## Eligibility
 
-Only items with the exact `agent-planned` label or tag that are waiting to
-start are eligible. Each provider adapter translates this rule into its status
-vocabulary using only the selection response; skip items whose waiting state
-cannot be established.
+Select `agent-planned` items waiting to start, or in review without
+`agent-inspected`. Provider adapters normalize statuses from the selection
+response; skip states whose eligibility cannot be established.
 
 ## Steps
 
-1. Load `../providers/<provider>/select-next-item.md`. Stop when it is missing.
-2. Run its single filtered selection call across the configured provider,
-   without a project, team, list, or assignee scope. Apply the provider's
-   status mapping for this eligibility rule to the first returned page and
-   use its first eligible result in provider order.
-   Do not follow another page or read individual items.
-3. Return the selected item's `name`, `id`, `url`, and `list`, or a no-match
-   result. A failed call or a selected item without a destination name is an
-   error, not a no-match result.
+1. Load `../providers/<provider>/select-next-item.md`; stop when missing.
+   Run its single filtered call without project, team, list, or assignee scope.
+2. Use only its first-page candidates: `name`, `id`, `url`, `list`,
+   `status_category` (`waiting`, `review`, or `other`), `labels`, and
+   `updated_at` (epoch milliseconds). Apply the eligibility rule above.
+3. Choose the eligible candidate with the oldest `updated_at`; retain provider
+   order for equal timestamps. Return no match when none qualifies.
+4. Return its `name`, `id`, `url`, and `list`. A failed call, incomplete candidate
+   labels, invalid eligible timestamp, or missing selected destination is an
+   error.
+
+Do not follow another page or read individual items.

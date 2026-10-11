@@ -12,7 +12,6 @@ when necessary, then promoted and handed to `/inspect` autonomously.
   context returns to resumed `/work`.
 - Promoted: the planned validation passed, the exact authoritative plan is the
   request body, the request is observed open and non-draft at the verified
-  HEAD, and the same delivery context is handed to `/inspect` after the item
-  review transition was attempted.
+  HEAD, and the same delivery context is handed to `/inspect`.
 - Stopped: the exact operational blocker is reported without treating a
   delivery gap as terminal or claiming an unobserved promotion.

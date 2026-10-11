@@ -26,18 +26,18 @@ For `new`, follow `./work-initialize.md` with the authoritative plan and item.
 Keep the updated official item and complete created request record returned by
 that branch with its exact branch identity in the delivery context.
 
-For `resumed`, trust that the current branch is the correct work branch and
-that its draft request already exists. Do not:
+For `resumed`:
 
-- switch or create a branch;
-- search for, read, recover, or recreate the request;
-- create another initialization commit;
-- push for initialization;
-- add another item backlink.
-
-Continue with caller identities when supplied. A standalone resumed entry may
-resolve the exact request once when `/ready` needs it, but never searches for a
-substitute. Do not persist Git, provider, or request metadata in the plan.
+1. Resolve the push remote's provider and repository with
+   `../commands/resolve-version-provider.md` and
+   `../commands/resolve-version-repository.md`. Run
+   `../commands/resolve-request.md` with the carried request ID or the item's
+   delivery backlink and any carried source branch.
+2. Run `git switch --no-guess <source_branch>` with the returned branch as a
+   separate process argument. Preserve local changes; stop on a failed switch
+   or an unclean worktree or index before changing files.
+3. Apply only Step 1 of `./work-initialize.md` to move the item to `in progress`.
+   Preserve the existing plan, branch, and request in the delivery context.
 
 ### 3. Execute the Plan
 
