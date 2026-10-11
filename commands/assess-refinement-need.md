@@ -9,9 +9,6 @@ units.
 
 ## Steps
 
-Assess the context directly using the criteria below, without loading
-`planning-and-task-breakdown`.
-
 1. Treat the context as `needs-refinement` only when it contains multiple
    useful units that can be delivered or verified separately. Prefer vertical
    slices for features. Allow justified expansion, migration, and removal
