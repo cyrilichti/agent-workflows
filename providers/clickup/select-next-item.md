@@ -15,11 +15,14 @@ using `../../rules/review-status.md`.
 `In Progress`, done, closed, canceled, and ambiguous custom statuses are
 skipped. `include_closed: false` is a query filter, not an eligibility check.
 
-Use the complete `tags` array's exact `name` values and normalize `date_updated`
-from a Unix millisecond timestamp string to a finite nonnegative integer.
-Reject absent, null, or malformed required fields according to the shared
-selection contract in `../../commands/select-next-item.md`.
+Return the first page as normalized candidates, preserving provider order:
 
-Apply that contract to the first returned page. Return the selected task's
-`id`, `name`, `url`, and list name as `list`. A missing list name on the selected
-task is an error.
+- `name`, `id`, `url`, `list`: task name, task ID, URL, and list name;
+- `status_category`: `waiting`, `review`, or `other` from the mapping above;
+- `labels`: the complete `tags` array's exact `name` values;
+- `updated_at`: `date_updated` converted from a Unix millisecond timestamp
+  string to a finite nonnegative integer.
+
+Represent absent or malformed label collections and timestamps as `null`.
+Preserve a missing destination as `null`. Return the provider failure when the
+selection call fails.

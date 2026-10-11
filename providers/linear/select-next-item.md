@@ -16,11 +16,14 @@ progress. Use native types for waiting states; a custom
 status named `Open` with type `started` does not qualify. Skip missing or other
 types, including `triage`, `completed`, `canceled`, and `duplicate`.
 
-Use the complete `labels` array of exact label names and normalize `updatedAt`
-as an ISO-8601 timestamp with an explicit UTC offset to epoch milliseconds.
-Reject absent, null, or malformed required fields according to the shared
-selection contract in `../../commands/select-next-item.md`.
+Return the first page as normalized candidates, preserving provider order:
 
-Apply that contract to the first returned page. Return the selected issue's
-`id`, `title` as `name`, `url`, and project name as `list`. A missing project
-name on the selected issue is an error.
+- `name`, `id`, `url`, `list`: title, issue ID, URL, and project name;
+- `status_category`: `waiting`, `review`, or `other` from the mapping above;
+- `labels`: the complete array of exact label names;
+- `updated_at`: `updatedAt` converted from ISO-8601 with an explicit UTC
+  offset to epoch milliseconds.
+
+Represent absent or malformed label collections and timestamps as `null`.
+Preserve a missing destination as `null`. Return the provider failure when the
+selection call fails.

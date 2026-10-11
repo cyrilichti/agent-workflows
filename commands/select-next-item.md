@@ -11,7 +11,7 @@ Return one item from the configured provider without an item reference.
 Only items with the exact `agent-planned` label or tag are eligible when they
 are waiting to start, or are in review without the exact `agent-inspected`
 label or tag. Each provider adapter translates waiting and review into its
-status vocabulary using only the selection response. Skip work in progress,
+status vocabulary and returns normalized first-page candidates. Skip work in progress,
 terminal states, and states whose eligibility cannot be established.
 
 Require complete labels or tags for every waiting or review candidate; a
@@ -22,11 +22,13 @@ An explicit empty collection is complete and has no `agent-planned` label.
 
 1. Load `../providers/<provider>/select-next-item.md`. Stop when it is missing.
 2. Run its single filtered selection call across the configured provider,
-   without a project, team, list, or assignee scope. Apply the provider's
-   status mapping for this eligibility rule to the first returned page.
+   without a project, team, list, or assignee scope. Receive candidates with `name`, `id`, `url`, `list`,
+   `status_category` (`waiting`, `review`, or `other`), `labels`, and
+   `updated_at` (epoch milliseconds). Apply this command's eligibility rule
+   to those candidates.
    Do not follow another page or read individual items.
-3. Normalize each eligible item's last-modified timestamp using the adapter's
-   field mapping. If any eligible item has a missing or invalid timestamp,
+3. Require each eligible candidate's normalized `updated_at` to be a finite
+   nonnegative integer. If any eligible item has a missing or invalid timestamp,
    stop with an error because ordering cannot be established. Select the
    smallest timestamp; equal timestamps retain the original provider order.
    When no eligible item exists, return a no-match result.
