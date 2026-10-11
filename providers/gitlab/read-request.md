@@ -14,6 +14,11 @@ Run the command once and parse its JSON response. Map `iid` to `request_id`, set
 then return title, native Draft state, source and target branches, author, web
 URL, and description normalized to an empty string.
 
+For `source_repository`, compare the initial response's `source_project_id`
+and `target_project_id`. Return `source_repository_matches: true` when both
+exist and are equal, `false` when they differ, or `null` when either is absent.
+Do not infer ownership from the branch name.
+
 For `delivery_state`, also return the exact head SHA and normalize the native
 `detailed_merge_status`, merge-status fields, Draft state, conflicts, pipeline,
 approval, and discussion state to `merge_status: mergeable`, `blocked`,

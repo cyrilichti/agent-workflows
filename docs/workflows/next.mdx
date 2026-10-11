@@ -4,18 +4,22 @@ description: Select one eligible item and return its identity and destination.
 ---
 
 The `agent-planned` label or tag marks work whose approved plan is available on
-its item. Eligible work is planned and waiting to start. `/next` selects the first
-eligible item in the configured provider's first returned page. It does not
-choose the most recently created or updated item: neither provider query
-specifies that ordering. Each adapter maps provider statuses to that shared
-rule using the selection response.
+its item. Eligible work is waiting to start, or is in review without
+`agent-inspected`. `/next` selects the least recently modified eligible item
+from the configured provider's first returned page. Equal timestamps retain
+provider order. Each adapter maps provider statuses to that shared rule using
+the selection response.
+
+After human findings, remove `agent-inspected` to make a review item eligible
+again. It keeps its plan and request. Updating it gives older eligible work a
+turn in subsequent selections.
 
 Invoke it as `/next` or `$next`, or let the Kestra `work` workflow call it
 through the bridge. It needs no item reference.
 
 ## How `/next` selects
 
-<div class="write-flow" role="group" aria-label="The next workflow resolves the configured item provider, runs one filtered selection query, then returns the first item's identity and destination or an empty result.">
+<div class="write-flow" role="group" aria-label="The next workflow resolves the configured item provider, runs one filtered selection query, then returns the oldest eligible item's identity and destination or an empty result.">
   <div class="write-flow__step write-flow__step--assisted">
     <small>01 · Configure</small>
     <strong>Resolve item provider</strong>
@@ -27,7 +31,7 @@ through the bridge. It needs no item reference.
   <div class="write-flow__step write-flow__step--focus">
     <small>02 · Select</small>
     <strong>Query once</strong>
-    <span>Map provider statuses to the shared eligibility rule and take the first eligible result.</span>
+    <span>Map provider statuses to the shared eligibility rule and choose the oldest eligible update.</span>
   </div>
 
   <span class="write-flow__connector" aria-hidden="true">↓</span>
@@ -46,12 +50,12 @@ through the bridge. It needs no item reference.
     <tr>
       <td>1</td>
       <th scope="row">Filter</th>
-      <td>Both providers filter for <code>agent-planned</code> work. Linear uses native waiting status types; ClickUp uses <code>Open</code> and equivalent waiting names. Already-started, terminal, or unrecognized states are skipped. Selection preserves provider order and stops at the first page, even when more pages exist.</td>
+      <td>Both providers filter for <code>agent-planned</code> work. Linear uses native waiting status types; ClickUp uses <code>Open</code> and equivalent waiting names. Review items qualify only without <code>agent-inspected</code>. Work in progress, terminal, and unrecognized states are skipped. Selection uses last-modified timestamps within the first page, even when more pages exist; provider order breaks ties.</td>
     </tr>
     <tr>
       <td>2</td>
       <th scope="row">Return</th>
-      <td>A found item returns only <code>{'{"name":"…","id":"…","url":"…","list":"…"}'}</code>. <code>list</code> is the Linear project name or ClickUp list name. No match returns <code>{'{"status":"no eligible item"}'}</code>; a missing destination or provider failure is an error.</td>
+      <td>A found item returns only <code>{'{"name":"…","id":"…","url":"…","list":"…"}'}</code>. <code>list</code> is the Linear project name or ClickUp list name. No match returns <code>{'{"status":"no eligible item"}'}</code>; a missing destination, provider failure, incomplete candidate labels, or invalid eligible timestamp is an error.</td>
     </tr>
     <tr>
       <td>3</td>

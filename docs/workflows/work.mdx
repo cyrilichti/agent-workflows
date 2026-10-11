@@ -57,7 +57,10 @@ export const skillUrl = (skill) =>
 `/work` requires an `agent-planned` item and executes its approved plan
 autonomously, one todo at a time. Standalone work automatically resumes when the
 item contains a delivery backlink, keeping the referenced local plan and its
-todo states. Otherwise, it copies the published plan locally and initializes
+todo states. It resolves the exact linked open request and safely switches to
+its existing source branch before changing any file. A missing local branch,
+unsafe checkout, or ambiguous request stops delivery. After checkout, the item
+moves to `in progress` while work and inspection run. Otherwise, it copies the published plan locally and initializes
 delivery. It routes each todo to the right specialist and hands the completed
 plan directly to `/ready` without another approval.
 
@@ -135,8 +138,8 @@ when none are needed.
   <tbody>
     <tr>
       <td>1</td>
-      <th scope="row">Initialize</th>
-      <td>For new work, move the item to <code>in progress</code> and create a work branch with a linked draft request.</td>
+      <th scope="row">Initialize or resume</th>
+      <td>For new work, move the item to <code>in progress</code> and create a work branch with a linked draft request. For resumed work, check out the existing request branch safely and move the item to <code>in progress</code>.</td>
     </tr>
     <tr>
       <td>2</td>

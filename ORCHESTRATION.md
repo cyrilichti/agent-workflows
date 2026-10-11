@@ -110,6 +110,13 @@ check after each call. In `agent-workflows.work`, no eligible item skips project
 resolution; an unresolved project leaves `projectDirectory` empty for a later
 stage to handle conditionally.
 
+Each `/next` call selects the least recently modified eligible `agent-planned`
+item from the first provider page: waiting work or review work without
+`agent-inspected`. Remove that label after human findings to resume the existing
+plan and request. `/work` safely checks out the linked request branch before
+editing files and moves the item to in progress. `/inspect` applies the label
+before returning it to review. Selection keeps no additional Kestra state.
+
 Execution times out after 30 minutes by default (`REQUEST_TIMEOUT_MS`). A failed
 or interrupted task may already have changed files: inspect its outcome before
 submitting a new request. Kestra and Langfuse data persist in Docker volumes.

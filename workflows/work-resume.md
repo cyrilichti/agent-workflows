@@ -16,9 +16,12 @@ request_id: carried exact request ID, when supplied
 request_backlinks: official item's existing delivery backlinks
 source_branch: carried branch, when supplied
 ambiguity_policy: stop
+fields: [source_repository, delivery_state]
 ```
 
-Require the returned source branch to be a nonempty valid Git branch name,
+Require `source_repository_matches: true`; stop when the source belongs to
+another repository or its ownership is unavailable. Require the returned
+source branch to be a nonempty valid Git branch name,
 different from the repository's default branch. Preserve a supplied request
 identity; stop on any contradictory backlink, request, or branch identity.
 Do not search for or substitute another request.
@@ -35,7 +38,8 @@ error, before editing any file.
 After switching, require the current branch to equal the request's source
 branch, a clean worktree and index, and an upstream for that branch belonging
 to the same push repository and exact source branch. Require the branch not
-to be behind or diverged from its upstream. Stop on a failed check before
+to be behind or diverged from its upstream, and require the upstream SHA to
+equal the observed request head SHA. Stop on a failed check before
 persisting corrective todos, todo states, or implementation changes.
 
 ### 3. Resume Delivery
