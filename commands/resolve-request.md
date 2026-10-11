@@ -14,8 +14,6 @@ Resolve one exact request.
 - `require_non_draft`: optional boolean, default `false`.
 - `allowed_states`: optional normalized states accepted by the caller, default
   `open`.
-- `ambiguity_policy`: `ask` (default) or `stop` when the exact request ID cannot
-  be established from backlinks.
 - `fields`: optional caller-requested fields forwarded to the exact request
   read.
 
@@ -28,9 +26,8 @@ A caller may provide an already known `request_id`.
    only request IDs belonging to that provider and exact repository. Stop when
    it is missing.
 2. Use the backlink result only when it contains one unique request ID.
-   Otherwise, stop with the exact ambiguity when `ambiguity_policy: stop`, or
-   ask the user for the exact pull-request number or merge-request IID when
-   `ambiguity_policy: ask`. Do not list or search requests.
+   Otherwise, ask the user for the exact pull-request number or merge-request
+   IID. Do not list or search requests.
 3. Run `./read-request.md` with that exact request ID and caller-requested
    `fields`.
 4. Require the normalized request `state` to be one of `allowed_states`.
