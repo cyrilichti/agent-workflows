@@ -30,6 +30,9 @@ or `{"status":"no eligible item"}` when skipped.
 | Linear | `backlog`, name `Custom` | planned, inspected | Eligible |
 | Linear | `started`, name `In Review` | planned | Eligible |
 | Linear | `started`, name ` review ` | planned | Eligible |
+| Linear | `started`, each of `Code Review`, `Awaiting Review`, `Under Review` | planned | Eligible; transition also classifies as review |
+| Linear | `started`, each of `Code Review`, `Awaiting Review`, `Under Review` | planned, inspected | Skip |
+| Linear | `started`, each of `Review Complete`, `Review Blocked` | planned | Skip; whole meaning does not establish awaiting or undergoing review |
 | Linear | `started`, name `In Review` | planned, inspected | Skip |
 | Linear | `started`, name `In Progress` | planned | Skip |
 | Linear | `started`, name `Open` | planned | Skip |
@@ -38,6 +41,9 @@ or `{"status":"no eligible item"}` when skipped.
 | ClickUp | each of `Open`, `To Do`, `Todo`, `Backlog`, `Not Started`, `Awaiting Start` | planned | Eligible |
 | ClickUp | ` to do ` | planned | Eligible |
 | ClickUp | each of `Review`, ` in review ` | planned | Eligible |
+| ClickUp | each of `Code Review`, `Awaiting Review`, `Under Review` | planned | Eligible; transition also classifies as review |
+| ClickUp | each of `Code Review`, `Awaiting Review`, `Under Review` | planned, inspected | Skip |
+| ClickUp | each of `Review Complete`, `Review Blocked` | planned | Skip |
 | ClickUp | `In Review` | planned, inspected | Skip |
 | ClickUp | each of `In Progress`, `Done`, `Closed`, `Canceled`, `Blocked`, missing status | planned | Skip |
 | Both | waiting | empty array or only `Agent-Planned` | Skip |

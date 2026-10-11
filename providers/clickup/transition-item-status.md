@@ -19,7 +19,7 @@ the returned expanded statuses as the available statuses in both cases.
 Return the current and available statuses as `id`, `name`, and `category`:
 
 - `completed`: done or closed type, or a clear done, completed, or closed name;
-- `review`: name clearly identifies review;
+- `review`: name qualifying under `../../rules/review-status.md`;
 - `active`: exact `in progress` name or a clear non-review active-work status;
 - `other`: every remaining status.
 
