@@ -8,12 +8,6 @@ gh api --hostname <host> repos/<owner>/<repo>/pulls/<number>
 
 Normalize its number to `request_id`, kind to `pull_request`, `merged`/`state` to open, merged, or closed, and null `body` to an empty string. Preserve draft, head/base branches, author, and URL. For `delivery_state`, return exact `head.sha`; map merged to `merged`, `mergeable: false` or a definite blocked state to `blocked`, `mergeable: true` with a definite ready state to `mergeable`, and all other states to `unknown`. Preserve a definite blocker reason. Never infer repository or request identity from the current branch.
 
-For `source_repository`, compare the initial response's `head.repo.full_name`
-with the caller's `<owner>/<repo>` case-insensitively. Return
-`source_repository_matches: true` on a match, `false` on a different repository,
-or `null` when the source repository is absent. Do not infer ownership from the
-branch name.
-
 For requested commits or files, exhaust the relevant endpoint with `per_page=100`, flatten all pages, and reject partial results or provider limits:
 
 ```text

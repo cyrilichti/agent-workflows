@@ -15,12 +15,10 @@ repository: repository derived from the push remote
 request_id: carried exact request ID, when supplied
 request_backlinks: official item's existing delivery backlinks
 source_branch: carried branch, when supplied
-fields: [source_repository, delivery_state]
+fields: delivery_state
 ```
 
-Require `source_repository_matches: true`; stop when the source belongs to
-another repository or its ownership is unavailable. Require the returned
-source branch to be a nonempty valid Git branch name,
+Require the returned source branch to be a valid Git branch name,
 different from the repository's default branch. Use the carried request identity
 or the workflow-created item backlink directly.
 Do not search for or substitute another request.

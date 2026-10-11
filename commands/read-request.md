@@ -25,10 +25,6 @@ When `fields` contains `delivery_state`, also return:
 - normalized `merge_status`: `mergeable`, `blocked`, `unknown`, or `merged`;
 - the provider-reported merge blocker when available.
 
-When `fields` contains `source_repository`, return `source_repository_matches`
-as `true` when the request's source repository is the caller's exact repository,
-`false` when it differs, or `null` when ownership cannot be established.
-
 When `fields` contains `review_activity`, return the exact head SHA and every
 request comment, review discussion, reply, and verdict. Follow every page and
 stop if the activity is partial.
