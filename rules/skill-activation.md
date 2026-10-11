@@ -1,13 +1,10 @@
 # Skill Activation
 
-Select Skills according to whether their method is useful for the current
-activity, rather than merely matching its topic or specialist. Follow any
-mandatory trigger defined by the active workflow.
+Load a complete Skill when any part of its method is useful or the active
+workflow requires it. Reuse a suitable active load.
 
-When any useful part of a Skill's method applies, load the complete Skill or
-reuse an active load that remains suitable. A workflow may bound which parts
-to apply. Local contracts own project-specific formats and rules; do not copy
-or abridge a Skill's method into them to avoid loading it.
+Workflows may limit its application. Local contracts own project-specific
+formats and rules without duplicating Skill methods.
 
 Whenever a Skill is selected and loaded for the current task, announce it
 before applying it using `../templates/skill-activation.md`.
