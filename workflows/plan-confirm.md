@@ -39,11 +39,12 @@ delivery units, reassess the expanded context with Step 1.
 
 ### 3. Draft and Review the Plan
 
-The specialist is the sole plan author. It may load and apply:
+The specialist is the sole plan author. Before drafting, apply
+`../rules/skill-activation.md` with these triggers and limits:
 
 | Skill | Trigger | Bounded use |
 | --- | --- | --- |
-| `planning-and-task-breakdown` | Always; reuse the Step 1 load | Order dependencies, prefer vertical slices, and create the fewest small, verifiable todos. Ignore its formats, paths, estimates, file lists, checkpoints, and templates. |
+| `planning-and-task-breakdown` | Every plan, after Step 1 confirms one delivery unit | Apply its planning method. |
 | `source-driven-development` | A decision depends on an unverified external versioned fact | Verify and cite only that fact. Ignore its implementation process. |
 
 Have the specialist write using `../templates/plan.md` with:
