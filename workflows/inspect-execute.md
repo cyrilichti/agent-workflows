@@ -84,12 +84,21 @@ item_id: exact official item ID
 label: agent-inspected
 ```
 
-Require `applied: true`, then present `../templates/inspect-result.md` with the
-observed request outcome and `agent-inspected applied`, and finish according to
+Require `applied: true`, then run `../commands/transition-item-status.md` with
+the exact item ID and `target_status: review`. Require `transitioned: true`.
+If the transition fails, present `../templates/inspect-result.md` with the
+observed request outcome, `agent-inspected applied`, and the exact remaining
+review transition. Report the incomplete delivery and the returned reason;
+do not claim completion.
+
+After a successful transition, preserve the resulting item status in the
+delivery context, present `../templates/inspect-result.md` with the observed
+request outcome and `agent-inspected applied`, and finish according to
 `../goals/inspect-complete.md`.
 
 ## Safety
 
-- Limit inspection-owned mutations to publishing new review content and
-  applying the final item label. Delegate code, commit, branch, and corrective
+- Limit inspection-owned mutations to publishing new review content, applying
+  the final item label, and transitioning the item to review. Delegate code,
+  commit, branch, and corrective
   todo changes to `/work`.
