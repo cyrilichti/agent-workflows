@@ -43,8 +43,6 @@ the main conversation and the caller can consume or restate the useful result.
 In the selected placement, read the full `../agents/<agent-name>.md` profile
 and apply it to `task_context`. Do not rely on frontmatter or partial content.
 
-Apply `../rules/skill-activation.md` to the profile's Skill triggers.
-
 ### 4. Report Activation
 
 After activating the profile, report using
