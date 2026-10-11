@@ -20,8 +20,6 @@ source_findings:
   copy.
 - Omit `source_findings` when there is no corrective work.
 - Recheck mutable provider and Git state at each mutation or snapshot boundary.
-- For resumed work, bind and safely check out the exact request's source branch
-  through `../workflows/work-resume.md` before changing the plan or files.
 - `plan` belongs to `item`.
 - A caller handoff must already contain every identity available at its stage.
   Preserve a complete caller-supplied plan and item pair without rediscovering
