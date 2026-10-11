@@ -10,8 +10,8 @@ arguments:
 Use the returned status name. Trim surrounding whitespace and compare
 case-insensitively against these waiting-to-start names: `Open`, `To Do`,
 `Todo`, `Backlog`, `Not Started`, and `Awaiting Start`. Match whole names;
-other or missing names do not establish waiting eligibility. Map review names
-using `../../rules/review-status.md`.
+other or missing names do not establish waiting eligibility. Map a status to review
+when its name clearly identifies review.
 `In Progress`, done, closed, canceled, and ambiguous custom statuses are
 skipped. `include_closed: false` is a query filter, not an eligibility check.
 

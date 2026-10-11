@@ -22,8 +22,7 @@ arguments:
 Return the current and available statuses as `id`, `name`, and `category`:
 
 - `completed`: Linear type `completed`, or a clear done or completed name;
-- `review`: Linear type `started` and a name qualifying under
-  `../../rules/review-status.md`;
+- `review`: name clearly identifies review;
 - `active`: Linear type `started`, excluding review;
 - `other`: every remaining status.
 

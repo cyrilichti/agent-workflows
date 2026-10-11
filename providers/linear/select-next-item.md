@@ -10,8 +10,8 @@ arguments:
 ```
 
 Use Linear's native `statusType`: `backlog` and `unstarted` map to waiting to
-start. A native type of `started` maps to review when its status name qualifies
-under `../../rules/review-status.md`. Other `started` statuses are work in
+start. A native type of `started` maps to review when its name clearly
+identifies review. Other `started` statuses are work in
 progress. Use native types for waiting states; a custom
 status named `Open` with type `started` does not qualify. Skip missing or other
 types, including `triage`, `completed`, `canceled`, and `duplicate`.
