@@ -44,7 +44,7 @@ The specialist is the sole plan author. Before drafting, apply
 
 | Skill | Trigger | Bounded use |
 | --- | --- | --- |
-| `planning-and-task-breakdown` | Every plan, after Step 1 confirms one delivery unit | Apply its planning method; `../templates/plan.md` owns the project-specific format, path, and allowed plan content. |
+| `planning-and-task-breakdown` | Every plan, after Step 1 confirms one delivery unit | Apply its planning method. |
 | `source-driven-development` | A decision depends on an unverified external versioned fact | Verify and cite only that fact. Ignore its implementation process. |
 
 Have the specialist write using `../templates/plan.md` with:
