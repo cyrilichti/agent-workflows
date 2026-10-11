@@ -21,8 +21,8 @@ Work directly when no trigger applies. Otherwise, load only:
   regression coverage through a test-first loop.
 
 Re-evaluate the route if assessment turns into implementation or the reverse.
-Keep the current Skill while it remains appropriate and do not load both for the
-same validation activity.
+Keep the current Skill while it remains appropriate and select any additional
+Skill whose method is needed for the activity.
 
 ## Responsibilities
 

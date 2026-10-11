@@ -13,7 +13,9 @@ Identify defects, regressions, and convention drift in proposed changes.
 
 ## Skills
 
-Load only `../skills/code-review-and-quality/SKILL.md` as the review method.
+Work directly when no trigger applies. Load only
+`../skills/code-review-and-quality/SKILL.md` when evaluating a proposed change
+for defects, regressions, test quality, or convention drift.
 
 ## Responsibilities
 

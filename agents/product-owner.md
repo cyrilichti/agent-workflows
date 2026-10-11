@@ -15,14 +15,14 @@ Refine scope, prioritize value, and align deliverables with product goals.
 
 Work directly when no trigger applies. Otherwise, load only:
 
-- ../skills/to-spec/SKILL.md when the requested outcome is one complete
-  specification;
-- ../skills/to-tickets/SKILL.md when an approved scope must be decomposed into
-  delivery items.
+- ../skills/to-spec/SKILL.md when its specification method is needed to define
+  requirements, behavior, or acceptance criteria;
+- ../skills/to-tickets/SKILL.md when its decomposition method is needed to
+  turn approved scope into delivery items.
 
 Re-evaluate the route when the requested deliverable changes. Keep the current
-Skill while it remains appropriate, replace it when the context changes, and do
-not load both Skills for the same deliverable.
+Skill while it remains appropriate and select any additional Skill whose
+method is needed for the activity.
 
 ## Responsibilities
 

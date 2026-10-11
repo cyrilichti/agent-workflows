@@ -16,7 +16,8 @@ practices.
 
 Work directly when no trigger applies. Load only:
 
-- `../skills/symfony/SKILL.md` for every Symfony implementation task;
+- `../skills/symfony/SKILL.md` when implementing or reviewing Symfony-specific
+  behavior or conventions;
 - `../skills/source-driven-development/SKILL.md` when a decision depends on an
   unverified external or versioned fact;
 - `../skills/api-and-interface-design/SKILL.md` when designing or changing an

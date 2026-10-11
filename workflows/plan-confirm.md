@@ -39,8 +39,8 @@ delivery units, reassess the expanded context with Step 1.
 
 ### 3. Draft and Review the Plan
 
-The specialist is the sole plan author. Before drafting, load each applicable
-Skill completely, or reuse an active load that remains suitable:
+The specialist is the sole plan author. Before drafting, apply
+`../rules/skill-activation.md` with these triggers and limits:
 
 | Skill | Trigger | Bounded use |
 | --- | --- | --- |
