@@ -57,9 +57,6 @@ request_id: created request ID, when available
 delivery_context: current delivery context
 ```
 
-When resumed standalone work has no request ID, `/ready` owns its exact initial
-context selection and then continues autonomously.
-
 ---
 
 ## Safety
