@@ -211,18 +211,8 @@ networks:
 volumes:
   kestra-db: {}
   kestra: {}
-  postgres:
-    external: ${EXTERNAL_VOLUMES:-false}
-    name: ${VOLUME_PREFIX:-agent-workflows}_postgres
-  clickhouse:
-    external: ${EXTERNAL_VOLUMES:-false}
-    name: ${VOLUME_PREFIX:-agent-workflows}_clickhouse
-  clickhouse-logs:
-    external: ${EXTERNAL_VOLUMES:-false}
-    name: ${VOLUME_PREFIX:-agent-workflows}_clickhouse-logs
-  redis:
-    external: ${EXTERNAL_VOLUMES:-false}
-    name: ${VOLUME_PREFIX:-agent-workflows}_redis
-  minio:
-    external: ${EXTERNAL_VOLUMES:-false}
-    name: ${VOLUME_PREFIX:-agent-workflows}_minio
+  postgres: {}
+  clickhouse: {}
+  clickhouse-logs: {}
+  redis: {}
+  minio: {}
