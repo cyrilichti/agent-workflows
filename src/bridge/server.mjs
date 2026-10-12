@@ -39,7 +39,7 @@ export function createBridgeHttpServer({ taskExecution, token, providerName }) {
     if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) {
       return sendJsonResponse(response, 401, { error: 'unauthorized' });
     }
-    if (request.method !== 'POST' || request.url !== '/generate') {
+    if (request.method !== 'POST' || request.url !== '/') {
       return sendJsonResponse(response, 404, { error: 'not_found' });
     }
     try {

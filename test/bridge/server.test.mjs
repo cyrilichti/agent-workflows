@@ -24,7 +24,7 @@ test('HTTP bridge authenticates before executing and accepts a task without a pr
   });
   server.listen(0, '127.0.0.1');
   await once(server, 'listening');
-  const url = `http://127.0.0.1:${server.address().port}/generate`;
+  const url = `http://127.0.0.1:${server.address().port}/`;
   assert.equal((await fetch(url, { method: 'POST', body: 'Hello' })).status, 401);
   assert.equal(calls.length, 0);
   const response = await fetch(url, {
@@ -37,6 +37,7 @@ test('HTTP bridge authenticates before executing and accepts a task without a pr
     body: 'Hello\n"world"',
   });
   assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { status: 'completed' });
   assert.deepEqual(calls, [{ requestId: 'request-001', prompt: 'Hello\n"world"' }]);
   assert.equal(
     (
@@ -49,6 +50,45 @@ test('HTTP bridge authenticates before executing and accepts a task without a pr
     400,
   );
   assert.equal(calls.length, 1);
+  const input = { requestId: 'request-002', prompt: 'Hello JSON' };
+  const jsonResponse = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  assert.equal(jsonResponse.status, 200);
+  assert.deepEqual(await jsonResponse.json(), { status: 'completed' });
+  assert.deepEqual(calls[1], input);
+});
+
+test('HTTP bridge rejects authenticated POST /generate without executing a task', async (t) => {
+  const token = 'test-only-token-'.repeat(4);
+  const calls = [];
+  const server = createBridgeHttpServer({
+    token,
+    providerName: 'codex',
+    taskExecution: {
+      enabled: true,
+      async executeTask(body) {
+        calls.push(body);
+        return { status: 'completed' };
+      },
+    },
+  });
+  t.after(() => {
+    server.closeAllConnections();
+    server.close();
+  });
+  server.listen(0, '127.0.0.1');
+  await once(server, 'listening');
+  const response = await fetch(`http://127.0.0.1:${server.address().port}/generate`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ requestId: 'request-001', prompt: 'Hello' }),
+  });
+  assert.equal(response.status, 404);
+  assert.deepEqual(await response.json(), { error: 'not_found' });
+  assert.deepEqual(calls, []);
 });
 
 test('HTTP bridge returns 429 for a concurrent call with the same request ID', async (t) => {
@@ -77,7 +117,7 @@ test('HTTP bridge returns 429 for a concurrent call with the same request ID', a
   });
   server.listen(0, '127.0.0.1');
   await once(server, 'listening');
-  const url = `http://127.0.0.1:${server.address().port}/generate`;
+  const url = `http://127.0.0.1:${server.address().port}/`;
   const options = {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -110,7 +150,7 @@ test('HTTP bridge reports inference failures through HTTP while preserving the t
   });
   server.listen(0, '127.0.0.1');
   await once(server, 'listening');
-  const response = await fetch(`http://127.0.0.1:${server.address().port}/generate`, {
+  const response = await fetch(`http://127.0.0.1:${server.address().port}/`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'text/plain', 'X-Request-Id': 'request-001' },
     body: 'Hello',
@@ -137,7 +177,7 @@ test('HTTP bridge distinguishes an unknown inference outcome from a failure', as
   });
   server.listen(0, '127.0.0.1');
   await once(server, 'listening');
-  const response = await fetch(`http://127.0.0.1:${server.address().port}/generate`, {
+  const response = await fetch(`http://127.0.0.1:${server.address().port}/`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'text/plain', 'X-Request-Id': 'request-001' },
     body: 'Hello',
