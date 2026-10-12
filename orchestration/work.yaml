@@ -73,7 +73,7 @@ tasks:
               | 2. Filter | Linear selects the first unarchived issue in the returned page with the exact `agent-planned` label and a `Backlog` or `Open` status. ClickUp selects a task tagged `agent-planned` and excludes closed tasks. |
               | 3. Return | A found item returns only `{"name":"…","id":"…","url":"…","list":"…"}`. `list` is the Linear project name or ClickUp list name. No match returns `{"status":"no eligible item"}`; a missing destination or provider failure is an error. |
               | 4. Stop | Selection ends without reading another item, creating a plan, changing the ticket, or starting delivery. `/work` starts delivery for the selected item. |
-            uri: '{{ envs.bridge_url }}/generate'
+            uri: '{{ envs.bridge_url }}/'
             method: POST
             contentType: application/json
             headers:
@@ -132,7 +132,7 @@ tasks:
                     | 2. Search | Search configured project directories first, then neighboring repositories and the home directory if needed. Complete the first matching tier, retain all exact matches when present, and otherwise retain prefix matches. |
                     | 3. Choose | For several matches, use the complete item to identify the primary repository, then apply stable tie breaks. |
                     | 4. Return | Return one absolute path, `not found`, or `search incomplete`. Invalid input or a failed search is an error. |
-                  uri: '{{ envs.bridge_url }}/generate'
+                  uri: '{{ envs.bridge_url }}/'
                   method: POST
                   contentType: application/json
                   headers:
@@ -195,7 +195,7 @@ tasks:
                           | 5. Ready | When every todo is complete, continue automatically to `/ready`; later findings return through the same loop as corrective todos. `/ready` verifies the completed branch against the approved plan, returns concrete gaps to `/work`, then promotes passing work for review. |
                           | 6. Inspect | `/ready` continues automatically to `/inspect` after the required request updates are observed. `/inspect` reviews one frozen request snapshot and head SHA, publishes each unseen valid finding once, and returns blocking findings to `/work`. When none remain, it applies `agent-inspected` and stops without invoking `/done`. |
                           | 7. Report | Kestra checks the bridge's `## Inspect result` for this same item before recording completion. Merge and `/done` remain human decisions. |
-                        uri: '{{ envs.bridge_url }}/generate'
+                        uri: '{{ envs.bridge_url }}/'
                         method: POST
                         contentType: application/json
                         headers:
