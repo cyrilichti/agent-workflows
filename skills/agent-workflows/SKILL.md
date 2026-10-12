@@ -31,8 +31,6 @@ Install or update agent-workflows in the current project.
   local customizations into them.
 - Treat `.agents/plans` as project-owned content. Never copy source-repository
   plans into a consuming project or remove consuming-project plans.
-- Leave existing `.cursor` content in consuming projects untouched. Do not
-  create `.cursor` paths.
 - Do not create commits.
 
 ## Preflight
@@ -234,7 +232,6 @@ Before reporting success, verify:
 - every fully managed directory equals its downloaded source and contains no
   obsolete path;
 - `.agents/plans` still contains every pre-existing consuming-project plan;
-- no `.cursor` path was created, modified, or removed by deployment;
 - the effective Git ignore behavior matches Compose Git Ignore Rules;
 - the project lock contains every downloaded Skill entry;
 - every declared Skill is installed;
