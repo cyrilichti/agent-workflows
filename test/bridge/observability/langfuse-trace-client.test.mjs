@@ -33,7 +33,7 @@ test('caller labels determine observation name, trace name and tags', () => {
     prompt: 'Execute /next',
     text: 'OK',
     status: 'completed',
-    trace: { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'], level: 'DEBUG' },
+    trace: { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'] },
     startedAt: '2026-01-01T00:00:00Z',
     endedAt: '2026-01-01T00:00:01Z',
   }, { environment: 'staging' });
@@ -45,7 +45,7 @@ test('caller labels determine observation name, trace name and tags', () => {
   assert.equal(attributes['langfuse.trace.name'].stringValue, 'agent-workflows.work.next');
   assert.deepEqual(attributes['langfuse.trace.tags'].arrayValue.values, [{ stringValue: 'next' }]);
   assert.equal(attributes['langfuse.environment'].stringValue, 'staging');
-  assert.equal(attributes['langfuse.observation.level'].stringValue, 'DEBUG');
+  assert.equal(attributes['langfuse.observation.level'].stringValue, 'DEFAULT');
 });
 
 test('failed operation is an error even when its configured level is debug', () => {
