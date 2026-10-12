@@ -1,6 +1,6 @@
 # Plan
 
-Use for a Plan UI-compatible implementation plan.
+Use for an implementation plan with visible todo states.
 
 ## File
 
@@ -16,19 +16,13 @@ etc. when the filename exists.
 ## Format
 
 ```markdown
----
-name: <short plan title>
-overview: <one-line objective and approach>
-todos:
-  - id: <unique step slug>
-    content: <one-sentence actionable step>
-    status: pending
-isProject: false
----
-
 # <Plan title>
 
 <when an official item reference is supplied: **Ticket :** [<exact item ID>](<exact item URL>)>
+
+## Overview
+
+<one-line objective and approach>
 
 ## Objective
 
@@ -44,40 +38,42 @@ isProject: false
 
 ## Steps
 
-1. <exact first todo content>
+1. ○ <one-sentence actionable step>
 
 ## Validation
 
 - [ ] <how the work will be checked>
 ```
 
-## Frontmatter Rules
+## Todo State
 
-| Field | Required | Notes |
-| --- | --- | --- |
-| `name` | yes | Short title shown in Plan UI |
-| `overview` | yes | One-line scope summary |
-| `todos` | yes | One item per numbered step |
-| `todos[].id` | yes | Unique kebab-case slug within the plan |
-| `todos[].content` | yes | Exact corresponding step text |
-| `todos[].status` | yes | `pending`, `in_progress`, `completed`, or `cancelled` |
-| `todos[].source` | corrective only | Exact source metadata from `corrective-todo.md` |
-| `isProject` | yes | `false` for one delivery unit |
+The numbered `## Steps` list is the sole authority for todo content, order, and
+state. Use exactly one of these symbols between the number and content:
+
+| State | Symbol |
+| --- | --- |
+| `pending` | `○` |
+| `in_progress` | `◐` |
+| `completed` | `✓` |
+| `cancelled` | `⊘` |
+
+Change only the step symbol for a state transition. Do not add a state label or
+checkbox to a step, and do not infer todo state from checkboxes in
+`## Validation` or other sections. At most one todo may be
+`in_progress`; cancellation requires explicit user confirmation. Start every
+initial todo as `pending`.
 
 ## Rules
 
 - Treat the project-relative `.plan.md` file path as the canonical plan
-  reference. Do not store a separate identity in frontmatter.
-- Start every todo as `pending`. Later allow only `pending`, `in_progress`,
-  `completed`, or `cancelled`, with at most one `in_progress`; cancellation
-  requires explicit user confirmation.
-- Use the fewest small, verifiable todos. Their content and the numbered steps
-  must match exactly in count, order, and wording.
+  reference. The H1 heading is the plan name.
+- Use the fewest small, verifiable todos. Preserve their content and order when
+  changing state.
 - Use only supplied or inspected context. Do not add Skill-specific formats,
   estimates, file lists, or checkpoints.
 - For official item context, render its exact supplied ID and URL in the ticket
   reference without reconstructing either value. Omit it for standalone plans.
 - Do not add other provider, item, Git, or request metadata to the plan.
 - Add `## Open Questions` only for unresolved decisions.
-- Only `/work` appends corrective todos after approval. Initial todos omit
-  `source`.
+- Only `/work` appends corrective todos after approval. Use
+  `../templates/corrective-todo.md` for their provenance.

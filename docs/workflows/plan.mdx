@@ -19,6 +19,11 @@ item plan, but it does not start delivery. When `/plan` is called by `/pick`,
 approval also authorizes autonomous delivery and returns control to `/pick` so
 it can continue with `/work`.
 
+Each plan shows todo state beside its numbered step with one symbol: `○` for
+`pending`, `◐` for `in_progress`, `✓` for `completed`, and `⊘` for `cancelled`.
+`/work` updates the symbol, and `/ready` uses the step states when checking
+that delivery is complete.
+
 ## How `/plan` reaches approval
 
 <div class="write-flow plan-flow" role="img" aria-label="The plan workflow resolves the task context and checks whether it is one delivery unit. Tasks containing multiple independent units exit with needs-refinement. Otherwise, a specialist drafts the plan, resolves material questions with the human, and revises the complete plan until the human approves it with the scope of the current entry mode.">

@@ -11,12 +11,14 @@ translates findings into corrective todos.
 
 ### 2. Execute Todos
 
-Treat plan todo states as authoritative. Skip `completed` and `cancelled`, then
+Treat the state symbols in the plan's numbered `## Steps` as
+authoritative. Skip `completed` and `cancelled`, then
 select the first `in_progress` todo or mark the first `pending` todo
 `in_progress`. Continue to Step 3 when neither exists.
 
-Persist every state transition immediately in the authoritative plan file. Do
-not keep todo state only in execution context.
+Persist every state transition immediately by changing that step's symbol in
+the authoritative plan file according to
+`../templates/plan.md`. Do not keep todo state only in execution context.
 
 For each active todo:
 

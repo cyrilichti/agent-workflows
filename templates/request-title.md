@@ -19,7 +19,7 @@ Without an official item:
 ## Rules
 
 - Use the exact official item ID supplied by the caller.
-- Use the plan frontmatter `name` as `<plan-name>`.
+- Use the plan H1 heading as `<plan-name>`.
 - Do not add a provider name, branch name, todo, or generated identifier.
 - This template defines only the title. It does not require a merge-request
   description.
