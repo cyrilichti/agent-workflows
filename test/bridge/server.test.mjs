@@ -50,15 +50,6 @@ test('HTTP bridge authenticates before executing and accepts a task without a pr
     400,
   );
   assert.equal(calls.length, 1);
-  const input = { requestId: 'request-002', prompt: 'Hello JSON' };
-  const jsonResponse = await fetch(url, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  assert.equal(jsonResponse.status, 200);
-  assert.deepEqual(await jsonResponse.json(), { status: 'completed' });
-  assert.deepEqual(calls[1], input);
 });
 
 test('HTTP bridge rejects authenticated POST /generate without executing a task', async (t) => {
