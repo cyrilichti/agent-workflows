@@ -21,8 +21,8 @@ backlinks from the delivery context; ask for its number or IID only when neither
 is available. Never search for or substitute another request.
 
 Reset every checkbox in the plan's global Validation to unchecked without
-changing step-state checkboxes, then run
-every validation item regardless of its prior state. After each successful
+changing step symbols, then run every validation item regardless of its prior
+state. After each successful
 item, check its exact checkbox. Never check a failed or unexecuted item.
 
 Compare the complete committed diff against the request target with the

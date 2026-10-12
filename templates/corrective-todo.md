@@ -7,7 +7,7 @@ Append a numbered step using the next number and the `pending` prefix from
 `../templates/plan.md`:
 
 ```markdown
-<next number>. [ ] **pending** — <one-sentence actionable correction>
+<next number>. ○ <one-sentence actionable correction>
    ~~~~yaml
    corrective_source:
      workflow: <ready or inspect>

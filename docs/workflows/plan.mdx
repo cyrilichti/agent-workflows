@@ -19,10 +19,10 @@ item plan, but it does not start delivery. When `/plan` is called by `/pick`,
 approval also authorizes autonomous delivery and returns control to `/pick` so
 it can continue with `/work`.
 
-Each plan shows todo state beside its numbered step. A checkbox and an explicit
-label distinguish `pending`, `in_progress`, `completed`, and `cancelled`.
-`/work` updates both markers together, and `/ready` uses the step states when
-checking that delivery is complete.
+Each plan shows todo state beside its numbered step with one symbol: `○` for
+`pending`, `◐` for `in_progress`, `✓` for `completed`, and `⊘` for `cancelled`.
+`/work` updates the symbol, and `/ready` uses the step states when checking
+that delivery is complete.
 
 ## How `/plan` reaches approval
 

@@ -38,7 +38,7 @@ etc. when the filename exists.
 
 ## Steps
 
-1. [ ] **pending** — <one-sentence actionable step>
+1. ○ <one-sentence actionable step>
 
 ## Validation
 
@@ -48,17 +48,18 @@ etc. when the filename exists.
 ## Todo State
 
 The numbered `## Steps` list is the sole authority for todo content, order, and
-state. Use exactly one of these visible prefixes on each step:
+state. Use exactly one of these symbols between the number and content:
 
-| State | Prefix |
+| State | Symbol |
 | --- | --- |
-| `pending` | `[ ] **pending** —` |
-| `in_progress` | `[ ] **in_progress** —` |
-| `completed` | `[x] **completed** —` |
-| `cancelled` | `[ ] **cancelled** —` |
+| `pending` | `○` |
+| `in_progress` | `◐` |
+| `completed` | `✓` |
+| `cancelled` | `⊘` |
 
-Change the checkbox and state label together. Do not infer todo state from
-checkboxes in `## Validation` or other sections. At most one todo may be
+Change only the step symbol for a state transition. Do not add a state label or
+checkbox to a step, and do not infer todo state from checkboxes in
+`## Validation` or other sections. At most one todo may be
 `in_progress`; cancellation requires explicit user confirmation. Start every
 initial todo as `pending`.
 
