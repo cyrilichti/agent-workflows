@@ -15,6 +15,6 @@ content.
 
 ## Rules
 
-- Lead with the plan state and frontmatter `name` on one bold line, then link to
+- Lead with the plan state and H1 plan name on one bold line, then link to
   `.agents/plans/<filename>`, and include no other plan content.
 - Present this summary only after the complete final plan.

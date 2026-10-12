@@ -4,7 +4,8 @@
 
 ### 1. Verify the Delivery
 
-Require the authoritative plan file, Objective, Expected Outcome, todos, and
+Require the authoritative plan file, Objective, Expected Outcome, numbered
+Steps with visible todo states, and
 global Validation. Derive its canonical reference from its project-relative
 path. Every todo must be terminal and at least one must be `completed`.
 
@@ -19,7 +20,8 @@ the current branch with `../commands/resolve-version-provider.md`,
 backlinks from the delivery context; ask for its number or IID only when neither
 is available. Never search for or substitute another request.
 
-Reset every checkbox in the plan's global Validation to unchecked, then run
+Reset every checkbox in the plan's global Validation to unchecked without
+changing step-state checkboxes, then run
 every validation item regardless of its prior state. After each successful
 item, check its exact checkbox. Never check a failed or unexecuted item.
 

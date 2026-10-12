@@ -3,18 +3,20 @@
 Use only in `/work` to translate one `/ready` gap or blocking `/inspect`
 finding into persisted plan work.
 
-```yaml
-- id: correction-<workflow>-<source-id-slug>-<full-source-head-sha>
-  content: <one-sentence actionable correction>
-  status: pending
-  source:
-    workflow: <ready or inspect>
-    id: <source finding ID>
-    head_sha: <source HEAD SHA>
-    finding: |-
-      <exact complete source finding>
+Append a numbered step using the next number and the `pending` prefix from
+`../templates/plan.md`:
+
+```markdown
+<next number>. [ ] **pending** — <one-sentence actionable correction>
+   <!-- corrective-source
+   workflow: <ready or inspect>
+   id: <source finding ID>
+   head_sha: <source HEAD SHA>
+   finding: <exact complete source finding>
+   -->
 ```
 
-Append the same `content` to the plan's numbered Steps. Preserve the finding
-until this record is persisted. Do not append the same workflow, source ID, and
-HEAD SHA twice.
+For a multiline finding, preserve every line inside the comment. Keep the
+comment attached to the same step through state changes. Preserve the finding
+until the step and comment are persisted. Do not append a second step with the
+same `workflow`, `id`, and `head_sha` values.
