@@ -45,6 +45,21 @@ test('disabled inference consumes no provider calls', async () => {
   assert.equal(f.calls(), 0);
 });
 
+test('caller trace labels are validated and forwarded to tracing', async () => {
+  let traced;
+  const f = fixture({ trace: async (outcome) => { traced = outcome; } });
+  const trace = { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'], level: 'DEBUG' };
+  await f.service.executeTask({ ...input, trace });
+  assert.deepEqual(traced.trace, trace);
+  await assert.rejects(f.service.executeTask({ ...input, trace: { ...trace, tags: 'next' } }), {
+    code: 'invalid_input',
+  });
+  await assert.rejects(f.service.executeTask({ ...input, trace: { ...trace, level: 'IMPORTANT' } }), {
+    code: 'invalid_input',
+  });
+  assert.equal(f.calls(), 1);
+});
+
 test('trace failure preserves response and is attempted once', async () => {
   let attempts = 0;
   const f = fixture({

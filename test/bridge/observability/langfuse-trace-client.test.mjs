@@ -23,3 +23,46 @@ test('trace usage subtracts cached input and leaves unavailable usage absent', (
   delete r.usage;
   assert.equal(usage(r), undefined);
 });
+
+test('caller labels determine observation name, trace name and tags', () => {
+  const batch = buildLangfuseTraceBatch({
+    requestId: 'trace-test-002',
+    traceId: '0123456789abcdef0123456789abcdef',
+    provider: 'codex',
+    model: 'test',
+    prompt: 'Execute /next',
+    text: 'OK',
+    status: 'completed',
+    trace: { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'] },
+    startedAt: '2026-01-01T00:00:00Z',
+    endedAt: '2026-01-01T00:00:01Z',
+  }, { environment: 'staging' });
+  const span = batch.resourceSpans[0].scopeSpans[0].spans[0];
+  const attributes = Object.fromEntries(
+    span.attributes.map(({ key, value }) => [key, value]),
+  );
+  assert.equal(span.name, 'next');
+  assert.equal(attributes['langfuse.trace.name'].stringValue, 'agent-workflows.work.next');
+  assert.deepEqual(attributes['langfuse.trace.tags'].arrayValue.values, [{ stringValue: 'next' }]);
+  assert.equal(attributes['langfuse.environment'].stringValue, 'staging');
+  assert.equal(attributes['langfuse.observation.level'].stringValue, 'DEFAULT');
+});
+
+test('failed operation is an error even when its configured level is debug', () => {
+  const batch = buildLangfuseTraceBatch({
+    requestId: 'trace-test-003',
+    traceId: '0123456789abcdef0123456789abcdef',
+    provider: 'codex',
+    model: 'test',
+    prompt: 'Execute /next',
+    status: 'failed',
+    error: { code: 'provider_error', message: 'Provider failed' },
+    trace: { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'], level: 'DEBUG' },
+    startedAt: '2026-01-01T00:00:00Z',
+    endedAt: '2026-01-01T00:00:01Z',
+  });
+  const level = batch.resourceSpans[0].scopeSpans[0].spans[0].attributes.find(
+    ({ key }) => key === 'langfuse.observation.level',
+  );
+  assert.equal(level.value.stringValue, 'ERROR');
+});

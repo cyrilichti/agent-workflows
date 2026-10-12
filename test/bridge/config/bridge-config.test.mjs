@@ -67,3 +67,11 @@ test('empty working directory defaults to the project root outside the launch di
 
   assert.equal(config.providerOptions.directory, projectRoot);
 });
+
+test('deployment environment is passed to tracing configuration', (t) => {
+  const config = loadBridgeConfig({
+    envFile: envFile(t, 'DEPLOYMENT_ENVIRONMENT=staging\n'),
+    environment: {},
+  });
+  assert.equal(config.langfuse.environment, 'staging');
+});
