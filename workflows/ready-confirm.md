@@ -5,9 +5,9 @@
 ### 1. Verify the Delivery
 
 Require the authoritative plan file, Objective, Expected Outcome, numbered
-Steps with visible todo states, and
-global Validation. Derive its canonical reference from its project-relative
-path. Every todo must be terminal and at least one must be `completed`.
+Steps with visible todo states, and global Validation. Derive its canonical
+reference from its project-relative path. Every todo must be terminal and at
+least one must be `completed`.
 
 Inspect the current branch without fetching. Require a clean named non-default
 branch with an upstream that is not behind or diverged. Keep the branch, `HEAD`,
