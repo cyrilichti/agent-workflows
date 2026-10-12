@@ -12,14 +12,19 @@ const attribute = (key, value) => ({
   key,
   value: { stringValue: typeof value === 'string' ? value : JSON.stringify(value) },
 });
+const stringArrayAttribute = (key, values) => ({
+  key,
+  value: { arrayValue: { values: values.map((value) => ({ stringValue: value })) } },
+});
 // https://langfuse.com/integrations/native/opentelemetry
 /**
  * Build an OTLP batch, separating cached token usage from input usage.
  *
  * @param {import('../execution/task-contract.mjs').TaskOutcome} record Finished task outcome.
+ * @param {{ environment?: string }} [options] Trace environment configuration.
  * @returns {object} OTLP HTTP/JSON payload for Langfuse.
  */
-export function buildLangfuseTraceBatch(record) {
+export function buildLangfuseTraceBatch(record, { environment } = {}) {
   const metadata = {
     requestId: record.requestId,
     provider: record.provider,
@@ -37,7 +42,9 @@ export function buildLangfuseTraceBatch(record) {
       }
     : undefined;
   const attributes = [
-    attribute('langfuse.trace.name', 'local-ai-workflow'),
+    ...(record.trace ? [attribute('langfuse.trace.name', record.trace.name)] : []),
+    ...(record.trace?.tags.length ? [stringArrayAttribute('langfuse.trace.tags', record.trace.tags)] : []),
+    ...(environment ? [attribute('langfuse.environment', environment)] : []),
     attribute('langfuse.observation.type', 'generation'),
     attribute('langfuse.observation.input', JSON.stringify(record.prompt)),
     attribute('langfuse.observation.output', JSON.stringify(record.text ?? null)),
@@ -46,7 +53,7 @@ export function buildLangfuseTraceBatch(record) {
       'langfuse.observation.model.name',
       record.provider === 'codex' ? `codex/${record.model}` : record.model,
     ),
-    attribute('langfuse.observation.level', record.status === 'completed' ? 'DEFAULT' : 'ERROR'),
+    attribute('langfuse.observation.level', record.status === 'completed' ? record.trace?.level ?? 'DEFAULT' : 'ERROR'),
     attribute('langfuse.observation.status_message', record.error?.message ?? record.status),
     ...Object.entries(metadata)
       .filter(([, value]) => value !== undefined)
@@ -66,7 +73,7 @@ export function buildLangfuseTraceBatch(record) {
               {
                 traceId: record.traceId,
                 spanId: hash(`${record.traceId}:generation`).slice(0, 16),
-                name: 'inference',
+                name: record.trace?.observationName ?? 'inference',
                 kind: 1,
                 startTimeUnixNano: String(BigInt(Date.parse(record.startedAt)) * 1000000n),
                 endTimeUnixNano: String(BigInt(Date.parse(record.endedAt)) * 1000000n),
@@ -91,10 +98,11 @@ export function buildLangfuseTraceBatch(record) {
  * @param {string} options.url Langfuse base URL.
  * @param {string} options.publicKey Project public key.
  * @param {string} options.secretKey Project secret key.
+ * @param {string} [options.environment] Environment attached to every trace.
  * @param {typeof fetch} [options.fetchImpl=fetch] Injectable HTTP client.
  * @returns {function(import('../execution/task-contract.mjs').TaskOutcome): Promise<void>} Sender that rejects failed or partially accepted deliveries.
  */
-export function createLangfuseTraceClient({ url, publicKey, secretKey, fetchImpl = fetch }) {
+export function createLangfuseTraceClient({ url, publicKey, secretKey, environment, fetchImpl = fetch }) {
   return async (record) => {
     const response = await fetchImpl(`${url}/api/public/otel/v1/traces`, {
       method: 'POST',
@@ -104,7 +112,7 @@ export function createLangfuseTraceClient({ url, publicKey, secretKey, fetchImpl
         'x-langfuse-ingestion-version': '4',
         Authorization: `Basic ${Buffer.from(`${publicKey}:${secretKey}`).toString('base64')}`,
       },
-      body: JSON.stringify(buildLangfuseTraceBatch(record)),
+      body: JSON.stringify(buildLangfuseTraceBatch(record, { environment })),
     });
     if (!response.ok) {
       throw new Error('Trace delivery failed');

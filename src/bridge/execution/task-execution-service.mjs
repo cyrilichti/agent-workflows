@@ -53,7 +53,7 @@ export class TaskExecutionService {
    * @throws {ProviderError} For invalid input, disabled or busy execution.
    */
   async executeTask(body) {
-    const { prompt, requestId, directory, timeoutMs = this.timeoutMs } = validateTaskInput(body);
+    const { prompt, requestId, directory, trace, timeoutMs = this.timeoutMs } = validateTaskInput(body);
     if (!this.enabled) {
       throw new ProviderError(
         'disabled',
@@ -71,6 +71,7 @@ export class TaskExecutionService {
       status: 'running',
       traceId: randomBytes(16).toString('hex'),
       startedAt: new Date().toISOString(),
+      ...(trace !== undefined ? { trace } : {}),
     };
     this.busy = true;
     this.controller = new AbortController();

@@ -81,6 +81,7 @@ tasks:
             body: >-
               {{ {
                 "requestId": execution.id ~ "-next-" ~ uuid(),
+                "trace": {"name": "agent-workflows.work.next", "observationName": "next", "tags": ["next"], "level": "DEBUG"},
                 "prompt": "Execute /next",
                 "timeoutMs": 285000
               } | toJson }}
@@ -139,6 +140,7 @@ tasks:
                   body: >-
                     {{ {
                       "requestId": execution.id ~ "-project-" ~ uuid(),
+                      "trace": {"name": "agent-workflows.work.project", "observationName": "project", "tags": ["project"], "level": "DEBUG"},
                       "prompt": "Execute /project with list: " ~ fromJson(fromJson(outputs.next.body).text).list ~ " and item ID: " ~ fromJson(fromJson(outputs.next.body).text).id,
                       "timeoutMs": 285000
                     } | toJson }}
@@ -201,6 +203,7 @@ tasks:
                         body: >-
                           {{ {
                             "requestId": execution.id ~ "-work-" ~ uuid(),
+                            "trace": {"name": "agent-workflows.work.work", "observationName": "work", "tags": ["work"], "level": "DEFAULT"},
                             "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ".",
                             "directory": fromJson(fromJson(outputs.project.body).text).path,
                             "timeoutMs": 3585000

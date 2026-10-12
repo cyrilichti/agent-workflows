@@ -4,6 +4,7 @@
  * @property {string} prompt Task instructions.
  * @property {string} [directory] Per-call Codex working directory.
  * @property {number} [timeoutMs] Per-call execution deadline in milliseconds.
+ * @property {{name: string, observationName: string, tags: string[], level?: 'DEBUG' | 'DEFAULT' | 'WARNING' | 'ERROR'}} [trace] Trace labels supplied by the caller.
  */
 
 /**
@@ -45,6 +46,7 @@
  * @property {{code: string, message: string}} [error] Safe failure details.
  * @property {TokenUsage} [usage] Observed provider usage.
  * @property {string} [providerRequestId] Provider-side identifier.
+ * @property {{name: string, observationName: string, tags: string[], level?: 'DEBUG' | 'DEFAULT' | 'WARNING' | 'ERROR'}} [trace] Validated trace labels.
  */
 
 /** An operational failure safe to expose to bridge clients. */
@@ -90,11 +92,32 @@ export function validateTaskInput(body) {
   ) {
     throw new ProviderError('invalid_input', `timeoutMs must be 1–${MAX_TIMEOUT_MS}.`);
   }
+  if (body.trace !== undefined) {
+    const trace = body.trace;
+    const validLabel = (value) => typeof value === 'string' && value.trim().length > 0 && value.length <= 100;
+    if (
+      !trace || typeof trace !== 'object' || Array.isArray(trace) ||
+      !validLabel(trace.name) || !validLabel(trace.observationName) ||
+      !Array.isArray(trace.tags) || trace.tags.length > 10 ||
+      !trace.tags.every(validLabel) ||
+      (trace.level !== undefined && !['DEBUG', 'DEFAULT', 'WARNING', 'ERROR'].includes(trace.level))
+    ) {
+      throw new ProviderError('invalid_input', 'trace requires a name, observationName, up to 10 tags, and a valid level when provided.');
+    }
+  }
   return {
     prompt: body.prompt,
     requestId: body.requestId,
     ...(body.directory !== undefined ? { directory: body.directory } : {}),
     ...(body.timeoutMs !== undefined ? { timeoutMs: body.timeoutMs } : {}),
+    ...(body.trace !== undefined ? {
+      trace: {
+        name: body.trace.name,
+        observationName: body.trace.observationName,
+        tags: [...body.trace.tags],
+        ...(body.trace.level !== undefined ? { level: body.trace.level } : {}),
+      },
+    } : {}),
   };
 }
 

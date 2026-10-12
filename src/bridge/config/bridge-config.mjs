@@ -62,6 +62,7 @@ export function loadBridgeConfig({
       url: env.LANGFUSE_URL || 'http://localhost:3001',
       publicUrl: env.LANGFUSE_PUBLIC_URL || 'http://localhost:3001',
       projectId: env.LANGFUSE_PROJECT_ID || 'local-ai',
+      environment: env.DEPLOYMENT_ENVIRONMENT?.trim() || undefined,
       publicKey: env.LANGFUSE_PUBLIC_KEY,
       secretKey: env.LANGFUSE_SECRET_KEY,
     },
