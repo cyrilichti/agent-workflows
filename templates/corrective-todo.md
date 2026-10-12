@@ -8,15 +8,18 @@ Append a numbered step using the next number and the `pending` prefix from
 
 ```markdown
 <next number>. [ ] **pending** — <one-sentence actionable correction>
-   <!-- corrective-source
-   workflow: <ready or inspect>
-   id: <source finding ID>
-   head_sha: <source HEAD SHA>
-   finding: <exact complete source finding>
-   -->
+   ~~~~yaml
+   corrective_source:
+     workflow: <ready or inspect>
+     id: <source finding ID>
+     head_sha: <source HEAD SHA>
+     finding: |-
+       <exact complete source finding, with each line indented here>
+   ~~~~
 ```
 
-For a multiline finding, preserve every line inside the comment. Keep the
-comment attached to the same step through state changes. Preserve the finding
-until the step and comment are persisted. Do not append a second step with the
-same `workflow`, `id`, and `head_sha` values.
+Preserve every source line, including Markdown and HTML markers, within the
+block scalar. Choose a fence longer than any matching fence in the finding.
+Keep the source block attached to the same step through state changes. Preserve
+the finding until the step and source block are persisted. Do not append a
+second step with the same `workflow`, `id`, and `head_sha` values.
