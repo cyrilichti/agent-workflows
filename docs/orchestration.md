@@ -78,9 +78,8 @@ npm start
 ```
 
 Keep this process running. Kestra reaches the host bridge through
-`BRIDGE_URL`, which defaults to the Bridge address listed below:
+`BRIDGE_URL`. The local service addresses are:
 
-- Bridge: [http://host.docker.internal:8787](http://host.docker.internal:8787)
-- Bridge health: [http://localhost:8787/health](http://localhost:8787/health)
 - Kestra: [http://localhost:3000](http://localhost:3000)
 - Langfuse: [http://localhost:3001](http://localhost:3001)
+- Bridge health: [http://localhost:8787/health](http://localhost:8787/health)
