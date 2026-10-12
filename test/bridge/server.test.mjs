@@ -50,36 +50,14 @@ test('HTTP bridge authenticates before executing and accepts a task without a pr
     400,
   );
   assert.equal(calls.length, 1);
-});
-
-test('HTTP bridge rejects authenticated POST /generate without executing a task', async (t) => {
-  const token = 'test-only-token-'.repeat(4);
-  const calls = [];
-  const server = createBridgeHttpServer({
-    token,
-    providerName: 'codex',
-    taskExecution: {
-      enabled: true,
-      async executeTask(body) {
-        calls.push(body);
-        return { status: 'completed' };
-      },
-    },
-  });
-  t.after(() => {
-    server.closeAllConnections();
-    server.close();
-  });
-  server.listen(0, '127.0.0.1');
-  await once(server, 'listening');
-  const response = await fetch(`http://127.0.0.1:${server.address().port}/generate`, {
+  const oldRouteResponse = await fetch(`${url}generate`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ requestId: 'request-001', prompt: 'Hello' }),
   });
-  assert.equal(response.status, 404);
-  assert.deepEqual(await response.json(), { error: 'not_found' });
-  assert.deepEqual(calls, []);
+  assert.equal(oldRouteResponse.status, 404);
+  assert.deepEqual(await oldRouteResponse.json(), { error: 'not_found' });
+  assert.equal(calls.length, 1);
 });
 
 test('HTTP bridge returns 429 for a concurrent call with the same request ID', async (t) => {
