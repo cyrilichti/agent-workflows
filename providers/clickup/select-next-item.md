@@ -7,12 +7,12 @@ arguments:
   include_closed: false
 ```
 
-Use the returned status name. Trim surrounding whitespace and compare
-case-insensitively against these waiting-to-start names: `Open`, `To Do`,
-`Todo`, `Backlog`, `Not Started`, and `Awaiting Start`. Match whole names;
-other or missing names do not establish waiting eligibility. Map a status to review
-when its name clearly identifies review.
-`In Progress`, done, closed, canceled, and ambiguous custom statuses are
+Use the returned status name. Trim surrounding whitespace and match `Open`
+case-insensitively as waiting to start. For any other name, interpret its meaning:
+map it to waiting when it clearly means open or waiting to start, including
+localized names such as `ouvert`. Do not use a fixed list of synonyms.
+Map a status to review when its name clearly identifies review.
+`In Progress`, done, closed, canceled, missing, and ambiguous statuses are
 skipped. `include_closed: false` is a query filter, not an eligibility check.
 
 Return the first page as normalized candidates, preserving provider order:
