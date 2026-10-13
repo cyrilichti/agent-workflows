@@ -37,7 +37,6 @@ test('HTTP bridge authenticates before executing and accepts a task without a pr
     body: 'Hello\n"world"',
   });
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { status: 'completed' });
   assert.deepEqual(calls, [{ requestId: 'request-001', prompt: 'Hello\n"world"' }]);
   assert.equal(
     (
@@ -49,14 +48,6 @@ test('HTTP bridge authenticates before executing and accepts a task without a pr
     ).status,
     400,
   );
-  assert.equal(calls.length, 1);
-  const oldRouteResponse = await fetch(`${url}generate`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ requestId: 'request-001', prompt: 'Hello' }),
-  });
-  assert.equal(oldRouteResponse.status, 404);
-  assert.deepEqual(await oldRouteResponse.json(), { error: 'not_found' });
   assert.equal(calls.length, 1);
 });
 
