@@ -70,27 +70,3 @@ competing matches can be resolved independently of discovery order.
     </tr>
   </tbody>
 </table>
-
-## Matching destination names
-
-Normalize the destination and repository basename to lowercase, replace runs
-of spaces, hyphens and points with one hyphen, and trim surrounding hyphens.
-Match complete names at hyphen boundaries, then retain the longest matching
-name. Keep all ties for selection from the item.
-
-| Destination | Repository candidates | Retained candidates |
-| --- | --- | --- |
-| `Backlog Commercial` | `commercial` | `commercial` |
-| `Backlog Guide Commercial` | `commercial`, `guide-commercial` | `guide-commercial` |
-| `Backlog Commercialisation` | `commercial` | None |
-| `Backlog Aftersales` | `aftersales-app`, `aftersales-api` | Both, using the family prefix `aftersales` |
-
-Family matching is a fallback within each tier. Compare prefixes ending before
-a hyphen in the repository name, retain the repositories with the longest
-matching prefix, and let the item distinguish their suffixes.
-
-The search stops after configured projects and their directly neighboring
-repositories. It does not recurse through the home directory. Return
-`not found` when both tiers finish without a match, or `search incomplete`
-when a tier cannot be fully inspected. Unavailable project configuration
-supplies no paths and does not make the search incomplete.

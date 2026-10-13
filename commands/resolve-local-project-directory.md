@@ -15,11 +15,9 @@ Find Git repositories matching a `list` name.
    cannot be read, use no configured paths and continue the search.
 2. If that tier has no match, inspect Git repositories directly inside every
    parent directory of the configured paths, in path order, before choosing.
-3. Search only these two tiers; do not search recursively or scan `~`. Complete
-   each tier before choosing or moving to the next. If a tier cannot be fully
-   inspected, return `{"status":"search incomplete"}` even when it found a
-   match, because competing matches remain unknown. Unavailable project
-   configuration in step 1 supplies no paths and is not an incomplete tier.
+3. Search only these two tiers, without recursion. Complete each tier before
+   choosing or moving to the next. If inspection is incomplete, return
+   `{"status":"search incomplete"}` even when a match was found.
 4. Within the first tier that contains matches, apply the matching priorities
    below. Deduplicate and sort the retained absolute canonical paths. Return
    `{"path":"<path>"}` for one retained path or
@@ -35,15 +33,11 @@ hyphens. Ignore empty normalized names.
 
 1. **Full basename:** a normalized basename matches when `-<list>-` contains
    `-<basename>-`. Retain every match with the longest normalized basename.
-   Thus `Backlog Commercial` matches `commercial`, and `Backlog Guide
-   Commercial` prefers `guide-commercial` over `commercial`.
 2. **Repository family:** only when no full basename matches in the tier,
    consider each non-empty prefix of a normalized basename ending before a
    hyphen. A prefix matches when `-<list>-` contains `-<prefix>-`. Retain every
-   repository with the longest matching prefix across the tier; do not rank
-   their suffixes. Thus `Backlog Aftersales` retains both `aftersales-app` and
-   `aftersales-api`.
+   repository with the longest matching prefix across the tier.
 
-Hyphen boundaries prevent `Backlog Commercialisation` from matching
-`commercial`, and `Backlog Aftersales` from matching `aftersalesman`. Keep all
-ties for the caller to resolve using the item.
+Keep all ties for selection from the item. For example, `Backlog Guide Example`
+prefers `guide-example` over `example`; `Backlog Example` retains both
+`example-app` and `example-api` when neither full basename matches.
