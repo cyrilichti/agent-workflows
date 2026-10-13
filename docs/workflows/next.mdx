@@ -50,7 +50,7 @@ through the bridge. It needs no item reference.
     <tr>
       <td>1</td>
       <th scope="row">Filter</th>
-      <td>Both providers filter for <code>agent-planned</code> work. Linear uses native waiting status types; ClickUp uses <code>Open</code> and equivalent waiting names. Review items qualify only without <code>agent-inspected</code>. Work in progress, terminal, and unrecognized states are skipped. Selection uses last-modified timestamps within the first page, even when more pages exist; provider order breaks ties.</td>
+      <td>Both providers filter for <code>agent-planned</code> work. Status names are matched case-insensitively: <code>Backlog</code> or <code>Todo</code> for Linear, <code>Open</code> for ClickUp. For other names, the agent interprets whether their meaning is open or waiting to start, including localized names such as <code>ouvert</code>, without a fixed synonym list. Review items qualify only without <code>agent-inspected</code>. Work in progress, terminal, missing, and ambiguous states are skipped. Selection uses last-modified timestamps within the first page, even when more pages exist; provider order breaks ties.</td>
     </tr>
     <tr>
       <td>2</td>
