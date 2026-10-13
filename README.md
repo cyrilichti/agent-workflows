@@ -101,6 +101,15 @@ Choose a work tracker and a code host. Orchestration also needs an AI provider.
 [Set up work and code providers →](https://cyrilichti.github.io/agent-workflows/providers/) ·
 [Configure orchestration →](https://cyrilichti.github.io/agent-workflows/orchestration/)
 
+## Roadmap
+
+- [x] Provide Skills that can be used independently for each stage of development.
+- [x] Route requests through a playbook and coordinate Skills through workflows.
+- [x] Match specialized agent profiles with the Skills suited to each task.
+- [x] Orchestrate the delivery cycle with Kestra and the bridge.
+- [x] Trace the bridge's AI calls in Langfuse.
+- [ ] Add Agent API as a bridge provider.
+
 ## Contribute
 
 Read [Contributing](./CONTRIBUTING.md) to propose a workflow or improve an existing one. For help or responsible reporting, see [Support](./SUPPORT.md) and [Security](./SECURITY.md). Community participation follows the [Code of Conduct](./CODE_OF_CONDUCT.md).
