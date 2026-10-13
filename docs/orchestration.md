@@ -48,7 +48,7 @@ authentication. It can also call the OpenAI API when configured to do so.
 </div>
 
 Kestra makes an authenticated HTTP `POST` to the host bridge at
-`/generate`. The request carries a text task, an `X-Request-Id`, and the
+`/`. The request carries a text task, an `X-Request-Id`, and the
 shared bearer token. The bridge starts a fresh Codex CLI execution on the
 host or sends the task to the OpenAI API, returns a JSON result to Kestra,
 and sends a trace to Langfuse. The bridge must be running for Kestra to
