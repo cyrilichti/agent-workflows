@@ -8,11 +8,11 @@ an exact item ID. Invoke it as `/project` or `$project` with both values, or let
 the Kestra `work` flow call it after `/next` returns an item. It reads the item
 only when several repositories match the destination. Configured project paths
 take priority when available; each selected search tier is completed so
-competing exact matches can be resolved independently of discovery order.
+competing matches can be resolved independently of discovery order.
 
 ## How `/project` finds a repository
 
-<div class="write-flow" role="group" aria-label="The project workflow requires a destination name and exact item ID, searches configured project directories and then nearby and home repositories as needed, uses the item to choose only when several repositories match, and returns one absolute path or an unresolved status.">
+<div class="write-flow" role="group" aria-label="The project workflow requires a destination name and exact item ID, searches configured project directories and then directly neighboring repositories as needed, uses the item to choose only when several repositories match, and returns one absolute path or an unresolved status.">
   <div class="write-flow__step write-flow__step--assisted">
     <small>01 · Input</small>
     <strong>Require destination and item</strong>
@@ -24,7 +24,7 @@ competing exact matches can be resolved independently of discovery order.
   <div class="write-flow__step write-flow__step--focus">
     <small>02 · Search</small>
     <strong>Find Git repositories</strong>
-    <span>Complete the first matching tier: available project configuration, neighboring repositories, then the home directory if needed.</span>
+    <span>Inspect configured projects first, then directly neighboring repositories if needed. Complete each tier before selecting candidates.</span>
   </div>
 
   <span class="write-flow__connector" aria-hidden="true">↓</span>
@@ -56,7 +56,7 @@ competing exact matches can be resolved independently of discovery order.
     <tr>
       <td>2</td>
       <th scope="row">Search</th>
-      <td>Search configured project directories first, then neighboring repositories and the home directory if needed. Complete the first matching tier, retain all exact matches when present, and otherwise retain prefix matches.</td>
+      <td>Search configured project directories first, then repositories directly inside their parent directories. Prefer the longest full repository name contained in the normalized destination; use repository family prefixes only when no full name matches.</td>
     </tr>
     <tr>
       <td>3</td>

@@ -15,21 +15,29 @@ Find Git repositories matching a `list` name.
    cannot be read, use no configured paths and continue the search.
 2. If that tier has no match, inspect Git repositories directly inside every
    parent directory of the configured paths, in path order, before choosing.
-3. If that tier also has no match, locate `.git` files or directories under
-   `~` and match only their parent repositories. Do not follow symlinks or
-   enter `.git`, `node_modules`, or a repository once found. Use no arbitrary
-   directory count or depth limit. If this search is incomplete, return
-   `{"status":"search incomplete"}` even when it found a match, because
-   competing matches remain unknown.
-4. Within the first tier that contains matches, retain every exact match when
-   any exist; otherwise retain every prefix match. Deduplicate and sort the
-   retained absolute canonical paths. Return `{"path":"<path>"}` for one
-   retained path or `{"candidates":["<path>",...]}` for several. Return
-   `{"status":"not found"}` only after a complete search with no match.
+3. Search only these two tiers, without recursion. Complete each tier before
+   choosing or moving to the next. If inspection is incomplete, return
+   `{"status":"search incomplete"}` even when a match was found.
+4. Within the first tier that contains matches, apply the matching priorities
+   below. Deduplicate and sort the retained absolute canonical paths. Return
+   `{"path":"<path>"}` for one retained path or
+   `{"candidates":["<path>",...]}` for several. Return
+   `{"status":"not found"}` when both tiers finish without a match.
 
 ## Matching
 
-Match only directories containing a `.git` file or directory. Ignore case,
-whitespace, hyphens and points for exact basename matches. Otherwise, allow a
-prefix only at a whitespace, hyphen or point boundary (`aftersales` matches
-`aftersales-api`, not `aftersalesman`). Exact matches outrank prefix matches.
+Match only directories containing a `.git` file or directory at their root.
+Normalize the `list` and each repository basename: lowercase, replace runs of
+whitespace, hyphens and points with one hyphen, and trim leading and trailing
+hyphens. Ignore empty normalized names.
+
+1. **Full basename:** a normalized basename matches when `-<list>-` contains
+   `-<basename>-`. Retain every match with the longest normalized basename.
+2. **Repository family:** only when no full basename matches in the tier,
+   consider each non-empty prefix of a normalized basename ending before a
+   hyphen. A prefix matches when `-<list>-` contains `-<prefix>-`. Retain every
+   repository with the longest matching prefix across the tier.
+
+Keep all ties for selection from the item. For example, `baz foo bar` prefers
+`foo-bar` over `bar`; `baz foo` retains both `foo-bar` and `foo-baz` when neither
+full basename matches.
