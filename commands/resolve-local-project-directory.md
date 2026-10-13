@@ -38,6 +38,6 @@ hyphens. Ignore empty normalized names.
    hyphen. A prefix matches when `-<list>-` contains `-<prefix>-`. Retain every
    repository with the longest matching prefix across the tier.
 
-Keep all ties for selection from the item. For example, `Backlog Guide Example`
-prefers `guide-example` over `example`; `Backlog Example` retains both
-`example-app` and `example-api` when neither full basename matches.
+Keep all ties for selection from the item. For example, `baz foo bar` prefers
+`foo-bar` over `bar`; `baz foo` retains both `foo-bar` and `foo-baz` when neither
+full basename matches.
