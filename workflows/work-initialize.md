@@ -33,8 +33,7 @@ preserve that updated item in the delivery context.
 
 ### 2. Prepare the Base Branch
 
-Use the current checkout. Resolve the repository's default branch and require
-its name to be exactly `main` or `master`.
+Use the current checkout. Resolve the repository's default branch.
 
 Run `git switch <default_branch>`, then `git pull --ff-only` on that branch.
 Perform the switch automatically; do not ask the user to switch or stop merely

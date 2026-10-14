@@ -12,7 +12,6 @@ Read the initial approved plan published on an official item.
 1. Load `../providers/<provider>/read-item-plan.md`.
 2. Read the item comments and find the comment identified by
    `../templates/item-plan-comment.md`.
-3. Return the complete content after the marker and its required blank line as
-   `plan_content`.
+3. Return `plan_content` from the provider operation.
 
 Do not modify the returned plan content.
