@@ -236,18 +236,19 @@ tasks:
                                 | map(sub("[ \t]+$"; ""))) as $lines
                               | ($lines | index("## Inspect result")) as $start
                               | if $start == null then "error"
-                                else $lines[$start:$start + 4] as $result
-                                | ($result[2] | capture("^\\*\\*Request \\S.*:\\*\\* (?<status>\\S.*)$") // {}) as $request
-                                | ($result[3] | capture("^\\*\\*Item (?:\\[(?<linked>[^]]+)\\]\\([^)]*\\)|(?<plain>\\S+)):\\*\\* (?<status>\\S.*)$") // {}) as $item
+                                else ($lines[$start:] | map(select(. != "")) | .[:3]) as $result
+                                | ($result[1] | capture("^\\*\\*Request \\S.*:\\*\\* (?<status>\\S.*)$") // {}) as $request
+                                | ($result[2] | capture("^\\*\\*Item (?:\\[(?<linked>[^]]+)\\]\\([^)]*\\)|(?<plain>\\S+)):\\*\\* (?<status>\\S.*)$") // {}) as $item
+                                | ($item.linked // $item.plain // ""
+                                  | sub(" [—–-] \\S.*$"; "")) as $item_id
                                 | ($request.status // "" | sub(" [—–-] \\S.*$"; "")) as $request_status
                                 | ($item.status // "" | sub("^`agent-inspected` "; "agent-inspected ")
                                   | sub(" [—–-] \\S.*$"; "")) as $item_status
-                                | if $result[1] != ""
-                                  or (["inspection published", "inspection completed without findings", "inspection incomplete", "inspection failed", "inspection not attempted", "unobserved"]
+                                | if (["inspection published", "inspection completed without findings", "inspection incomplete", "inspection failed", "inspection not attempted", "unobserved"]
                                     | index($request_status)) == null
                                   or (["agent-inspected applied", "agent-inspected not applied", "unobserved"]
                                     | index($item_status)) == null
-                                  or ($item.linked // $item.plain // "") != .item then "error"
+                                  or $item_id != .item then "error"
                                   elif (["inspection published", "inspection completed without findings"]
                                     | index($request_status)) != null
                                     and $item_status == "agent-inspected applied" then "success"

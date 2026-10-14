@@ -21,18 +21,23 @@ Apply one provider-neutral promotion mutation to an existing open request.
 
 ## Steps
 
+For body comparisons, ignore only trailing CR/LF characters in both strings.
+Preserve every other character, including spaces, tabs, and internal line
+endings. This comparison must not modify the body sent to the provider.
+
 1. Reject any `action` other than the two allowed values, a missing `body` for
    `replace-description`, or a `body` supplied for `mark-ready`.
 2. Run `./read-request.md` and require the request state to be `open`.
 3. For `replace-description`:
-   1. Return `succeeded` without mutation when the current `body` exactly
-      equals `body`.
+   1. Return `succeeded` without mutation when the current `body` equals the
+      supplied `body` under the comparison above.
    2. Load `../providers/<provider>/update-request.md` and run it with only
       `replace-description` and the exact replacement `body`.
    3. If the adapter reports that this operation is unavailable, return
       `unsupported` with its exact reason.
-   4. Run `./read-request.md` again. Return `succeeded` when its `body` exactly
-      equals `body`; otherwise return `failed` with the observed record.
+   4. Run `./read-request.md` again. Return `succeeded` when its `body` equals
+      the supplied `body` under the comparison above; otherwise return
+      `failed` with the observed record.
 4. For `mark-ready`:
    1. Derive the ready title by removing exactly one leading `Draft:` prefix
       and its following whitespace from the current title. Otherwise preserve
