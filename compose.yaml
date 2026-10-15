@@ -82,6 +82,34 @@ services:
           environment:
             name: Agent Workflows
             color: "#4D7FF0"
+          webserver:
+            html-title: Agent Workflows - Kestra
+            html-head: |
+              <style>
+                .oss-login > img {
+                  display: none;
+                }
+                .oss-login::before {
+                  content: "";
+                  display: block;
+                  width: 3.5rem;
+                  height: 3.5rem;
+                  background: center / contain no-repeat url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImZsb3ciIHgxPSIwIiB5MT0iMCIgeDI9IjY0IiB5Mj0iMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMxNjI0M2IiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiMzMTU5YTIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNGQ3ZmYwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cGF0aCBkPSJNOCA5LjVWNDRjMCA0LjQxOCAzLjU4MiA4IDggOHM4LTMuNTgyIDgtOFYyMmMwLTQuNDE4IDMuNTgyLTggOC04czggMy41ODIgOCA4djIyYzAgNC40MTggMy41ODIgOCA4IDhzOC0zLjU4MiA4LThWOS41IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZmxvdykiIHN0cm9rZS13aWR0aD0iOSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==");
+                }
+                html.dark .oss-login::before {
+                  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImZsb3ciIHgxPSIwIiB5MT0iMCIgeDI9IjY0IiB5Mj0iMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiNiN2NjZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjODVhYWZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cGF0aCBkPSJNOCA5LjVWNDRjMCA0LjQxOCAzLjU4MiA4IDggOHM4LTMuNTgyIDgtOFYyMmMwLTQuNDE4IDMuNTgyLTggOC04czggMy41ODIgOCA4djIyYzAgNC40MTggMy41ODIgOCA4IDhzOC0zLjU4MiA4LThWOS41IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZmxvdykiIHN0cm9rZS13aWR0aD0iOSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==");
+                }
+                #side-menu .ks-sidebar__header::before {
+                  content: "";
+                  display: block;
+                  width: 32px;
+                  height: 32px;
+                  background: center / contain no-repeat url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImZsb3ciIHgxPSIwIiB5MT0iMCIgeDI9IjY0IiB5Mj0iMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMxNjI0M2IiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiMzMTU5YTIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNGQ3ZmYwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cGF0aCBkPSJNOCA5LjVWNDRjMCA0LjQxOCAzLjU4MiA4IDggOHM4LTMuNTgyIDgtOFYyMmMwLTQuNDE4IDMuNTgyLTggOC04czggMy41ODIgOCA4djIyYzAgNC40MTggMy41ODIgOCA4IDhzOC0zLjU4MiA4LThWOS41IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZmxvdykiIHN0cm9rZS13aWR0aD0iOSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==");
+                }
+                html.dark #side-menu .ks-sidebar__header::before {
+                  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImZsb3ciIHgxPSIwIiB5MT0iMCIgeDI9IjY0IiB5Mj0iMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiNiN2NjZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjODVhYWZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cGF0aCBkPSJNOCA5LjVWNDRjMCA0LjQxOCAzLjU4MiA4IDggOHM4LTMuNTgyIDgtOFYyMmMwLTQuNDE4IDMuNTgyLTggOC04czggMy41ODIgOCA4djIyYzAgNC40MTggMy41ODIgOCA4IDhzOC0zLjU4MiA4LThWOS41IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZmxvdykiIHN0cm9rZS13aWR0aD0iOSIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==");
+                }
+              </style>
           repository:
             type: postgres
           queue:
