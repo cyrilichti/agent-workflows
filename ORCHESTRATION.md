@@ -85,45 +85,6 @@ Restart it after changing `.env`.
 | Langfuse | http://localhost:3001 | `LANGFUSE_ADMIN_EMAIL` / `LANGFUSE_ADMIN_PASSWORD` |
 | Bridge health | http://localhost:8787/health | None |
 
-## Kestra instance identity
-
-The `kestra.environment` settings in [compose.yaml](./compose.yaml) display
-**Agent Workflows** with `#4D7FF0`, the blue at the end of the repository's
-light logo gradient. These are instance defaults; Kestra's UI lets a browser
-override the environment name or color locally. No personal UI setting is
-changed by this configuration. After rebuilding Kestra, inspect the values
-returned to the UI with:
-
-```bash
-docker compose exec -T kestra sh -c 'curl --fail --silent --user "$KESTRA_ADMIN_EMAIL:$KESTRA_ADMIN_PASSWORD" http://localhost:8080/api/v1/configs' | jq '.environment'
-```
-
-The Agent Workflows logo appears on the sign-in page and in the main sidebar,
-and `kestra.webserver.html-title` brands the browser tab. The sign-in heading
-reads **Agent Workflows Orchestration**. Kestra 2.0.4 accepts
-`kestra.webserver.html-head` as an HTML string, so
-[compose.yaml](./compose.yaml) injects CSS with the two repository SVGs encoded
-as data URIs. The light asset is the default; `html.dark` selects the dark
-asset. A small script updates the sign-in heading after Kestra renders it. The
-icons are decorative: the environment badge names the instance in the
-application, and the sign-in heading names it on that page. The original
-sign-in image is hidden so its "Kestra" alternative text does not describe the
-replacement mark.
-
-This customization depends on Kestra 2.0.4's internal `.oss-login`,
-`.oss-login__title`, and `#side-menu .ks-sidebar__header` markup. The sidebar
-has no supported branding
-slot. A version upgrade can break these selectors, so check both themes and
-the narrow sidebar after an upgrade. The SVG bytes are duplicated in Compose;
-if either source asset changes, regenerate its base64 data URI in `html-head`.
-Kestra does not serve these repository files directly: a request for
-`/ui/agent-workflows-logo.svg` returns the UI's `text/html` fallback.
-
-This decision is based on the pinned [webserver configuration](https://github.com/kestra-io/kestra/blob/v2.0.4/webserver/src/main/java/io/kestra/webserver/configuration/WebserverConfiguration.java),
-[sidebar component](https://github.com/kestra-io/kestra/blob/v2.0.4/ui/src/components/layout/SideBar.vue),
-[sign-in component](https://github.com/kestra-io/kestra/blob/v2.0.4/ui/src/components/basicauth/BasicAuthLogin.vue),
-and [environment badge](https://github.com/kestra-io/kestra/blob/v2.0.4/ui/src/components/layout/Environment.vue).
-
 Kestra reaches the bridge through `BRIDGE_URL`, which defaults to
 `http://host.docker.internal:8787`. The example configuration listens on
 `0.0.0.0` so containers can connect; keep this port accessible only to trusted
