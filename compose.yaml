@@ -78,6 +78,7 @@ services:
             basic-auth:
               username: $${KESTRA_ADMIN_EMAIL}
               password: $${KESTRA_ADMIN_PASSWORD}
+          # https://kestra.io/docs/configuration/runtime-and-storage
           environment:
             name: Agent Workflows
             color: "#4D7FF0"

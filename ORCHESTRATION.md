@@ -85,6 +85,38 @@ Restart it after changing `.env`.
 | Langfuse | http://localhost:3001 | `LANGFUSE_ADMIN_EMAIL` / `LANGFUSE_ADMIN_PASSWORD` |
 | Bridge health | http://localhost:8787/health | None |
 
+## Kestra instance identity
+
+The `kestra.environment` settings in [compose.yaml](./compose.yaml) display
+**Agent Workflows** with `#4D7FF0`, the blue at the end of the repository's
+light logo gradient. These are instance defaults; Kestra's UI lets a browser
+override the environment name or color locally. No personal UI setting is
+changed by this configuration. After rebuilding Kestra, inspect the values
+returned to the UI with:
+
+```bash
+docker compose exec -T kestra sh -c 'curl --fail --silent --user "$KESTRA_ADMIN_EMAIL:$KESTRA_ADMIN_PASSWORD" http://localhost:8080/api/v1/configs' | jq '.environment'
+```
+
+The Agent Workflows logo is **not** injected into Kestra. Kestra 2.0.4 accepts
+`kestra.webserver.html-head` as an HTML string, but its main sidebar header
+contains only the menu toggle and drag handle; it has no supported branding
+slot. A local fixture using the 2.0.4 header markup rendered the existing light
+and dark SVGs as data URI backgrounds on
+`#side-menu .ks-sidebar__header::before` at normal and narrow widths. The
+approach was rejected because that selector and layout are internal Kestra
+markup, and a CSS pseudo-element cannot give the logo an accessible name. The
+repository SVGs are not served by Kestra: requesting
+`/ui/agent-workflows-logo.svg` returns the UI's `text/html` fallback. Inlining
+the SVGs would duplicate the assets in Compose, while serving them separately
+would require another asset route. A supported Kestra branding slot or a
+maintained UI build is the next viable route if the logo becomes necessary.
+
+This decision is based on the pinned [webserver configuration](https://github.com/kestra-io/kestra/blob/v2.0.4/webserver/src/main/java/io/kestra/webserver/configuration/WebserverConfiguration.java),
+[sidebar component](https://github.com/kestra-io/kestra/blob/v2.0.4/ui/src/components/layout/SideBar.vue),
+and [environment badge](https://github.com/kestra-io/kestra/blob/v2.0.4/ui/src/components/layout/Environment.vue).
+Revisit it when upgrading Kestra, since the relevant UI markup may change.
+
 Kestra reaches the bridge through `BRIDGE_URL`, which defaults to
 `http://host.docker.internal:8787`. The example configuration listens on
 `0.0.0.0` so containers can connect; keep this port accessible only to trusted
