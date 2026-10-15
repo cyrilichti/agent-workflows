@@ -99,17 +99,20 @@ docker compose exec -T kestra sh -c 'curl --fail --silent --user "$KESTRA_ADMIN_
 ```
 
 The Agent Workflows logo appears on the sign-in page and in the main sidebar,
-and `kestra.webserver.html-title` brands the browser tab. Kestra 2.0.4 accepts
+and `kestra.webserver.html-title` brands the browser tab. The sign-in heading
+reads **Agent Workflows Orchestration**. Kestra 2.0.4 accepts
 `kestra.webserver.html-head` as an HTML string, so
 [compose.yaml](./compose.yaml) injects CSS with the two repository SVGs encoded
 as data URIs. The light asset is the default; `html.dark` selects the dark
-asset. The icons are decorative: the environment badge names the instance in
-the application, and the sign-in page retains Kestra's heading. The original
+asset. A small script updates the sign-in heading after Kestra renders it. The
+icons are decorative: the environment badge names the instance in the
+application, and the sign-in heading names it on that page. The original
 sign-in image is hidden so its "Kestra" alternative text does not describe the
 replacement mark.
 
-This customization depends on Kestra 2.0.4's internal `.oss-login` and
-`#side-menu .ks-sidebar__header` markup. The sidebar has no supported branding
+This customization depends on Kestra 2.0.4's internal `.oss-login`,
+`.oss-login__title`, and `#side-menu .ks-sidebar__header` markup. The sidebar
+has no supported branding
 slot. A version upgrade can break these selectors, so check both themes and
 the narrow sidebar after an upgrade. The SVG bytes are duplicated in Compose;
 if either source asset changes, regenerate its base64 data URI in `html-head`.
