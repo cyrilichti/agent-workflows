@@ -78,6 +78,9 @@ services:
             basic-auth:
               username: $${KESTRA_ADMIN_EMAIL}
               password: $${KESTRA_ADMIN_PASSWORD}
+          environment:
+            name: Agent Workflows
+            color: "#4D7FF0"
           repository:
             type: postgres
           queue:
