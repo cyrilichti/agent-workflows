@@ -1,13 +1,9 @@
 # create-item
 
-Serialize the confirmed item sections as Markdown, then create the task:
-
 ```text
-tool: clickup_create_task
-arguments:
-  list_id: selected destination ID
-  name: confirmed title
-  markdown_description: confirmed free-form Markdown body
+clickup-cli task create --list <selected List ID> --name <confirmed title> --description <confirmed Markdown body> --output json
 ```
 
-Return the created task ID, name, and URL from the mutation response.
+Return ID, name, and URL from the single created record in the JSON array.
+Pass values as separate process arguments; escape a literal leading `@` in the
+body as `@@` because the CLI otherwise treats it as a file reference.

@@ -1,8 +1,7 @@
-# Copy this file to `agent-workflows.yaml` in a consuming project when workflows need
-# project-specific providers.
-#
-# Item-provider MCP endpoints and CLI authentication are configured outside
-# this file. This file selects the provider for each context.
+# Copy this file to `agent-workflows.yaml` in a consuming project.
+# Provider access is configured in the agent's execution environment:
+# ClickUp uses clickup-cli, Linear uses MCP, and GitHub/GitLab use gh/glab.
+# The historical `mcp` keys select providers; they do not prescribe transport.
 
 mcp:
   item:

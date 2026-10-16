@@ -1,14 +1,9 @@
 # add-request-backlink
 
 ```text
-tool: clickup_create_comment
-arguments:
-  entity_type: task
-  entity_id: item ID
-  comment_text: exact caller-provided backlink comment
-  notify_all: false
+clickup-cli comment create --task <item ID> --text <exact caller backlink comment> --output json
 ```
 
-Create only the comment. Do not update item status or any other item field.
-Use this operation only after creating a new request and never during resumed
-work.
+Create only the comment, without `--markdown` or `--notify-all`. Pass its exact
+text as one argument, escaping a leading `@` as `@@`. Use only after creating a
+new request, never during resumed work. Do not update task fields.

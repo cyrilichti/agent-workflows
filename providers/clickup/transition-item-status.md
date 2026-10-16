@@ -2,36 +2,25 @@
 
 ## Read
 
-When complete normalized `status_resolution` is not supplied, obtain the
-current task and its available statuses with:
+Reuse supplied `status_resolution` or exact official task context according to
+`../../commands/transition-item-status.md`. Read missing context with:
 
 ```text
-tool: clickup_get_task
-arguments:
-  task_id: caller item ID
-  expand_statuses: true
+clickup-cli task get <item ID> --output json
+clickup-cli list get <official task List ID> --output json
 ```
 
-Reuse a supplied official current status only when it matches the task's
-returned current status. Otherwise normalize the returned current status. Use
-the returned expanded statuses as the available statuses in both cases.
-
-Return the current and available statuses as `id`, `name`, and `category`:
-
-- `completed`: done or closed type, or a clear done, completed, or closed name;
-- `review`: name clearly identifies review;
-- `active`: exact `in progress` name or a clear non-review active-work status;
-- `other`: every remaining status.
-
-Return the provider failure when the read fails.
+Use the task's current status and the List's effective `statuses`. Return
+current and available statuses as `id`, `name`, and `category`: `completed`
+for done/closed type or clear completed names, `review` for clear review names,
+`active` for exact `in progress` or clear non-review active names, otherwise
+`other`. Report read failures; the caller owns target selection.
 
 ## Apply
 
 ```text
-tool: clickup_update_task
-arguments:
-  task_id: caller item ID
-  status: exact resolved status name
+clickup-cli task update <item ID> --status <exact resolved native name> --output json
 ```
 
-Return the resulting status or provider failure. Do not pass any other field.
+Return the resulting status from the single mutation record or the provider
+failure. Do not update any other field.

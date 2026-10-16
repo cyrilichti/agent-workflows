@@ -1,16 +1,13 @@
 # search-items
 
-Search tasks by user-provided title text:
-
 ```text
-tool: clickup_search
-arguments:
-  keywords: caller query
-  filters:
-    asset_types:
-      - task
-  count: 5
+clickup-cli task search --page 0 --include-closed --subtasks --output json
 ```
 
-Prefer results whose names match the query. Return task ID, name, status, URL,
-and hierarchy. Do not paginate unless the user refines the search.
+The CLI has no title-query flag. Match task names against the caller's title
+phrase locally, ignoring case and surrounding/repeated whitespace. Prefer
+exact matches, then phrase matches. Return at most five relevant records with
+ID, name, status, URL, and hierarchy, preserving provider order for ties.
+Do not limit candidates before matching or paginate unless the user refines
+the search. A first-page miss does not establish Workspace-wide absence;
+request an exact task URL/ID when the bounded search cannot resolve it.

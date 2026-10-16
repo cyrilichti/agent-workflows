@@ -4,7 +4,7 @@ Retrieve items from a resolved provider.
 
 ## Input
 
-- `provider`: resolved MCP provider.
+- `provider`: resolved item provider.
 - `criteria`: item filtering rules.
 - `fields`: optional subset of `provider_id`, `title`, `status`, and
   `destination`; defaults to all four.

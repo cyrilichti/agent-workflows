@@ -1,12 +1,9 @@
 # update-item
 
 ```text
-tool: clickup_update_task
-arguments:
-  task_id: item ID
-  name: confirmed title, when changed
-  markdown_description: confirmed free-form Markdown body, when changed
+clickup-cli task update <item ID> [--name <confirmed title>] [--description <confirmed Markdown body>] --output json
 ```
 
-Omit every field that the user did not confirm changing. Return the task ID,
-name, and URL from the mutation response when available.
+Pass only confirmed changed fields as separate arguments, escaping a literal
+leading `@` in text as `@@`. Return ID, name, and URL from the single mutation
+record when available. Do not change other fields.
