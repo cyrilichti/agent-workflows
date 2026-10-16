@@ -33,6 +33,8 @@ export class TaskExecutionService {
       text: outcome.text ?? null,
       error: outcome.error ?? null,
       usage: outcome.usage ?? null,
+      usageReportPath: outcome.usageReportPath ?? null,
+      usageReportStatus: outcome.usageReportStatus ?? null,
       durationMs: outcome.durationMs ?? null,
       providerRequestId: outcome.providerRequestId ?? null,
       traceId: outcome.traceId,
@@ -80,6 +82,9 @@ export class TaskExecutionService {
         const result = validateTaskResult(
           await this.provider.generate(prompt, {
             signal: AbortSignal.any([this.controller.signal, AbortSignal.timeout(timeoutMs)]),
+            traceId: outcome.traceId,
+            phase: trace?.observationName,
+            requestId,
             ...(directory !== undefined ? { directory } : {}),
           }),
         );
@@ -88,9 +93,13 @@ export class TaskExecutionService {
           text: result.text,
           model: result.model,
           usage: result.usage,
+          usageReportPath: result.usageReportPath,
+          usageReportStatus: result.usageReportStatus,
           providerRequestId: result.requestId,
         });
       } catch (error) {
+        outcome.usageReportPath = error.usageReportPath;
+        outcome.usageReportStatus = error.usageReportStatus;
         outcome.status = ['timeout', 'network'].includes(error.code) ? 'unknown' : 'failed';
         outcome.error = {
           code: error instanceof ProviderError ? error.code : 'provider_error',

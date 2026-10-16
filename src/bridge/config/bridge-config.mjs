@@ -49,6 +49,7 @@ export function loadBridgeConfig({
       executable: env.CODEX_BIN || 'codex',
       environment: cliEnvironment,
       directory: env.CODEX_WORKING_DIRECTORY || directory,
+      usageReportDir: env.CODEX_USAGE_REPORT_DIR?.trim() || undefined,
       key: env.OPENAI_API_KEY,
       keyFile: env.OPENAI_API_KEY_FILE,
     },

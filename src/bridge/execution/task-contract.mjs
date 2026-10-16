@@ -21,12 +21,14 @@
  * @property {string} model Model identifier or configured-default label.
  * @property {string} [requestId] Provider-side request or thread identifier.
  * @property {TokenUsage} [usage] Observed usage when available.
+ * @property {string} [usageReportPath] Local Codex JSONL report path when enabled.
+ * @property {'saved' | 'failed'} [usageReportStatus] Local report write outcome when enabled.
  */
 
 /**
  * Each adapter owns authentication; execution owns validation.
  * @typedef {object} AiProvider
- * @property {function(string, {signal: AbortSignal, directory?: string}): Promise<TaskResult>} generate
+ * @property {function(string, {signal: AbortSignal, directory?: string, traceId?: string, phase?: string, requestId?: string}): Promise<TaskResult>} generate
  */
 
 /**
@@ -45,6 +47,8 @@
  * @property {string} [text] Final response text.
  * @property {{code: string, message: string}} [error] Safe failure details.
  * @property {TokenUsage} [usage] Observed provider usage.
+ * @property {string} [usageReportPath] Local Codex JSONL report path.
+ * @property {'saved' | 'failed'} [usageReportStatus] Local report write outcome.
  * @property {string} [providerRequestId] Provider-side identifier.
  * @property {{name: string, observationName: string, tags: string[], level?: 'DEBUG' | 'DEFAULT' | 'WARNING' | 'ERROR'}} [trace] Validated trace labels.
  */

@@ -51,6 +51,11 @@ test('configuration rejects invalid execution settings and missing API model', (
     environment: {},
   });
   assert.equal(projectConfig.providerOptions.directory, '/host/project with spaces');
+  const reportConfig = loadBridgeConfig({
+    envFile: envFile(t, 'CODEX_USAGE_REPORT_DIR=.local/bridge/usage\n'),
+    environment: {},
+  });
+  assert.equal(reportConfig.providerOptions.usageReportDir, '.local/bridge/usage');
 });
 
 test('empty working directory defaults to the project root outside the launch directory', (t) => {

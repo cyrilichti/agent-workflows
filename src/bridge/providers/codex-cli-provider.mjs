@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import { ProviderError } from '../execution/task-contract.mjs';
 import { PROJECT_ROOT } from '../project-root.mjs';
+import { saveCodexUsageReport } from '../observability/codex-usage-report.mjs';
 
 // Authentication, tools, skills, MCP servers and model defaults belong to the local CLI.
 /**
@@ -90,6 +91,7 @@ export function parseCodexEvents(text, model) {
  * @param {string} [options.executable='codex'] Executable name or absolute path.
  * @param {NodeJS.ProcessEnv} [options.environment=process.env] Inherited host environment.
  * @param {string} [options.directory=PROJECT_ROOT] Task working directory.
+ * @param {string} [options.usageReportDir] Opt-in local directory for complete CLI JSONL and summary.
  * @param {typeof spawn} [options.spawnImpl=spawn] Injectable subprocess launcher.
  * @returns {import('../execution/task-contract.mjs').AiProvider}
  */
@@ -99,6 +101,7 @@ export function createCodexCliProvider({
   executable = 'codex',
   environment = process.env,
   directory = PROJECT_ROOT,
+  usageReportDir,
   spawnImpl = spawn,
 }) {
   return {
@@ -106,11 +109,11 @@ export function createCodexCliProvider({
      * Run one CLI process group and terminate it on cancellation or excess output.
      *
      * @param {string} prompt Task instructions.
-     * @param {{ signal: AbortSignal, directory?: string }} options Cancellation and per-call directory.
+     * @param {{ signal: AbortSignal, directory?: string, traceId?: string, phase?: string, requestId?: string }} options Cancellation and report identifiers.
      * @returns {Promise<import('../execution/task-contract.mjs').TaskResult>}
      * @throws {ProviderError} For execution, authentication, cancellation or provider failures.
      */
-    async generate(prompt, { signal, directory: taskDirectory = directory }) {
+    async generate(prompt, { signal, directory: taskDirectory = directory, traceId, phase, requestId }) {
       if (signal.aborted) {
         throw new ProviderError('timeout', 'Execution cancelled before launch.');
       }
@@ -156,22 +159,42 @@ export function createCodexCliProvider({
         child.on('error', () => {
           failure = new ProviderError('codex_start', 'Codex could not start.');
         });
-        child.on('close', (code) => {
+        child.on('close', async (code) => {
           signal.removeEventListener('abort', abort);
+          let usageReportPath;
+          let usageReportStatus;
+          if (usageReportDir && traceId && output) {
+            try {
+              usageReportPath = await saveCodexUsageReport(usageReportDir, output, {
+                traceId,
+                phase,
+                requestId,
+                model: model || 'configured-default',
+                prompt,
+              });
+              usageReportStatus = 'saved';
+            } catch {
+              usageReportStatus = 'failed';
+            }
+          }
           if (failure) {
+            Object.assign(failure, { usageReportPath, usageReportStatus });
             return reject(failure);
           }
           if (code !== 0) {
-            return reject(
-              new ProviderError(
-                'codex_error',
-                'Codex exited without success. Check login, quota and model access.',
-              ),
+            const error = new ProviderError(
+              'codex_error',
+              'Codex exited without success. Check login, quota and model access.',
             );
+            Object.assign(error, { usageReportPath, usageReportStatus });
+            return reject(error);
           }
           try {
-            resolve(parseCodexEvents(output, model || 'configured-default'));
+            const result = parseCodexEvents(output, model || 'configured-default');
+            Object.assign(result, { usageReportPath, usageReportStatus });
+            resolve(result);
           } catch (error) {
+            Object.assign(error, { usageReportPath, usageReportStatus });
             reject(error);
           }
         });

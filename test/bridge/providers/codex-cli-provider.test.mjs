@@ -125,3 +125,52 @@ test('local CLI uses the same default or explicit directory for -C and cwd', asy
     assert.equal(result.model, 'configured-default');
   }
 });
+
+test('Codex provider saves an opt-in report and returns its path', async (t) => {
+  const { spawn } = await import('node:child_process');
+  const directory = mkdtempSync(`${tmpdir()}/codex-usage-provider-`);
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const provider = createCodexCliProvider({
+    model: 'test',
+    usageReportDir: `${directory}/reports`,
+    spawnImpl: (_file, _args, options) => spawn(process.execPath, ['-e', `
+      process.stdin.resume();
+      process.stdin.on('end', () => {
+        console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:'OK'}}));
+        console.log(JSON.stringify({type:'turn.completed',usage:{input_tokens:10,cached_input_tokens:4,output_tokens:2}}));
+      });
+    `], options),
+  });
+  const result = await provider.generate('Execute /next', {
+    signal: new AbortController().signal,
+    traceId: 'b'.repeat(32),
+  });
+  assert.equal(result.usageReportStatus, 'saved');
+  assert.equal(JSON.parse((await import('node:fs')).readFileSync(result.usageReportPath, 'utf8')).usage.input_tokens, 10);
+});
+
+test('failed Codex turns still save observable events with unknown usage', async (t) => {
+  const { spawn } = await import('node:child_process');
+  const { readFileSync } = await import('node:fs');
+  const directory = mkdtempSync(`${tmpdir()}/codex-failed-usage-`);
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const provider = createCodexCliProvider({
+    usageReportDir: `${directory}/reports`,
+    spawnImpl: (_file, _args, options) => spawn(process.execPath, ['-e', `
+      process.stdin.resume();
+      process.stdin.on('end', () => console.log(JSON.stringify({type:'turn.failed'})));
+    `], options),
+  });
+  let error;
+  try {
+    await provider.generate('Execute /next', {
+      signal: new AbortController().signal,
+      traceId: 'c'.repeat(32),
+    });
+  } catch (caught) {
+    error = caught;
+  }
+  assert.equal(error.code, 'codex_error');
+  assert.equal(error.usageReportStatus, 'saved');
+  assert.equal(JSON.parse(readFileSync(error.usageReportPath, 'utf8')).usage, null);
+});
