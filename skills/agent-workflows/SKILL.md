@@ -82,13 +82,16 @@ this guard.
 
 ## Deploy
 
-Replace the consuming project's root `AGENTS.md` with the downloaded
-`AGENTS.md`.
-
 For every fully managed directory listed in Rules:
 
 1. remove the matching directory under `.agents` completely;
 2. recreate it from the matching downloaded source directory.
+
+Create the consuming project's root `AGENTS.md` from the downloaded file.
+Prefix `.agents/` to each backtick-quoted path under a managed directory:
+`rules/default-language.md` becomes `.agents/rules/default-language.md`.
+Keep all other text unchanged. Require at least one replacement, verify each
+source and installed path exists, then replace the target file atomically.
 
 Create `.agents/plans` when absent. Otherwise preserve it and all of its
 contents exactly. Do not copy the downloaded `plans` directory. Create
@@ -228,7 +231,8 @@ missing `mcp.version.provider`.
 
 Before reporting success, verify:
 
-- the root `AGENTS.md` equals the downloaded source;
+- the root `AGENTS.md` differs from the downloaded source only by those
+  `.agents/` prefixes, and all referenced installed paths exist;
 - every fully managed directory equals its downloaded source and contains no
   obsolete path;
 - `.agents/plans` still contains every pre-existing consuming-project plan;
