@@ -19,5 +19,5 @@ The same command installs a new project or updates an existing installation.
 
 Run the bootstrap from the project root with no pending Git changes beyond
 the files created by the command above, select your item and version providers,
-then connect them as described in [Providers](/agent-workflows/providers/)
+then configure their access as described in [Providers](/agent-workflows/providers/)
 before running workflows.

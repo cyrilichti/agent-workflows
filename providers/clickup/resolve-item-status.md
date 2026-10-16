@@ -1,5 +1,12 @@
 # resolve-item-status
 
-Use `clickup_get_workspace_hierarchy` with `max_depth: "2"` and return every
-status name that clearly matches `semantic_status`. If the hierarchy does not
-expose statuses, report resolution as unavailable. Do not retrieve tasks.
+Enumerate Lists as in `./list-destinations.md`, without retrieving tasks.
+Read missing effective List statuses with:
+
+```text
+clickup-cli list get <List ID> --output json
+```
+
+Return every distinct exact `statuses[].status` name clearly matching
+`semantic_status`. Report resolution unavailable when statuses cannot be
+completely read; return an empty result only after enumeration with no match.

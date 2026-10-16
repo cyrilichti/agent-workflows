@@ -1,53 +1,18 @@
 # retrieve-items
 
-Retrieve ClickUp tasks matching the caller's criteria.
+```text
+clickup-cli task search --page 0 --output json
+```
 
-### Current User
+Add only caller-requested filters: repeat `--status` for resolved names,
+`--tag` for an exact label, and `--assignee` for numeric user IDs. For the
+current user, resolve `id` from `clickup-cli auth whoami --output json` once.
+With a label and no status constraint, add `--include-closed`; for `open`,
+omit it. Omit `--subtasks` and do not add unrequested assignee scope.
+Percent-encode status/tag query values in this version; use native names for
+comparison. Apply remaining criteria locally before the caller's `limit`.
+Never request another page.
 
-1. Resolve the current user to ClickUp user IDs:
-
-   ```text
-   tool: clickup_resolve_assignees
-   arguments:
-     assignees:
-       - me
-   ```
-
-2. Retrieve assigned tasks:
-
-   ```text
-   tool: clickup_filter_tasks
-   arguments:
-     assignees: resolved numeric user IDs
-     include_closed: false
-     subtasks: false
-   ```
-
-3. Apply the caller criteria to the returned tasks when ClickUp cannot express
-   them directly.
-
-Keep the first `limit` matches without requesting another page. Normalize `id`
-as `provider_id`, `name` as `title`, and the list label as `destination`.
-
-Use ClickUp status names as workspace-specific values. Do not assume every
-workspace uses the same status labels.
-
-Do not call `clickup_search` for this operation when `clickup_filter_tasks` can
-retrieve the requested tasks.
-
-### Status Criteria
-
-Use `clickup_filter_tasks` with the caller's resolved `statuses`. Do not pass
-`assignees` unless requested.
-
-### Labeled Candidate Criteria
-
-For a supplied `label` without `status`, use `clickup_filter_tasks` with the
-exact tag and `include_closed: true`. Do not pass `assignees`. Keep the first
-caller-limited results without requesting another page.
-
-### Open Labeled Candidate Criteria
-
-For `status: open` with a supplied `label`, use `clickup_filter_tasks` with the
-exact tag and `include_closed: false`. Do not pass `assignees`. Keep the first
-caller-limited results without requesting another page.
+Normalize `id` to `provider_id`, `name` to `title`, `status.status` to `status`,
+and `list.name` to `destination`. Preserve provider order and return only
+requested fields, not raw payloads.

@@ -1,24 +1,27 @@
 # read-item
 
 ```text
-tool: clickup_get_task
-arguments:
-  task_id: item ID
-  include:
-    - description
+clickup-cli task get <item ID> --markdown --output json
 ```
 
-Return the task's core fields, full description, native status type or closed
-indicator, list hierarchy, and URL. Return its assignees only when `assignment`
-is requested. When `labels` are requested, return every current task tag name
-from the same task response as exact labels.
+Parse the single task in the JSON array and return its core fields, full
+`markdown_description` (otherwise `description`), native status/type, hierarchy,
+and URL. Preserve empty descriptions. Return assignees only for requested
+`assignment`; for `labels`, require every exact tag name from the native
+`tags` array. Return requested attachments or linked tasks from the same record.
+Normalize `closed` to `true` for a closed status type or a present closed date,
+`false` when native status/closed-date data establishes an open task, and
+`null` when neither is available.
 
-Return `closed: null` when neither the native status type nor closed-date
-indicator is available. Otherwise, normalize `closed` to `true` when the type
-is `closed` or a closed date is present, and `false` otherwise.
+For comments or `request_backlinks`:
 
-Add supported `include` values such as `attachments` or `linked_tasks` when the
-caller requests them. For comments or `request_backlinks`, call
-`clickup_get_task_comments` once, follow every continuation, and return the
-requested comments and `Draft PR:` or `Draft MR:` URLs. Stop when the result is
-incomplete.
+```text
+clickup-cli comment list --task <item ID> --output json
+```
+
+A full page has 25 records: continue with the last record's raw `date` and `id`
+as `--start` and `--start-id` until a short page. Deduplicate IDs and stop on
+failure or a non-advancing boundary. Reconstruct full text from `comment[].text`
+in order: this CLI truncates `comment_text` even in JSON. Fail when full text
+blocks are unavailable. Return requested comments and `Draft PR:`/`Draft MR:`
+URLs only.
