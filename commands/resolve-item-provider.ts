@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-export function resolveItemProvider(configPath: string): 'clickup' | 'linear' {
+export function resolveItemProvider(configPath: string): string | undefined {
   const lines = readFileSync(configPath, 'utf8').split(/\r?\n/);
   const parents: Array<{ indent: number; key: string }> = [];
 
@@ -20,15 +20,11 @@ export function resolveItemProvider(configPath: string): 'clickup' | 'linear' {
     const path = [...parents.map(parent => parent.key), key].join('.');
     if (path === 'mcp.item.provider') {
       const scalar = (match[3] ?? '').replace(/\s+#.*$/, '').trim();
-      const provider = scalar.replace(/^(?:'([^']*)'|"([^"]*)")$/, (_value, single, double) => single ?? double);
-      if (provider === 'clickup' || provider === 'linear') {
-        return provider;
-      }
-      throw new Error('mcp.item.provider must be clickup or linear');
+      return scalar.replace(/^(?:'([^']*)'|"([^"]*)")$/, (_value, single, double) => single ?? double);
     }
     if (!match[3]?.trim()) {
       parents.push({ indent, key });
     }
   }
-  throw new Error('mcp.item.provider is missing from agent-workflows.yaml');
+  return undefined;
 }
