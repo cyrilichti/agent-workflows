@@ -12,16 +12,19 @@ function providerFromConfig(path: string): string {
     if (!line.trim() || line.trimStart().startsWith('#')) continue;
     const match = /^(\s*)([\w-]+):(?:\s*(.*))?$/.exec(line);
     if (!match) continue;
-    const indent = match[1].length;
+    const indentation = match[1];
+    const key = match[2];
+    if (indentation === undefined || key === undefined) continue;
+    const indent = indentation.length;
     while (parents.length && parents.at(-1)!.indent >= indent) parents.pop();
-    const path = [...parents.map(parent => parent.key), match[2]].join('.');
+    const path = [...parents.map(parent => parent.key), key].join('.');
     if (path === 'mcp.item.provider') {
       const scalar = (match[3] ?? '').replace(/\s+#.*$/, '').trim();
       const provider = scalar.replace(/^(?:'([^']*)'|"([^"]*)")$/, (_value, single, double) => single ?? double);
       if (provider === 'clickup' || provider === 'linear') return provider;
       throw new Error('mcp.item.provider must be clickup or linear');
     }
-    if (!match[3]?.trim()) parents.push({ indent, key: match[2] });
+    if (!match[3]?.trim()) parents.push({ indent, key });
   }
   throw new Error('mcp.item.provider is missing from agent-workflows.yaml');
 }
@@ -61,10 +64,12 @@ async function main(): Promise<void> {
     console.log(JSON.stringify(selectNext(candidates)));
     return;
   }
-  if (args.length !== 3 || args[0] !== '--resume') throw new Error('Expected --resume <snapshot> <comma-separated-categories>');
-  const snapshot = args[1];
+  const [mode, snapshot, categories] = args;
+  if (args.length !== 3 || mode !== '--resume' || !snapshot || !categories) {
+    throw new Error('Expected --resume <snapshot> <comma-separated-categories>');
+  }
   const candidates = readSnapshot(snapshot);
-  const classifications = classificationsFromArgument(args[2], unresolvedStatuses(candidates));
+  const classifications = classificationsFromArgument(categories, unresolvedStatuses(candidates));
   const result = selectNext(candidates, classifications);
   rmSync(dirname(snapshot), { recursive: true, force: true });
   console.log(JSON.stringify(result));
