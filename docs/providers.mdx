@@ -36,23 +36,29 @@ The `mcp.version.provider` key is retained for existing project configurations;
 
 ClickUp operations use the community
 [`clickup-cli`](https://github.com/nicholasbester/clickup-cli) directly.
-Install it and configure its API token and Workspace in the environment running
-the agent. Follow the upstream [installation and authentication guide](https://clickup-cli.com/install/)
-and [command reference](https://clickup-cli.com/commands/).
+Install it and configure the API token and Workspace before selecting ClickUp:
+
+```bash
+clickup-cli setup
+```
+
+Run the setup command in the agent's execution environment. See the upstream
+[installation and setup guide](https://clickup-cli.com/install/) for token,
+Workspace, and environment variable options, and the
+[command reference](https://clickup-cli.com/commands/).
 
 Linear operations use the community
 [`schpet/linear-cli`](https://github.com/schpet/linear-cli) directly. Install it
-on the machine running the agent and authenticate with a Linear API key:
+and authenticate it with a Linear API key before selecting Linear:
 
 ```bash
-brew install schpet/tap/linear
 linear auth login
 ```
 
-The CLI must be available as `linear` on `PATH`. See the upstream
+The CLI must be available as `linear` on the agent's `PATH`. See the upstream
 [installation and setup guide](https://github.com/schpet/linear-cli#install) for
-other installation methods and workspace configuration. The provider contracts
-use native CLI commands and `linear api` for focused GraphQL queries. The
+installation and workspace configuration. The provider contracts use native
+CLI commands and `linear api` for focused GraphQL queries. The
 `mcp.item.provider` key is retained for existing project configurations;
 `clickup` and `linear` select their respective CLIs.
 
