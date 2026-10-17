@@ -69,8 +69,8 @@ tasks:
 
               | Step | Execution |
               | --- | --- |
-              | 1. Configure | The playbook routes `execute next`; the workflow reads the configured Linear or ClickUp provider. |
-              | 2. Filter | A Node.js TypeScript program calls the configured provider CLI and selects the oldest eligible `agent-planned` item from the first returned page. |
+              | 1. Configure | Read the Linear or ClickUp provider from `agent-workflows.yaml`; no item reference is needed. |
+              | 2. Filter | Linear selects the first unarchived issue in the returned page with the exact `agent-planned` label and a `Backlog` or `Open` status. ClickUp selects a task tagged `agent-planned` and excludes closed tasks. |
               | 3. Return | A found item returns only `{"name":"…","id":"…","url":"…","list":"…"}`. `list` is the Linear project name or ClickUp list name. No match returns `{"status":"no eligible item"}`; a missing destination or provider failure is an error. |
               | 4. Stop | Selection ends without reading another item, creating a plan, changing the ticket, or starting delivery. `/work` starts delivery for the selected item. |
             uri: '{{ envs.bridge_url }}/'
@@ -82,7 +82,7 @@ tasks:
               {{ {
                 "requestId": execution.id ~ "-next-" ~ uuid(),
                 "trace": {"name": "agent-workflows.work.next", "observationName": "next", "tags": ["next"], "sessionId": execution.id},
-                "prompt": "execute next",
+                "prompt": "Execute /next",
                 "timeoutMs": 285000
               } | toJson }}
             timeout: PT5M

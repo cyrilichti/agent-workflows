@@ -29,6 +29,7 @@ function fixture(tasks: unknown[], provider = 'clickup', remainingLabels?: unkno
   };
   return {
     root,
+    env,
     run: (...args: string[]) => spawnSync(process.execPath, [program, ...args], { cwd: root, env, encoding: 'utf8' }),
     cleanup: () => rmSync(root, { recursive: true, force: true }),
   };
@@ -141,17 +142,23 @@ test('Linear resumes unfamiliar statuses without another CLI query', () => {
 });
 
 test('the workflow command resolves an installed .agents layout', () => {
-  const f = fixture([], 'linear');
-  try {
-    const installed = join(f.root, '.agents', 'commands');
-    mkdirSync(installed, { recursive: true });
-    copyFileSync(program, join(installed, 'next.ts'));
-    copyFileSync(resolve('commands/next-selection.ts'), join(installed, 'next-selection.ts'));
-    copyFileSync(resolve('commands/next-linear.ts'), join(installed, 'next-linear.ts'));
-    const result = spawnSync('sh', ['-c',
-      'if [ -f commands/next.ts ]; then node commands/next.ts; else node .agents/commands/next.ts; fi'],
-      { cwd: f.root, encoding: 'utf8' });
-    assert.equal(result.status, 0, result.stderr);
-    assert.deepEqual(JSON.parse(result.stdout), { status: 'no eligible item' });
-  } finally { f.cleanup(); }
+  for (const configuredProvider of ['clickup', 'linear']) {
+    const f = fixture([], configuredProvider);
+    try {
+      const installed = join(f.root, '.agents', 'commands');
+      mkdirSync(installed, { recursive: true });
+      copyFileSync(program, join(installed, 'next.ts'));
+      copyFileSync(resolve('commands/next-selection.ts'), join(installed, 'next-selection.ts'));
+      for (const provider of ['clickup', 'linear']) {
+        const destination = join(f.root, '.agents', 'providers', provider);
+        mkdirSync(destination, { recursive: true });
+        copyFileSync(resolve(`providers/${provider}/select-next-item.ts`), join(destination, 'select-next-item.ts'));
+      }
+      const result = spawnSync('sh', ['-c',
+        'if [ -f commands/next.ts ]; then node commands/next.ts; else node .agents/commands/next.ts; fi'],
+        { cwd: f.root, env: f.env, encoding: 'utf8' });
+      assert.equal(result.status, 0, result.stderr);
+      assert.deepEqual(JSON.parse(result.stdout), { status: 'no eligible item' });
+    } finally { f.cleanup(); }
+  }
 });

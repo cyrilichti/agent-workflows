@@ -1,9 +1,7 @@
-import { execFileSync } from 'node:child_process';
 import { readFileSync, mkdtempSync, writeFileSync, rmSync, realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname, basename, resolve } from 'node:path';
-import { normalizeClickUpPage, selectNext, unresolvedStatuses, type Candidate, type StatusCategory } from './next-selection.ts';
-import { fetchLinearCandidates } from './next-linear.ts';
+import { selectNext, unresolvedStatuses, type Candidate, type StatusCategory } from './next-selection.ts';
 
 const snapshotPrefix = 'agent-workflows-next-';
 
@@ -46,24 +44,12 @@ function readSnapshot(path: string): Candidate[] {
   return JSON.parse(readFileSync(path, 'utf8'));
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const args = process.argv.slice(2);
   if (args.length === 0) {
     const provider = providerFromConfig(resolve('agent-workflows.yaml'));
-    let candidates: Candidate[];
-    if (provider === 'linear') {
-      candidates = fetchLinearCandidates();
-    } else {
-      let output: string;
-      try {
-        output = execFileSync('clickup-cli', ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json'], {
-          encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'],
-        });
-      } catch {
-        throw new Error('ClickUp query failed');
-      }
-      candidates = normalizeClickUpPage(JSON.parse(output));
-    }
+    const adapter: { fetchCandidates(): Candidate[] } = await import(`../providers/${provider}/select-next-item.ts`);
+    const candidates = adapter.fetchCandidates();
     const statuses = unresolvedStatuses(candidates);
     if (statuses.length) {
       const directory = mkdtempSync(join(tmpdir(), snapshotPrefix));
@@ -84,10 +70,8 @@ function main(): void {
   console.log(JSON.stringify(result));
 }
 
-try {
-  main();
-} catch (error) {
+main().catch(error => {
   const message = error instanceof Error ? error.message : String(error);
   console.error(`next: ${message}`);
   process.exitCode = 1;
-}
+});
