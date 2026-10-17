@@ -54,6 +54,20 @@ host or sends the task to the OpenAI API, returns a JSON result to Kestra,
 and sends a trace to Langfuse. The bridge must be running for Kestra to
 reach either provider.
 
+The bridge summarizes Codex JSONL in memory and sends the summary directly to
+the same Langfuse trace. The root `generation` contains the run's input,
+cached-input, and output token counts, plus the original Codex usage object
+and summary metadata such as event counts and JSONL size. Each completed item
+becomes a child event with its order, type, and input/output character counts;
+command events also include the executable name and exit code. Prompts,
+command arguments, and tool results are not included in the summary. The bridge
+does not write a local usage report. Codex reports tokens for the whole turn,
+not per item, and its JSONL does not timestamp individual items.
+The token breakdown belongs to the root `generation`; no extra usage event is
+created. Item names include their character counts. Codex JSONL has no item
+timestamps, so the bridge records when each `item.completed` line arrives and
+uses that observed time for the corresponding child event.
+
 ## Start the architecture locally
 
 You need Node.js 24+, npm, and Docker with Compose 2.24+. To use the local

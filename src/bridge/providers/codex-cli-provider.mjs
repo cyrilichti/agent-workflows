@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { ProviderError } from '../execution/task-contract.mjs';
 import { PROJECT_ROOT } from '../project-root.mjs';
-import { saveCodexUsageReport } from '../observability/codex-usage-report.mjs';
+import { summarizeCodexEvents } from '../observability/codex-usage-report.mjs';
 
 // Authentication, tools, skills, MCP servers and model defaults belong to the local CLI.
 /**
@@ -91,7 +91,6 @@ export function parseCodexEvents(text, model) {
  * @param {string} [options.executable='codex'] Executable name or absolute path.
  * @param {NodeJS.ProcessEnv} [options.environment=process.env] Inherited host environment.
  * @param {string} [options.directory=PROJECT_ROOT] Task working directory.
- * @param {string} [options.usageReportDir] Opt-in local directory for complete CLI JSONL and summary.
  * @param {typeof spawn} [options.spawnImpl=spawn] Injectable subprocess launcher.
  * @returns {import('../execution/task-contract.mjs').AiProvider}
  */
@@ -101,7 +100,6 @@ export function createCodexCliProvider({
   executable = 'codex',
   environment = process.env,
   directory = PROJECT_ROOT,
-  usageReportDir,
   spawnImpl = spawn,
 }) {
   return {
@@ -125,7 +123,19 @@ export function createCodexCliProvider({
           env: { ...environment },
         });
         let output = '';
+        let pendingLine = '';
+        const itemCompletedAt = [];
         let failure;
+        const captureItemCompletion = (line) => {
+          try {
+            const event = JSON.parse(line);
+            if (event.type === 'item.completed' && event.item) {
+              itemCompletedAt.push(new Date().toISOString());
+            }
+          } catch {
+            // The summary records malformed lines after the process exits.
+          }
+        };
         /** Terminate the detached process group, including tools started by Codex. */
         const terminateProcessGroup = () => {
           try {
@@ -146,8 +156,16 @@ export function createCodexCliProvider({
         if (signal.aborted) {
           abort();
         }
+        child.stdout.setEncoding('utf8');
         child.stdout.on('data', (chunk) => {
           output += chunk;
+          pendingLine += chunk;
+          let newline = pendingLine.indexOf('\n');
+          while (newline !== -1) {
+            captureItemCompletion(pendingLine.slice(0, newline));
+            pendingLine = pendingLine.slice(newline + 1);
+            newline = pendingLine.indexOf('\n');
+          }
           if (Buffer.byteLength(output) > 32 * 1024 * 1024) {
             failure = new ProviderError('output_limit', 'Codex output exceeded the local limit.');
             terminateProcessGroup();
@@ -159,26 +177,19 @@ export function createCodexCliProvider({
         child.on('error', () => {
           failure = new ProviderError('codex_start', 'Codex could not start.');
         });
-        child.on('close', async (code) => {
+        child.on('close', (code) => {
           signal.removeEventListener('abort', abort);
-          let usageReportPath;
-          let usageReportStatus;
-          if (usageReportDir && traceId && output) {
-            try {
-              usageReportPath = await saveCodexUsageReport(usageReportDir, output, {
-                traceId,
-                phase,
-                requestId,
-                model: model || 'configured-default',
-                prompt,
-              });
-              usageReportStatus = 'saved';
-            } catch {
-              usageReportStatus = 'failed';
-            }
-          }
+          if (pendingLine.trim()) captureItemCompletion(pendingLine);
+          const codexSummary = output ? summarizeCodexEvents(output, {
+            traceId,
+            phase,
+            requestId,
+            model: model || 'configured-default',
+            prompt,
+            itemCompletedAt,
+          }) : undefined;
           if (failure) {
-            Object.assign(failure, { usageReportPath, usageReportStatus });
+            failure.codexSummary = codexSummary;
             return reject(failure);
           }
           if (code !== 0) {
@@ -186,15 +197,15 @@ export function createCodexCliProvider({
               'codex_error',
               'Codex exited without success. Check login, quota and model access.',
             );
-            Object.assign(error, { usageReportPath, usageReportStatus });
+            error.codexSummary = codexSummary;
             return reject(error);
           }
           try {
             const result = parseCodexEvents(output, model || 'configured-default');
-            Object.assign(result, { usageReportPath, usageReportStatus });
+            result.codexSummary = codexSummary;
             resolve(result);
           } catch (error) {
-            Object.assign(error, { usageReportPath, usageReportStatus });
+            error.codexSummary = codexSummary;
             reject(error);
           }
         });
