@@ -12,7 +12,6 @@
     "start": "node src/commandes/start.command.ts",
     "build": "astro build",
     "test": "node --test \"test/**/*.test.ts\"",
-    "usage:analyze": "node src/commandes/analyze-usage.command.ts",
     "doc": "astro dev"
   },
   "dependencies": {
