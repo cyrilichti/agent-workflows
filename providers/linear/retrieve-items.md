@@ -1,49 +1,55 @@
 # Retrieve Items
 
-Retrieve Linear issues matching the caller's criteria.
+Retrieve Linear issues matching the caller's criteria. Retain only requested
+display fields from the resulting records. Do not print full issue payloads to
+the caller.
 
 ## Current User
 
-1. Retrieve issues assigned to the current user:
+```text
+linear issue query --all-teams --assignee @me --limit 5 --json --no-input
+```
 
-   ```text
-   tool: list_issues
-   arguments:
-     assignee: me
-     includeArchived: false
-     fields:
-       - id
-       - title
-       - status
-       - statusType
-     limit: 5
-   ```
-
-2. Apply the caller criteria to the returned issues when Linear cannot express
-   them directly.
-
-Return the first `limit` matches without following the cursor. Normalize `id`
-as `provider_id` and the state name as `status`.
-
-Use Linear state names and state types as workspace-specific values. Do not
-assume every workspace uses the same status labels.
+Apply any caller criteria that Linear cannot express directly. Return the
+first `limit` matches without requesting more issues. Normalize native `id` as
+`provider_id`, `state.name` as `status`, and `state.type` as `statusType`.
 
 ## Status Criteria
 
-Use `list_issues` with the caller's resolved `team` and `state`. Do not pass
-`assignee` unless the caller requested it. Never follow the returned cursor.
+```text
+linear issue query --team <resolved team ID> --state <resolved state ID> --limit <caller limit> --json --no-input
+```
 
-Use the same fields, plus `team` and `project` only for destination.
+Do not pass `--assignee` unless requested. Return only team and project when
+the caller requests destination information. Use native state names and types;
+do not assume every workspace uses the same labels.
 
 ## Labeled Candidate Criteria
 
-For a supplied `label` without `status`, call `list_issues` with the exact label
-name, `includeArchived: false`, the requested display fields, and the caller
-limit. Do not filter by status, pass `assignee`, or follow a cursor.
+Use an exact, case-sensitive label name filter. The native `--label` resolver
+matches case-insensitively, so use a focused GraphQL query here:
+
+```sh
+linear api --variable "label=<exact label name>" --variable "limit=<caller limit>" <<'GRAPHQL'
+query LabeledIssues($label: String!, $limit: Int!) {
+  issues(filter: {labels: {name: {eq: $label}}},
+         includeArchived: false, first: $limit) {
+    nodes {
+      id identifier title
+      state { name type }
+      team { id name }
+      project { id name }
+    }
+  }
+}
+GRAPHQL
+```
+
+Do not filter by state or assignee unless the caller requests it. A label
+resolver ambiguity or provider failure is an error, not an empty result.
 
 ## Open Labeled Candidate Criteria
 
-For `status: open` with a supplied `label`, call `list_issues` with the exact
-label name, `includeArchived: false`, the requested display fields, and the
-caller limit. Exclude issues whose `statusType` is `completed` or `canceled`.
-Also exclude `duplicate`. Do not pass `assignee` and do not follow a cursor.
+Use the same labeled query with the caller's limit. Exclude native state types
+`completed`, `canceled`, and `duplicate` from the returned issues. Do not pass
+`--assignee` or request more pages to backfill exclusions.
