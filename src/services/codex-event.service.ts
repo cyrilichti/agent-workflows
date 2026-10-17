@@ -27,8 +27,7 @@ export class CodexEventService {
         malformedLines++;
         continue;
       }
-      const type = String(event.type);
-      eventCounts[type] = (eventCounts[type] ?? 0) + 1;
+      eventCounts[event.type] = (eventCounts[event.type] ?? 0) + 1;
       if (event.type === 'thread.started') threadId = event.thread_id ?? null;
       if (event.type === 'turn.completed') usage = event.usage ?? null;
       const item = this.items.build(event, options.itemCompletedAt?.[items.length]);

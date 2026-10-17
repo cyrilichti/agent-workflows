@@ -8,11 +8,14 @@ export class TaskRequestService {
 
   async parseTaskInput(request: IncomingMessage): Promise<unknown> {
     let body = '';
+    let bytes = 0;
+    request.setEncoding('utf8');
     for await (const chunk of request) {
-      body += chunk;
-      if (Buffer.byteLength(body) > MAX_HTTP_BODY_BYTES) {
+      bytes += Buffer.byteLength(chunk);
+      if (bytes > MAX_HTTP_BODY_BYTES) {
         throw new HttpError(413, 'body_too_large');
       }
+      body += chunk;
     }
     try {
       return request.headers['content-type']?.startsWith('text/plain')

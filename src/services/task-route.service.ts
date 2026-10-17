@@ -24,7 +24,9 @@ export class TaskRouteService {
       } else if (!this.security.isAuthorized(request)) {
         this.json.send(response, 401, { error: 'unauthorized' });
       } else if (request.method === 'POST' && request.url === '/') {
-        this.responses.sendTask(response, await this.controller.postTask(await this.requests.parseTaskInput(request)));
+        const input = await this.requests.parseTaskInput(request);
+        const result = await this.controller.postTask(input);
+        this.responses.sendTask(response, result);
       } else {
         this.json.send(response, 404, { error: 'not_found' });
       }

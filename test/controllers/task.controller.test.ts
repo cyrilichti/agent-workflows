@@ -8,6 +8,7 @@ import { SecurityService } from '../../src/core/services/security.service.ts';
 import { TaskService } from '../../src/services/task.service.ts';
 import { TaskResponseEntity } from '../../src/entities/task-response.entity.ts';
 import { TaskResultEntity } from '../../src/entities/task-result.entity.ts';
+import { MAX_HTTP_BODY_BYTES } from '../../src/config/keys.ts';
 import type { TaskResponse } from '../../src/types/task.types.ts';
 import type { Server } from 'node:http';
 
@@ -73,6 +74,13 @@ test('HTTP bridge authenticates before executing and accepts a task without a pr
     ).status,
     400,
   );
+  assert.equal(calls.length, 1);
+  const tooLarge = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: 'é'.repeat(Math.floor(MAX_HTTP_BODY_BYTES / 2) + 1),
+  });
+  assert.equal(tooLarge.status, 413);
   assert.equal(calls.length, 1);
 });
 

@@ -11,7 +11,7 @@ export class TraceItemSpanBuilder {
     const received = Date.parse(event.completedAt ?? '');
     const measured = Number.isFinite(received) && received >= start && received <= end;
     const time = unixNanoseconds(measured ? received : end);
-    const size = `${event.inputCharacters ?? 0} in, ${event.outputCharacters ?? 0} out chars`;
+    const size = `${event.inputCharacters} in, ${event.outputCharacters} out chars`;
     const name = event.type === 'command_execution'
       ? `command ${commandIndex}: ${event.commandName ?? 'shell'} (${size})`
       : `item ${index + 1}: ${event.type ?? 'unknown'} (${size})`;
@@ -21,8 +21,8 @@ export class TraceItemSpanBuilder {
       traceAttribute('langfuse.observation.metadata.sequence', index + 1),
       traceAttribute('langfuse.observation.metadata.timeSource', measured ? 'bridge received item completion' : 'unavailable'),
       traceAttribute('langfuse.observation.metadata.itemType', event.type ?? 'unknown'),
-      traceAttribute('langfuse.observation.metadata.inputCharacters', event.inputCharacters ?? 0),
-      traceAttribute('langfuse.observation.metadata.outputCharacters', event.outputCharacters ?? 0),
+      traceAttribute('langfuse.observation.metadata.inputCharacters', event.inputCharacters),
+      traceAttribute('langfuse.observation.metadata.outputCharacters', event.outputCharacters),
       ...(event.exitCode === undefined ? [] : [traceAttribute('langfuse.observation.metadata.exitCode', event.exitCode)]),
       ...(event.tool ? [traceAttribute('langfuse.observation.metadata.tool', event.tool)] : []),
       traceAttribute('langfuse.observation.metadata.measurement', 'characters; token usage is recorded on the run'),

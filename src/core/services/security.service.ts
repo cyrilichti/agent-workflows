@@ -5,7 +5,7 @@ export class SecurityService {
   private readonly expectedToken: Buffer;
 
   constructor(token: string) {
-    if (typeof token !== 'string' || Buffer.byteLength(token) < 32) {
+    if (Buffer.byteLength(token) < 32) {
       throw new Error('Configure a bridge token of at least 32 bytes.');
     }
     this.expectedToken = Buffer.from(`Bearer ${token}`);

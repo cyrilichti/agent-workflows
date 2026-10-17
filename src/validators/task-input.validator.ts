@@ -9,18 +9,17 @@ export class TaskInputValidator implements Validator<TaskInput> {
     if (!isRecord(value) || typeof value.prompt !== 'string' || !value.prompt.trim() || value.prompt.length > 16000) {
       throw new ProviderError('invalid_input', 'Prompt must contain 1–16000 characters.');
     }
-    const body = value;
-    if (typeof body.requestId !== 'string' || !/^[A-Za-z0-9_-]{8,100}$/.test(body.requestId)) {
+    if (typeof value.requestId !== 'string' || !/^[A-Za-z0-9_-]{8,100}$/.test(value.requestId)) {
       throw new ProviderError('invalid_input', 'Provide a requestId (8–100 letters, digits, underscores or hyphens).');
     }
-    if (body.directory !== undefined && (typeof body.directory !== 'string' || !body.directory.trim())) {
+    if (value.directory !== undefined && (typeof value.directory !== 'string' || !value.directory.trim())) {
       throw new ProviderError('invalid_input', 'directory must be a nonempty string.');
     }
-    if (body.timeoutMs !== undefined && (typeof body.timeoutMs !== 'number' || !Number.isInteger(body.timeoutMs) || body.timeoutMs < 1 || body.timeoutMs > MAX_TIMEOUT_MS)) {
+    if (value.timeoutMs !== undefined && (typeof value.timeoutMs !== 'number' || !Number.isInteger(value.timeoutMs) || value.timeoutMs < 1 || value.timeoutMs > MAX_TIMEOUT_MS)) {
       throw new ProviderError('invalid_input', `timeoutMs must be 1–${MAX_TIMEOUT_MS}.`);
     }
-    if (body.trace !== undefined) {
-      const trace = body.trace;
+    if (value.trace !== undefined) {
+      const trace = value.trace;
       const validLabel = (label: unknown) => typeof label === 'string' && label.trim().length > 0 && label.length <= 100;
       if (!isRecord(trace) ||
           !validLabel(trace.name) || !validLabel(trace.observationName) ||

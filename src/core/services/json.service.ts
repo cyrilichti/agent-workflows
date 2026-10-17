@@ -10,8 +10,4 @@ export class JsonService {
       return null;
     }
   }
-
-  stringify(value: unknown): string {
-    return JSON.stringify(value);
-  }
 }
