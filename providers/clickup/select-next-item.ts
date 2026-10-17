@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import type { Candidate, StatusCategory } from '../../commands/select-next-item.ts';
+
+type StatusCategory = 'waiting' | 'review' | 'other';
 
 const knownStatuses: Record<string, StatusCategory> = {
   open: 'waiting',
@@ -28,7 +29,7 @@ function named(value: unknown): unknown {
   return object(value)?.name;
 }
 
-function normalizePage(page: unknown): Candidate[] {
+function normalizePage(page: unknown) {
   if (!Array.isArray(page)) throw new Error('ClickUp did not return a task array');
   return page.map((value, index) => {
     const task = object(value);
@@ -50,7 +51,7 @@ function normalizePage(page: unknown): Candidate[] {
   });
 }
 
-export function fetchCandidates(): Candidate[] {
+export function fetchCandidates() {
   let output: string;
   try {
     output = execFileSync('clickup-cli', ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json'], {

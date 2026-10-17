@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import type { Candidate, StatusCategory } from '../../commands/select-next-item.ts';
+
+type StatusCategory = 'waiting' | 'review' | 'other';
 
 const knownStatuses: Record<string, StatusCategory> = {
   open: 'waiting',
@@ -92,7 +93,7 @@ function remainingLabels(id: string, firstCursor: string): string[] {
   return names;
 }
 
-function normalizePage(page: unknown): Candidate[] {
+function normalizePage(page: unknown) {
   const issues = object(object(page)?.data)?.issues;
   const nodes = object(issues)?.nodes;
   if (!Array.isArray(nodes)) throw new Error('Linear did not return an issue page');
@@ -131,6 +132,6 @@ function normalizePage(page: unknown): Candidate[] {
   });
 }
 
-export function fetchCandidates(): Candidate[] {
+export function fetchCandidates() {
   return normalizePage(queryLinear(firstPageQuery));
 }

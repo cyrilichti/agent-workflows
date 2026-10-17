@@ -5,9 +5,9 @@ type NextResult =
   | { name: string; id: string; url: string; list: string }
   | { status: 'no eligible item' };
 
-export type StatusCategory = 'waiting' | 'review' | 'other';
+type StatusCategory = 'waiting' | 'review' | 'other';
 
-export type Candidate = {
+type Candidate = {
   name: unknown;
   id: unknown;
   url: unknown;
