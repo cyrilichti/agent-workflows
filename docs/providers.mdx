@@ -40,11 +40,21 @@ Install it and configure its API token and Workspace in the environment running
 the agent. Follow the upstream [installation and authentication guide](https://clickup-cli.com/install/)
 and [command reference](https://clickup-cli.com/commands/).
 
-The `mcp.item.provider` key is retained for existing project configurations;
-`clickup` selects the CLI.
+Linear operations use the community
+[`schpet/linear-cli`](https://github.com/schpet/linear-cli) directly. Install it
+on the machine running the agent and authenticate with a Linear API key:
 
-Linear uses its [official MCP integration](https://linear.app/docs/mcp).
-Enable it in the AI client running the workflows.
+```bash
+brew install schpet/tap/linear
+linear auth login
+```
+
+The CLI must be available as `linear` on `PATH`. See the upstream
+[installation and setup guide](https://github.com/schpet/linear-cli#install) for
+other installation methods and workspace configuration. The provider contracts
+use native CLI commands and `linear api` for focused GraphQL queries. The
+`mcp.item.provider` key is retained for existing project configurations;
+`clickup` and `linear` select their respective CLIs.
 
 GitHub operations use the official [`gh` CLI](https://cli.github.com/).
 Install it and authenticate it for the repository's host before selecting
