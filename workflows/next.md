@@ -11,13 +11,10 @@ result. This is a standalone entry point.
 
 ### 1. Run the Selection Program
 
-From the project root, set `workflow_file` to the path used to load this
-`next.md`. Resolve the program relative to that file, not relative to the
-project root:
+From the directory containing this workflow file, run:
 
 ```sh
-workflow_file="<path used to load this next.md>"
-node "$(dirname "$workflow_file")/../commands/next.ts"
+node ../commands/next.ts
 ```
 
 The program reads `agent-workflows.yaml` and returns one JSON object. A result
@@ -34,8 +31,7 @@ the returned snapshot path and comma-separated categories in the same order as
 the reported names:
 
 ```sh
-workflow_file="<path used to load this next.md>"
-node "$(dirname "$workflow_file")/../commands/next.ts" --resume "<snapshot>" "<categories>"
+node ../commands/next.ts --resume "<snapshot>" "<categories>"
 ```
 
 Return its final JSON object unchanged. Do not read the snapshot or rerun the

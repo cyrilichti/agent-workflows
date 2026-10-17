@@ -1,9 +1,20 @@
-import { readFileSync, mkdtempSync, writeFileSync, rmSync, realpathSync } from 'node:fs';
+import { readFileSync, mkdtempSync, writeFileSync, rmSync, realpathSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, dirname, basename, resolve } from 'node:path';
+import { join, dirname, basename } from 'node:path';
 import { selectNext, unresolvedStatuses, type Candidate, type StatusCategory } from './next-selection.ts';
 
 const snapshotPrefix = 'agent-workflows-next-';
+
+function projectRoot(): string {
+  let directory = process.cwd();
+  for (let depth = 0; depth < 3; depth++) {
+    if (existsSync(join(directory, 'agent-workflows.yaml'))) return directory;
+    const parent = dirname(directory);
+    if (parent === directory) break;
+    directory = parent;
+  }
+  throw new Error('agent-workflows.yaml was not found');
+}
 
 function providerFromConfig(path: string): string {
   const lines = readFileSync(path, 'utf8').split(/\r?\n/);
@@ -50,7 +61,9 @@ function readSnapshot(path: string): Candidate[] {
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   if (args.length === 0) {
-    const provider = providerFromConfig(resolve('agent-workflows.yaml'));
+    const root = projectRoot();
+    const provider = providerFromConfig(join(root, 'agent-workflows.yaml'));
+    process.chdir(root);
     const adapter: { fetchCandidates(): Candidate[] } = await import(`../providers/${provider}/select-next-item.ts`);
     const candidates = adapter.fetchCandidates();
     const statuses = unresolvedStatuses(candidates);
