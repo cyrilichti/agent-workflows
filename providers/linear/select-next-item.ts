@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import type { Candidate, StatusCategory } from '../../commands/next-selection.ts';
+import type { Candidate, StatusCategory } from '../../commands/select-next-item.ts';
 
 const knownStatuses: Record<string, StatusCategory> = {
   open: 'waiting',

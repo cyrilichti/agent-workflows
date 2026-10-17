@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import test from 'node:test';
 
-const program = resolve('commands/next.ts');
+const program = resolve('commands/select-next-item.ts');
 
 function fixture(tasks: unknown[], provider = 'clickup', remainingLabels?: unknown) {
   const root = mkdtempSync(join(tmpdir(), 'next-test-'));
@@ -13,8 +13,7 @@ function fixture(tasks: unknown[], provider = 'clickup', remainingLabels?: unkno
   mkdirSync(bin);
   const commands = join(root, 'commands');
   mkdirSync(commands);
-  copyFileSync(program, join(commands, 'next.ts'));
-  copyFileSync(resolve('commands/next-selection.ts'), join(commands, 'next-selection.ts'));
+  copyFileSync(program, join(commands, 'select-next-item.ts'));
   for (const providerName of ['clickup', 'linear']) {
     const destination = join(root, 'providers', providerName);
     mkdirSync(destination, { recursive: true });
@@ -39,7 +38,7 @@ function fixture(tasks: unknown[], provider = 'clickup', remainingLabels?: unkno
   return {
     root,
     env,
-    run: (...args: string[]) => spawnSync(process.execPath, [join(commands, 'next.ts'), ...args], { cwd: root, env, encoding: 'utf8' }),
+    run: (...args: string[]) => spawnSync(process.execPath, [join(commands, 'select-next-item.ts'), ...args], { cwd: root, env, encoding: 'utf8' }),
     cleanup: () => rmSync(root, { recursive: true, force: true }),
   };
 }
@@ -149,15 +148,14 @@ test('the workflow command resolves its installed .agents path even when the pro
       copyFileSync(resolve('workflows/next.md'), workflow);
       const installed = join(f.root, '.agents', 'commands');
       mkdirSync(installed, { recursive: true });
-      copyFileSync(program, join(installed, 'next.ts'));
-      copyFileSync(resolve('commands/next-selection.ts'), join(installed, 'next-selection.ts'));
-      writeFileSync(join(f.root, 'commands', 'next.ts'), 'process.exit(42);\n');
+      copyFileSync(program, join(installed, 'select-next-item.ts'));
+      writeFileSync(join(f.root, 'commands', 'select-next-item.ts'), 'process.exit(42);\n');
       for (const provider of ['clickup', 'linear']) {
         const destination = join(f.root, '.agents', 'providers', provider);
         mkdirSync(destination, { recursive: true });
         copyFileSync(resolve(`providers/${provider}/select-next-item.ts`), join(destination, 'select-next-item.ts'));
       }
-      const result = spawnSync(process.execPath, ['../commands/next.ts'],
+      const result = spawnSync(process.execPath, ['../commands/select-next-item.ts'],
         { cwd: dirname(workflow), env: f.env, encoding: 'utf8' });
       assert.equal(result.status, 0, result.stderr);
       assert.deepEqual(JSON.parse(result.stdout), { status: 'no eligible item' });
