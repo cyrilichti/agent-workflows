@@ -16,6 +16,7 @@ export class TaskInputEntity {
       name: value.trace.name,
       observationName: value.trace.observationName,
       tags: [...value.trace.tags],
+      ...(value.trace.sessionId !== undefined ? { sessionId: value.trace.sessionId } : {}),
       ...(value.trace.level !== undefined ? { level: value.trace.level } : {}),
     } : undefined;
   }

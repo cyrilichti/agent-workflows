@@ -3,6 +3,7 @@ import type { TaskOutcome } from '../types/task.types.ts';
 export class TaskEntity {
   requestId: TaskOutcome['requestId'];
   prompt: TaskOutcome['prompt'];
+  directory?: TaskOutcome['directory'];
   provider: TaskOutcome['provider'];
   model: TaskOutcome['model'];
   status: TaskOutcome['status'];
@@ -21,6 +22,7 @@ export class TaskEntity {
   constructor(value: TaskOutcome) {
     this.requestId = value.requestId;
     this.prompt = value.prompt;
+    this.directory = value.directory;
     this.provider = value.provider;
     this.model = value.model;
     this.status = value.status;
