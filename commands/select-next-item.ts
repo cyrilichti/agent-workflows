@@ -57,12 +57,8 @@ function projectRoot(): string {
   return basename(parent) === '.agents' ? dirname(parent) : parent;
 }
 
-async function main(): Promise<void> {
-  const root = projectRoot();
-  const provider = resolveItemProvider(join(root, 'agent-workflows.yaml'));
-  process.chdir(root);
-  const adapter: { fetchCandidates(): Candidate[] } = await import(`../providers/${provider}/select-next-item.ts`);
-  process.stdout.write(`${JSON.stringify(selectNext(adapter.fetchCandidates()))}\n`);
-}
-
-await main();
+const root = projectRoot();
+const provider = resolveItemProvider(join(root, 'agent-workflows.yaml'));
+process.chdir(root);
+const adapter: { fetchCandidates(): Candidate[] } = await import(`../providers/${provider}/select-next-item.ts`);
+process.stdout.write(`${JSON.stringify(selectNext(adapter.fetchCandidates()))}\n`);
