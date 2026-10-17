@@ -1,5 +1,15 @@
 import { execFileSync } from 'node:child_process';
 
+type Task = {
+  name: unknown;
+  id: unknown;
+  url: unknown;
+  list?: { name?: unknown };
+  status?: { status?: string };
+  tags: Array<{ name: string }>;
+  date_updated: unknown;
+};
+
 const categories: Record<string, 'waiting' | 'review'> = {
   open: 'waiting',
   backlog: 'waiting',
@@ -8,37 +18,6 @@ const categories: Record<string, 'waiting' | 'review'> = {
   review: 'review',
   'in review': 'review',
 };
-
-function object(value: unknown): Record<string, unknown> | null {
-  return value !== null && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown> : null;
-}
-
-function named(value: unknown): unknown {
-  return object(value)?.name;
-}
-
-function normalizePage(page: unknown) {
-  if (!Array.isArray(page)) throw new Error('ClickUp did not return a task array');
-  return page.map((value, index) => {
-    const task = object(value);
-    if (!task) throw new Error(`Invalid task at index ${index}`);
-    if (!Array.isArray(task.tags) || !task.tags.every(tag => typeof named(tag) === 'string')) {
-      throw new Error(`Incomplete labels at index ${index}`);
-    }
-    const rawStatus = object(task.status)?.status;
-    const status = typeof rawStatus === 'string' && rawStatus.trim() ? rawStatus.trim() : null;
-    return {
-      name: task.name,
-      id: task.id,
-      url: task.url,
-      list: named(task.list),
-      category: status ? categories[status.toLowerCase()] ?? null : null,
-      labels: task.tags.map(tag => named(tag) as string),
-      updatedAt: task.date_updated,
-    };
-  });
-}
 
 export function fetchCandidates() {
   let output: string;
@@ -49,5 +28,17 @@ export function fetchCandidates() {
   } catch {
     throw new Error('ClickUp query failed');
   }
-  return normalizePage(JSON.parse(output));
+  const tasks = JSON.parse(output) as Task[];
+  return tasks.map(task => {
+    const status = task.status?.status?.trim().toLowerCase();
+    return {
+      name: task.name,
+      id: task.id,
+      url: task.url,
+      list: task.list?.name,
+      category: status ? categories[status] ?? null : null,
+      labels: task.tags.map(tag => tag.name),
+      updatedAt: task.date_updated,
+    };
+  });
 }

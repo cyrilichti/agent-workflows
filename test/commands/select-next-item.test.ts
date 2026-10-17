@@ -14,6 +14,7 @@ function fixture(tasks: unknown[], provider = 'clickup', remainingLabels?: unkno
   const commands = join(root, 'commands');
   mkdirSync(commands);
   copyFileSync(program, join(commands, 'select-next-item.ts'));
+  copyFileSync(resolve('commands/resolve-item-provider.ts'), join(commands, 'resolve-item-provider.ts'));
   for (const providerName of ['clickup', 'linear']) {
     const destination = join(root, 'providers', providerName);
     mkdirSync(destination, { recursive: true });
@@ -149,6 +150,7 @@ test('the workflow command resolves its installed .agents path even when the pro
       const installed = join(f.root, '.agents', 'commands');
       mkdirSync(installed, { recursive: true });
       copyFileSync(program, join(installed, 'select-next-item.ts'));
+      copyFileSync(resolve('commands/resolve-item-provider.ts'), join(installed, 'resolve-item-provider.ts'));
       writeFileSync(join(f.root, 'commands', 'select-next-item.ts'), 'process.exit(42);\n');
       for (const provider of ['clickup', 'linear']) {
         const destination = join(f.root, '.agents', 'providers', provider);

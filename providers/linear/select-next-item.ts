@@ -1,5 +1,20 @@
 import { execFileSync } from 'node:child_process';
 
+type Labels = {
+  nodes: Array<{ name: string }>;
+  pageInfo: { hasNextPage: boolean; endCursor: string | null };
+};
+
+type Issue = {
+  id: string;
+  title: unknown;
+  url: unknown;
+  updatedAt: unknown;
+  state?: { name?: string };
+  project?: { name?: unknown };
+  labels: Labels;
+};
+
 const categories: Record<string, 'waiting' | 'review'> = {
   open: 'waiting',
   backlog: 'waiting',
@@ -32,32 +47,11 @@ const remainingLabelsQuery = `query NextIssueLabels($id: String!, $after: String
   }
 }`;
 
-function object(value: unknown): Record<string, unknown> | null {
-  return value !== null && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown> : null;
-}
-
-function named(value: unknown): unknown {
-  return object(value)?.name;
-}
-
-function labelPage(value: unknown): { names: string[]; nextCursor: string | null } {
-  const labels = object(value);
-  const nodes = labels?.nodes;
-  const pageInfo = object(labels?.pageInfo);
-  if (!Array.isArray(nodes) || !nodes.every(node => typeof named(node) === 'string') ||
-      typeof pageInfo?.hasNextPage !== 'boolean') {
-    throw new Error('Incomplete Linear labels');
-  }
-  const names = nodes.map(node => named(node) as string);
-  if (!pageInfo.hasNextPage) return { names, nextCursor: null };
-  if (typeof pageInfo.endCursor !== 'string' || !pageInfo.endCursor) throw new Error('Incomplete Linear label cursor');
-  return { names, nextCursor: pageInfo.endCursor };
-}
-
-function queryLinear(query: string, variables?: Record<string, string>): unknown {
+function queryLinear<T>(query: string, variables?: Record<string, string>): T {
   const args = ['--no-input', 'api'];
-  if (variables) args.push('--variables-json', JSON.stringify(variables));
+  if (variables) {
+    args.push('--variables-json', JSON.stringify(variables));
+  }
   let output: string;
   try {
     output = execFileSync('linear', args, {
@@ -66,11 +60,7 @@ function queryLinear(query: string, variables?: Record<string, string>): unknown
   } catch {
     throw new Error('Linear query failed');
   }
-  try {
-    return JSON.parse(output);
-  } catch {
-    throw new Error('Linear returned invalid JSON');
-  }
+  return JSON.parse(output) as T;
 }
 
 function remainingLabels(id: string, firstCursor: string): string[] {
@@ -78,48 +68,44 @@ function remainingLabels(id: string, firstCursor: string): string[] {
   const cursors = new Set<string>();
   let cursor: string | null = firstCursor;
   while (cursor) {
-    if (cursors.has(cursor)) throw new Error('Linear label cursor repeated');
+    if (cursors.has(cursor)) {
+      throw new Error('Linear label cursor repeated');
+    }
     cursors.add(cursor);
-    const response = object(queryLinear(remainingLabelsQuery, { id, after: cursor }));
-    const issue = object(object(response?.data)?.issue);
-    const page = labelPage(issue?.labels);
-    names.push(...page.names);
-    cursor = page.nextCursor;
+    const response: { data: { issue: { labels: Labels } } } = queryLinear(remainingLabelsQuery, { id, after: cursor });
+    const labels: Labels = response.data.issue.labels;
+    names.push(...labels.nodes.map(label => label.name));
+    if (labels.pageInfo.hasNextPage && !labels.pageInfo.endCursor) {
+      throw new Error('Incomplete Linear label cursor');
+    }
+    cursor = labels.pageInfo.hasNextPage ? labels.pageInfo.endCursor : null;
   }
   return names;
 }
 
-function normalizePage(page: unknown) {
-  const issues = object(object(page)?.data)?.issues;
-  const nodes = object(issues)?.nodes;
-  if (!Array.isArray(nodes)) throw new Error('Linear did not return an issue page');
-  return nodes.map((value, index) => {
-    const issue = object(value);
-    if (!issue) throw new Error(`Invalid Linear issue at index ${index}`);
-    const labels = labelPage(issue.labels);
-    const issueId = issue.id;
-    const names = labels.names;
-    if (labels.nextCursor) {
-      if (typeof issueId !== 'string' || !issueId) throw new Error(`Missing Linear issue ID at index ${index}`);
-      names.push(...remainingLabels(issueId, labels.nextCursor));
+export function fetchCandidates() {
+  const response = queryLinear<{ data: { issues: { nodes: Issue[] } } }>(firstPageQuery);
+  return response.data.issues.nodes.map(issue => {
+    const names = issue.labels.nodes.map(label => label.name);
+    if (issue.labels.pageInfo.hasNextPage) {
+      const cursor = issue.labels.pageInfo.endCursor;
+      if (!cursor) {
+        throw new Error('Incomplete Linear label cursor');
+      }
+      names.push(...remainingLabels(issue.id, cursor));
     }
     const updatedAt = issue.updatedAt;
     const timestamp = typeof updatedAt === 'string' && /(Z|[+-]\d{2}:\d{2})$/.test(updatedAt)
       ? Date.parse(updatedAt) : NaN;
-    const rawStatus = object(issue.state)?.name;
-    const status = typeof rawStatus === 'string' && rawStatus.trim() ? rawStatus.trim() : null;
+    const status = issue.state?.name?.trim().toLowerCase();
     return {
       name: issue.title,
       id: issue.id,
       url: issue.url,
-      list: named(issue.project),
-      category: status ? categories[status.toLowerCase()] ?? null : null,
+      list: issue.project?.name,
+      category: status ? categories[status] ?? null : null,
       labels: names,
       updatedAt: Number.isSafeInteger(timestamp) && timestamp >= 0 ? String(timestamp) : null,
     };
   });
-}
-
-export function fetchCandidates() {
-  return normalizePage(queryLinear(firstPageQuery));
 }
