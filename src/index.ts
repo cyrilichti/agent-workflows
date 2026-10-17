@@ -1,15 +1,15 @@
-import { appConfig } from '../config/app.config.ts';
+import { appConfig } from './config/app.config.ts';
 import { createServer } from 'node:http';
-import { ConfigValidator } from '../validators/config.validator.ts';
-import { AiProviderService } from '../services/ai-provider.service.ts';
-import { TaskService } from '../services/task.service.ts';
-import { TraceService } from '../services/trace.service.ts';
-import { TaskRouteService } from '../services/task-route.service.ts';
-import { TaskController } from '../controllers/task.controller.ts';
-import { SecurityService } from '../core/services/security.service.ts';
-import { HTTP_REQUEST_TIMEOUT_MS } from '../config/keys.ts';
-import type { AppConfig } from '../types/app-config.types.ts';
-import type { Validator } from '../types/validator.types.ts';
+import { ConfigValidator } from './validators/config.validator.ts';
+import { AiProviderService } from './services/ai-provider.service.ts';
+import { TaskService } from './services/task.service.ts';
+import { TraceService } from './services/trace.service.ts';
+import { TaskRouteService } from './services/task-route.service.ts';
+import { TaskController } from './controllers/task.controller.ts';
+import { SecurityService } from './core/services/security.service.ts';
+import { HTTP_REQUEST_TIMEOUT_MS } from './config/keys.ts';
+import type { AppConfig } from './types/app-config.types.ts';
+import type { Validator } from './types/validator.types.ts';
 
 const configValidator: Validator<AppConfig> = new ConfigValidator();
 configValidator.validate(appConfig);

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
-import type { InstallWorkflowOptions } from '../types/install-workflow.types.ts';
+import type { InstallWorkflowOptions } from './types/install-workflow.types.ts';
 
 export async function installWorkflow({ url, email, password, workflow, namespace, id, fetchImpl = fetch }: InstallWorkflowOptions): Promise<'created' | 'retained'> {
   if (!url || !email || !password) {
@@ -45,7 +45,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       password: process.env.KESTRA_ADMIN_PASSWORD,
       namespace: 'agent-workflows',
       id: 'work',
-      workflow: readFileSync(new URL('../../orchestration/work.yaml', import.meta.url), 'utf8'),
+      workflow: readFileSync(new URL('../orchestration/work.yaml', import.meta.url), 'utf8'),
     });
     console.log(`Workflow agent-workflows/work ${status}. Kestra: http://localhost:3000.`);
   } catch (error) {
