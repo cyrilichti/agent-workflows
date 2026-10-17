@@ -155,7 +155,7 @@ services:
   workflow-init:
     image: node:24-bookworm-slim@sha256:0e0ff40c39bc087845bfb27465a0df4ea419520094bc35842ff83dd8cbe6f9b6
     working_dir: /app
-    command: ['node', 'src/install.mjs']
+    command: ['node', 'src/commandes/install.command.ts']
     restart: 'no'
     read_only: true
     cap_drop: [ALL]
@@ -167,7 +167,7 @@ services:
       KESTRA_ADMIN_EMAIL: ${KESTRA_ADMIN_EMAIL:-local@example.test}
       KESTRA_ADMIN_PASSWORD: ${KESTRA_ADMIN_PASSWORD:?Set KESTRA_ADMIN_PASSWORD in .env}
     volumes:
-      - ./src/install.mjs:/app/src/install.mjs:ro
+      - ./src/commandes/install.command.ts:/app/src/commandes/install.command.ts:ro
       - ./orchestration/work.yaml:/app/orchestration/work.yaml:ro
     networks: [workflow]
   langfuse-web:
