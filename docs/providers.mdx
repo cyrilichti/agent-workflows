@@ -34,8 +34,9 @@ The `mcp.version.provider` key is retained for existing project configurations;
 
 ## Configure provider access
 
-ClickUp operations use the community `clickup-cli` directly. Install it and
-configure the API token and Workspace before selecting ClickUp:
+ClickUp operations use the community
+[`clickup-cli`](https://github.com/nicholasbester/clickup-cli) directly. Install
+it and configure the API token and Workspace before selecting ClickUp:
 
 ```bash
 clickup-cli setup
@@ -44,7 +45,8 @@ clickup-cli setup
 Run the setup command in the agent's execution environment. The provider
 contracts call `clickup-cli` directly.
 
-Linear operations use the community `schpet/linear-cli` directly. Install it
+Linear operations use the community
+[`schpet/linear-cli`](https://github.com/schpet/linear-cli) directly. Install it
 and authenticate it with a Linear API key before selecting Linear:
 
 ```bash
@@ -55,8 +57,8 @@ The provider contracts use native `linear` commands and `linear api` for
 focused GraphQL queries. The `mcp.item.provider` key is retained for existing
 project configurations; `clickup` and `linear` select their respective CLIs.
 
-GitHub operations use the official `gh` CLI. Install it and authenticate it
-for the repository's host before selecting GitHub:
+GitHub operations use the official [`gh` CLI](https://cli.github.com/). Install
+it and authenticate it for the repository's host before selecting GitHub:
 
 ```bash
 gh auth login --hostname github.example.com
@@ -64,8 +66,10 @@ gh auth login --hostname github.example.com
 
 For GitHub.com, use `gh auth login`.
 
-GitLab operations use the official `glab` CLI instead of an MCP server. Install
-it, then authenticate it for the repository's host before selecting GitLab:
+GitLab operations use the official
+[`glab` CLI](https://docs.gitlab.com/cli/installation/) instead of an MCP
+server. Install it, then authenticate it for the repository's host before
+selecting GitLab:
 
 ```bash
 glab auth login --hostname gitlab.example.com
