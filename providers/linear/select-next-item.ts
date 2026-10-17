@@ -47,7 +47,7 @@ const remainingLabelsQuery = `query NextIssueLabels($id: String!, $after: String
   }
 }`;
 
-function queryLinear<T>(query: string, variables?: Record<string, string>): T {
+function queryLinear<T>(query: string, variables?: Record<string, string | null>): T {
   const args = ['--no-input', 'api'];
   if (variables) {
     args.push('--variables-json', JSON.stringify(variables));
@@ -58,31 +58,18 @@ function queryLinear<T>(query: string, variables?: Record<string, string>): T {
   return JSON.parse(output) as T;
 }
 
-function remainingLabels(id: string, firstCursor: string): string[] {
-  const names: string[] = [];
-  let cursor: string | null = firstCursor;
-  while (cursor) {
-    const response: { data: { issue: { labels: Labels } } } = queryLinear(remainingLabelsQuery, { id, after: cursor });
-    const labels: Labels = response.data.issue.labels;
-    names.push(...labels.nodes.map(label => label.name));
-    if (labels.pageInfo.hasNextPage && !labels.pageInfo.endCursor) {
-      throw new Error('Incomplete Linear label cursor');
-    }
-    cursor = labels.pageInfo.hasNextPage ? labels.pageInfo.endCursor : null;
-  }
-  return names;
-}
-
 export function fetchCandidates() {
   const response = queryLinear<{ data: { issues: { nodes: Issue[] } } }>(firstPageQuery);
   return response.data.issues.nodes.map(issue => {
-    const names = issue.labels.nodes.map(label => label.name);
-    if (issue.labels.pageInfo.hasNextPage) {
-      const cursor = issue.labels.pageInfo.endCursor;
-      if (!cursor) {
-        throw new Error('Incomplete Linear label cursor');
-      }
-      names.push(...remainingLabels(issue.id, cursor));
+    let labels = issue.labels;
+    const names = labels.nodes.map(label => label.name);
+    while (labels.pageInfo.hasNextPage) {
+      const page = queryLinear<{ data: { issue: { labels: Labels } } }>(remainingLabelsQuery, {
+        id: issue.id,
+        after: labels.pageInfo.endCursor,
+      });
+      labels = page.data.issue.labels;
+      names.push(...labels.nodes.map(label => label.name));
     }
     const status = issue.state?.name?.trim().toLowerCase();
     return {
