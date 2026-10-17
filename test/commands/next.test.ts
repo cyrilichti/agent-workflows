@@ -11,6 +11,15 @@ function fixture(tasks: unknown[], provider = 'clickup', remainingLabels?: unkno
   const root = mkdtempSync(join(tmpdir(), 'next-test-'));
   const bin = join(root, 'bin');
   mkdirSync(bin);
+  const commands = join(root, 'commands');
+  mkdirSync(commands);
+  copyFileSync(program, join(commands, 'next.ts'));
+  copyFileSync(resolve('commands/next-selection.ts'), join(commands, 'next-selection.ts'));
+  for (const providerName of ['clickup', 'linear']) {
+    const destination = join(root, 'providers', providerName);
+    mkdirSync(destination, { recursive: true });
+    copyFileSync(resolve(`providers/${providerName}/select-next-item.ts`), join(destination, 'select-next-item.ts'));
+  }
   writeFileSync(join(root, 'agent-workflows.yaml'), `mcp:\n  item:\n    provider: ${provider}\n`);
   writeFileSync(join(root, 'tasks.json'), JSON.stringify(tasks));
   writeFileSync(join(root, 'linear-1.json'), JSON.stringify({ data: { issues: { nodes: tasks } } }));
@@ -30,7 +39,7 @@ function fixture(tasks: unknown[], provider = 'clickup', remainingLabels?: unkno
   return {
     root,
     env,
-    run: (...args: string[]) => spawnSync(process.execPath, [program, ...args], { cwd: root, env, encoding: 'utf8' }),
+    run: (...args: string[]) => spawnSync(process.execPath, [join(commands, 'next.ts'), ...args], { cwd: root, env, encoding: 'utf8' }),
     cleanup: () => rmSync(root, { recursive: true, force: true }),
   };
 }
@@ -152,7 +161,6 @@ test('the workflow command resolves its installed .agents path even when the pro
       mkdirSync(installed, { recursive: true });
       copyFileSync(program, join(installed, 'next.ts'));
       copyFileSync(resolve('commands/next-selection.ts'), join(installed, 'next-selection.ts'));
-      mkdirSync(join(f.root, 'commands'));
       writeFileSync(join(f.root, 'commands', 'next.ts'), 'process.exit(42);\n');
       for (const provider of ['clickup', 'linear']) {
         const destination = join(f.root, '.agents', 'providers', provider);

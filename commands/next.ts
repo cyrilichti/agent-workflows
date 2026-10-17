@@ -6,14 +6,12 @@ import { selectNext, unresolvedStatuses, type Candidate, type StatusCategory } f
 const snapshotPrefix = 'agent-workflows-next-';
 
 function projectRoot(): string {
-  let directory = process.cwd();
-  for (let depth = 0; depth < 3; depth++) {
-    if (existsSync(join(directory, 'agent-workflows.yaml'))) return directory;
-    const parent = dirname(directory);
-    if (parent === directory) break;
-    directory = parent;
+  const parent = dirname(import.meta.dirname);
+  const root = basename(parent) === '.agents' ? dirname(parent) : parent;
+  if (!existsSync(join(root, 'agent-workflows.yaml'))) {
+    throw new Error('agent-workflows.yaml was not found');
   }
-  throw new Error('agent-workflows.yaml was not found');
+  return root;
 }
 
 function providerFromConfig(path: string): string {
