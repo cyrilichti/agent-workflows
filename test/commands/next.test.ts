@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import test from 'node:test';
 
 const program = resolve('commands/next.ts');
@@ -141,22 +141,27 @@ test('Linear resumes unfamiliar statuses without another CLI query', () => {
   } finally { f.cleanup(); }
 });
 
-test('the workflow command resolves an installed .agents layout', () => {
+test('the workflow command resolves its installed .agents path even when the project has a commands directory', () => {
   for (const configuredProvider of ['clickup', 'linear']) {
     const f = fixture([], configuredProvider);
     try {
+      const workflow = join(f.root, '.agents', 'workflows', 'next.md');
+      mkdirSync(dirname(workflow), { recursive: true });
+      copyFileSync(resolve('workflows/next.md'), workflow);
       const installed = join(f.root, '.agents', 'commands');
       mkdirSync(installed, { recursive: true });
       copyFileSync(program, join(installed, 'next.ts'));
       copyFileSync(resolve('commands/next-selection.ts'), join(installed, 'next-selection.ts'));
+      mkdirSync(join(f.root, 'commands'));
+      writeFileSync(join(f.root, 'commands', 'next.ts'), 'process.exit(42);\n');
       for (const provider of ['clickup', 'linear']) {
         const destination = join(f.root, '.agents', 'providers', provider);
         mkdirSync(destination, { recursive: true });
         copyFileSync(resolve(`providers/${provider}/select-next-item.ts`), join(destination, 'select-next-item.ts'));
       }
       const result = spawnSync('sh', ['-c',
-        'if [ -f commands/next.ts ]; then node commands/next.ts; else node .agents/commands/next.ts; fi'],
-        { cwd: f.root, env: f.env, encoding: 'utf8' });
+        'node "$(dirname "$workflow_file")/../commands/next.ts"'],
+        { cwd: f.root, env: { ...f.env, workflow_file: workflow }, encoding: 'utf8' });
       assert.equal(result.status, 0, result.stderr);
       assert.deepEqual(JSON.parse(result.stdout), { status: 'no eligible item' });
     } finally { f.cleanup(); }
