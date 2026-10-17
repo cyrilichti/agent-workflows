@@ -1,6 +1,11 @@
-import type { ChildProcess, SpawnOptions } from 'node:child_process';
+import type { ChildProcessByStdio, SpawnOptionsWithStdioTuple } from 'node:child_process';
+import type { Readable, Writable } from 'node:stream';
 
-export type SpawnProcess = (command: string, args: readonly string[], options: SpawnOptions) => ChildProcess;
+export type SpawnProcess = (
+  command: string,
+  args: readonly string[],
+  options: SpawnOptionsWithStdioTuple<'pipe', 'pipe', 'ignore'>,
+) => ChildProcessByStdio<Writable, Readable, null>;
 
 export type ProviderOptions = {
   model?: string | undefined; workspace?: string | undefined; executable?: string | undefined;

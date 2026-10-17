@@ -1,6 +1,10 @@
 import { createHash } from 'node:crypto';
 import type { TraceAttribute } from './types/trace.types.ts';
 
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
 export function textLength(value: unknown): number {
   if (value === undefined || value === null) return 0;
   return (typeof value === 'string' ? value : JSON.stringify(value)).length;
@@ -11,7 +15,7 @@ export function commandName(command: unknown): string {
   const inner = /(?:^|\s)-lc\s+['"]?([^\s'"\\]+)/.exec(command)?.[1]
     ?? command.trim().split(/\s+/)[0];
   const name = inner?.split('/').pop();
-  return /^[A-Za-z0-9._-]+$/.test(name ?? '') ? name! : 'shell';
+  return name && /^[A-Za-z0-9._-]+$/.test(name) ? name : 'shell';
 }
 
 export function spanId(value: string): string {

@@ -30,9 +30,9 @@ export class CodexProcessService {
       };
       signal.addEventListener('abort', abort, { once: true });
       if (signal.aborted) abort();
-      child.stdout!.setEncoding('utf8');
-      child.stdout!.on('data', (chunk) => this.capture.append(child, state, chunk));
-      child.stdin!.on('error', () => {});
+      child.stdout.setEncoding('utf8');
+      child.stdout.on('data', (chunk) => this.capture.append(child, state, chunk));
+      child.stdin.on('error', () => {});
       child.on('error', () => { state.failure = new ProviderError('codex_start', 'Codex could not start.'); });
       child.on('close', (code) => {
         signal.removeEventListener('abort', abort);
@@ -43,7 +43,7 @@ export class CodexProcessService {
           reject(error);
         }
       });
-      child.stdin!.end(context.prompt);
+      child.stdin.end(context.prompt);
     });
   }
 }

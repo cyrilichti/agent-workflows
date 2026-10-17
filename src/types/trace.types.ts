@@ -51,7 +51,7 @@ export type TraceBatch = {
 };
 
 export type CodexRawEvent = {
-  type?: string;
+  type: string;
   thread_id?: string;
   usage?: { input_tokens: number; cached_input_tokens?: number; output_tokens: number };
   item?: {

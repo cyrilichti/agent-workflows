@@ -1,7 +1,9 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import type { CodexSummary } from '../types/trace.types.ts';
-import type { UsagePhaseRow } from '../types/usage-report.types.ts';
+import { JsonService } from '../core/services/json.service.ts';
+import type { UsagePhaseRow, UsageReport } from '../types/usage-report.types.ts';
+import type { Validator } from '../types/validator.types.ts';
+import { UsageReportValidator } from '../validators/usage-report.validator.ts';
 
 const directory = resolve(process.argv[2] || '.local/bridge/usage');
 let files: string[];
@@ -16,9 +18,13 @@ if (!files.length) {
   process.exit(0);
 }
 
-const reports = await Promise.all(files.map(async (file): Promise<CodexSummary> =>
-  JSON.parse(await readFile(resolve(directory, file), 'utf8')) as CodexSummary,
-));
+const json = new JsonService();
+const validator: Validator<UsageReport> = new UsageReportValidator();
+const reports = await Promise.all(files.map(async (file) => {
+  const report = json.parse(await readFile(resolve(directory, file), 'utf8'));
+  validator.validate(report);
+  return report;
+}));
 const byPhase = new Map<string, UsagePhaseRow>();
 const byTool = new Map<string, number>();
 for (const report of reports) {

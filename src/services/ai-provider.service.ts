@@ -9,7 +9,9 @@ export class AiProviderService {
       return new CodexCliService(options);
     }
     if (name === 'openai-api') {
-      return new OpenAiApiService({ ...options, model: options.model! });
+      const model = options.model;
+      if (!model) throw new Error('Set AI_MODEL for openai-api.');
+      return new OpenAiApiService({ ...options, model });
     }
     throw new Error(`Unknown AI_PROVIDER: ${name}`);
   }

@@ -1,11 +1,11 @@
 export class JsonService {
-  parse<T = unknown>(source: string): T {
-    return JSON.parse(source) as T;
+  parse(source: string): unknown {
+    return JSON.parse(source);
   }
 
-  parseOrNull<T = unknown>(source: string): T | null {
+  parseOrNull(source: string): unknown {
     try {
-      return this.parse<T>(source);
+      return this.parse(source);
     } catch {
       return null;
     }

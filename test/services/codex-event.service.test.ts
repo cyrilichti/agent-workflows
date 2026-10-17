@@ -35,3 +35,12 @@ test('in-memory summary keeps exact turn tokens separate from tool character cou
   assert.doesNotMatch(summaryText, /secret issue data/);
   assert.doesNotMatch(summaryText, /secret-file|secret contents/);
 });
+
+test('invalid Codex event fields are counted as malformed and rejected as output', () => {
+  const events = new CodexEventService();
+  const invalid = JSON.stringify({ type: 'turn.completed', usage: { input_tokens: 'ten', output_tokens: 1 } });
+  const summary = events.summarize(invalid, { model: 'test', prompt: 'Say OK' });
+  assert.equal(summary.malformedLines, 1);
+  assert.equal(summary.usage, null);
+  assert.throws(() => events.parseTurnResult(invalid, 'test'), { code: 'invalid_output' });
+});

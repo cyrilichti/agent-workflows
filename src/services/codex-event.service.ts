@@ -2,12 +2,15 @@ import { ProviderError } from '../errors/provider.error.ts';
 import { TaskResultEntity } from '../entities/task-result.entity.ts';
 import { CodexEventItemBuilder } from '../builders/codex-event-item.builder.ts';
 import { JsonService } from '../core/services/json.service.ts';
+import { CodexEventValidator } from '../validators/codex-event.validator.ts';
 import type { TokenUsage } from '../types/task.types.ts';
 import type { CodexEventItem, CodexRawEvent, CodexSummary, CodexSummaryOptions } from '../types/trace.types.ts';
+import type { Validator } from '../types/validator.types.ts';
 
 export class CodexEventService {
   private readonly json = new JsonService();
   private readonly items = new CodexEventItemBuilder();
+  private readonly validator: Validator<CodexRawEvent> = new CodexEventValidator();
 
   summarize(jsonl: string, options: CodexSummaryOptions): CodexSummary {
     const eventCounts: Record<string, number> = {};
@@ -17,8 +20,10 @@ export class CodexEventService {
     let malformedLines = 0;
 
     for (const line of jsonl.split('\n').filter(Boolean)) {
-      const event = this.json.parseOrNull<CodexRawEvent>(line);
-      if (!event) {
+      const event = this.json.parseOrNull(line);
+      try {
+        this.validator.validate(event);
+      } catch {
         malformedLines++;
         continue;
       }
@@ -53,8 +58,8 @@ export class CodexEventService {
     let usage: TokenUsage | undefined;
     let completed = false;
     for (const line of jsonl.split('\n').filter(Boolean)) {
-      const event = this.json.parseOrNull<CodexRawEvent>(line);
-      if (!event) throw new ProviderError('invalid_output', 'Invalid Codex event stream.');
+      const event = this.json.parseOrNull(line);
+      this.validator.validate(event);
       if (event.type === 'thread.started') requestId = event.thread_id;
       if (event.type === 'item.completed' && event.item?.type === 'agent_message') output = event.item.text ?? '';
       if (event.type === 'turn.failed') {
@@ -78,7 +83,12 @@ export class CodexEventService {
   }
 
   isItemCompletion(line: string): boolean {
-    const event = this.json.parseOrNull<CodexRawEvent>(line);
-    return event?.type === 'item.completed' && !!event.item;
+    const event = this.json.parseOrNull(line);
+    try {
+      this.validator.validate(event);
+      return event.type === 'item.completed' && !!event.item;
+    } catch {
+      return false;
+    }
   }
 }
