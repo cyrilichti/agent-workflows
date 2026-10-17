@@ -34,54 +34,41 @@ The `mcp.version.provider` key is retained for existing project configurations;
 
 ## Configure provider access
 
-ClickUp operations use the community
-[`clickup-cli`](https://github.com/nicholasbester/clickup-cli) directly.
-Install it and configure the API token and Workspace before selecting ClickUp:
+ClickUp operations use the community `clickup-cli` directly. Install it and
+configure the API token and Workspace before selecting ClickUp:
 
 ```bash
 clickup-cli setup
 ```
 
-Run the setup command in the agent's execution environment. See the upstream
-[installation and setup guide](https://clickup-cli.com/install/) for token,
-Workspace, and environment variable options, and the
-[command reference](https://clickup-cli.com/commands/).
+Run the setup command in the agent's execution environment. The provider
+contracts call `clickup-cli` directly.
 
-Linear operations use the community
-[`schpet/linear-cli`](https://github.com/schpet/linear-cli) directly. Install it
+Linear operations use the community `schpet/linear-cli` directly. Install it
 and authenticate it with a Linear API key before selecting Linear:
 
 ```bash
 linear auth login
 ```
 
-The CLI must be available as `linear` on the agent's `PATH`. See the upstream
-[installation and setup guide](https://github.com/schpet/linear-cli#install) for
-installation and workspace configuration. The provider contracts use native
-CLI commands and `linear api` for focused GraphQL queries. The
-`mcp.item.provider` key is retained for existing project configurations;
-`clickup` and `linear` select their respective CLIs.
+The provider contracts use native `linear` commands and `linear api` for
+focused GraphQL queries. The `mcp.item.provider` key is retained for existing
+project configurations; `clickup` and `linear` select their respective CLIs.
 
-GitHub operations use the official [`gh` CLI](https://cli.github.com/).
-Install it and authenticate it for the repository's host before selecting
-GitHub:
+GitHub operations use the official `gh` CLI. Install it and authenticate it
+for the repository's host before selecting GitHub:
 
 ```bash
 gh auth login --hostname github.example.com
 ```
 
-For GitHub.com, use `gh auth login`. See the
-[`gh` installation guide](https://github.com/cli/cli#installation) and
-[authentication guide](https://cli.github.com/manual/gh_auth_login).
+For GitHub.com, use `gh auth login`.
 
 GitLab operations use the official `glab` CLI instead of an MCP server. Install
-[`glab`](https://docs.gitlab.com/cli/installation/), then authenticate it for
-the repository's host before selecting GitLab:
+it, then authenticate it for the repository's host before selecting GitLab:
 
 ```bash
 glab auth login --hostname gitlab.example.com
 ```
 
-For GitLab.com, run `glab auth login`. See GitLab's
-[authentication guide](https://docs.gitlab.com/cli/authentication/) for OAuth,
-personal access token, CI, and self-managed instance options.
+For GitLab.com, run `glab auth login`.

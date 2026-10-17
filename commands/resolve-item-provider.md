@@ -9,10 +9,8 @@ Resolve the provider configured for item operations.
    Do not select or fall back to another provider.
 3. Require a matching directory at `../providers/<provider>/`.
 4. For `clickup`, return the configured provider.
-5. For `linear`, require the `linear` executable from `schpet/linear-cli` on
-   `PATH`. Check authenticated access with
-   `linear api --silent 'query { viewer { id } }'`. Stop on an observed
-   availability or authentication failure.
+5. For `linear`, return the configured provider. The `schpet/linear-cli`
+   executable and authentication are prerequisites for its operations.
 6. Stop for any other value and list `clickup` and `linear` as supported values.
 
 If the configuration or `mcp.item.provider` is missing, stop and explain what
