@@ -65,13 +65,8 @@ function queryLinear<T>(query: string, variables?: Record<string, string>): T {
 
 function remainingLabels(id: string, firstCursor: string): string[] {
   const names: string[] = [];
-  const cursors = new Set<string>();
   let cursor: string | null = firstCursor;
   while (cursor) {
-    if (cursors.has(cursor)) {
-      throw new Error('Linear label cursor repeated');
-    }
-    cursors.add(cursor);
     const response: { data: { issue: { labels: Labels } } } = queryLinear(remainingLabelsQuery, { id, after: cursor });
     const labels: Labels = response.data.issue.labels;
     names.push(...labels.nodes.map(label => label.name));
