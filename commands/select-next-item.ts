@@ -64,11 +64,7 @@ async function main(): Promise<void> {
   const provider = resolveItemProvider(join(root, 'agent-workflows.yaml'));
   process.chdir(root);
   const adapter: { fetchCandidates(): Candidate[] } = await import(`../providers/${provider}/select-next-item.ts`);
-  console.log(JSON.stringify(selectNext(adapter.fetchCandidates())));
+  process.stdout.write(`${JSON.stringify(selectNext(adapter.fetchCandidates()))}\n`);
 }
 
-main().catch(error => {
-  const message = error instanceof Error ? error.message : String(error);
-  console.error(`next: ${message}`);
-  process.exitCode = 1;
-});
+await main();
