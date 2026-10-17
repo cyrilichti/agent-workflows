@@ -9,7 +9,7 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "start": "node src/index.ts",
+    "start": "node src/server.ts",
     "build": "astro build",
     "test": "node --test \"test/**/*.test.ts\"",
     "doc": "astro dev"
