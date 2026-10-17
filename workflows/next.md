@@ -7,27 +7,52 @@ result. This is a standalone entry point.
 
 ---
 
-## Required Context
-
-Load `../goals/next-complete.md` as this workflow's completion contract.
-Follow `../rules/user-facing-output.md`.
-
----
-
 ## Steps
 
-### 1. Resolve Item Provider
+### 1. Run the Selection Program
 
-Run `../commands/resolve-item-provider.md`.
+From the project root, use the source checkout path when present, or the
+installed `.agents` path:
 
-### 2. Select the Next Item
-
-Run `../commands/select-next-item.md` with:
-
-```text
-provider: resolved item provider
+```sh
+if [ -f commands/next.ts ]; then
+  node commands/next.ts
+else
+  node .agents/commands/next.ts
+fi
 ```
 
-### 3. Return the Result
+The program reads `agent-workflows.yaml` and returns one JSON object. A result
+is valid only after this program has completed successfully in the current run.
+When it returns an item or `{"status":"no eligible item"}`, return that JSON
+object unchanged and stop. On a nonzero exit, stop and report the error.
 
-Format the returned result with `../templates/next-result.md`.
+### 2. Resolve Exceptional Statuses
+
+When the program returns `{"status":"classify-statuses",...}`, interpret each
+reported status name as `waiting`, `review`, or `other` using its ordinary
+meaning. Treat ambiguous names as `other`. Then run the program once more with
+the returned snapshot path and comma-separated categories in the same order as
+the reported names:
+
+```sh
+if [ -f commands/next.ts ]; then
+  node commands/next.ts --resume "<snapshot>" "<categories>"
+else
+  node .agents/commands/next.ts --resume "<snapshot>" "<categories>"
+fi
+```
+
+Return its final JSON object unchanged. Do not read the snapshot or rerun the
+provider query. A nonzero exit is an error.
+
+### 3. Select Through Linear MCP
+
+When the program returns `{"status":"use-linear-mcp"}`, run
+`../commands/select-next-item.md` with:
+
+```text
+provider: linear
+```
+
+Format its result with `../templates/next-result.md`.
