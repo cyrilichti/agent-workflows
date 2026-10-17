@@ -5,6 +5,7 @@ const knownStatuses: Record<string, StatusCategory> = {
   open: 'waiting',
   backlog: 'waiting',
   todo: 'waiting',
+  'to do': 'waiting',
   review: 'review',
   'in review': 'review',
   'in progress': 'other',

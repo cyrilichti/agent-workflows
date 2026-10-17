@@ -53,7 +53,7 @@ function task(id: string, status: string, updated: string, tags = ['agent-planne
 test('ClickUp selection uses one filtered call, oldest eligible date, and provider order for ties', () => {
   const f = fixture([
     task('reviewed', 'Review', '1', ['agent-planned', 'agent-inspected']),
-    task('first', 'Open', '2'),
+    task('first', 'to do', '2'),
     task('tied', 'Open', '2'),
     task('newer', 'Open', '3'),
   ]);
