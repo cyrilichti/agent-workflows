@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { TaskService } from '../../src/services/task.service.ts';
 import { ProviderError } from '../../src/errors/provider.error.ts';
+import { TraceDeliveryError } from '../../src/errors/trace-delivery.error.ts';
 import { TaskResultEntity } from '../../src/entities/task-result.entity.ts';
 import type { TaskEntity } from '../../src/entities/task.entity.ts';
 import type { TaskServiceOptions } from '../../src/types/task-service.types.ts';
@@ -108,12 +109,14 @@ test('a failed Codex result still traces observed usage and events', async () =>
   assert.equal(traced.codexSummary.items.length, 1);
 });
 
-test('trace failure preserves response and is attempted once', async () => {
+test('trace failure preserves response and reports a safe reason once', async (t) => {
+  const logs: unknown[][] = [];
+  t.mock.method(console, 'error', (...args: unknown[]) => { logs.push(args); });
   let attempts = 0;
   const f = fixture({
     trace: async () => {
       attempts++;
-      throw new Error('offline');
+      throw new TraceDeliveryError('http', 503);
     },
   });
   const result = await f.service.executeTask(input);
@@ -122,6 +125,20 @@ test('trace failure preserves response and is attempted once', async () => {
   assert.equal(result.traceStatus, 'failed');
   assert.equal(attempts, 1);
   assert.equal(f.calls(), 1);
+  assert.deepEqual(logs, [['Trace delivery failed', {
+    traceId: result.traceId, reason: 'http', status: 503,
+  }]]);
+});
+
+test('unexpected trace errors do not expose their message', async (t) => {
+  const logs: unknown[][] = [];
+  t.mock.method(console, 'error', (...args: unknown[]) => { logs.push(args); });
+  const f = fixture({ trace: async () => { throw new Error('secret detail'); } });
+  const result = await f.service.executeTask(input);
+  assert.equal(result.traceStatus, 'failed');
+  assert.deepEqual(logs, [['Trace delivery failed', {
+    traceId: result.traceId, reason: 'unexpected_error',
+  }]]);
 });
 
 test('timeout returns an unknown outcome', async () => {

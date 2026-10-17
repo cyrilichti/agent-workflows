@@ -15,6 +15,8 @@ export type CodexSummary = {
 
 export type TraceClient = { send(record: TaskEntity): Promise<void> };
 
+export type TraceDeliveryFailure = 'network' | 'timeout' | 'http' | 'invalid_response' | 'partial_rejection';
+
 export type TraceServiceOptions = {
   url: string; publicKey: string; secretKey: string; environment?: string | undefined; fetchImpl?: typeof fetch;
 };

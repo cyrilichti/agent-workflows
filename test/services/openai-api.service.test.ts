@@ -57,6 +57,19 @@ test('incomplete API responses fail closed', () => {
   });
 });
 
+test('completed API responses reject malformed output and usage', () => {
+  const validator = new OpenAiResponseValidator();
+  for (const response of [
+    { status: 'completed', output: {} },
+    { status: 'completed', output: [{ type: 'message', content: 'wrong shape' }] },
+    { status: 'completed', output: [{ type: 'message', content: [{ type: 'output_text', text: 42 }] }] },
+    { status: 'completed', output: [], usage: { input_tokens: '3', output_tokens: 1 } },
+    { status: 'completed', output: [], usage: { input_tokens: 3, output_tokens: 1, input_tokens_details: { cached_tokens: 4 } } },
+  ]) {
+    assert.throws(() => validator.validate(response), { code: 'invalid_output' });
+  }
+});
+
 test('API authentication failures do not retry or fall back', async (t) => {
   const dir = mkdtempSync(`${tmpdir()}/auth-test-`);
   t.after(() => rmSync(dir, { recursive: true, force: true }));

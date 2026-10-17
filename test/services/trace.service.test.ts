@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { TraceBuilder } from '../../src/builders/trace.builder.ts';
 import { TraceService } from '../../src/services/trace.service.ts';
+import { TaskEntity } from '../../src/entities/task.entity.ts';
 import type { TaskOutcome } from '../../src/types/task.types.ts';
 import type { TraceEntity } from '../../src/entities/trace.entity.ts';
 
@@ -140,4 +141,29 @@ test('in-memory JSONL summary becomes Langfuse metadata and child events without
   assert.ok(eventCounts);
   assert.deepEqual(JSON.parse(codexUsage), codexSummary.usage);
   assert.deepEqual(JSON.parse(eventCounts), codexSummary.eventCounts);
+});
+
+test('trace delivery classifies network, HTTP and partial acceptance failures', async () => {
+  const record = new TaskEntity({
+    requestId: 'trace-delivery-test', traceId: '0123456789abcdef0123456789abcdef',
+    provider: 'codex', model: 'test', prompt: 'Hello', status: 'completed',
+    startedAt: '2026-01-01T00:00:00Z', endedAt: '2026-01-01T00:00:01Z',
+  });
+  const options = { url: 'http://localhost:3001', publicKey: 'public', secretKey: 'secret' };
+  await assert.rejects(
+    new TraceService({ ...options, fetchImpl: async () => { throw new Error('secret detail'); } }).send(record),
+    { reason: 'network' },
+  );
+  await assert.rejects(
+    new TraceService({ ...options, fetchImpl: async () => new Response(null, { status: 503 }) }).send(record),
+    { reason: 'http', status: 503 },
+  );
+  await assert.rejects(
+    new TraceService({ ...options, fetchImpl: async () => Response.json({ partialSuccess: { rejectedSpans: 1 } }) }).send(record),
+    { reason: 'partial_rejection' },
+  );
+  await assert.rejects(
+    new TraceService({ ...options, fetchImpl: async () => Response.json('invalid') }).send(record),
+    { reason: 'invalid_response' },
+  );
 });

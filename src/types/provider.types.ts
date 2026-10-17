@@ -14,8 +14,8 @@ export type ProviderOptions = {
 };
 
 export type OpenAiResponse = {
-  status?: string; model?: string; id?: string;
-  output?: { type: string; content?: { type: string; text?: string }[] }[];
+  status: 'completed'; model?: string; id?: string;
+  output: { type: string; content?: { type: string; text?: string }[] }[];
   usage?: { input_tokens: number; output_tokens: number; input_tokens_details?: { cached_tokens?: number } };
 };
 
@@ -35,6 +35,7 @@ export type CodexRunContext = {
 
 export type CodexRunState = {
   output: string;
+  outputBytes: number;
   pendingLine: string;
   itemCompletedAt: string[];
   failure?: import('../errors/provider.error.ts').ProviderError;

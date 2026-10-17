@@ -11,6 +11,7 @@ export class CodexOutputCaptureService {
 
   append(child: ChildProcess, state: CodexRunState, chunk: string): void {
     state.output += chunk;
+    state.outputBytes += Buffer.byteLength(chunk);
     state.pendingLine += chunk;
     let newline = state.pendingLine.indexOf('\n');
     while (newline !== -1) {
@@ -18,7 +19,7 @@ export class CodexOutputCaptureService {
       state.pendingLine = state.pendingLine.slice(newline + 1);
       newline = state.pendingLine.indexOf('\n');
     }
-    if (Buffer.byteLength(state.output) > MAX_CODEX_OUTPUT_BYTES) {
+    if (state.outputBytes > MAX_CODEX_OUTPUT_BYTES) {
       state.failure = new ProviderError('output_limit', 'Codex output exceeded the local limit.');
       this.termination.terminate(child);
     }

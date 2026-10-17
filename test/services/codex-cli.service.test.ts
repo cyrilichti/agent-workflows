@@ -4,11 +4,15 @@ import { mkdirSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ChildProcess } from 'node:child_process';
 import { CodexCliService } from '../../src/services/codex-cli.service.ts';
+import { CodexOutputCaptureService } from '../../src/services/codex-output-capture.service.ts';
 import { CodexCommandBuilder } from '../../src/builders/codex-command.builder.ts';
 import { CodexEventService } from '../../src/services/codex-event.service.ts';
 import { TaskResultEntity } from '../../src/entities/task-result.entity.ts';
 import { ProviderError } from '../../src/errors/provider.error.ts';
+import { MAX_CODEX_OUTPUT_BYTES } from '../../src/config/keys.ts';
+import type { CodexRunState } from '../../src/types/provider.types.ts';
 
 const projectRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 
@@ -29,6 +33,15 @@ test('Codex events map to common result and usage', () => {
   }));
   assert.throws(() => new CodexEventService().parseTurnResult('{"type":"turn.failed"}', 'test'), { code: 'codex_error' });
   assert.throws(() => new CodexEventService().parseTurnResult('bad json', 'test'), { code: 'invalid_output' });
+});
+
+test('Codex output limit counts UTF-8 bytes across chunks', () => {
+  const state: CodexRunState = {
+    output: '', outputBytes: MAX_CODEX_OUTPUT_BYTES - 1, pendingLine: '', itemCompletedAt: [],
+  };
+  new CodexOutputCaptureService().append(new ChildProcess(), state, 'é');
+  assert.equal(state.outputBytes, MAX_CODEX_OUTPUT_BYTES + 1);
+  assert.equal(state.failure?.code, 'output_limit');
 });
 
 test('Codex uses an ephemeral task with local configuration and a working directory', () => {

@@ -3,7 +3,7 @@ import type { OpenAiResponse } from '../types/provider.types.ts';
 
 export class OpenAiResultBuilder {
   build(body: OpenAiResponse, model: string): TaskResultEntity {
-    const text = (body.output ?? [])
+    const text = body.output
       .filter((item) => item.type === 'message')
       .flatMap((item) => item.content ?? [])
       .filter((content) => content.type === 'output_text')

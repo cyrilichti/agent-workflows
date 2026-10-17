@@ -19,7 +19,7 @@ export class CodexProcessService {
       cwd: context.directory, detached: true, stdio: ['pipe', 'pipe', 'ignore'],
       env: { ...(options.environment ?? process.env) },
     });
-    const state: CodexRunState = { output: '', pendingLine: '', itemCompletedAt: [] };
+    const state: CodexRunState = { output: '', outputBytes: 0, pendingLine: '', itemCompletedAt: [] };
     return new Promise((resolve, reject) => {
       const abort = () => {
         state.failure = new ProviderError(
