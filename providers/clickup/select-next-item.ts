@@ -1,23 +1,12 @@
 import { execFileSync } from 'node:child_process';
 
-type StatusCategory = 'waiting' | 'review' | 'other';
-
-const knownStatuses: Record<string, StatusCategory> = {
+const categories: Record<string, 'waiting' | 'review'> = {
   open: 'waiting',
   backlog: 'waiting',
   todo: 'waiting',
   'to do': 'waiting',
   review: 'review',
   'in review': 'review',
-  'in progress': 'other',
-  triage: 'other',
-  started: 'other',
-  completed: 'other',
-  duplicate: 'other',
-  done: 'other',
-  closed: 'other',
-  canceled: 'other',
-  cancelled: 'other',
 };
 
 function object(value: unknown): Record<string, unknown> | null {
@@ -44,7 +33,7 @@ function normalizePage(page: unknown) {
       id: task.id,
       url: task.url,
       list: named(task.list),
-      category: status ? knownStatuses[status.toLowerCase()] ?? null : null,
+      category: status ? categories[status.toLowerCase()] ?? null : null,
       labels: task.tags.map(tag => named(tag) as string),
       updatedAt: task.date_updated,
     };

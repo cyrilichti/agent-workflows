@@ -5,14 +5,12 @@ type NextResult =
   | { name: string; id: string; url: string; list: string }
   | { status: 'no eligible item' };
 
-type StatusCategory = 'waiting' | 'review' | 'other';
-
 type Candidate = {
   name: unknown;
   id: unknown;
   url: unknown;
   list: unknown;
-  category: StatusCategory | null;
+  category: 'waiting' | 'review' | null;
   labels: string[];
   updatedAt: unknown;
 };
@@ -22,15 +20,13 @@ function selectNext(candidates: Candidate[]): NextResult {
   let oldest = Infinity;
   for (const candidate of candidates) {
     if (!candidate.labels.includes('agent-planned')) continue;
-    const category = candidate.category;
-    if (category === 'other' || (category === 'review' && candidate.labels.includes('agent-inspected'))) continue;
-    if (!category) continue;
+    if (candidate.category !== 'waiting' && candidate.category !== 'review') continue;
+    if (candidate.category === 'review' && candidate.labels.includes('agent-inspected')) continue;
     const timestamp = candidate.updatedAt;
-    if (typeof timestamp !== 'string' || !/^\d+$/.test(timestamp) ||
-        !Number.isSafeInteger(Number(timestamp)) || Number(timestamp) < 0) {
+    const updatedAt = Number(timestamp);
+    if (typeof timestamp !== 'string' || !/^\d+$/.test(timestamp) || !Number.isSafeInteger(updatedAt)) {
       throw new Error('Invalid eligible task timestamp');
     }
-    const updatedAt = Number(timestamp);
     if (updatedAt < oldest) {
       selected = candidate;
       oldest = updatedAt;
