@@ -45,14 +45,3 @@ fi
 
 Return its final JSON object unchanged. Do not read the snapshot or rerun the
 provider query. A nonzero exit is an error.
-
-### 3. Select Through Linear MCP
-
-When the program returns `{"status":"use-linear-mcp"}`, run
-`../commands/select-next-item.md` with:
-
-```text
-provider: linear
-```
-
-Format its result with `../templates/next-result.md`.

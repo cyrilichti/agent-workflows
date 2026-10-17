@@ -4,7 +4,7 @@ export type NextResult =
 
 export type StatusCategory = 'waiting' | 'review' | 'other';
 
-type Candidate = {
+export type Candidate = {
   name: unknown;
   id: unknown;
   url: unknown;
@@ -16,9 +16,15 @@ type Candidate = {
 
 const knownStatuses: Record<string, StatusCategory> = {
   open: 'waiting',
+  backlog: 'waiting',
+  todo: 'waiting',
   review: 'review',
   'in review': 'review',
   'in progress': 'other',
+  triage: 'other',
+  started: 'other',
+  completed: 'other',
+  duplicate: 'other',
   done: 'other',
   closed: 'other',
   canceled: 'other',
@@ -52,6 +58,44 @@ export function normalizeClickUpPage(page: unknown): Candidate[] {
       status: typeof status === 'string' && status.trim() ? status.trim() : null,
       labels: task.tags.map(tag => named(tag) as string),
       updatedAt: task.date_updated,
+    };
+  });
+}
+
+export function normalizeLinearPage(page: unknown, loadRemainingLabels: (id: string, cursor: string) => string[]): Candidate[] {
+  const issues = object(object(page)?.data)?.issues;
+  const nodes = object(issues)?.nodes;
+  if (!Array.isArray(nodes)) throw new Error('Linear did not return an issue page');
+  return nodes.map((value, index) => {
+    const issue = object(value);
+    if (!issue) throw new Error(`Invalid Linear issue at index ${index}`);
+    const labels = object(issue.labels);
+    const labelNodes = labels?.nodes;
+    const pageInfo = object(labels?.pageInfo);
+    if (!Array.isArray(labelNodes) || !labelNodes.every(label => typeof named(label) === 'string') ||
+        typeof pageInfo?.hasNextPage !== 'boolean') {
+      throw new Error(`Incomplete Linear labels at index ${index}`);
+    }
+    const issueId = issue.id;
+    const names = labelNodes.map(label => named(label) as string);
+    if (pageInfo.hasNextPage) {
+      if (typeof issueId !== 'string' || !issueId || typeof pageInfo.endCursor !== 'string' || !pageInfo.endCursor) {
+        throw new Error(`Incomplete Linear label cursor at index ${index}`);
+      }
+      names.push(...loadRemainingLabels(issueId, pageInfo.endCursor));
+    }
+    const updatedAt = issue.updatedAt;
+    const timestamp = typeof updatedAt === 'string' && /(Z|[+-]\d{2}:\d{2})$/.test(updatedAt)
+      ? Date.parse(updatedAt) : NaN;
+    const status = object(issue.state)?.name;
+    return {
+      name: issue.title,
+      id: issue.id,
+      url: issue.url,
+      list: named(issue.project),
+      status: typeof status === 'string' && status.trim() ? status.trim() : null,
+      labels: names,
+      updatedAt: Number.isSafeInteger(timestamp) && timestamp >= 0 ? String(timestamp) : null,
     };
   });
 }

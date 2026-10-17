@@ -7,18 +7,25 @@ import test from 'node:test';
 
 const program = resolve('commands/next.ts');
 
-function fixture(tasks: unknown[], provider = 'clickup') {
+function fixture(tasks: unknown[], provider = 'clickup', remainingLabels?: unknown) {
   const root = mkdtempSync(join(tmpdir(), 'next-test-'));
   const bin = join(root, 'bin');
   mkdirSync(bin);
   writeFileSync(join(root, 'agent-workflows.yaml'), `mcp:\n  item:\n    provider: ${provider}\n`);
   writeFileSync(join(root, 'tasks.json'), JSON.stringify(tasks));
+  writeFileSync(join(root, 'linear-1.json'), JSON.stringify({ data: { issues: { nodes: tasks } } }));
+  if (remainingLabels) writeFileSync(join(root, 'linear-2.json'), JSON.stringify(remainingLabels));
   writeFileSync(join(bin, 'clickup-cli'), '#!/bin/sh\nprintf "%s\\n" "$@" > "$NEXT_ARGS"\ncat "$NEXT_FIXTURE"\n', { mode: 0o755 });
+  writeFileSync(join(bin, 'linear'),
+    '#!/bin/sh\ncount=0\n[ -f "$NEXT_LINEAR_COUNT" ] && count=$(cat "$NEXT_LINEAR_COUNT")\ncount=$((count + 1))\nprintf "%s" "$count" > "$NEXT_LINEAR_COUNT"\nprintf "%s\\n" "$@" > "$NEXT_LINEAR_ROOT/linear-args-$count.txt"\ncat > "$NEXT_LINEAR_ROOT/linear-query-$count.txt"\ncat "$NEXT_LINEAR_ROOT/linear-$count.json"\n',
+    { mode: 0o755 });
   const env = {
     ...process.env,
     PATH: `${bin}:${process.env.PATH}`,
     NEXT_FIXTURE: join(root, 'tasks.json'),
     NEXT_ARGS: join(root, 'args.txt'),
+    NEXT_LINEAR_ROOT: root,
+    NEXT_LINEAR_COUNT: join(root, 'linear-count.txt'),
   };
   return {
     root,
@@ -78,12 +85,58 @@ test('incomplete labels and invalid eligible timestamps fail instead of selectin
   }
 });
 
-test('Linear remains on the MCP workflow', () => {
-  const f = fixture([], 'linear');
+function issue(id: string, status: string, updatedAt: string, labels = ['agent-planned']) {
+  return {
+    id, identifier: id, title: `Issue ${id}`, url: `https://linear.test/${id}`, updatedAt,
+    state: { name: status, type: 'unstarted' }, project: { name: 'Project' },
+    labels: { nodes: labels.map(name => ({ name })), pageInfo: { hasNextPage: false, endCursor: null as string | null } },
+  };
+}
+
+test('Linear selection uses the first 250 filtered issues and returns the oldest eligible one', () => {
+  const f = fixture([
+    issue('reviewed', 'Review', '2026-01-01T00:00:00Z', ['agent-planned', 'agent-inspected']),
+    issue('first', 'Backlog', '2026-01-02T00:00:00Z'),
+    issue('newer', 'Todo', '2026-01-03T00:00:00Z'),
+  ], 'linear');
   try {
     const result = f.run();
     assert.equal(result.status, 0, result.stderr);
-    assert.deepEqual(JSON.parse(result.stdout), { status: 'use-linear-mcp' });
+    assert.deepEqual(JSON.parse(result.stdout), { name: 'Issue first', id: 'first', url: 'https://linear.test/first', list: 'Project' });
+    assert.equal(readFileSync(join(f.root, 'linear-count.txt'), 'utf8'), '1');
+    assert.match(readFileSync(join(f.root, 'linear-query-1.txt'), 'utf8'), /first: 250/);
+    assert.match(readFileSync(join(f.root, 'linear-query-1.txt'), 'utf8'), /agent-planned/);
+  } finally { f.cleanup(); }
+});
+
+test('Linear completes partial labels before deciding review eligibility', () => {
+  const reviewed = issue('reviewed', 'Review', '2026-01-01T00:00:00Z');
+  reviewed.labels.pageInfo = { hasNextPage: true, endCursor: 'cursor-1' };
+  const f = fixture([reviewed, issue('selected', 'Todo', '2026-01-02T00:00:00Z')], 'linear', {
+    data: { issue: { labels: {
+      nodes: [{ name: 'agent-inspected' }], pageInfo: { hasNextPage: false, endCursor: null },
+    } } },
+  });
+  try {
+    const result = f.run();
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(result.stdout).id, 'selected');
+    assert.equal(readFileSync(join(f.root, 'linear-count.txt'), 'utf8'), '2');
+    assert.match(readFileSync(join(f.root, 'linear-args-2.txt'), 'utf8'), /cursor-1/);
+  } finally { f.cleanup(); }
+});
+
+test('Linear resumes unfamiliar statuses without another CLI query', () => {
+  const f = fixture([issue('unknown', 'À valider', '2026-01-01T00:00:00Z')], 'linear');
+  try {
+    const first = f.run();
+    assert.equal(first.status, 0, first.stderr);
+    const request = JSON.parse(first.stdout);
+    assert.deepEqual(request.statuses, ['À valider']);
+    const second = f.run('--resume', request.snapshot, 'review');
+    assert.equal(second.status, 0, second.stderr);
+    assert.equal(JSON.parse(second.stdout).id, 'unknown');
+    assert.equal(readFileSync(join(f.root, 'linear-count.txt'), 'utf8'), '1');
   } finally { f.cleanup(); }
 });
 
@@ -94,10 +147,11 @@ test('the workflow command resolves an installed .agents layout', () => {
     mkdirSync(installed, { recursive: true });
     copyFileSync(program, join(installed, 'next.ts'));
     copyFileSync(resolve('commands/next-selection.ts'), join(installed, 'next-selection.ts'));
+    copyFileSync(resolve('commands/next-linear.ts'), join(installed, 'next-linear.ts'));
     const result = spawnSync('sh', ['-c',
       'if [ -f commands/next.ts ]; then node commands/next.ts; else node .agents/commands/next.ts; fi'],
       { cwd: f.root, encoding: 'utf8' });
     assert.equal(result.status, 0, result.stderr);
-    assert.deepEqual(JSON.parse(result.stdout), { status: 'use-linear-mcp' });
+    assert.deepEqual(JSON.parse(result.stdout), { status: 'no eligible item' });
   } finally { f.cleanup(); }
 });

@@ -70,7 +70,7 @@ tasks:
               | Step | Execution |
               | --- | --- |
               | 1. Configure | The playbook routes `execute next`; the workflow reads the configured Linear or ClickUp provider. |
-              | 2. Filter | ClickUp selection runs in a Node.js TypeScript program. Linear selection uses MCP. Both select the oldest eligible `agent-planned` item from the first returned page. |
+              | 2. Filter | A Node.js TypeScript program calls the configured provider CLI and selects the oldest eligible `agent-planned` item from the first returned page. |
               | 3. Return | A found item returns only `{"name":"…","id":"…","url":"…","list":"…"}`. `list` is the Linear project name or ClickUp list name. No match returns `{"status":"no eligible item"}`; a missing destination or provider failure is an error. |
               | 4. Stop | Selection ends without reading another item, creating a plan, changing the ticket, or starting delivery. `/work` starts delivery for the selected item. |
             uri: '{{ envs.bridge_url }}/'

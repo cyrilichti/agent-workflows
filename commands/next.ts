@@ -2,7 +2,8 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, mkdtempSync, writeFileSync, rmSync, realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname, basename, resolve } from 'node:path';
-import { normalizeClickUpPage, selectNext, unresolvedStatuses, type StatusCategory } from './next-selection.ts';
+import { normalizeClickUpPage, selectNext, unresolvedStatuses, type Candidate, type StatusCategory } from './next-selection.ts';
+import { fetchLinearCandidates } from './next-linear.ts';
 
 const snapshotPrefix = 'agent-workflows-next-';
 
@@ -36,7 +37,7 @@ function classificationsFromArgument(value: string, expected: string[]): Record<
   return Object.fromEntries(expected.map((status, index) => [status, categories[index]])) as Record<string, StatusCategory>;
 }
 
-function readSnapshot(path: string): ReturnType<typeof normalizeClickUpPage> {
+function readSnapshot(path: string): Candidate[] {
   const directory = realpathSync(dirname(path));
   if (!basename(directory).startsWith(snapshotPrefix) || dirname(directory) !== realpathSync(tmpdir()) ||
       basename(path) !== 'candidates.json') {
@@ -49,19 +50,20 @@ function main(): void {
   const args = process.argv.slice(2);
   if (args.length === 0) {
     const provider = providerFromConfig(resolve('agent-workflows.yaml'));
+    let candidates: Candidate[];
     if (provider === 'linear') {
-      console.log(JSON.stringify({ status: 'use-linear-mcp' }));
-      return;
+      candidates = fetchLinearCandidates();
+    } else {
+      let output: string;
+      try {
+        output = execFileSync('clickup-cli', ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json'], {
+          encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'],
+        });
+      } catch {
+        throw new Error('ClickUp query failed');
+      }
+      candidates = normalizeClickUpPage(JSON.parse(output));
     }
-    let output: string;
-    try {
-      output = execFileSync('clickup-cli', ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json'], {
-        encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'],
-      });
-    } catch {
-      throw new Error('ClickUp query failed');
-    }
-    const candidates = normalizeClickUpPage(JSON.parse(output));
     const statuses = unresolvedStatuses(candidates);
     if (statuses.length) {
       const directory = mkdtempSync(join(tmpdir(), snapshotPrefix));

@@ -7,8 +7,8 @@ The `agent-planned` label or tag marks work whose approved plan is available on
 its item. Eligible work is waiting to start, or is in review without
 `agent-inspected`. `/next` selects the least recently modified eligible item
 from the configured provider's first returned page. Equal timestamps retain
-provider order. The ClickUp program and Linear adapter map provider statuses
-to that shared rule using the selection response.
+provider order. The program maps both providers' statuses to that shared rule
+using the selection response.
 
 After human findings, remove `agent-inspected` to make a review item eligible
 again. It keeps its plan and request. Updating it gives older eligible work a
@@ -16,11 +16,12 @@ turn in subsequent selections.
 
 Invoke it as `execute next`, `/next`, or `$next`, or let the Kestra `work`
 workflow call it through the bridge. It needs no item reference. The playbook
-routes the request to `/next`. With ClickUp, the agent runs one dependency-free
-Node.js TypeScript program that reads the configuration, queries the first page,
-selects the item, and prints only the final JSON. Unknown status names trigger
-one compact classification request to the agent; the program resumes from a
-local snapshot without querying ClickUp again. Linear continues through MCP.
+routes the request to `/next`. The agent runs one dependency-free Node.js
+TypeScript program that reads the configuration, queries the selected provider's
+first page, selects the item, and prints only the final JSON. Unknown status
+names trigger one compact classification request to the agent; the program
+resumes from a local snapshot without querying the provider again. Linear
+uses `linear api`, and ClickUp uses `clickup-cli`.
 
 ## How `/next` selects
 
@@ -35,8 +36,8 @@ local snapshot without querying ClickUp again. Linear continues through MCP.
 
   <div class="write-flow__step write-flow__step--focus">
     <small>02 · Select</small>
-    <strong>Query once</strong>
-    <span>Map provider statuses to the shared eligibility rule and choose the oldest eligible update.</span>
+    <strong>Query the first page</strong>
+    <span>Complete partial Linear labels when needed, map statuses, and choose the oldest eligible update.</span>
   </div>
 
   <span class="write-flow__connector" aria-hidden="true">↓</span>
