@@ -5,18 +5,23 @@
 Reuse the caller's official item from the current workflow run when it includes
 the current status and team. Otherwise read the issue:
 
-```text
-tool: get_issue
-arguments:
-  id: caller item ID or identifier
+```sh
+linear api --variable "id=<caller item ID or identifier>" <<'GRAPHQL'
+query CurrentStatus($id: String!) {
+  issue(id: $id) {
+    id
+    identifier
+    state { id name type }
+    team { id key name }
+  }
+}
+GRAPHQL
 ```
 
 List that issue's team statuses:
 
 ```text
-tool: list_issue_statuses
-arguments:
-  team: reused or returned issue team name or ID
+linear team states <reused or returned issue team key or ID> --limit all --json --no-input
 ```
 
 Return the current and available statuses as `id`, `name`, and `category`:
@@ -34,10 +39,7 @@ read operation is omitted.
 ## Apply
 
 ```text
-tool: save_issue
-arguments:
-  id: caller item ID or identifier
-  state: exact resolved status ID or name
+linear issue update <caller item ID or identifier> --state <exact resolved status ID or name> --no-input
 ```
 
 Return the resulting status or provider failure. Do not pass any other field.
