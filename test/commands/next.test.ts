@@ -67,18 +67,12 @@ test('ClickUp selection uses one filtered call, oldest eligible date, and provid
   } finally { f.cleanup(); }
 });
 
-test('unknown statuses are classified from a local snapshot without another provider call', () => {
+test('unknown ClickUp statuses are skipped without another provider call', () => {
   const f = fixture([task('unknown', 'À valider', '1'), task('open', 'Open', '2')]);
   try {
-    const first = f.run();
-    assert.equal(first.status, 0, first.stderr);
-    const request = JSON.parse(first.stdout);
-    assert.equal(request.status, 'classify-statuses');
-    assert.deepEqual(request.statuses, ['À valider']);
-    const second = f.run('--resume', request.snapshot, 'review');
-    assert.equal(second.status, 0, second.stderr);
-    assert.equal(JSON.parse(second.stdout).id, 'unknown');
-    assert.throws(() => readFileSync(request.snapshot));
+    const result = f.run();
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(result.stdout).id, 'open');
     assert.deepEqual(readFileSync(join(f.root, 'args.txt'), 'utf8').trim().split('\n'),
       ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json']);
   } finally { f.cleanup(); }
@@ -136,16 +130,12 @@ test('Linear completes partial labels before deciding review eligibility', () =>
   } finally { f.cleanup(); }
 });
 
-test('Linear resumes unfamiliar statuses without another CLI query', () => {
+test('unknown Linear statuses are skipped in one CLI query', () => {
   const f = fixture([issue('unknown', 'À valider', '2026-01-01T00:00:00Z')], 'linear');
   try {
-    const first = f.run();
-    assert.equal(first.status, 0, first.stderr);
-    const request = JSON.parse(first.stdout);
-    assert.deepEqual(request.statuses, ['À valider']);
-    const second = f.run('--resume', request.snapshot, 'review');
-    assert.equal(second.status, 0, second.stderr);
-    assert.equal(JSON.parse(second.stdout).id, 'unknown');
+    const result = f.run();
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(JSON.parse(result.stdout), { status: 'no eligible item' });
     assert.equal(readFileSync(join(f.root, 'linear-count.txt'), 'utf8'), '1');
   } finally { f.cleanup(); }
 });

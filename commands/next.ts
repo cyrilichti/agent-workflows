@@ -1,9 +1,6 @@
-import { readFileSync, mkdtempSync, writeFileSync, rmSync, realpathSync, existsSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname, basename } from 'node:path';
-import { selectNext, unresolvedStatuses, type Candidate, type StatusCategory } from './next-selection.ts';
-
-const snapshotPrefix = 'agent-workflows-next-';
+import { selectNext, type Candidate } from './next-selection.ts';
 
 function projectRoot(): string {
   const parent = dirname(import.meta.dirname);
@@ -38,52 +35,13 @@ function providerFromConfig(path: string): string {
   throw new Error('mcp.item.provider is missing from agent-workflows.yaml');
 }
 
-function classificationsFromArgument(value: string, expected: string[]): Record<string, StatusCategory> {
-  const categories = value.split(',');
-  if (categories.length !== expected.length ||
-      categories.some(category => !['waiting', 'review', 'other'].includes(category))) {
-    throw new Error('Classify every reported status as waiting, review, or other');
-  }
-  return Object.fromEntries(expected.map((status, index) => [status, categories[index]])) as Record<string, StatusCategory>;
-}
-
-function readSnapshot(path: string): Candidate[] {
-  const directory = realpathSync(dirname(path));
-  if (!basename(directory).startsWith(snapshotPrefix) || dirname(directory) !== realpathSync(tmpdir()) ||
-      basename(path) !== 'candidates.json') {
-    throw new Error('Invalid next snapshot path');
-  }
-  return JSON.parse(readFileSync(path, 'utf8'));
-}
-
 async function main(): Promise<void> {
-  const args = process.argv.slice(2);
-  if (args.length === 0) {
-    const root = projectRoot();
-    const provider = providerFromConfig(join(root, 'agent-workflows.yaml'));
-    process.chdir(root);
-    const adapter: { fetchCandidates(): Candidate[] } = await import(`../providers/${provider}/select-next-item.ts`);
-    const candidates = adapter.fetchCandidates();
-    const statuses = unresolvedStatuses(candidates);
-    if (statuses.length) {
-      const directory = mkdtempSync(join(tmpdir(), snapshotPrefix));
-      const snapshot = join(directory, 'candidates.json');
-      writeFileSync(snapshot, JSON.stringify(candidates), { mode: 0o600 });
-      console.log(JSON.stringify({ status: 'classify-statuses', statuses, snapshot }));
-      return;
-    }
-    console.log(JSON.stringify(selectNext(candidates)));
-    return;
-  }
-  const [mode, snapshot, categories] = args;
-  if (args.length !== 3 || mode !== '--resume' || !snapshot || !categories) {
-    throw new Error('Expected --resume <snapshot> <comma-separated-categories>');
-  }
-  const candidates = readSnapshot(snapshot);
-  const classifications = classificationsFromArgument(categories, unresolvedStatuses(candidates));
-  const result = selectNext(candidates, classifications);
-  rmSync(dirname(snapshot), { recursive: true, force: true });
-  console.log(JSON.stringify(result));
+  if (process.argv.length !== 2) throw new Error('Unexpected next arguments');
+  const root = projectRoot();
+  const provider = providerFromConfig(join(root, 'agent-workflows.yaml'));
+  process.chdir(root);
+  const adapter: { fetchCandidates(): Candidate[] } = await import(`../providers/${provider}/select-next-item.ts`);
+  console.log(JSON.stringify(selectNext(adapter.fetchCandidates())));
 }
 
 main().catch(error => {

@@ -124,7 +124,6 @@ function normalizePage(page: unknown): Candidate[] {
       id: issue.id,
       url: issue.url,
       list: named(issue.project),
-      status,
       category: status ? knownStatuses[status.toLowerCase()] ?? null : null,
       labels: names,
       updatedAt: Number.isSafeInteger(timestamp) && timestamp >= 0 ? String(timestamp) : null,

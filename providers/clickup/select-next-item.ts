@@ -42,7 +42,6 @@ function normalizePage(page: unknown): Candidate[] {
       id: task.id,
       url: task.url,
       list: named(task.list),
-      status,
       category: status ? knownStatuses[status.toLowerCase()] ?? null : null,
       labels: task.tags.map(tag => named(tag) as string),
       updatedAt: task.date_updated,

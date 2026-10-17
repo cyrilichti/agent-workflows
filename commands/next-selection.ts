@@ -9,29 +9,19 @@ export type Candidate = {
   id: unknown;
   url: unknown;
   list: unknown;
-  status: string | null;
   category: StatusCategory | null;
   labels: string[];
   updatedAt: unknown;
 };
 
-export function unresolvedStatuses(candidates: Candidate[]): string[] {
-  const unresolved = new Set<string>();
-  for (const candidate of candidates) {
-    if (!candidate.labels.includes('agent-planned') || !candidate.status) continue;
-    if (!candidate.category) unresolved.add(candidate.status);
-  }
-  return [...unresolved];
-}
-
-export function selectNext(candidates: Candidate[], classifications: Record<string, StatusCategory> = {}): NextResult {
+export function selectNext(candidates: Candidate[]): NextResult {
   let selected: Candidate | null = null;
   let oldest = Infinity;
   for (const candidate of candidates) {
-    if (!candidate.labels.includes('agent-planned') || !candidate.status) continue;
-    const category = candidate.category ?? classifications[candidate.status];
-    if (!category) throw new Error(`Unclassified status: ${candidate.status}`);
+    if (!candidate.labels.includes('agent-planned')) continue;
+    const category = candidate.category;
     if (category === 'other' || (category === 'review' && candidate.labels.includes('agent-inspected'))) continue;
+    if (!category) continue;
     const timestamp = candidate.updatedAt;
     if (typeof timestamp !== 'string' || !/^\d+$/.test(timestamp) ||
         !Number.isSafeInteger(Number(timestamp)) || Number(timestamp) < 0) {
