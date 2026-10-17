@@ -57,7 +57,7 @@ export type CodexRawEvent = {
   thread_id?: string;
   usage?: { input_tokens: number; cached_input_tokens?: number; output_tokens: number };
   item?: {
-    type?: string; id?: string; text?: string; command?: string; exit_code?: number;
+    type?: string; id?: string; text?: string; command?: string; exit_code?: number | null;
     server?: string; tool?: string; arguments?: unknown; input?: unknown;
     result?: unknown; aggregated_output?: unknown; output?: unknown;
   };

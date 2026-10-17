@@ -20,9 +20,9 @@ export class CodexEventValidator implements Validator<CodexRawEvent> {
     if (value.item !== undefined) {
       const item = value.item;
       if (!isRecord(item) ||
-          ['type', 'id', 'text', 'command', 'server', 'tool', 'aggregated_output', 'output']
+          ['type', 'id', 'text', 'command', 'server', 'tool']
             .some((field) => item[field] !== undefined && typeof item[field] !== 'string') ||
-          (item.exit_code !== undefined && typeof item.exit_code !== 'number')) {
+          (item.exit_code !== undefined && item.exit_code !== null && typeof item.exit_code !== 'number')) {
         throw new ProviderError('invalid_output', 'Invalid Codex event stream.');
       }
     }

@@ -11,7 +11,7 @@ export class CodexEventItemBuilder {
       ...(typeof completedAt === 'string' && Number.isFinite(Date.parse(completedAt)) ? { completedAt } : {}),
       ...(item.type === 'command_execution' ? {
         commandName: commandName(item.command),
-        ...(Number.isInteger(item.exit_code) ? { exitCode: item.exit_code } : {}),
+        ...(typeof item.exit_code === 'number' && Number.isInteger(item.exit_code) ? { exitCode: item.exit_code } : {}),
       } : {}),
       ...(item.type === 'mcp_tool_call' ? { tool: `${item.server}/${item.tool}` } : {}),
       inputCharacters: textLength(item.arguments ?? item.command ?? item.input),

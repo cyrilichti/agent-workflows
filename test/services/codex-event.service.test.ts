@@ -44,3 +44,31 @@ test('invalid Codex event fields are counted as malformed and rejected as output
   assert.equal(summary.usage, null);
   assert.throws(() => events.parseTurnResult(invalid, 'test'), { code: 'invalid_output' });
 });
+
+test('Codex accepts a null command exit code and structured tool output', () => {
+  const events = new CodexEventService();
+  const jsonl = [
+    { type: 'item.completed', item: { type: 'command_execution', command: 'pwd', exit_code: null } },
+    { type: 'item.completed', item: { type: 'mcp_tool_call', server: 'test', tool: 'read', output: { count: 2 } } },
+    { type: 'item.completed', item: { type: 'agent_message', text: 'OK' } },
+    { type: 'turn.completed', usage: { input_tokens: 10, cached_input_tokens: 4, output_tokens: 2 } },
+  ].map((event) => JSON.stringify(event)).join('\n');
+  const summary = events.summarize(jsonl, { model: 'test', prompt: 'Say OK' });
+  assert.equal(summary.malformedLines, 0);
+  assert.equal(summary.items[0]?.exitCode, undefined);
+  assert.equal(summary.items[1]?.outputCharacters, JSON.stringify({ count: 2 }).length);
+  assert.equal(events.parseTurnResult(jsonl, 'test').text, 'OK');
+});
+
+test('malformed auxiliary events do not discard a valid final answer', () => {
+  const events = new CodexEventService();
+  const jsonl = [
+    { type: 'item.completed', item: { type: 'command_execution', exit_code: 'unknown' } },
+    { type: 'item.completed', item: { type: 'agent_message', text: 'OK' } },
+    { type: 'turn.completed', usage: { input_tokens: 10, output_tokens: 2 } },
+  ].map((event) => JSON.stringify(event)).join('\n');
+  assert.equal(events.summarize(jsonl, { model: 'test', prompt: 'Say OK' }).malformedLines, 1);
+  assert.equal(events.parseTurnResult(jsonl, 'test').text, 'OK');
+  const invalidAnswer = jsonl.replace('"text":"OK"', '"text":42');
+  assert.throws(() => events.parseTurnResult(invalidAnswer, 'test'), { code: 'invalid_output' });
+});

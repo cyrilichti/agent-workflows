@@ -149,7 +149,7 @@ test('Codex provider returns a content-free summary without writing a report', a
     spawnImpl: (_file, _args, options) => spawn(process.execPath, ['-e', `
       process.stdin.resume();
       process.stdin.on('end', () => {
-        console.log(JSON.stringify({type:'item.completed',item:{type:'command_execution',command:'cat secret-file',aggregated_output:'secret contents',exit_code:0}}));
+        console.log(JSON.stringify({type:'item.completed',item:{type:'command_execution',command:'cat secret-file',aggregated_output:'secret contents',exit_code:null}}));
         console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:'OK'}}));
         console.log(JSON.stringify({type:'turn.completed',usage:{input_tokens:10,cached_input_tokens:4,output_tokens:2}}));
       });
@@ -166,6 +166,7 @@ test('Codex provider returns a content-free summary without writing a report', a
   const firstItem = summary.items[0];
   assert.ok(firstItem);
   assert.equal(firstItem.commandName, 'cat');
+  assert.equal(firstItem.exitCode, undefined);
   assert.ok(firstItem.completedAt);
   assert.ok(Number.isFinite(Date.parse(firstItem.completedAt)));
   assert.doesNotMatch(JSON.stringify(summary), /secret-file|secret contents/);

@@ -3,6 +3,7 @@ import { TaskResultEntity } from '../entities/task-result.entity.ts';
 import { CodexEventItemBuilder } from '../builders/codex-event-item.builder.ts';
 import { JsonService } from '../core/services/json.service.ts';
 import { CodexEventValidator } from '../validators/codex-event.validator.ts';
+import { isRecord } from '../helper.ts';
 import type { TokenUsage } from '../types/task.types.ts';
 import type { CodexEventItem, CodexRawEvent, CodexSummary, CodexSummaryOptions } from '../types/trace.types.ts';
 import type { Validator } from '../types/validator.types.ts';
@@ -58,7 +59,16 @@ export class CodexEventService {
     let completed = false;
     for (const line of jsonl.split('\n').filter(Boolean)) {
       const event = this.json.parseOrNull(line);
-      this.validator.validate(event);
+      try {
+        this.validator.validate(event);
+      } catch (error) {
+        const raw = isRecord(event) ? event : null;
+        if (raw?.type === 'turn.completed' || raw?.type === 'turn.failed' ||
+            (raw?.type === 'item.completed' && isRecord(raw.item) && raw.item.type === 'agent_message')) {
+          throw error;
+        }
+        continue;
+      }
       if (event.type === 'thread.started') requestId = event.thread_id;
       if (event.type === 'item.completed' && event.item?.type === 'agent_message') output = event.item.text ?? '';
       if (event.type === 'turn.failed') {
