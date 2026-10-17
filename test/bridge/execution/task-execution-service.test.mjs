@@ -60,6 +60,39 @@ test('caller trace labels are validated and forwarded to tracing', async () => {
   assert.equal(f.calls(), 1);
 });
 
+test('Codex summary reaches tracing without being exposed in the HTTP result', async () => {
+  let traced;
+  const summary = { traceId: 'provider-trace', items: [{ type: 'command_execution', commandName: 'cat' }] };
+  const f = fixture({
+    provider: { async generate() { return { text: 'OK', model: 'test', codexSummary: summary }; } },
+    trace: async (outcome) => { traced = outcome; },
+  });
+  const result = await f.service.executeTask(input);
+  assert.equal(traced.codexSummary, summary);
+  assert.equal(Object.hasOwn(result, 'codexSummary'), false);
+  assert.equal(Object.hasOwn(result, 'usageReportPath'), false);
+});
+
+test('a failed Codex result still traces observed usage and events', async () => {
+  let traced;
+  const f = fixture({
+    provider: { async generate(_prompt, { traceId }) {
+      const error = new ProviderError('invalid_output', 'No final answer');
+      error.codexSummary = {
+        traceId,
+        usage: { input_tokens: 20, cached_input_tokens: 12, output_tokens: 3 },
+        items: [{ type: 'command_execution', commandName: 'cat' }],
+      };
+      throw error;
+    } },
+    trace: async (outcome) => { traced = outcome; },
+  });
+  const result = await f.service.executeTask(input);
+  assert.equal(result.status, 'failed');
+  assert.deepEqual(traced.usage, { input: 20, cachedInput: 12, output: 3 });
+  assert.equal(traced.codexSummary.items.length, 1);
+});
+
 test('trace failure preserves response and is attempted once', async () => {
   let attempts = 0;
   const f = fixture({

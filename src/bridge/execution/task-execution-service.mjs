@@ -80,6 +80,9 @@ export class TaskExecutionService {
         const result = validateTaskResult(
           await this.provider.generate(prompt, {
             signal: AbortSignal.any([this.controller.signal, AbortSignal.timeout(timeoutMs)]),
+            traceId: outcome.traceId,
+            phase: trace?.observationName,
+            requestId,
             ...(directory !== undefined ? { directory } : {}),
           }),
         );
@@ -88,9 +91,23 @@ export class TaskExecutionService {
           text: result.text,
           model: result.model,
           usage: result.usage,
+          codexSummary: result.codexSummary,
           providerRequestId: result.requestId,
         });
       } catch (error) {
+        outcome.codexSummary = error.codexSummary;
+        const observedUsage = error.codexSummary?.usage;
+        if (
+          Number.isFinite(observedUsage?.input_tokens) &&
+          Number.isFinite(observedUsage?.output_tokens)
+        ) {
+          outcome.usage = {
+            input: observedUsage.input_tokens,
+            output: observedUsage.output_tokens,
+            ...(Number.isFinite(observedUsage.cached_input_tokens)
+              ? { cachedInput: observedUsage.cached_input_tokens } : {}),
+          };
+        }
         outcome.status = ['timeout', 'network'].includes(error.code) ? 'unknown' : 'failed';
         outcome.error = {
           code: error instanceof ProviderError ? error.code : 'provider_error',

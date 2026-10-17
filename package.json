@@ -12,6 +12,7 @@
     "start": "node src/bridge/index.mjs",
     "build": "astro build",
     "test": "node --test \"test/**/*.test.mjs\"",
+    "usage:analyze": "node scripts/analyze-usage.mjs",
     "doc": "astro dev"
   },
   "dependencies": {

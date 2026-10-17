@@ -125,3 +125,76 @@ test('local CLI uses the same default or explicit directory for -C and cwd', asy
     assert.equal(result.model, 'configured-default');
   }
 });
+
+test('Codex provider returns a content-free summary without writing a report', async (t) => {
+  const { spawn } = await import('node:child_process');
+  const directory = mkdtempSync(`${tmpdir()}/codex-usage-provider-`);
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const provider = createCodexCliProvider({
+    model: 'test',
+    spawnImpl: (_file, _args, options) => spawn(process.execPath, ['-e', `
+      process.stdin.resume();
+      process.stdin.on('end', () => {
+        console.log(JSON.stringify({type:'item.completed',item:{type:'command_execution',command:'cat secret-file',aggregated_output:'secret contents',exit_code:0}}));
+        console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:'OK'}}));
+        console.log(JSON.stringify({type:'turn.completed',usage:{input_tokens:10,cached_input_tokens:4,output_tokens:2}}));
+      });
+    `], options),
+  });
+  const result = await provider.generate('Execute /next', {
+    signal: new AbortController().signal,
+    traceId: 'b'.repeat(32),
+  });
+  assert.equal(result.codexSummary.usage.input_tokens, 10);
+  assert.equal(result.codexSummary.items[0].commandName, 'cat');
+  assert.ok(Number.isFinite(Date.parse(result.codexSummary.items[0].completedAt)));
+  assert.doesNotMatch(JSON.stringify(result.codexSummary), /secret-file|secret contents/);
+  assert.equal((await import('node:fs')).existsSync(`${directory}/reports`), false);
+});
+
+test('Codex provider records item completion arrival times in stream order', async () => {
+  const { spawn } = await import('node:child_process');
+  const provider = createCodexCliProvider({
+    spawnImpl: (_file, _args, options) => spawn(process.execPath, ['-e', `
+      process.stdin.resume();
+      process.stdin.on('end', () => {
+        console.log(JSON.stringify({type:'item.completed',item:{id:'one',type:'command_execution',command:'pwd',exit_code:0}}));
+        setTimeout(() => {
+          console.log(JSON.stringify({type:'item.completed',item:{id:'two',type:'command_execution',command:'cat file',exit_code:0}}));
+          console.log(JSON.stringify({type:'item.completed',item:{type:'agent_message',text:'OK'}}));
+          console.log(JSON.stringify({type:'turn.completed'}));
+        }, 25);
+      });
+    `], options),
+  });
+  const result = await provider.generate('Execute /next', {
+    signal: new AbortController().signal,
+    traceId: 'd'.repeat(32),
+  });
+  const [first, second] = result.codexSummary.items;
+  assert.ok(Date.parse(first.completedAt) < Date.parse(second.completedAt));
+});
+
+test('failed Codex turns still return observable events with unknown usage', async (t) => {
+  const { spawn } = await import('node:child_process');
+  const directory = mkdtempSync(`${tmpdir()}/codex-failed-usage-`);
+  t.after(() => rmSync(directory, { recursive: true, force: true }));
+  const provider = createCodexCliProvider({
+    spawnImpl: (_file, _args, options) => spawn(process.execPath, ['-e', `
+      process.stdin.resume();
+      process.stdin.on('end', () => console.log(JSON.stringify({type:'turn.failed'})));
+    `], options),
+  });
+  let error;
+  try {
+    await provider.generate('Execute /next', {
+      signal: new AbortController().signal,
+      traceId: 'c'.repeat(32),
+    });
+  } catch (caught) {
+    error = caught;
+  }
+  assert.equal(error.code, 'codex_error');
+  assert.equal(error.codexSummary.usage, null);
+  assert.equal(error.codexSummary.eventCounts['turn.failed'], 1);
+});

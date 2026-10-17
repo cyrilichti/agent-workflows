@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import { ProviderError } from '../execution/task-contract.mjs';
 import { PROJECT_ROOT } from '../project-root.mjs';
+import { summarizeCodexEvents } from '../observability/codex-usage-report.mjs';
 
 // Authentication, tools, skills, MCP servers and model defaults belong to the local CLI.
 /**
@@ -106,11 +107,11 @@ export function createCodexCliProvider({
      * Run one CLI process group and terminate it on cancellation or excess output.
      *
      * @param {string} prompt Task instructions.
-     * @param {{ signal: AbortSignal, directory?: string }} options Cancellation and per-call directory.
+     * @param {{ signal: AbortSignal, directory?: string, traceId?: string, phase?: string, requestId?: string }} options Cancellation and report identifiers.
      * @returns {Promise<import('../execution/task-contract.mjs').TaskResult>}
      * @throws {ProviderError} For execution, authentication, cancellation or provider failures.
      */
-    async generate(prompt, { signal, directory: taskDirectory = directory }) {
+    async generate(prompt, { signal, directory: taskDirectory = directory, traceId, phase, requestId }) {
       if (signal.aborted) {
         throw new ProviderError('timeout', 'Execution cancelled before launch.');
       }
@@ -122,7 +123,19 @@ export function createCodexCliProvider({
           env: { ...environment },
         });
         let output = '';
+        let pendingLine = '';
+        const itemCompletedAt = [];
         let failure;
+        const captureItemCompletion = (line) => {
+          try {
+            const event = JSON.parse(line);
+            if (event.type === 'item.completed' && event.item) {
+              itemCompletedAt.push(new Date().toISOString());
+            }
+          } catch {
+            // The summary records malformed lines after the process exits.
+          }
+        };
         /** Terminate the detached process group, including tools started by Codex. */
         const terminateProcessGroup = () => {
           try {
@@ -143,8 +156,16 @@ export function createCodexCliProvider({
         if (signal.aborted) {
           abort();
         }
+        child.stdout.setEncoding('utf8');
         child.stdout.on('data', (chunk) => {
           output += chunk;
+          pendingLine += chunk;
+          let newline = pendingLine.indexOf('\n');
+          while (newline !== -1) {
+            captureItemCompletion(pendingLine.slice(0, newline));
+            pendingLine = pendingLine.slice(newline + 1);
+            newline = pendingLine.indexOf('\n');
+          }
           if (Buffer.byteLength(output) > 32 * 1024 * 1024) {
             failure = new ProviderError('output_limit', 'Codex output exceeded the local limit.');
             terminateProcessGroup();
@@ -158,20 +179,33 @@ export function createCodexCliProvider({
         });
         child.on('close', (code) => {
           signal.removeEventListener('abort', abort);
+          if (pendingLine.trim()) captureItemCompletion(pendingLine);
+          const codexSummary = output ? summarizeCodexEvents(output, {
+            traceId,
+            phase,
+            requestId,
+            model: model || 'configured-default',
+            prompt,
+            itemCompletedAt,
+          }) : undefined;
           if (failure) {
+            failure.codexSummary = codexSummary;
             return reject(failure);
           }
           if (code !== 0) {
-            return reject(
-              new ProviderError(
-                'codex_error',
-                'Codex exited without success. Check login, quota and model access.',
-              ),
+            const error = new ProviderError(
+              'codex_error',
+              'Codex exited without success. Check login, quota and model access.',
             );
+            error.codexSummary = codexSummary;
+            return reject(error);
           }
           try {
-            resolve(parseCodexEvents(output, model || 'configured-default'));
+            const result = parseCodexEvents(output, model || 'configured-default');
+            result.codexSummary = codexSummary;
+            resolve(result);
           } catch (error) {
+            error.codexSummary = codexSummary;
             reject(error);
           }
         });
