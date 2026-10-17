@@ -9,7 +9,7 @@ type Issue = {
   id: string;
   title: string;
   url: string;
-  updatedAt: unknown;
+  updatedAt: string;
   state?: { name?: string };
   project: { name: string } | null;
   labels: Labels;
@@ -52,14 +52,9 @@ function queryLinear<T>(query: string, variables?: Record<string, string>): T {
   if (variables) {
     args.push('--variables-json', JSON.stringify(variables));
   }
-  let output: string;
-  try {
-    output = execFileSync('linear', args, {
-      input: query, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, stdio: ['pipe', 'pipe', 'pipe'],
-    });
-  } catch {
-    throw new Error('Linear query failed');
-  }
+  const output = execFileSync('linear', args, {
+    input: query, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, stdio: ['pipe', 'pipe', 'pipe'],
+  });
   return JSON.parse(output) as T;
 }
 
@@ -89,9 +84,6 @@ export function fetchCandidates() {
       }
       names.push(...remainingLabels(issue.id, cursor));
     }
-    const updatedAt = issue.updatedAt;
-    const timestamp = typeof updatedAt === 'string' && /(Z|[+-]\d{2}:\d{2})$/.test(updatedAt)
-      ? Date.parse(updatedAt) : NaN;
     const status = issue.state?.name?.trim().toLowerCase();
     return {
       name: issue.title,
@@ -100,7 +92,7 @@ export function fetchCandidates() {
       list: issue.project?.name ?? null,
       category: status ? categories[status] ?? null : null,
       labels: names,
-      updatedAt: Number.isSafeInteger(timestamp) && timestamp >= 0 ? String(timestamp) : null,
+      updatedAt: Date.parse(issue.updatedAt),
     };
   });
 }

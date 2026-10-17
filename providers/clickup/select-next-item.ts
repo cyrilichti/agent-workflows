@@ -7,7 +7,7 @@ type Task = {
   list: { name: string } | null;
   status?: { status?: string };
   tags: Array<{ name: string }>;
-  date_updated: unknown;
+  date_updated: string;
 };
 
 const categories: Record<string, 'waiting' | 'review'> = {
@@ -20,14 +20,9 @@ const categories: Record<string, 'waiting' | 'review'> = {
 };
 
 export function fetchCandidates() {
-  let output: string;
-  try {
-    output = execFileSync('clickup-cli', ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json'], {
-      encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'],
-    });
-  } catch {
-    throw new Error('ClickUp query failed');
-  }
+  const output = execFileSync('clickup-cli', ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json'], {
+    encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'],
+  });
   const tasks = JSON.parse(output) as Task[];
   return tasks.map(task => {
     const status = task.status?.status?.trim().toLowerCase();
@@ -38,7 +33,7 @@ export function fetchCandidates() {
       list: task.list?.name ?? null,
       category: status ? categories[status] ?? null : null,
       labels: task.tags.map(tag => tag.name),
-      updatedAt: task.date_updated,
+      updatedAt: /^\d+$/.test(task.date_updated) ? Number(task.date_updated) : NaN,
     };
   });
 }

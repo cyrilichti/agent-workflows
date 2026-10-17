@@ -12,7 +12,7 @@ type Candidate = {
   list: string | null;
   category: 'waiting' | 'review' | null;
   labels: string[];
-  updatedAt: unknown;
+  updatedAt: number;
 };
 
 function selectNext(candidates: Candidate[]): NextResult {
@@ -28,14 +28,12 @@ function selectNext(candidates: Candidate[]): NextResult {
     if (candidate.category === 'review' && candidate.labels.includes('agent-inspected')) {
       continue;
     }
-    const timestamp = candidate.updatedAt;
-    const updatedAt = Number(timestamp);
-    if (typeof timestamp !== 'string' || !/^\d+$/.test(timestamp) || !Number.isSafeInteger(updatedAt)) {
+    if (!Number.isSafeInteger(candidate.updatedAt)) {
       throw new Error('Invalid eligible task timestamp');
     }
-    if (updatedAt < oldest) {
+    if (candidate.updatedAt < oldest) {
       selected = candidate;
-      oldest = updatedAt;
+      oldest = candidate.updatedAt;
     }
   }
   if (!selected) {
@@ -52,12 +50,8 @@ function selectNext(candidates: Candidate[]): NextResult {
   };
 }
 
-function projectRoot(): string {
-  const parent = dirname(import.meta.dirname);
-  return basename(parent) === '.agents' ? dirname(parent) : parent;
-}
-
-const root = projectRoot();
+const parent = dirname(import.meta.dirname);
+const root = basename(parent) === '.agents' ? dirname(parent) : parent;
 const provider = resolveItemProvider(join(root, 'agent-workflows.yaml'));
 process.chdir(root);
 const adapter: { fetchCandidates(): Candidate[] } = await import(`../providers/${provider}/select-next-item.ts`);
