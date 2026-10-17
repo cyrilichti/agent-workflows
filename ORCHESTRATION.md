@@ -52,13 +52,9 @@ Paste this output directly into `.env`, without encoding it again. This token
 allows Kestra to call the bridge. The Langfuse keys initialize your local
 Langfuse project; neither replaces Codex login or an OpenAI API key.
 
-On a new installation, Langfuse creates the **Agent Workflows** organization
-and its **work** project. Existing installations keep the organization and
-project names already stored in Langfuse. To update those displayed names,
-rename them in the Langfuse organization and project settings. Keep their
-existing IDs (`local` and `local-ai`) and API keys: the bridge uses the project
-ID in trace links, and the keys select the project receiving traces. Changing
-the `LANGFUSE_INIT_*_NAME` values alone does not rename existing resources.
+Langfuse initializes the **cyrilichti** organization and its
+**agent-workflows** project. Their IDs match their names. The bridge uses
+`LANGFUSE_PROJECT_ID=agent-workflows` when building trace links.
 
 Choose a provider and enable execution:
 

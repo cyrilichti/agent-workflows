@@ -54,10 +54,9 @@ host or sends the task to the OpenAI API, returns a JSON result to Kestra,
 and sends a trace to Langfuse. The bridge must be running for Kestra to
 reach either provider.
 
-The Langfuse organization is named **Agent Workflows** and its project is
-named **work** on a new installation. In an existing installation, rename
-the organization and project in Langfuse settings; the initialization values
-do not rename resources already stored there. The Kestra `work` flow groups
+The Langfuse organization is **cyrilichti** and its project is
+**agent-workflows**. Their IDs match their names.
+The Kestra `work` flow groups
 its traces under a session identified by the Kestra execution ID. Its `/work`
 trace includes the repository directory name as filterable metadata.
 For an existing Kestra installation, update the `work` flow from

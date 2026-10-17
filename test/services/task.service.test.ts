@@ -21,7 +21,7 @@ function fixture(options: Partial<TaskServiceOptions> = {}) {
     model: 'test',
     trace: async () => {},
     publicUrl: 'http://localhost:3001',
-    projectId: 'local-ai',
+    projectId: 'agent-workflows',
     enabled: true,
     ...options,
   };

@@ -100,7 +100,7 @@ test('HTTP bridge returns 429 for a concurrent call with the same request ID', a
     model: 'test',
     trace: async () => {},
     publicUrl: 'http://localhost:3001',
-    projectId: 'local-ai',
+    projectId: 'agent-workflows',
     enabled: true,
   });
   const server = createTaskServer(token, taskExecution);
@@ -130,7 +130,7 @@ test('HTTP bridge reports inference failures through HTTP while preserving the t
   const server = createTaskServer(token, {
       getHealth: () => ({ status: 'ok', provider: 'codex', inferenceEnabled: true }),
       async executeTask() {
-        return taskResponse('failed', 'http://localhost:3001/project/local/traces/123');
+        return taskResponse('failed', 'http://localhost:3001/project/agent-workflows/traces/123');
       },
   });
   t.after(() => {
@@ -145,7 +145,7 @@ test('HTTP bridge reports inference failures through HTTP while preserving the t
     body: 'Hello',
   });
   assert.equal(response.status, 502);
-  assert.equal((await response.json()).traceUrl, 'http://localhost:3001/project/local/traces/123');
+  assert.equal((await response.json()).traceUrl, 'http://localhost:3001/project/agent-workflows/traces/123');
 });
 
 test('HTTP bridge distinguishes an unknown inference outcome from a failure', async (t) => {

@@ -178,14 +178,14 @@ services:
     environment:
       <<: *langfuse-env
       HOSTNAME: 0.0.0.0
-      LANGFUSE_INIT_ORG_ID: local
-      LANGFUSE_INIT_ORG_NAME: Agent Workflows
-      LANGFUSE_INIT_PROJECT_ID: local-ai
-      LANGFUSE_INIT_PROJECT_NAME: work
+      LANGFUSE_INIT_ORG_ID: cyrilichti
+      LANGFUSE_INIT_ORG_NAME: cyrilichti
+      LANGFUSE_INIT_PROJECT_ID: agent-workflows
+      LANGFUSE_INIT_PROJECT_NAME: agent-workflows
       LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:?Set LANGFUSE_PUBLIC_KEY in .env}
       LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_SECRET_KEY:?Set LANGFUSE_SECRET_KEY in .env}
-      LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_ADMIN_EMAIL:-local@example.test}
-      LANGFUSE_INIT_USER_NAME: Local user
+      LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_ADMIN_EMAIL:-admin@agent-workflows.test}
+      LANGFUSE_INIT_USER_NAME: Agent Workflows admin
       LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_ADMIN_PASSWORD:?Set LANGFUSE_ADMIN_PASSWORD in .env}
     networks: [observability, storage]
     healthcheck:
