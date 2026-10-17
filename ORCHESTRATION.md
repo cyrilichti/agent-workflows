@@ -52,10 +52,6 @@ Paste this output directly into `.env`, without encoding it again. This token
 allows Kestra to call the bridge. The Langfuse keys initialize your local
 Langfuse project; neither replaces Codex login or an OpenAI API key.
 
-Langfuse initializes the **cyrilichti** organization and its
-**agent-workflows** project. Their IDs match their names. The bridge uses
-`LANGFUSE_PROJECT_ID=agent-workflows` when building trace links.
-
 Choose a provider and enable execution:
 
 | Setting | Codex CLI (default) | OpenAI API |
@@ -106,17 +102,6 @@ inference, even when it reuses a request ID. The ID correlates the response with
 its Langfuse trace. If an HTTP response is lost, sending the request again may
 repeat the inference. Tasks and failed Langfuse deliveries are not retried
 automatically.
-
-For the Kestra `work` flow, each `/next`, `/project`, and `/work` request has its
-own Langfuse trace. All traces from one Kestra execution share its execution ID
-as their Langfuse session ID. The `/work` trace also records the basename of
-the resolved working directory as `repository` metadata, so the repository is
-visible without sending its full local path.
-
-The Kestra installer keeps an existing `work` flow as it is. If that flow was
-imported before this change, update it from `orchestration/work.yaml` in Kestra
-to start sending the session ID. Restart the host bridge to pick up the new
-trace metadata handling.
 
 The bridge returns HTTP 200 for completed inference, 502 for a failed inference,
 and 504 when the outcome is unknown. Error responses retain the trace URL in
