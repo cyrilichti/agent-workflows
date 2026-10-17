@@ -1,3 +1,4 @@
+import { basename } from 'node:path';
 import { traceArrayAttribute, traceAttribute } from '../helper.ts';
 import { TraceEntity } from '../entities/trace.entity.ts';
 import type { TaskOutcome } from '../types/task.types.ts';
@@ -15,14 +16,16 @@ export class TraceBuilder {
     const shared: TraceAttribute[] = [
       ...(record.trace ? [traceAttribute('langfuse.trace.name', record.trace.name)] : []),
       ...(record.trace?.tags.length ? [traceArrayAttribute('langfuse.trace.tags', record.trace.tags)] : []),
+      ...(record.trace?.sessionId ? [traceAttribute('langfuse.session.id', record.trace.sessionId)] : []),
+      ...(record.directory ? [traceAttribute('langfuse.trace.metadata.repository', basename(record.directory))] : []),
       ...(environment ? [traceAttribute('langfuse.environment', environment)] : []),
     ];
     const root = this.generation.build(record, summary, shared);
     return new TraceEntity({
       resourceSpans: [{
-        resource: { attributes: [traceAttribute('service.name', 'agent-workflows-local-ai')] },
+        resource: { attributes: [traceAttribute('service.name', 'agent-workflows-bridge')] },
         scopeSpans: [{
-          scope: { name: 'local-ai', version: '1' },
+          scope: { name: 'agent-workflows-bridge', version: '1' },
           spans: [root, ...this.items.buildMany(record, summary?.items ?? [], shared, root.spanId)],
         }],
       }],

@@ -45,6 +45,7 @@ test('configuration preserves host CLI environment without injecting .env secret
   assert.equal(config.http.token, 'test-token-'.repeat(4));
   assert.equal(config.execution.enabled, false);
   assert.equal(config.execution.timeoutMs, 1_800_000);
+  assert.equal(config.langfuse.projectId, 'agent-workflows');
 });
 
 test('configuration rejects invalid execution settings and missing API model', (t) => {

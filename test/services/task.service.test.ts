@@ -21,7 +21,7 @@ function fixture(options: Partial<TaskServiceOptions> = {}) {
     model: 'test',
     trace: async () => {},
     publicUrl: 'http://localhost:3001',
-    projectId: 'local-ai',
+    projectId: 'agent-workflows',
     enabled: true,
     ...options,
   };
@@ -53,14 +53,18 @@ test('disabled inference consumes no provider calls', async () => {
 test('caller trace labels are validated and forwarded to tracing', async () => {
   let traced: TaskEntity | undefined;
   const f = fixture({ trace: async (outcome) => { traced = outcome; } });
-  const trace = { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'], level: 'DEBUG' };
-  await f.service.executeTask({ ...input, trace: { ...trace, unexpected: 'not forwarded' } });
+  const trace = { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'], sessionId: 'kestra-execution-1', level: 'DEBUG' };
+  await f.service.executeTask({ ...input, directory: '/projects/example-repo', trace: { ...trace, unexpected: 'not forwarded' } });
   assert.ok(traced);
   assert.deepEqual(traced.trace, trace);
+  assert.equal(traced.directory, '/projects/example-repo');
   await assert.rejects(f.service.executeTask({ ...input, trace: { ...trace, tags: 'next' } }), {
     code: 'invalid_input',
   });
   await assert.rejects(f.service.executeTask({ ...input, trace: { ...trace, level: 'IMPORTANT' } }), {
+    code: 'invalid_input',
+  });
+  await assert.rejects(f.service.executeTask({ ...input, trace: { ...trace, sessionId: '' } }), {
     code: 'invalid_input',
   });
   assert.equal(f.calls(), 1);

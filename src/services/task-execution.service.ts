@@ -28,7 +28,7 @@ export class TaskExecutionService {
     }
     return this.exclusive.run(async (signal) => {
       const outcome = new TaskEntity({
-        requestId: input.requestId, prompt: input.prompt,
+        requestId: input.requestId, prompt: input.prompt, directory: input.directory,
         provider: this.options.providerName, model: this.options.model, status: 'running',
         traceId: randomBytes(16).toString('hex'), startedAt: new Date().toISOString(),
         trace: input.trace,

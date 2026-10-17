@@ -39,7 +39,8 @@ test('caller labels determine observation name, trace name and tags', () => {
     prompt: 'Execute /next',
     text: 'OK',
     status: 'completed',
-    trace: { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'] },
+    directory: '/projects/example-repo/',
+    trace: { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'], sessionId: 'kestra-execution-1' },
     startedAt: '2026-01-01T00:00:00Z',
     endedAt: '2026-01-01T00:00:01Z',
   }, { environment: 'staging' });
@@ -51,6 +52,8 @@ test('caller labels determine observation name, trace name and tags', () => {
   assert.equal(span.name, 'next');
   assert.equal(attributes['langfuse.trace.name']?.stringValue, 'agent-workflows.work.next');
   assert.deepEqual(attributes['langfuse.trace.tags']?.arrayValue?.values, [{ stringValue: 'next' }]);
+  assert.equal(attributes['langfuse.session.id']?.stringValue, 'kestra-execution-1');
+  assert.equal(attributes['langfuse.trace.metadata.repository']?.stringValue, 'example-repo');
   assert.equal(attributes['langfuse.environment']?.stringValue, 'staging');
   assert.equal(attributes['langfuse.observation.level']?.stringValue, 'DEFAULT');
 });
@@ -107,6 +110,8 @@ test('in-memory JSONL summary becomes Langfuse metadata and child events without
   await traceService.send({
     requestId: 'request-1', traceId, provider: 'codex', model: 'test',
     prompt: 'Execute /next', text: 'done', status: 'completed',
+    directory: '/projects/example-repo',
+    trace: { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'], sessionId: 'kestra-execution-1' },
     startedAt: '2026-01-01T00:00:00Z', endedAt: '2026-01-01T00:00:01Z',
     usage: { input: 100, cachedInput: 80, output: 10 },
     codexSummary,
@@ -131,6 +136,8 @@ test('in-memory JSONL summary becomes Langfuse metadata and child events without
   assert.equal(attributes['langfuse.observation.type'], 'event');
   assert.equal(attributes['langfuse.observation.metadata.outputCharacters'], '2500');
   assert.equal(attributes['langfuse.observation.metadata.timeSource'], 'bridge received item completion');
+  assert.equal(attributes['langfuse.session.id'], 'kestra-execution-1');
+  assert.equal(attributes['langfuse.trace.metadata.repository'], 'example-repo');
   assert.equal(attributes['langfuse.observation.usage_details'], undefined);
   assert.equal(third.status.code, 2);
   const rootAttributes = Object.fromEntries(root.attributes.map(({ key, value }) => [key, value.stringValue]));

@@ -5,6 +5,7 @@ export type TraceLabels = {
   name: string;
   observationName: string;
   tags: string[];
+  sessionId?: string;
   level?: 'DEBUG' | 'DEFAULT' | 'WARNING' | 'ERROR';
 };
 
@@ -36,6 +37,7 @@ export type AiProvider = {
 export type TaskOutcome = {
   requestId: string;
   prompt: string;
+  directory?: string | undefined;
   provider: string;
   model: string;
   status: 'running' | 'completed' | 'failed' | 'unknown';

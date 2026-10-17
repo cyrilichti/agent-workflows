@@ -21,11 +21,13 @@ export class TaskInputValidator implements Validator<TaskInput> {
     if (value.trace !== undefined) {
       const trace = value.trace;
       const validLabel = (label: unknown) => typeof label === 'string' && label.trim().length > 0 && label.length <= 100;
+      const validSessionId = (id: unknown) => typeof id === 'string' && /^[\x20-\x7E]{1,100}$/.test(id) && id.trim().length > 0;
       if (!isRecord(trace) ||
           !validLabel(trace.name) || !validLabel(trace.observationName) ||
+          (trace.sessionId !== undefined && !validSessionId(trace.sessionId)) ||
           !Array.isArray(trace.tags) || trace.tags.length > 10 || !trace.tags.every(validLabel) ||
           (trace.level !== undefined && (typeof trace.level !== 'string' || !['DEBUG', 'DEFAULT', 'WARNING', 'ERROR'].includes(trace.level)))) {
-        throw new ProviderError('invalid_input', 'trace requires a name, observationName, up to 10 tags, and a valid level when provided.');
+        throw new ProviderError('invalid_input', 'trace requires a name, observationName, up to 10 tags, and valid optional sessionId and level.');
       }
     }
   }
