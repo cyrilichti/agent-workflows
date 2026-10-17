@@ -78,8 +78,12 @@ test('unknown ClickUp statuses are skipped without another provider call', () =>
   } finally { f.cleanup(); }
 });
 
-test('incomplete labels and invalid eligible timestamps fail instead of selecting another item', () => {
-  for (const tasks of [[{ ...task('bad', 'Open', '1'), tags: null }], [task('bad', 'Open', 'not-a-date')]]) {
+test('incomplete labels, invalid dates, and missing selected destinations fail', () => {
+  for (const tasks of [
+    [{ ...task('bad', 'Open', '1'), tags: null }],
+    [task('bad', 'Open', 'not-a-date')],
+    [{ ...task('bad', 'Open', '1'), list: null }],
+  ]) {
     const f = fixture(tasks);
     try {
       const result = f.run();

@@ -6,10 +6,10 @@ type NextResult =
   | { status: 'no eligible item' };
 
 type Candidate = {
-  name: unknown;
-  id: unknown;
-  url: unknown;
-  list: unknown;
+  name: string;
+  id: string;
+  url: string;
+  list: string | null;
   category: 'waiting' | 'review' | null;
   labels: string[];
   updatedAt: unknown;
@@ -41,16 +41,14 @@ function selectNext(candidates: Candidate[]): NextResult {
   if (!selected) {
     return { status: 'no eligible item' };
   }
-  for (const key of ['name', 'id', 'url', 'list'] as const) {
-    if (typeof selected[key] !== 'string' || !selected[key].trim()) {
-      throw new Error(`Selected task has no ${key}`);
-    }
+  if (!selected.list) {
+    throw new Error('Selected item has no destination');
   }
   return {
-    name: selected.name as string,
-    id: selected.id as string,
-    url: selected.url as string,
-    list: selected.list as string,
+    name: selected.name,
+    id: selected.id,
+    url: selected.url,
+    list: selected.list,
   };
 }
 

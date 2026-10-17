@@ -7,11 +7,11 @@ type Labels = {
 
 type Issue = {
   id: string;
-  title: unknown;
-  url: unknown;
+  title: string;
+  url: string;
   updatedAt: unknown;
   state?: { name?: string };
-  project?: { name?: unknown };
+  project: { name: string } | null;
   labels: Labels;
 };
 
@@ -102,7 +102,7 @@ export function fetchCandidates() {
       name: issue.title,
       id: issue.id,
       url: issue.url,
-      list: issue.project?.name,
+      list: issue.project?.name ?? null,
       category: status ? categories[status] ?? null : null,
       labels: names,
       updatedAt: Number.isSafeInteger(timestamp) && timestamp >= 0 ? String(timestamp) : null,

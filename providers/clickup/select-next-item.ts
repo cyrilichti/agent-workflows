@@ -1,10 +1,10 @@
 import { execFileSync } from 'node:child_process';
 
 type Task = {
-  name: unknown;
-  id: unknown;
-  url: unknown;
-  list?: { name?: unknown };
+  name: string;
+  id: string;
+  url: string;
+  list: { name: string } | null;
   status?: { status?: string };
   tags: Array<{ name: string }>;
   date_updated: unknown;
@@ -35,7 +35,7 @@ export function fetchCandidates() {
       name: task.name,
       id: task.id,
       url: task.url,
-      list: task.list?.name,
+      list: task.list?.name ?? null,
       category: status ? categories[status] ?? null : null,
       labels: task.tags.map(tag => tag.name),
       updatedAt: task.date_updated,
