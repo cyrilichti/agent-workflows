@@ -3,6 +3,8 @@ title: Installation
 description: Add Agent Workflows to a project.
 ---
 
+Node.js 24 or later must be available in the environment where your coding agent runs workflows.
+
 From the project root, install the Agent Workflows bootstrap Skill:
 
 ```bash
