@@ -2,8 +2,9 @@
 
 ## Purpose
 
-Resolve a `list` to one absolute local project directory, using the item to
-choose when several repositories match. This is a standalone entry point.
+Resolve a `list` to one absolute local project directory, using repository
+names to choose when several repositories match. This is a standalone entry
+point.
 
 ---
 
@@ -25,9 +26,14 @@ either is missing; do not infer them.
 
 Get the configured project paths from the active execution environment. If the
 configuration is unavailable or unreadable, use an empty array. From the
-directory containing this workflow file, run
-`node ../commands/resolve-local-project-directory.ts` once with the exact
-`list` and the JSON array of configured paths as separate process arguments.
+directory containing this workflow file, run:
+
+```sh
+node ../commands/resolve-local-project-directory.ts "$LIST" "$PROJECT_PATHS_JSON"
+```
+
+Pass the exact `list` as `LIST` and the JSON array of configured paths as
+`PROJECT_PATHS_JSON`.
 The command prefers a repository whose name does not contain `api` or `back`
 when several paths remain, then chooses the lexicographically smallest absolute
 path. Return its path or unresolved status JSON unchanged. If it fails,
