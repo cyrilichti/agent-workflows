@@ -1,14 +1,39 @@
-import { readdirSync, realpathSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { basename, dirname, isAbsolute, join } from 'node:path';
 
 type SearchResult =
   | { path: string }
   | { status: 'not found' | 'search incomplete' };
 
-function configuredPaths(input: string): string[] {
+function parsePaths(input: string): string[] {
   const paths: unknown = JSON.parse(input);
   if (!Array.isArray(paths) || !paths.every(path => typeof path === 'string' && isAbsolute(path))) {
     throw new Error('Configured project paths must be a JSON array of absolute paths.');
+  }
+  return paths;
+}
+
+function configuredPaths(input?: string): string[] {
+  if (input !== undefined) return parsePaths(input);
+  if (process.env.AI_PROVIDER === 'openai-api') return [];
+  const config = join(process.env.CODEX_HOME || join(homedir(), '.codex'), 'config.toml');
+  let content: string;
+  try {
+    content = readFileSync(config, 'utf8');
+  } catch {
+    return [];
+  }
+  const paths: string[] = [];
+  for (const line of content.split(/\r?\n/)) {
+    const match = /^\s*\[projects\.(?:"((?:[^"\\]|\\.)*)"|'([^']*)')\]\s*(?:#.*)?$/.exec(line);
+    if (!match) continue;
+    try {
+      const path = match[1] === undefined ? match[2]! : JSON.parse(`"${match[1]}"`);
+      if (typeof path === 'string' && isAbsolute(path)) paths.push(path);
+    } catch {
+      // Skip an unavailable project entry and inspect the remaining paths.
+    }
   }
   return paths;
 }
@@ -107,10 +132,11 @@ function result(paths: string[], list: string): SearchResult {
 }
 
 const list = process.argv[2];
-const paths = process.argv[3];
+const itemId = process.argv[3];
+const paths = process.argv[4];
 try {
   if (!list?.trim()) throw new Error('Missing list.');
-  if (paths === undefined) throw new Error('Missing configured project paths.');
+  if (!itemId?.trim()) throw new Error('Missing item ID.');
   process.stdout.write(`${JSON.stringify(result(configuredPaths(paths), list))}\n`);
 } catch (error) {
   process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);

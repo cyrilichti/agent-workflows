@@ -11,7 +11,8 @@ function fixture(paths: string[]) {
   const root = mkdtempSync(join(tmpdir(), 'project-test-'));
   return {
     root,
-    run: (list: string, configured = paths) => spawnSync(process.execPath, [program, list, JSON.stringify(configured)], {
+    run: (list: string, configured = paths) => spawnSync(process.execPath,
+      [program, list, 'item-id', JSON.stringify(configured)], {
       encoding: 'utf8',
     }),
     cleanup: () => rmSync(root, { recursive: true, force: true }),
@@ -87,9 +88,27 @@ test('incomplete inspection overrides a match and empty configuration yields not
     const invalid = f.run(' ');
     assert.equal(invalid.status, 1);
     assert.equal(invalid.stdout, '');
-    assert.equal(spawnSync(process.execPath, [program, 'matching project', 'not json']).status, 1);
+    assert.equal(spawnSync(process.execPath, [program, 'matching project', 'item-id', 'not json']).status, 1);
   } finally {
     f.cleanup();
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('default invocation reads configured Codex projects without a paths argument', () => {
+  const root = mkdtempSync(join(tmpdir(), 'project-config-'));
+  const codexHome = join(root, 'codex');
+  const repo = join(root, 'example');
+  mkdirSync(codexHome);
+  repository(repo);
+  writeFileSync(join(codexHome, 'config.toml'), `[projects.${JSON.stringify(repo)}]\ntrust_level = "trusted"\n`);
+  try {
+    const result = spawnSync(process.execPath, [program, 'example', 'item-id'], {
+      encoding: 'utf8', env: { ...process.env, CODEX_HOME: codexHome, AI_PROVIDER: 'codex' },
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(JSON.parse(result.stdout), { path: realpathSync(repo) });
+  } finally {
     rmSync(root, { recursive: true, force: true });
   }
 });
@@ -105,7 +124,8 @@ test('installed workflow can invoke its adjacent resolver', () => {
   repository(repo);
   const f = fixture([repo]);
   try {
-    const result = spawnSync(process.execPath, ['../commands/resolve-local-project-directory.ts', 'example', JSON.stringify([repo])], {
+    const result = spawnSync(process.execPath,
+      ['../commands/resolve-local-project-directory.ts', 'example', 'item-id', JSON.stringify([repo])], {
       cwd: workflows,
       encoding: 'utf8',
     });
