@@ -3,7 +3,6 @@ import { basename, dirname, isAbsolute, join } from 'node:path';
 
 type SearchResult =
   | { path: string }
-  | { candidates: string[] }
   | { status: 'not found' | 'search incomplete' };
 
 function configuredPaths(input: string): string[] {
@@ -88,18 +87,23 @@ function matchingRepositories(paths: string[], list: string): string[] {
   return family.filter(entry => entry.longest === longest).map(entry => entry.path);
 }
 
+function chooseRepository(paths: string[]): string {
+  const frontend = paths.filter(path => !/api|back/i.test(basename(path)));
+  return (frontend.length ? frontend : paths)[0]!;
+}
+
 function result(paths: string[], list: string): SearchResult {
   const configured = inspectConfigured(paths);
   const first = matchingRepositories(configured.repositories, list);
   if (first.length) {
     if (configured.incomplete) return { status: 'search incomplete' };
-    return first.length === 1 ? { path: first[0]! } : { candidates: first };
+    return { path: chooseRepository(first) };
   }
   const parents = inspectParents(paths);
   if (configured.incomplete || parents.incomplete) return { status: 'search incomplete' };
   const second = matchingRepositories(parents.repositories, list);
   if (!second.length) return { status: 'not found' };
-  return second.length === 1 ? { path: second[0]! } : { candidates: second };
+  return { path: chooseRepository(second) };
 }
 
 const list = process.argv[2];

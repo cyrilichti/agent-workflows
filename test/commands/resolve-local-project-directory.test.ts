@@ -24,7 +24,7 @@ function repository(path: string, gitFile = false) {
   else mkdirSync(join(path, '.git'));
 }
 
-test('configured tier preserves full basename priority and family ties', () => {
+test('configured tier preserves full basename priority and chooses the first family tie', () => {
   const root = mkdtempSync(join(tmpdir(), 'project-repos-'));
   const fooBar = join(root, 'foo-bar');
   const fooBaz = join(root, 'foo-baz');
@@ -33,8 +33,23 @@ test('configured tier preserves full basename priority and family ties', () => {
   const f = fixture([fooBaz, bar, fooBar]);
   try {
     assert.deepEqual(JSON.parse(f.run('baz foo bar').stdout), { path: realpathSync(fooBar) });
-    assert.deepEqual(JSON.parse(f.run('baz foo').stdout),
-      { candidates: [realpathSync(fooBar), realpathSync(fooBaz)] });
+    assert.deepEqual(JSON.parse(f.run('baz foo').stdout), { path: realpathSync(fooBar) });
+  } finally {
+    f.cleanup();
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('family ties prefer names without api or back, then lexical paths', () => {
+  const root = mkdtempSync(join(tmpdir(), 'project-family-'));
+  const api = join(root, 'foo-api');
+  const back = join(root, 'foo-backend');
+  const front = join(root, 'foo-web');
+  for (const path of [api, back, front]) repository(path);
+  const f = fixture([back, front, api]);
+  try {
+    assert.deepEqual(JSON.parse(f.run('foo').stdout), { path: realpathSync(front) });
+    assert.deepEqual(JSON.parse(f.run('foo', [back, api]).stdout), { path: realpathSync(api) });
   } finally {
     f.cleanup();
     rmSync(root, { recursive: true, force: true });
