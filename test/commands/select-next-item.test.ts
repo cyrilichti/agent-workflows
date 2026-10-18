@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import test from 'node:test';
@@ -165,6 +165,24 @@ test('the workflow command resolves its installed .agents path even when the pro
         { cwd: dirname(workflow), env: f.env, encoding: 'utf8' });
       assert.equal(result.status, 0, result.stderr);
       assert.deepEqual(JSON.parse(result.stdout), { status: 'no eligible item' });
+      const providerResult = spawnSync(process.execPath, ['../commands/select-next-item.ts', '--provider'],
+        { cwd: dirname(workflow), env: f.env, encoding: 'utf8' });
+      assert.equal(providerResult.status, 0, providerResult.stderr);
+      assert.equal(providerResult.stdout, `${configuredProvider}\n`);
+    } finally { f.cleanup(); }
+  }
+});
+
+test('provider mode uses the existing resolver without querying items', () => {
+  for (const provider of ['clickup', 'linear']) {
+    const f = fixture([], provider);
+    try {
+      const result = f.run('--provider');
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(result.stdout, `${provider}\n`);
+      assert.equal(result.stderr, '');
+      assert.equal(existsSync(join(f.root, 'args.txt')), false);
+      assert.equal(existsSync(join(f.root, 'linear-count.txt')), false);
     } finally { f.cleanup(); }
   }
 });
