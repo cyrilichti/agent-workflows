@@ -44,6 +44,8 @@ Use the same delivery workflows with your agent or through orchestration. This n
 
 ## Install in your project
 
+Node.js 24 or later must be available where your coding agent runs. The `next` workflow executes a TypeScript program with `node`.
+
 From the root of a Git project, install the bootstrap skill:
 
 ```bash
@@ -108,6 +110,8 @@ Choose a work tracker and a code host. Orchestration also needs an AI provider.
 - [x] Match specialized agent profiles with the Skills suited to each task.
 - [x] Orchestrate the delivery cycle with Kestra and the bridge.
 - [x] Trace the bridge's AI calls in Langfuse.
+- [x] Use hybrid agent workflows that combine agent instructions with programmatic steps.
+- [x] Reduce token use by limiting the context reinjected after each command.
 - [ ] Add Agent API as a bridge provider.
 
 ## Contribute
