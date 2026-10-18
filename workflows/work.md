@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Execute one selected plan autonomously and stop when its todos are terminal.
+Execute one selected plan autonomously, then continue through `/ready`.
 
 ---
 
@@ -41,6 +41,7 @@ context as `resumed`. Treat the approved plan and item supplied by `/pick` as
 ## Safety
 
 - The selected approved plan and official item, or complete caller handoff,
-  authorize autonomous execution. Do not ask for a todo commit confirmation.
+  authorize autonomous execution. Do not ask for a todo commit or `/ready`
+  handoff confirmation.
 - Push each non-empty todo commit normally to the current branch upstream.
-- Do not invoke `/ready` or `/inspect` from `/work`.
+- Do not invoke `/inspect` before `/ready` passes.

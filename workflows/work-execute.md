@@ -44,14 +44,20 @@ For each active todo:
    success, persist the todo as `completed`, push the current branch normally
    to its configured upstream, and continue.
 
-### 3. Finish
+### 3. Continue to Ready
 
-When no todo remains `pending` or `in_progress`, report that no work was
-completed and stop if all todos are `cancelled`. Otherwise, require at least
-one `completed` todo.
+When no todo remains `pending` or `in_progress`, require at least one
+`completed` todo. When all todos are `cancelled`, report that no work was
+completed and stop without calling `/ready`.
 
-Otherwise, stop after the last completed todo. A later standalone `/ready` can
-resolve the delivery from the official item backlink and local plan.
+Otherwise, follow `./ready.md` in caller mode without another choice:
+
+```text
+plan: authoritative plan
+item: complete official item context
+request_id: created request ID, when available
+delivery_context: current delivery context
+```
 
 ---
 
@@ -59,4 +65,4 @@ resolve the delivery from the official item backlink and local plan.
 
 - Do not mark a todo with staged changes `completed` before its commit succeeds.
 - Never use `--allow-empty` for a todo commit.
-- Do not invoke `/ready` or `/inspect`.
+- Do not invoke `/inspect` before `/ready` passes.
