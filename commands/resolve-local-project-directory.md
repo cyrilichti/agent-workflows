@@ -13,8 +13,6 @@ Find Git repositories matching a `list` name.
    configuration exposed by the active AI provider; do not assume a
    provider-specific file or path. If the configuration is unavailable or
    cannot be read, use no configured paths and continue the search.
-   Once the paths are available, run the directory inspection and matching in
-   one command execution rather than probing each directory separately.
 2. If that tier has no match, inspect Git repositories directly inside every
    parent directory of the configured paths, in path order, before choosing.
 3. Search only these two tiers, without recursion. Complete each tier before

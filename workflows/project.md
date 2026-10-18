@@ -23,7 +23,13 @@ either is missing; do not infer them.
 
 ### 2. Find Repositories
 
-Run `../commands/resolve-local-project-directory.md` with `list`.
+Get the configured project paths from the active execution environment as
+specified in `../commands/resolve-local-project-directory.md`. If the
+configuration is unavailable or unreadable, use an empty array. From the
+directory containing this workflow file, run
+`node ../commands/resolve-local-project-directory.ts` once with the exact
+`list` and the JSON array of configured paths as separate process arguments.
+Use its returned JSON according to the same resolution contract.
 
 ### 3. Choose a Repository
 
