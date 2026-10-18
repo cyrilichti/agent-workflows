@@ -5,20 +5,21 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
 
-const program = resolve('commands/resolve-item-provider.ts');
+const program = resolve('commands/resolve-item-provider-cli.ts');
 
 function fixture(provider: string | null) {
   const root = mkdtempSync(join(tmpdir(), 'item-provider-test-'));
   const commands = join(root, '.agents', 'commands');
   mkdirSync(commands, { recursive: true });
-  copyFileSync(program, join(commands, 'resolve-item-provider.ts'));
+  copyFileSync(program, join(commands, 'resolve-item-provider-cli.ts'));
+  copyFileSync(resolve('commands/resolve-item-provider.ts'), join(commands, 'resolve-item-provider.ts'));
   if (provider !== null) {
     writeFileSync(join(root, 'agent-workflows.yaml'), `mcp:\n  item:\n    provider: ${provider}\n`);
   }
   return {
     root,
     commands,
-    run: () => spawnSync(process.execPath, ['../commands/resolve-item-provider.ts'], {
+    run: () => spawnSync(process.execPath, ['../commands/resolve-item-provider-cli.ts'], {
       cwd: join(root, '.agents', 'workflows'),
       encoding: 'utf8',
     }),

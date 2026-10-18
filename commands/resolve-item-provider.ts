@@ -1,5 +1,4 @@
-import { readFileSync, statSync } from 'node:fs';
-import { basename, dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
 
 export function resolveItemProvider(configPath: string): string | undefined {
   const lines = readFileSync(configPath, 'utf8').split(/\r?\n/);
@@ -28,27 +27,4 @@ export function resolveItemProvider(configPath: string): string | undefined {
     }
   }
   return undefined;
-}
-
-if (import.meta.main) {
-  const parent = dirname(import.meta.dirname);
-  const root = basename(parent) === '.agents' ? dirname(parent) : parent;
-  try {
-    const configPath = join(root, 'agent-workflows.yaml');
-    if (!statSync(configPath, { throwIfNoEntry: false })?.isFile()) {
-      throw new Error('Configure mcp.item.provider in agent-workflows.yaml.');
-    }
-    const provider = resolveItemProvider(configPath);
-    if (!provider) throw new Error('Configure mcp.item.provider in agent-workflows.yaml.');
-    if (provider !== 'clickup' && provider !== 'linear') {
-      throw new Error(`Unsupported item provider: ${provider}. Supported values: clickup, linear.`);
-    }
-    if (!statSync(join(parent, 'providers', provider), { throwIfNoEntry: false })?.isDirectory()) {
-      throw new Error(`Missing provider directory: ${provider}.`);
-    }
-    process.stdout.write(`${provider}\n`);
-  } catch (error) {
-    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-    process.exitCode = 1;
-  }
 }
