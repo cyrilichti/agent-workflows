@@ -42,7 +42,5 @@ read operation is omitted.
 linear issue update <caller item ID or identifier> --state <exact resolved status name> --no-input
 ```
 
-Use the name of the exact status selected in `status_resolution`; retain its ID
-for the shared command's identity checks. The CLI's `--state` update argument
-does not accept a workflow state ID. Return the resulting status or provider
-failure. Do not pass any other field.
+Use the selected status's name. Return the resulting status or provider failure.
+Do not pass any other field.
