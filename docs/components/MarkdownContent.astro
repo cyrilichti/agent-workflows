@@ -1,0 +1,26 @@
+---
+// Preserve Starlight's content wrapper and styling when extending its behavior.
+// https://starlight.astro.build/guides/overriding-components/#reuse-a-built-in-component
+import Default from '@astrojs/starlight/components/MarkdownContent.astro'
+---
+
+<Default><slot /></Default>
+
+<script>
+  function updateExternalLinks() {
+    // Inspect rendered anchors so Markdown, raw HTML, and MDX expressions share
+    // the same rule without changing their authoring syntax.
+    for (const link of document.querySelectorAll<HTMLAnchorElement>('.sl-markdown-content a[href]')) {
+      const url = new URL(link.href, window.location.href)
+      if (!['http:', 'https:'].includes(url.protocol) || url.origin === window.location.origin) continue
+
+      link.target = '_blank'
+      link.relList.add('noopener', 'noreferrer')
+    }
+  }
+
+  // Astro processes this as a deferred module; also handle client navigation.
+  // https://docs.astro.build/en/guides/client-side-scripts/#script-processing
+  updateExternalLinks()
+  document.addEventListener('astro:page-load', updateExternalLinks)
+</script>
