@@ -106,7 +106,7 @@ Choose a work tracker and a code host. Orchestration also needs an AI provider.
 ## Roadmap
 
 - [x] Provide Skills that can be used independently for each stage of development.
-- [x] Route requests through a playbook and coordinate Skills through workflows.
+- [x] Route requests through `AGENTS.md` and coordinate Skills through workflows.
 - [x] Match specialized agent profiles with the Skills suited to each task.
 - [x] Orchestrate the delivery cycle with Kestra and the bridge.
 - [x] Trace the bridge's AI calls in Langfuse.

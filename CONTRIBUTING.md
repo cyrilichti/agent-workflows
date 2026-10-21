@@ -45,9 +45,9 @@ Add `agents/openai.yaml` only when the skill needs a display name, short
 description, or default prompt in compatible OpenAI/Codex clients. It does not
 control workflow behavior.
 
-When the workflow belongs in the main playbook, also update:
+When the workflow belongs in the main routing table, also update:
 
-- `workflows/play-book.md` with its routing situation;
+- `AGENTS.md` with its routing situation;
 - `.gitignore` so its local skill bridge is tracked;
 - `docs/workflows/index.mdx` with its workflow card;
 - `astro.config.ts` with its documentation page;
