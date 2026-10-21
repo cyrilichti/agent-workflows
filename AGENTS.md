@@ -7,7 +7,7 @@ means loading and following the workflow file in the current agent.
 
 | Situation | Workflow |
 | --- | --- |
-| Select the next eligible item (`execute next`, `/next`, or `$next`) | `workflows/next.md` |
+| Select the next eligible item (`/next` or `$next`) | `workflows/next.md` |
 | Resolve a local project directory (`/project` or `$project`) | `workflows/project.md` |
 | Create or reformulate one item | `workflows/write.md` |
 | Select an item, plan it, and start its implementation | `workflows/pick.md` |
