@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { installWorkflow } from '../src/install.ts';
+import { installWorkflow } from './install.ts';
 const config = {
   url: 'http://kestra:8080',
   email: 'local@example.test',

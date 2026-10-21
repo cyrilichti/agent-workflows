@@ -8,8 +8,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const projectRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)));
-const configUrl = new URL('../../src/config/app.config.ts', import.meta.url).href;
-const validatorUrl = new URL('../../src/validators/config.validator.ts', import.meta.url).href;
+const configUrl = new URL('./app.config.ts', import.meta.url).href;
+const validatorUrl = new URL('../validators/config.validator.ts', import.meta.url).href;
 
 function envFile(t: TestContext, extra = '') {
   const directory = mkdtempSync(`${tmpdir()}/bridge-config-`);

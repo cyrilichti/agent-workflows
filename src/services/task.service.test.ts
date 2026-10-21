@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TaskService } from '../../src/services/task.service.ts';
-import { ProviderError } from '../../src/errors/provider.error.ts';
-import { TraceDeliveryError } from '../../src/errors/trace-delivery.error.ts';
-import { TaskResultEntity } from '../../src/entities/task-result.entity.ts';
-import type { TaskEntity } from '../../src/entities/task.entity.ts';
-import type { TaskServiceOptions } from '../../src/types/task-service.types.ts';
-import type { CodexSummary } from '../../src/types/trace.types.ts';
+import { TaskService } from './task.service.ts';
+import { ProviderError } from '../errors/provider.error.ts';
+import { TraceDeliveryError } from '../errors/trace-delivery.error.ts';
+import { TaskResultEntity } from '../entities/task-result.entity.ts';
+import type { TaskEntity } from '../entities/task.entity.ts';
+import type { TaskServiceOptions } from '../types/task-service.types.ts';
+import type { CodexSummary } from '../types/trace.types.ts';
 
 function fixture(options: Partial<TaskServiceOptions> = {}) {
   let calls = 0;

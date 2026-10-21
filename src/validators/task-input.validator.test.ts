@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TaskInputValidator } from '../../src/validators/task-input.validator.ts';
+import { TaskInputValidator } from './task-input.validator.ts';
 
 const input = { requestId: 'test-request-001', prompt: 'Say OK' };
 test('input validation rejects malformed correlation IDs and invalid prompts', () => {
