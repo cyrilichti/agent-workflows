@@ -4,8 +4,8 @@ import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import {
   OpenAiApiService,
-} from '../../src/services/openai-api.service.ts';
-import { OpenAiResponseValidator } from '../../src/validators/openai-response.validator.ts';
+} from './openai-api.service.ts';
+import { OpenAiResponseValidator } from '../validators/openai-response.validator.ts';
 
 test('API uses selected model, bounded output and supplied token without retries', async (t) => {
   const dir = mkdtempSync(`${tmpdir()}/api-test-`);

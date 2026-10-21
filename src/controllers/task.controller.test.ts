@@ -2,14 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
 import { createServer } from 'node:http';
-import { TaskRouteService } from '../../src/services/task-route.service.ts';
-import { TaskController } from '../../src/controllers/task.controller.ts';
-import { SecurityService } from '../../src/core/services/security.service.ts';
-import { TaskService } from '../../src/services/task.service.ts';
-import { TaskResponseEntity } from '../../src/entities/task-response.entity.ts';
-import { TaskResultEntity } from '../../src/entities/task-result.entity.ts';
-import { MAX_HTTP_BODY_BYTES } from '../../src/config/keys.ts';
-import type { TaskResponse } from '../../src/types/task.types.ts';
+import { TaskRouteService } from '../services/task-route.service.ts';
+import { TaskController } from './task.controller.ts';
+import { SecurityService } from '../core/services/security.service.ts';
+import { TaskService } from '../services/task.service.ts';
+import { TaskResponseEntity } from '../entities/task-response.entity.ts';
+import { TaskResultEntity } from '../entities/task-result.entity.ts';
+import { MAX_HTTP_BODY_BYTES } from '../config/keys.ts';
+import type { TaskResponse } from '../types/task.types.ts';
 import type { Server } from 'node:http';
 
 function createTaskServer(token: string, taskExecution: Pick<TaskService, 'getHealth' | 'executeTask'>) {

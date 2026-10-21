@@ -28,7 +28,7 @@ test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, asyn
     'INFERENCE_ENABLED=false',
   ].join('\n'));
 
-  const entry = fileURLToPath(new URL('../src/server.ts', import.meta.url));
+  const entry = fileURLToPath(new URL('./server.ts', import.meta.url));
   const child = spawn(process.execPath, [entry], {
     cwd: directory,
     env: { PATH: process.env.PATH, HOME: process.env.HOME },

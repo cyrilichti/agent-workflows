@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TraceBuilder } from '../../src/builders/trace.builder.ts';
-import { TraceService } from '../../src/services/trace.service.ts';
-import { TaskEntity } from '../../src/entities/task.entity.ts';
-import type { TaskOutcome } from '../../src/types/task.types.ts';
-import type { TraceEntity } from '../../src/entities/trace.entity.ts';
+import { TraceBuilder } from '../builders/trace.builder.ts';
+import { TraceService } from './trace.service.ts';
+import { TaskEntity } from '../entities/task.entity.ts';
+import type { TaskOutcome } from '../types/task.types.ts';
+import type { TraceEntity } from '../entities/trace.entity.ts';
 
 test('trace usage subtracts cached input and leaves unavailable usage absent', () => {
   const r: TaskOutcome = {

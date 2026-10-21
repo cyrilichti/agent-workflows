@@ -5,14 +5,14 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ChildProcess } from 'node:child_process';
-import { CodexCliService } from '../../src/services/codex-cli.service.ts';
-import { CodexOutputCaptureService } from '../../src/services/codex-output-capture.service.ts';
-import { CodexCommandBuilder } from '../../src/builders/codex-command.builder.ts';
-import { CodexEventService } from '../../src/services/codex-event.service.ts';
-import { TaskResultEntity } from '../../src/entities/task-result.entity.ts';
-import { ProviderError } from '../../src/errors/provider.error.ts';
-import { MAX_CODEX_OUTPUT_BYTES } from '../../src/config/keys.ts';
-import type { CodexRunState } from '../../src/types/provider.types.ts';
+import { CodexCliService } from './codex-cli.service.ts';
+import { CodexOutputCaptureService } from './codex-output-capture.service.ts';
+import { CodexCommandBuilder } from '../builders/codex-command.builder.ts';
+import { CodexEventService } from './codex-event.service.ts';
+import { TaskResultEntity } from '../entities/task-result.entity.ts';
+import { ProviderError } from '../errors/provider.error.ts';
+import { MAX_CODEX_OUTPUT_BYTES } from '../config/keys.ts';
+import type { CodexRunState } from '../types/provider.types.ts';
 
 const projectRoot = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 

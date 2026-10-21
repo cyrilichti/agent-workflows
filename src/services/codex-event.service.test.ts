@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CodexEventService } from '../../src/services/codex-event.service.ts';
+import { CodexEventService } from './codex-event.service.ts';
 
 test('in-memory summary keeps exact turn tokens separate from tool character counts', () => {
   const events = [
