@@ -1,9 +1,9 @@
 # Next
 
-From the directory containing this workflow file, run:
+Run from this file's directory:
 
 ```sh
 node ../commands/select-next-item.ts
 ```
 
-Return the command's output unchanged. If it fails, report the error.
+Return the output unchanged, or report the command's error.

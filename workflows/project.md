@@ -1,13 +1,12 @@
 # Project
 
-Require a non-blank `list` and an exact item ID before running the command.
-Stop with an input error if either is missing; do not infer them.
+Require non-blank `list` and `item ID` values. If either is missing, report an
+input error; do not infer a value.
 
-From the directory containing this workflow file, run with the supplied
-`list` and exact item ID:
+Run from this file's directory:
 
 ```sh
 node ../commands/resolve-local-project-directory.ts "<list>" "<item ID>"
 ```
 
-Return the command's output unchanged. If it fails, report the error.
+Return the output unchanged, or report the command's error.
