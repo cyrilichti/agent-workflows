@@ -10,11 +10,15 @@ summarize it, create a plan via `/plan`, offer `/refine` on
 
 ## Required Context
 
+Reuse any rules already active from the caller. From this workflow's directory,
+load the remaining rules in one `cat` command, omitting paths for active rules.
+Skip the command when all are active:
+
+```sh
+cat ../rules/default-language.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md
+```
+
 Load `../goals/pick-complete.md` once as this workflow's completion contract.
-
-Follow `../rules/user-facing-output.md`.
-
-Follow `../rules/mutation-response.md`.
 
 ---
 

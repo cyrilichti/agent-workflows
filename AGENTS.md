@@ -1,21 +1,37 @@
 # AGENTS.md
 
-## Global Rules
+## Request Routing
 
-Follow `rules/default-language.md`.
+1. For every user request, identify every matching route using this table:
 
-Follow `rules/git-authorization.md`.
+   | Situation | Workflow |
+   | --- | --- |
+   | Select the next eligible item (`/next` or `$next`) | `workflows/next.md` |
+   | Resolve a local project directory (`/project` or `$project`) | `workflows/project.md` |
+   | Create or reformulate one item (`/write` or `$write`) | `workflows/write.md` |
+   | Select an item, plan it, and start its implementation (`/pick` or `$pick`) | `workflows/pick.md` |
+   | Create an implementation plan (`/plan` or `$plan`) | `workflows/plan.md` |
+   | Decompose one oversized item into child items (`/refine` or `$refine`) | `workflows/refine.md` |
+   | Execute a plan (`/work` or `$work`) | `workflows/work.md` |
+   | Prepare work for review (`/ready` or `$ready`) | `workflows/ready.md` |
+   | Review a pull or merge request (`/inspect` or `$inspect`) | `workflows/inspect.md` |
+   | Complete a pull or merge request (`/done` or `$done`) | `workflows/done.md` |
 
-Follow `rules/skill-activation.md`.
+2. When several routes match, reduce them to one by asking with
+   `templates/select-option.md`:
 
-Follow `rules/inclusive-wording.md`.
+   ```text
+   question: Which workflow do you want to use?
+   options:
+   - label: <matching situation>
+     value: <workflow file>
+   ```
 
-## Session Bootstrap
+3. When one route remains, read its workflow file completely and follow it.
+4. When no route matches, follow `workflows/specialist.md` with:
 
-At the beginning of a new conversation or a new unrelated task, follow
-`workflows/play-book.md`. Do not re-run this for every prompt in the
-same task.
+   ```text
+   task_context: available request context
+   ```
 
-## Guidelines
-
-- Load only the context required by the active workflow.
+   Then continue handling the original request.

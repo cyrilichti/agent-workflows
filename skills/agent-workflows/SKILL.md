@@ -10,6 +10,16 @@ disable-model-invocation: true
 
 Install or update agent-workflows in the current project.
 
+## Required Context
+
+Reuse any rules already active from the caller. From this Skill's directory,
+load the remaining rules in one `cat` command, omitting paths for active rules.
+Skip the command when all are active:
+
+```sh
+cat ../../rules/default-language.md ../../rules/git-authorization.md ../../rules/skill-activation.md ../../rules/inclusive-wording.md
+```
+
 ## Rules
 
 - Treat the root `AGENTS.md` and these `.agents/` directories as fully managed
@@ -89,7 +99,8 @@ For every fully managed directory listed in Rules:
 
 Create the consuming project's root `AGENTS.md` from the downloaded file.
 Prefix `.agents/` to each backtick-quoted path under a managed directory:
-`rules/default-language.md` becomes `.agents/rules/default-language.md`.
+`workflows/next.md` becomes `.agents/workflows/next.md`, and
+`templates/select-option.md` becomes `.agents/templates/select-option.md`.
 Keep all other text unchanged. Require at least one replacement, verify each
 source and installed path exists, then replace the target file atomically.
 

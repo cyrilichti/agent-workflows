@@ -8,13 +8,15 @@ Execute one selected plan autonomously, then continue through `/ready`.
 
 ## Required Context
 
+Reuse any rules already active from the caller. From this workflow's directory,
+load the remaining rules in one `cat` command, omitting paths for active rules.
+Skip the command when all are active:
+
+```sh
+cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../rules/change-design.md
+```
+
 Load `../goals/work-complete.md` once as this workflow's completion contract.
-
-Reuse these rules when already active from the caller; otherwise follow them:
-
-- `../rules/user-facing-output.md`;
-- `../rules/mutation-response.md`;
-- `../rules/change-design.md`.
 
 ---
 
