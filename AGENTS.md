@@ -10,13 +10,13 @@ means loading and following the workflow file in the current agent.
 | Select the next eligible item (`/next` or `$next`) | `workflows/next.md` |
 | Resolve a local project directory (`/project` or `$project`) | `workflows/project.md` |
 | Create or reformulate one item (`/write` or `$write`) | `workflows/write.md` |
-| Select an item, plan it, and start its implementation | `workflows/pick.md` |
-| Create an implementation plan | `workflows/plan.md` |
-| Decompose one oversized item into child items | `workflows/refine.md` |
-| Execute a plan | `workflows/work.md` |
-| Prepare work for review | `workflows/ready.md` |
-| Review a pull or merge request | `workflows/inspect.md` |
-| Complete a pull or merge request | `workflows/done.md` |
+| Select an item, plan it, and start its implementation (`/pick` or `$pick`) | `workflows/pick.md` |
+| Create an implementation plan (`/plan` or `$plan`) | `workflows/plan.md` |
+| Decompose one oversized item into child items (`/refine` or `$refine`) | `workflows/refine.md` |
+| Execute a plan (`/work` or `$work`) | `workflows/work.md` |
+| Prepare work for review (`/ready` or `$ready`) | `workflows/ready.md` |
+| Review a pull or merge request (`/inspect` or `$inspect`) | `workflows/inspect.md` |
+| Complete a pull or merge request (`/done` or `$done`) | `workflows/done.md` |
 
 Evaluate every user request against the routes above.
 
