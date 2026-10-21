@@ -39,7 +39,8 @@ read operation is omitted.
 ## Apply
 
 ```text
-linear issue update <caller item ID or identifier> --state <exact resolved status ID or name> --no-input
+linear issue update <caller item ID or identifier> --state <exact resolved status name> --no-input
 ```
 
-Return the resulting status or provider failure. Do not pass any other field.
+Use the selected status's name. Return the resulting status or provider failure.
+Do not pass any other field.
