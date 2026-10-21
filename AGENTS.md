@@ -35,7 +35,3 @@
    ```
 
    Then continue handling the original request.
-
-## Guidelines
-
-- Load only the context required by the active workflow.
