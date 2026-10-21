@@ -2,9 +2,6 @@
 
 ## Request Routing
 
-Use the table below to identify workflow candidates for every user request.
-Do not load a workflow file until a single route has been selected.
-
 | Situation | Workflow |
 | --- | --- |
 | Select the next eligible item (`/next` or `$next`) | `workflows/next.md` |
@@ -18,7 +15,7 @@ Do not load a workflow file until a single route has been selected.
 | Review a pull or merge request (`/inspect` or `$inspect`) | `workflows/inspect.md` |
 | Complete a pull or merge request (`/done` or `$done`) | `workflows/done.md` |
 
-1. Identify every matching route.
+1. For every user request, identify every matching route in the table above.
 2. When several routes match, reduce them to one by asking with
    `templates/select-option.md`:
 
