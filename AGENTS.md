@@ -2,8 +2,8 @@
 
 ## Request Routing
 
-Route every user request to one workflow when its situation matches. Routing
-means loading and following the workflow file in the current agent.
+Use the table below to identify workflow candidates for every user request.
+Do not load a workflow file until a single route has been selected.
 
 | Situation | Workflow |
 | --- | --- |
@@ -17,8 +17,6 @@ means loading and following the workflow file in the current agent.
 | Prepare work for review (`/ready` or `$ready`) | `workflows/ready.md` |
 | Review a pull or merge request (`/inspect` or `$inspect`) | `workflows/inspect.md` |
 | Complete a pull or merge request (`/done` or `$done`) | `workflows/done.md` |
-
-Evaluate every user request against the routes above.
 
 1. Identify every matching route.
 2. When several routes match, reduce them to one by asking with
