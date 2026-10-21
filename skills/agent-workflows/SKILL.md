@@ -10,6 +10,16 @@ disable-model-invocation: true
 
 Install or update agent-workflows in the current project.
 
+## Required Context
+
+Reuse any rules already active from the caller. From this Skill's directory,
+load the remaining rules in one `cat` command, omitting paths for active rules.
+Skip the command when all are active:
+
+```sh
+cat ../../rules/default-language.md ../../rules/git-authorization.md ../../rules/skill-activation.md ../../rules/inclusive-wording.md
+```
+
 ## Rules
 
 - Treat the root `AGENTS.md` and these `.agents/` directories as fully managed

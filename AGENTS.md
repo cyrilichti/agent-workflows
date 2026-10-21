@@ -1,15 +1,5 @@
 # AGENTS.md
 
-## Global Rules
-
-Follow `rules/default-language.md`.
-
-Follow `rules/git-authorization.md`.
-
-Follow `rules/skill-activation.md`.
-
-Follow `rules/inclusive-wording.md`.
-
 ## Session Bootstrap
 
 At the beginning of a new conversation or a new unrelated task, follow
