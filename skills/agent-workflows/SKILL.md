@@ -10,15 +10,9 @@ disable-model-invocation: true
 
 Install or update agent-workflows in the current project.
 
-## Required Context
-
-Reuse any rules already active from the caller. From this Skill's directory,
-load the remaining rules in one `cat` command, omitting paths for active rules.
-Skip the command when all are active:
-
-```sh
-cat ../../rules/default-language.md ../../rules/git-authorization.md ../../rules/skill-activation.md ../../rules/inclusive-wording.md
-```
+Announce `agent-workflows` in a Markdown blockquote before starting Preflight.
+The bootstrap installation may not have `.agents/rules` yet; load the rules
+from the downloaded repository in Download.
 
 ## Rules
 
@@ -78,6 +72,14 @@ Stop before deployment unless the downloaded repository contains:
 - `skills-lock.json`;
 - every fully managed directory listed in Rules.
 
+Reuse any rules already active from the caller. From the downloaded repository
+root, load the remaining rules in one `cat` command, omitting paths for active
+rules. Skip the command when all are active:
+
+```sh
+cat rules/default-language.md rules/git-authorization.md rules/skill-activation.md rules/inclusive-wording.md
+```
+
 Read the downloaded and consuming `skills-lock.json` files and calculate the
 merged lock before deployment. Require compatible lock-file versions.
 
@@ -99,9 +101,12 @@ For every fully managed directory listed in Rules:
 
 Create the consuming project's root `AGENTS.md` from the downloaded file.
 Prefix `.agents/` to each backtick-quoted path under a managed directory:
-`rules/default-language.md` becomes `.agents/rules/default-language.md`.
-Keep all other text unchanged. Require at least one replacement, verify each
-source and installed path exists, then replace the target file atomically.
+`workflows/next.md` becomes `.agents/workflows/next.md`, and
+`templates/select-option.md` becomes `.agents/templates/select-option.md`.
+Keep command aliases such as `/next` and `$next`, and all other text, unchanged.
+Require at least one replacement, verify each source and installed path exists,
+then replace the target file atomically. Do not rewrite relative paths within
+the copied workflows or Skills; they resolve from their installed locations.
 
 Create `.agents/plans` when absent. Otherwise preserve it and all of its
 contents exactly. Do not copy the downloaded `plans` directory. Create
