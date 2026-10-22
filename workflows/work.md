@@ -2,7 +2,7 @@
 
 ## Required Context
 
-From this workflow's directory, read only the files below that are not already
+From this file's directory, read only the files below that are not already
 active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
