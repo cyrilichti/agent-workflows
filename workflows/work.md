@@ -13,11 +13,14 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 
 ## Delivery Context
 
-`../templates/delivery-context.md` defines the expected delivery context
-structure. Preserve complete official item context supplied by the caller.
+Use `../templates/delivery-context.md` as the structure for `delivery_context`.
+When the caller supplies `item`, pass that exact official item context to the
+selected branch unchanged.
 
-A return from `/ready` or `/inspect` must supply a complete delivery context.
-Stop when it is missing or incomplete; do not route the return to standalone.
+A return from `/ready` or `/inspect` must supply `delivery_context` with `plan`,
+`item`, `branch`, `request`, and at least one `source_findings` record in the
+template's format. Report any missing field and stop before routing; do not
+treat the return as a standalone call.
 
 ---
 
