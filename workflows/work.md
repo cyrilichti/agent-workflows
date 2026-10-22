@@ -26,7 +26,7 @@ Select exactly one branch:
 
 | Situation | Workflow |
 | --- | --- |
-| Caller supplies an approved plan and its complete `agent-planned` official item context | `./work-item.md` |
+| Caller supplies an approved plan and its complete official item context | `./work-item.md` |
 | No caller handoff | `./work-standalone.md` |
 
 Both branches create or preserve a delivery context conforming to `Delivery Context`.
