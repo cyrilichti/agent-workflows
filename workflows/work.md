@@ -1,11 +1,5 @@
 # Work
 
-## Purpose
-
-Execute one selected plan autonomously, then continue through `/ready`.
-
----
-
 ## Required Context
 
 Reuse any rules already active from the caller. From this workflow's directory,
