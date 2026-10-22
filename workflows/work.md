@@ -13,7 +13,6 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 
 ## Delivery Context
 
-Use the loaded `Delivery Context` template as the contract.
 For a return from `/ready` or `/inspect`, require a conforming delivery context
 before routing; otherwise stop.
 
