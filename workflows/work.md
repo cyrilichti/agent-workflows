@@ -29,7 +29,7 @@ Select exactly one branch:
 | Caller supplies an approved plan and its complete official item context | `./work-item.md` |
 | No caller handoff | `./work-standalone.md` |
 
-Both branches create or preserve a delivery context conforming to `Delivery Context`.
+Both branches create or preserve a `Delivery Context`.
 
 Treat a caller handoff from `/ready` or `/inspect` with a complete delivery
 context as `resumed`. Treat the approved plan and item supplied by `/pick` as
