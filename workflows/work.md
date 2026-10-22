@@ -15,15 +15,12 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 
 ### 1. Follow One Context Branch
 
-In caller mode, require an approved plan and complete `agent-planned` official
-item context. In resumed caller mode, also check the delivery context against
-`../templates/delivery-context.md`. Report missing inputs and stop instead of
-routing to standalone. Then select exactly one branch:
+Select exactly one branch from the invocation mode:
 
-| Situation | Workflow |
+| Mode | Workflow |
 | --- | --- |
-| Caller supplies an approved plan and its complete `agent-planned` official item context | `./work-item.md` |
-| No caller handoff | `./work-standalone.md` |
+| Caller mode | `./work-item.md` |
+| Standalone mode | `./work-standalone.md` |
 
 Preserve complete official item context when the caller supplies it. Both
 branches create or preserve `../templates/delivery-context.md`.
