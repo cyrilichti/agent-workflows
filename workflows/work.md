@@ -15,19 +15,21 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 
 ### 1. Follow One Context Branch
 
-Select exactly one branch, read its file completely, then follow it:
+Fail an incomplete caller handoff before routing. Select exactly one branch:
 
-- follow `./work-item.md` when the caller supplies an approved plan and its
-  complete `agent-planned` official item context;
-- otherwise, follow `./work-standalone.md`.
+| Situation | Workflow |
+| --- | --- |
+| Caller supplies an approved plan and its complete `agent-planned` official item context | `./work-item.md` |
+| No caller handoff | `./work-standalone.md` |
 
 Preserve complete official item context when the caller supplies it. Both
-branches create or preserve `../templates/delivery-context.md`. Fail an
-incomplete caller handoff instead of switching it to standalone mode.
+branches create or preserve `../templates/delivery-context.md`.
 
 Treat a caller handoff from `/ready` or `/inspect` with a complete delivery
 context as `resumed`. Treat the approved plan and item supplied by `/pick` as
 `new`.
+
+Read the selected workflow file completely and follow it.
 
 ---
 
