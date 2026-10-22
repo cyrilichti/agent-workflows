@@ -15,15 +15,16 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 
 ### 1. Follow One Context Branch
 
-Select exactly one branch from the invocation mode:
+Select exactly one branch:
 
-| Mode | Workflow |
+| Situation | Workflow |
 | --- | --- |
-| Caller mode | `./work-item.md` |
-| Standalone mode | `./work-standalone.md` |
+| Caller supplies an approved plan and its complete `agent-planned` official item context | `./work-item.md` |
+| No caller handoff | `./work-standalone.md` |
 
 Preserve complete official item context when the caller supplies it. Both
-branches create or preserve `../templates/delivery-context.md`.
+branches create or preserve `../templates/delivery-context.md`. Fail an
+incomplete caller handoff instead of switching it to standalone mode.
 
 Treat a caller handoff from `/ready` or `/inspect` with a complete delivery
 context as `resumed`. Treat the approved plan and item supplied by `/pick` as
