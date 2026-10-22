@@ -15,7 +15,10 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 
 ### 1. Follow One Context Branch
 
-Fail an incomplete caller handoff before routing. Select exactly one branch:
+In caller mode, require an approved plan and complete `agent-planned` official
+item context. In resumed caller mode, also check the delivery context against
+`../templates/delivery-context.md`. Report missing inputs and stop instead of
+routing to standalone. Then select exactly one branch:
 
 | Situation | Workflow |
 | --- | --- |
