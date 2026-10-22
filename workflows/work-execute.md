@@ -41,8 +41,8 @@ For each active todo:
 4. When the index has no staged tracked change, persist the todo as `completed`
    without a commit and continue.
 5. Otherwise, create one non-empty Conventional Commit without trailers. After
-   success, persist the todo as `completed`, push the current branch normally
-   to its configured upstream, and continue.
+   success, persist the todo as `completed`. Push each non-empty todo commit
+   normally to the current branch upstream, then continue.
 
 ### 3. Continue to Ready
 
@@ -63,6 +63,8 @@ delivery_context: current delivery context
 
 ## Safety
 
+- Do not ask for confirmation before creating a todo commit or handing off to
+  `/ready`.
 - Do not mark a todo with staged changes `completed` before its commit succeeds.
 - Never use `--allow-empty` for a todo commit.
 - Do not invoke `/inspect` before `/ready` passes.

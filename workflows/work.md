@@ -1,49 +1,43 @@
 # Work
 
-## Purpose
-
-Execute one selected plan autonomously, then continue through `/ready`.
-
----
-
 ## Required Context
 
-Reuse any rules already active from the caller. From this workflow's directory,
-load the remaining rules in one `cat` command, omitting paths for active rules.
-Skip the command when all are active:
+From this file's directory, read only the files below that are not already
+active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../rules/change-design.md
+cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../rules/change-design.md ../goals/work-complete.md ../templates/delivery-context.md
 ```
 
-Load `../goals/work-complete.md` once as this workflow's completion contract.
+---
+
+## Delivery Context
+
+For a return from `/ready` or `/inspect`, require a conforming delivery context
+before routing; otherwise stop.
 
 ---
 
-## Steps
+## Work Mode
 
-### 1. Follow One Context Branch
+Set `work_mode` from the caller:
 
-Follow exactly one branch:
-
-- follow `./work-item.md` when the caller supplies an approved plan and its
-  complete `agent-planned` official item context;
-- otherwise, follow `./work-standalone.md`.
-
-Preserve complete official item context when the caller supplies it. Both
-branches create or preserve `../templates/delivery-context.md`. Fail an
-incomplete caller handoff instead of switching it to standalone mode.
-
-Treat a caller handoff from `/ready` or `/inspect` with a complete delivery
-context as `resumed`. Treat the approved plan and item supplied by `/pick` as
-`new`.
+| Caller | `work_mode` |
+| --- | --- |
+| `/pick` | `new` |
+| `/ready` or `/inspect` | `resumed` |
 
 ---
 
-## Safety
+## Branch Routing
 
-- The selected approved plan and official item, or complete caller handoff,
-  authorize autonomous execution. Do not ask for a todo commit or `/ready`
-  handoff confirmation.
-- Push each non-empty todo commit normally to the current branch upstream.
-- Do not invoke `/inspect` before `/ready` passes.
+Select exactly one branch:
+
+| Situation | Workflow |
+| --- | --- |
+| Caller supplies an approved plan and its complete official item context | `./work-item.md` |
+| No caller handoff | `./work-standalone.md` |
+
+Both branches create or preserve a `Delivery Context`.
+
+Read the selected workflow file completely and follow it.
