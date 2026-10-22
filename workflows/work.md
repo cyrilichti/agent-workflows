@@ -15,7 +15,7 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 
 ### 1. Follow One Context Branch
 
-Follow exactly one branch:
+Select exactly one branch, read its file completely, then follow it:
 
 - follow `./work-item.md` when the caller supplies an approved plan and its
   complete `agent-planned` official item context;
