@@ -9,9 +9,6 @@ active. Omit active paths from the `cat` command; skip it when none remain:
 cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../rules/change-design.md ../goals/work-complete.md
 ```
 
-Apply `../goals/work-complete.md` as this workflow's completion contract on every
-entry, including returns from `/ready` or `/inspect`.
-
 ---
 
 ## Steps
