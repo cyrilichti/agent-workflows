@@ -18,9 +18,18 @@ before routing; otherwise stop.
 
 ---
 
-## Steps
+## Work Mode
 
-### 1. Follow One Context Branch
+Set `work_mode` from the caller:
+
+| Caller | `work_mode` |
+| --- | --- |
+| `/pick` | `new` |
+| `/ready` or `/inspect` | `resumed` |
+
+---
+
+## Branch Routing
 
 Select exactly one branch:
 
@@ -31,15 +40,4 @@ Select exactly one branch:
 
 Both branches create or preserve a `Delivery Context`.
 
-Treat a caller handoff from `/ready` or `/inspect` with a complete delivery
-context as `resumed`. Treat the approved plan and item supplied by `/pick` as
-`new`.
-
 Read the selected workflow file completely and follow it.
-
----
-
-## Safety
-
-- The selected approved plan and official item, or complete caller handoff,
-  authorize autonomous execution.
