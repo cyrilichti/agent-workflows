@@ -14,8 +14,7 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 ## Delivery Context
 
 `../templates/delivery-context.md` defines the expected delivery context
-structure. Preserve complete official item context supplied by the caller. Both
-branches create or preserve a delivery context following this structure.
+structure. Preserve complete official item context supplied by the caller.
 
 A return from `/ready` or `/inspect` must supply a complete delivery context.
 Stop when it is missing or incomplete; do not route the return to standalone.
@@ -32,6 +31,9 @@ Select exactly one branch:
 | --- | --- |
 | Caller supplies an approved plan and its complete `agent-planned` official item context | `./work-item.md` |
 | No caller handoff | `./work-standalone.md` |
+
+Both branches create or preserve a delivery context following
+`../templates/delivery-context.md`.
 
 Treat a caller handoff from `/ready` or `/inspect` with a complete delivery
 context as `resumed`. Treat the approved plan and item supplied by `/pick` as
