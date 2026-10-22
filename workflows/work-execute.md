@@ -63,6 +63,8 @@ delivery_context: current delivery context
 
 ## Safety
 
+- Do not ask for confirmation before creating a todo commit or handing off to
+  `/ready`.
 - Do not mark a todo with staged changes `completed` before its commit succeeds.
 - Never use `--allow-empty` for a todo commit.
 - Do not invoke `/inspect` before `/ready` passes.

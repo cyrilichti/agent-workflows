@@ -43,5 +43,4 @@ context as `resumed`. Treat the approved plan and item supplied by `/pick` as
 ## Safety
 
 - The selected approved plan and official item, or complete caller handoff,
-  authorize autonomous execution. Do not ask for a todo commit or `/ready`
-  handoff confirmation.
+  authorize autonomous execution.
