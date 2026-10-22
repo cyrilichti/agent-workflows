@@ -6,8 +6,19 @@ From this file's directory, read only the files below that are not already
 active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../rules/change-design.md ../goals/work-complete.md
+cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../rules/change-design.md ../goals/work-complete.md ../templates/delivery-context.md
 ```
+
+---
+
+## Delivery Context
+
+`../templates/delivery-context.md` defines the expected delivery context
+structure. Preserve complete official item context supplied by the caller. Both
+branches create or preserve a delivery context following this structure.
+
+A return from `/ready` or `/inspect` must supply a complete delivery context.
+Stop when it is missing or incomplete; do not route the return to standalone.
 
 ---
 
@@ -21,10 +32,6 @@ Select exactly one branch:
 | --- | --- |
 | Caller supplies an approved plan and its complete `agent-planned` official item context | `./work-item.md` |
 | No caller handoff | `./work-standalone.md` |
-
-Preserve complete official item context when the caller supplies it. Both
-branches create or preserve `../templates/delivery-context.md`. Fail an
-incomplete caller handoff instead of switching it to standalone mode.
 
 Treat a caller handoff from `/ready` or `/inspect` with a complete delivery
 context as `resumed`. Treat the approved plan and item supplied by `/pick` as
