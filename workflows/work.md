@@ -2,15 +2,15 @@
 
 ## Required Context
 
-Reuse any rules already active from the caller. From this workflow's directory,
-load the remaining rules in one `cat` command, omitting paths for active rules.
-Skip the command when all are active:
+From this workflow's directory, read only the files below that are not already
+active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../rules/change-design.md
+cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../rules/change-design.md ../goals/work-complete.md
 ```
 
-Load `../goals/work-complete.md` once as this workflow's completion contract.
+Apply `../goals/work-complete.md` as this workflow's completion contract on every
+entry, including returns from `/ready` or `/inspect`.
 
 ---
 
