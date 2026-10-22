@@ -13,7 +13,7 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 
 ## Delivery Context
 
-Use `../templates/delivery-context.md` as the delivery context contract.
+Use the loaded delivery context template as the contract.
 For a return from `/ready` or `/inspect`, require a conforming delivery context
 before routing; otherwise stop.
 
@@ -30,8 +30,7 @@ Select exactly one branch:
 | Caller supplies an approved plan and its complete `agent-planned` official item context | `./work-item.md` |
 | No caller handoff | `./work-standalone.md` |
 
-Both branches create or preserve a delivery context following
-`../templates/delivery-context.md`.
+Both branches create or preserve a delivery context conforming to that contract.
 
 Treat a caller handoff from `/ready` or `/inspect` with a complete delivery
 context as `resumed`. Treat the approved plan and item supplied by `/pick` as
