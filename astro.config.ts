@@ -18,6 +18,9 @@ export default defineConfig({
       description:
         'Move from work item to merged request with workflows that select the right skills, keep mutations explicit, and synchronize your providers.',
       customCss: ['./docs/styles/custom.css'],
+      components: {
+        MarkdownContent: './docs/components/MarkdownContent.astro',
+      },
       editLink: {
         baseUrl:
           'https://github.com/cyrilichti/agent-workflows/edit/main/',
@@ -41,6 +44,15 @@ export default defineConfig({
             {
               label: 'Orchestration',
               link: '/orchestration/',
+            },
+            {
+              label: '☆ Star on GitHub',
+              link: 'https://github.com/cyrilichti/agent-workflows',
+              attrs: {
+                target: '_blank',
+                rel: 'noopener noreferrer',
+                'aria-label': 'Star on GitHub (opens in a new tab)',
+              },
             },
           ],
         }),
