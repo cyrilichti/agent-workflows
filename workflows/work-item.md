@@ -55,50 +55,53 @@ record the returned `branch` and `request` in `Delivery Context`.
 
 ### 2. Execute the Plan
 
-#### Persist Corrective Todos
+#### Select the Next Todo
 
-When the delivery context contains `source_findings`, translate each finding
-through `../templates/corrective-todo.md` and append it to the authoritative
-plan. Persist the plan before clearing the carried findings. Only `/work`
-translates findings into corrective todos.
+Add an actionable `todo` to each `source_findings` record. Run from this file's
+directory, replacing `[]` with those records as JSON when present:
 
-#### Execute Todos
+```sh
+node ../commands/work-next-todo.ts "<plan path>" <<'JSON'
+[]
+JSON
+```
 
-Treat the state symbols in the plan's numbered `## Steps` as authoritative.
-Skip `completed` and `cancelled`, then select the first `in_progress` todo or
-mark the first `pending` todo `in_progress`. When neither exists, continue to
-the Ready handoff below.
+If the command fails, report its `stage` and `reason`, then stop. On success,
+clear `source_findings`.
 
-Persist every state transition immediately by changing that step's symbol in
-the authoritative plan file according to `../templates/plan.md`. Do not keep
-todo state only in execution context.
+#### Execute Each Todo
 
-For each active todo:
+Follow the returned `todo` until the command returns `ready` or `cancelled`:
 
-1. Require a clean worktree and index before implementation.
-2. Reuse the active specialist while it remains appropriate. When none is
-   active or the todo requires a different agent cohort, follow
+1. Reuse the active specialist while appropriate. Otherwise follow
    `./specialist.md` with:
 
    ```text
-   task_context:
-     todo: active todo
-     constraints: relevant plan constraints
-     technical_context: required technical context
+   task_context: todo returned by work-next-todo.ts or work-complete-todo.ts
    ```
 
-   Let the selected specialist route only Skills whose profile triggers apply,
-   or work directly when none apply.
-3. Have the specialist implement and validate only that todo, then stage only
-   its changes.
-4. When the index has no staged tracked change, persist the todo as `completed`
-   without a commit and continue.
-5. Otherwise, create one non-empty Conventional Commit without trailers and
-   without asking for confirmation. After success, persist the todo as
-   `completed`. Push each non-empty todo commit normally to the current branch
-   upstream, then continue.
+   Implement and validate only that todo, then stage only its changes.
+2. Run one of these commands from this file's directory:
 
-#### Continue to Ready
+   With staged changes:
+
+   ```sh
+   node ../commands/work-complete-todo.ts "<plan path>" "<todo number>" "<Conventional Commit message>"
+   ```
+
+   Without staged changes:
+
+   ```sh
+   node ../commands/work-complete-todo.ts "<plan path>" "<todo number>"
+   ```
+
+   Repeat from step 1 for each returned todo. Do not ask for commit confirmation
+   or add trailers.
+
+   If the command fails, report its `stage`, `reason`, and any completed commit
+   or todo, then stop.
+
+### 3. Continue to Ready
 
 When all todos are `cancelled`, report that no work was completed and stop
 without calling `/ready`. Require at least one `completed` todo.
