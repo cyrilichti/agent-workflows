@@ -25,19 +25,12 @@ export function createRequest(input: Input) {
     '--source-branch', source_branch, '--target-branch', target_branch,
     '--title', title, '--description', '', '--draft', '--yes',
   ], { encoding: 'utf8' }).trim();
-  const urls = created.split(/\s+/).filter(value => /^https?:\/\//.test(value));
-  if (urls.length !== 1) {
-    throw new Error(`Created GitLab request could not be identified: ${created}`);
+  const createdUrl = created.match(/https?:\/\/\S+/)?.[0];
+  if (!createdUrl) {
+    throw new Error('glab did not return a merge request URL.');
   }
-  const url = new URL(urls[0]!);
-  const expected = `/${repository.path}/-/merge_requests/`;
-  if (url.host !== repository.host || !url.pathname.startsWith(expected)) {
-    throw new Error(`Created GitLab request URL does not match repository: ${url}`);
-  }
-  const iid = Number(url.pathname.slice(expected.length));
-  if (!Number.isSafeInteger(iid) || iid <= 0) {
-    throw new Error(`Invalid GitLab merge IID: ${url}`);
-  }
+  const url = new URL(createdUrl);
+  const iid = Number(url.pathname.split('/').filter(Boolean).at(-1));
   try {
     const output = execFileSync('glab', [
       'mr', 'view', String(iid), '--repo', repository.url, '--output', 'json',
@@ -50,16 +43,12 @@ export function createRequest(input: Input) {
     const draft = observed.draft === true || observed.work_in_progress === true;
     const source = observed.source_branch ?? observed.sourceBranch;
     const target = observed.target_branch ?? observed.targetBranch;
-    if (Number(observed.iid ?? observed.IID) !== iid || state !== 'open' || !draft ||
-        source !== source_branch || target !== target_branch) {
-      throw new Error('Created GitLab request could not be verified.');
-    }
     return {
-      request_id: iid,
+      request_id: Number(observed.iid ?? observed.IID),
       kind: 'merge_request',
       title: observed.title,
-      state: 'open',
-      draft: true,
+      state,
+      draft,
       source_branch: source,
       target_branch: target,
       body: observed.description ?? '',

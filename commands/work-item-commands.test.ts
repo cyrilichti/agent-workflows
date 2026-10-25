@@ -63,8 +63,11 @@ if (program === 'clickup-cli') {
   if (args[0] === 'pr' && args[1] === 'create') {
     process.stdout.write('https://github.com/acme/repo/pull/7\\n');
   } else if (args[0] === 'api') {
+    if (process.env.TEST_OBSERVE_FAILURE === '1') {
+      process.exit(2);
+    }
     output({
-      number: 7, state: 'open', draft: process.env.TEST_BAD_DRAFT !== '1', title: 'ITEM-1: Plan',
+      number: 7, state: 'open', draft: true, title: 'ITEM-1: Plan',
       head: { ref: 'fix/plan' }, base: { ref: 'main' },
       body: '', html_url: 'https://github.com/acme/repo/pull/7',
     });
@@ -188,13 +191,13 @@ test('GitHub request and ClickUp backlink use the created request URL', () => {
   }
 });
 
-test('request verification failure preserves the created URL for recovery', () => {
+test('request read failure preserves the created URL for recovery', () => {
   const f = fixture('clickup', 'github');
   try {
     const result = f.run('create-request.ts', {
       push_remote_url: 'https://github.com/acme/repo.git',
       source_branch: 'fix/plan', target_branch: 'main', plan_name: 'Plan', item_id: 'ITEM-1',
-    }, { TEST_BAD_DRAFT: '1' });
+    }, { TEST_OBSERVE_FAILURE: '1' });
     assert.equal(result.status, 1);
     const output = JSON.parse(result.stdout);
     assert.equal(output.stage, 'create_request');

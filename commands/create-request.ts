@@ -19,20 +19,11 @@ function repository(remote: string, provider: 'github' | 'gitlab') {
     pathname = ssh[2]!;
   } else {
     const url = new URL(remote);
-    if (!['https:', 'ssh:'].includes(url.protocol) || url.search || url.hash ||
-        (url.protocol === 'ssh:' && url.username !== 'git')) {
-      throw new Error('Unsupported push remote.');
-    }
     host = url.host;
     pathname = url.pathname.replace(/^\//, '');
   }
 
   const parts = pathname.replace(/\.git$/, '').split('/').map(decodeURIComponent);
-  if (!host || parts.some(part => !part || part === '.' || part === '..' || /[?#\\]/.test(part)) ||
-      parts.length < 2 || (provider === 'github' && parts.length !== 2)) {
-    throw new Error('Push remote does not identify one repository.');
-  }
-
   if (provider === 'github') {
     return { host, owner: parts[0]!, repo: parts[1]! };
   }

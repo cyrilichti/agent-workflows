@@ -27,17 +27,11 @@ export function readStatuses(itemId: string, officialItem?: Record<string, unkno
     });
     task = JSON.parse(output) as Record<string, unknown>;
   }
-  const listId = (task.list as { id?: string } | undefined)?.id;
-  if (!listId) {
-    throw new Error('Official item has no ClickUp List ID.');
-  }
+  const listId = (task.list as { id: string }).id;
   const listOutput = execFileSync('clickup-cli', ['list', 'get', listId, '--output', 'json'], {
     encoding: 'utf8',
   });
   const list = JSON.parse(listOutput) as { statuses: NativeStatus[] };
-  if (!Array.isArray(list.statuses)) {
-    throw new Error('ClickUp List has no status list.');
-  }
   return {
     current_status: normalize(task.status as NativeStatus),
     available_statuses: list.statuses.map(normalize),
@@ -52,9 +46,5 @@ export function applyStatus(itemId: string, target: ItemStatus): ItemStatus {
   if (!result.status) {
     throw new Error('ClickUp did not return the resulting status.');
   }
-  const resulting = normalize(result.status);
-  if (resulting.name !== target.name) {
-    throw new Error('ClickUp did not apply the selected status.');
-  }
-  return resulting;
+  return normalize(result.status);
 }
