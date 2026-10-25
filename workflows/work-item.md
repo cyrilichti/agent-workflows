@@ -17,22 +17,19 @@
 
 ### 1. Start or Resume Work
 
-Follow exactly one case according to `work_mode`.
+Follow the `work_mode` case.
 
 #### `new`
 
-Pass the plan path relative to the project.
-
-Run from this file's directory:
+Run from this file's directory with the project-relative plan path:
 
 ```sh
 node ../commands/work-new.ts "<item ID>" "<plan name>" "<plan objective>" "<plan path>"
 ```
 
-If the command fails, report its `stage`, `reason`, and completed identities,
-then stop. Otherwise, set the carried item's status to `resulting_status`,
-then create or update `Delivery Context` with the plan path, item, `branch`,
-and `request`.
+On failure, report `stage`, `reason`, and completed identities; stop. On
+success, set the carried item's status to `resulting_status` and create or
+update `Delivery Context` with the plan path, item, `branch`, and `request`.
 
 #### `resumed`
 
@@ -45,9 +42,9 @@ Run from this file's directory:
 node ../commands/work-resume.ts "<item ID>" "<request ID>" "<branch>"
 ```
 
-If the command fails, report its `stage`, `reason`, and completed identities,
-then stop. Otherwise, set the carried item's status to `resulting_status` and
-record the returned `branch` and `request` in `Delivery Context`.
+On failure, report `stage`, `reason`, and completed identities; stop. On
+success, set the carried item's status to `resulting_status` and record the
+returned `branch` and `request` in `Delivery Context`.
 
 ### 2. Execute the Plan
 
@@ -67,27 +64,37 @@ clear `source_findings`.
 
 #### Execute Each Todo
 
-Follow the returned `todo` until the command returns `ready` or `cancelled`:
+For each returned `todo`:
 
 1. Reuse the active specialist while appropriate. Otherwise follow
-  `./specialist.md` with:
-   Implement and validate only that todo, then stage only its changes.
-2. Run one of these commands from this file's directory:
-  With staged changes:
+   `./specialist.md` with:
+
+   ```text
+   task_context: todo returned by work-next-todo.ts or work-complete-todo.ts
+   ```
+
+2. Implement and validate only that todo, then stage only its changes.
+3. Run one command from this file's directory:
+
+   With staged changes:
+
+   ```sh
+   node ../commands/work-complete-todo.ts "<plan path>" "<todo number>" "<Conventional Commit message>"
+   ```
+
    Without staged changes:
-   Repeat from step 1 for each returned todo. Do not ask for commit confirmation
-   or add trailers.
-   If the command fails, report its `stage`, `reason`, and any completed commit
-   or todo, then stop.
 
+   ```sh
+   node ../commands/work-complete-todo.ts "<plan path>" "<todo number>"
+   ```
 
+On `todo`, repeat. On `ready` or `cancelled`, go to Step 3. On `failed`, report
+the command result and stop.
 
 ### 3. Continue to Ready
 
-When all todos are `cancelled`, report that no work was completed and stop
-without calling `/ready`. Require at least one `completed` todo.
-
-Follow `./ready.md` in caller mode without another choice or confirmation:
+On `status: cancelled`, report no work and stop. When the command returns
+`status: ready`, follow `./ready.md` in caller mode:
 
 ```text
 plan: authoritative plan
