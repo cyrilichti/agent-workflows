@@ -29,13 +29,15 @@ try {
   const adapter = await import(`../providers/${provider}/transition-item-status.ts`) as Adapter;
   const resolution = adapter.readStatuses(itemId, data.official_item);
   const candidates = resolution.available_statuses.filter(status => status.category === 'active');
-  if (candidates.length === 0) {
+  const exact = candidates.filter(status => status.name.toLowerCase() === 'in progress');
+  const matches = exact.length === 1 ? exact : candidates;
+  if (matches.length === 0) {
     throw new Error('No active status is available.');
   }
-  if (candidates.length > 1) {
+  if (matches.length > 1) {
     throw new Error('Multiple active statuses are available.');
   }
-  const target = candidates[0]!;
+  const target = matches[0]!;
   const resulting = adapter.applyStatus(itemId, target);
   process.stdout.write(`${JSON.stringify({
     status: 'transitioned',
