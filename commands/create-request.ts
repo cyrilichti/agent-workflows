@@ -1,0 +1,84 @@
+import { readFileSync } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
+import { resolveConfiguredProvider } from './resolve-item-provider.ts';
+
+type Input = {
+  push_remote_url: string;
+  source_branch: string;
+  target_branch: string;
+  plan_name: string;
+  item_id?: string;
+};
+
+function repository(remote: string, provider: 'github' | 'gitlab') {
+  let host: string;
+  let pathname: string;
+  const ssh = /^git@([^:]+):(.+)$/.exec(remote);
+  if (ssh) {
+    host = ssh[1]!;
+    pathname = ssh[2]!;
+  } else {
+    const url = new URL(remote);
+    if (!['https:', 'ssh:'].includes(url.protocol) || url.search || url.hash ||
+        (url.protocol === 'ssh:' && url.username !== 'git')) {
+      throw new Error('Unsupported push remote.');
+    }
+    host = url.host;
+    pathname = url.pathname.replace(/^\//, '');
+  }
+
+  const parts = pathname.replace(/\.git$/, '').split('/').map(decodeURIComponent);
+  if (!host || parts.some(part => !part || part === '.' || part === '..' || /[?#\\]/.test(part)) ||
+      parts.length < 2 || (provider === 'github' && parts.length !== 2)) {
+    throw new Error('Push remote does not identify one repository.');
+  }
+
+  if (provider === 'github') {
+    return { host, owner: parts[0]!, repo: parts[1]! };
+  }
+  return { host, path: parts.join('/'), url: `https://${host}/${parts.map(encodeURIComponent).join('/')}` };
+}
+
+try {
+  const parent = dirname(import.meta.dirname);
+  let root = parent;
+  if (basename(parent) === '.agents') {
+    root = dirname(parent);
+  }
+  process.chdir(root);
+  const data = JSON.parse(readFileSync(0, 'utf8')) as Input;
+  const provider = resolveConfiguredProvider(join(root, 'agent-workflows.yaml'), 'version') as 'github' | 'gitlab';
+  const remote = data.push_remote_url;
+  const source = data.source_branch;
+  const target = data.target_branch;
+  const name = data.plan_name;
+  let title = name;
+  if (data.item_id) {
+    title = `${data.item_id}: ${name}`;
+  }
+  const adapter = await import(`../providers/${provider}/create-request.ts`);
+  const request = adapter.createRequest({
+    repository: repository(remote, provider),
+    source_branch: source,
+    target_branch: target,
+    title,
+  });
+  process.stdout.write(`${JSON.stringify({ status: 'created', request })}\n`);
+} catch (error) {
+  const failure = error as Error & { created_url?: string; request_id?: number };
+  let reason = String(error);
+  if (error instanceof Error) {
+    reason = error.message;
+  }
+  const output: Record<string, unknown> = {
+    status: 'failed',
+    stage: 'create_request',
+    reason,
+  };
+  if (failure.created_url) {
+    output.created_url = failure.created_url;
+    output.request_id = failure.request_id;
+  }
+  process.stdout.write(`${JSON.stringify(output)}\n`);
+  process.exitCode = 1;
+}
