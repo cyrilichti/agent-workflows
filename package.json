@@ -15,8 +15,10 @@
     "doc": "astro dev"
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "7.2.1",
     "@astrojs/starlight": "^0.41.3",
     "astro": "^7.0.9",
+    "rehype-raw": "^7.0.0",
     "sharp": "^0.34.5",
     "starlight-theme-black": "^0.7.0"
   }

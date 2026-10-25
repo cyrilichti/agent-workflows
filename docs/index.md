@@ -48,7 +48,7 @@ hero:
             <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>Who needs to search, and what should they be able to find? That will help us define success.</p></div>
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
               <li><span>Workflow</span><p><a class="workflow-demo__workflow" href="/agent-workflows/workflows/write/">/write</a> guides the ticket conversation.</p></li>
-              <li><span>Skill</span><p>One best fit at a time: <span class="workflow-demo__skill-list"><a class="workflow-demo__skill workflow-demo__skill--active" href="https://github.com/addyosmani/agent-skills/tree/main/skills/idea-refine">idea-refine</a><a class="workflow-demo__skill" href="https://github.com/addyosmani/agent-skills/tree/main/skills/interview-me">interview-me</a><a class="workflow-demo__skill" href="https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling">grilling</a><a class="workflow-demo__skill" href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec">to-spec</a></span></p></li>
+              <li><span>Skill</span><p>One best fit at a time: <span class="workflow-demo__skill-list"><a class="workflow-demo__skill workflow-demo__skill--active" href="https://github.com/addyosmani/agent-skills/tree/main/skills/idea-refine" target="_blank" rel="noopener noreferrer">idea-refine</a><a class="workflow-demo__skill" href="https://github.com/addyosmani/agent-skills/tree/main/skills/interview-me" target="_blank" rel="noopener noreferrer">interview-me</a><a class="workflow-demo__skill" href="https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling" target="_blank" rel="noopener noreferrer">grilling</a><a class="workflow-demo__skill" href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-spec" target="_blank" rel="noopener noreferrer">to-spec</a></span></p></li>
             </ul></div>
           </article>
           <article class="workflow-demo__scene" data-demo-scene>
@@ -58,7 +58,7 @@ hero:
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
               <li><span>Integration</span><p>Linear receives the approved ticket.</p></li>
               <li><span>Workflow</span><p><a class="workflow-demo__workflow" href="/agent-workflows/workflows/plan/">/plan</a> turns it into verifiable steps.</p></li>
-              <li><span>Skill</span><p><a class="workflow-demo__skill workflow-demo__skill--active" href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown">planning-and-task-breakdown</a> orders the work.</p></li>
+              <li><span>Skill</span><p><a class="workflow-demo__skill workflow-demo__skill--active" href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown" target="_blank" rel="noopener noreferrer">planning-and-task-breakdown</a> orders the work.</p></li>
               <li><span>Validation</span><p>Execution waits for your approval.</p></li>
             </ul></div>
           </article>

@@ -1,11 +1,28 @@
 import starlight from '@astrojs/starlight'
+import { unified } from '@astrojs/markdown-remark'
 import { defineConfig } from 'astro/config'
+import rehypeRaw from 'rehype-raw'
 import starlightThemeBlack from 'starlight-theme-black'
+import externalLinks from './docs/plugins/external-links.ts'
+
+const site = 'https://cyrilichti.github.io'
 
 export default defineConfig({
-  site: 'https://cyrilichti.github.io',
+  site,
   base: '/agent-workflows',
   srcDir: './docs',
+  // MDX inherits this processor: https://docs.astro.build/en/guides/markdown-content/
+  markdown: {
+    processor: unified({
+      rehypePlugins: [
+        [rehypeRaw, { passThrough: [
+          'mdxJsxFlowElement', 'mdxJsxTextElement',
+          'mdxFlowExpression', 'mdxTextExpression', 'mdxjsEsm',
+        ] }],
+        [externalLinks, { site }],
+      ],
+    }),
+  },
   integrations: [
     starlight({
       title: 'Agent Workflows',
