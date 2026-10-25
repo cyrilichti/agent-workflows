@@ -9,6 +9,8 @@ function normalize(status: NativeStatus): ItemStatus {
   let category: ItemStatus['category'] = 'other';
   if (type === 'completed') {
     category = 'completed';
+  } else if (/\breview\b/i.test(status.name)) {
+    category = 'review';
   } else if (type === 'started') {
     category = 'active';
   }
@@ -47,6 +49,6 @@ export function readStatuses(itemId: string, officialItem?: Record<string, unkno
 }
 
 export function applyStatus(itemId: string, target: ItemStatus): ItemStatus {
-  execFileSync('linear', ['issue', 'update', itemId, '--state', target.id, '--no-input']);
+  execFileSync('linear', ['issue', 'update', itemId, '--state', target.name, '--no-input']);
   return target;
 }

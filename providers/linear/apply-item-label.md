@@ -28,13 +28,13 @@ mutation CreateLabel($name: String!) {
 GRAPHQL
 ```
 
-Require `success: true` and use the returned label ID. The mutation omits
+Require `success: true`. The mutation omits
 `teamId`, so the new label belongs to the workspace.
 
 Apply the resolved or created label without replacing existing labels:
 
 ```text
-linear issue update <item ID or identifier> --add-label <resolved label ID> --no-input
+linear issue update <item ID or identifier> --add-label <supplied label name> --no-input
 ```
 
 Return `applied: true` only after a successful issue update. Return

@@ -43,14 +43,16 @@ if (program === 'clickup-cli') {
     const updated = existsSync(join(process.env.TEST_ROOT, 'linear-updated'));
     output({ data: { issue: {
       state: updated
-        ? { id: 'active', name: 'En cours', type: 'started' }
+        ? { id: 'active', name: 'In Progress', type: 'started' }
         : { id: 'todo', name: 'À faire', type: 'unstarted' },
       team: { id: 'team-1', key: 'TEAM' },
     } } });
   } else if (args[0] === 'team' && args[1] === 'states') {
     output([
       { id: 'todo', name: 'À faire', type: 'unstarted' },
-      { id: 'active', name: 'En cours', type: 'started' },
+      { id: 'active', name: 'In Progress', type: 'started' },
+      { id: 'review', name: 'In Review', type: 'started' },
+      { id: 'development', name: 'Development', type: 'started' },
     ]);
   } else if (args[0] === 'issue' && args[1] === 'update') {
     writeFileSync(join(process.env.TEST_ROOT, 'linear-updated'), '');
@@ -157,14 +159,14 @@ test('ClickUp transition uses native status type and stops before mutation on am
   }
 });
 
-test('Linear transition uses native started type', () => {
+test('Linear transition selects In Progress and passes its name to the CLI', () => {
   const f = fixture('linear', 'gitlab');
   try {
     const result = f.run('transition-item-status.ts', { item_id: 'ITEM-1' });
     assert.equal(result.status, 0, result.stdout);
     assert.equal(JSON.parse(result.stdout).resulting_status.id, 'active');
     assert.deepEqual(f.calls().find(call => call.args[1] === 'update')?.args,
-      ['issue', 'update', 'ITEM-1', '--state', 'active', '--no-input']);
+      ['issue', 'update', 'ITEM-1', '--state', 'In Progress', '--no-input']);
   } finally {
     f.cleanup();
   }
