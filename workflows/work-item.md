@@ -15,7 +15,7 @@
 
 ## Steps
 
-### 1. Follow the Work Mode
+### 1. Start or Resume Work
 
 Follow exactly one case according to `work_mode`.
 
@@ -55,28 +55,59 @@ record the returned `branch` and `request` in `Delivery Context`.
 
 ### 2. Execute the Plan
 
-Follow `./work-execute.md` with:
+#### Persist Corrective Todos
+
+When the delivery context contains `source_findings`, translate each finding
+through `../templates/corrective-todo.md` and append it to the authoritative
+plan. Persist the plan before clearing the carried findings. Only `/work`
+translates findings into corrective todos.
+
+#### Execute Todos
+
+Treat the state symbols in the plan's numbered `## Steps` as authoritative.
+Skip `completed` and `cancelled`, then select the first `in_progress` todo or
+mark the first `pending` todo `in_progress`. When neither exists, continue to
+the Ready handoff below.
+
+Persist every state transition immediately by changing that step's symbol in
+the authoritative plan file according to `../templates/plan.md`. Do not keep
+todo state only in execution context.
+
+For each active todo:
+
+1. Require a clean worktree and index before implementation.
+2. Reuse the active specialist while it remains appropriate. When none is
+   active or the todo requires a different agent cohort, follow
+   `./specialist.md` with:
+
+   ```text
+   task_context:
+     todo: active todo
+     constraints: relevant plan constraints
+     technical_context: required technical context
+   ```
+
+   Let the selected specialist route only Skills whose profile triggers apply,
+   or work directly when none apply.
+3. Have the specialist implement and validate only that todo, then stage only
+   its changes.
+4. When the index has no staged tracked change, persist the todo as `completed`
+   without a commit and continue.
+5. Otherwise, create one non-empty Conventional Commit without trailers and
+   without asking for confirmation. After success, persist the todo as
+   `completed`. Push each non-empty todo commit normally to the current branch
+   upstream, then continue.
+
+#### Continue to Ready
+
+When all todos are `cancelled`, report that no work was completed and stop
+without calling `/ready`. Require at least one `completed` todo.
+
+Follow `./ready.md` in caller mode without another choice or confirmation:
 
 ```text
 plan: authoritative plan
 item: complete official item context
-request: created request record, when available
-delivery_context: current autonomous delivery context
+request_id: current request ID
+delivery_context: current delivery context
 ```
-
----
-
-
-
-## Safety
-
-During `new` initialization:
-
-- Do not create or select another worktree, including as a fallback for local
-changes, a checked-out base branch, or a failed switch or pull.
-- Do not stash, reset, clean, or force a branch switch.
-- Do not fetch separately, merge, rebase, or use another pull mode.
-- Do not run a general repository, provider, MCP capability, or backlink
-preflight.
-- Link only the newly created request.
-- Do not persist Git, provider, or request metadata in the plan.
