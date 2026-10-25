@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { resolveConfiguredProvider } from './resolve-item-provider.ts';
+import { resolveVersionRepository } from './resolve-version-repository.ts';
 
 type Input = {
   push_remote_url: string;
@@ -9,26 +10,6 @@ type Input = {
   plan_name: string;
   item_id?: string;
 };
-
-function repository(remote: string, provider: 'github' | 'gitlab') {
-  let host: string;
-  let pathname: string;
-  const ssh = /^git@([^:]+):(.+)$/.exec(remote);
-  if (ssh) {
-    host = ssh[1]!;
-    pathname = ssh[2]!;
-  } else {
-    const url = new URL(remote);
-    host = url.host;
-    pathname = url.pathname.replace(/^\//, '');
-  }
-
-  const parts = pathname.replace(/\.git$/, '').split('/').map(decodeURIComponent);
-  if (provider === 'github') {
-    return { host, owner: parts[0]!, repo: parts[1]! };
-  }
-  return { host, path: parts.join('/'), url: `https://${host}/${parts.map(encodeURIComponent).join('/')}` };
-}
 
 try {
   const parent = dirname(import.meta.dirname);
@@ -49,7 +30,7 @@ try {
   }
   const adapter = await import(`../providers/${provider}/create-request.ts`);
   const request = adapter.createRequest({
-    repository: repository(remote, provider),
+    repository: resolveVersionRepository(remote, provider),
     source_branch: source,
     target_branch: target,
     title,

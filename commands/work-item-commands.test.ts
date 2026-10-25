@@ -94,7 +94,8 @@ function fixture(itemProvider: 'clickup' | 'linear', versionProvider: 'github' |
   const bin = join(root, 'bin');
   mkdirSync(bin);
   mkdirSync(join(root, 'commands'));
-  for (const name of ['resolve-item-provider', 'transition-item-status', 'create-request', 'link-request-to-item']) {
+  for (const name of ['resolve-item-provider', 'resolve-version-repository',
+    'transition-item-status', 'create-request', 'link-request-to-item']) {
     copyFileSync(resolve(`commands/${name}.ts`), join(root, 'commands', `${name}.ts`));
   }
   const adapterFiles: Array<[string, string]> = [

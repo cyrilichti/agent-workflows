@@ -67,12 +67,12 @@ if (name === 'transition-item-status.ts') {
 `;
 
 function fixture() {
-  const root = mkdtempSync(join(tmpdir(), 'init-work-'));
+  const root = mkdtempSync(join(tmpdir(), 'work-new-'));
   const commands = join(root, 'commands');
   const bin = join(root, 'bin');
   mkdirSync(commands);
   mkdirSync(bin);
-  copyFileSync(resolve('commands/init-work.ts'), join(commands, 'init-work.ts'));
+  copyFileSync(resolve('commands/work-new.ts'), join(commands, 'work-new.ts'));
   for (const name of ['transition-item-status', 'create-request', 'link-request-to-item']) {
     writeFileSync(join(commands, `${name}.ts`), childCommand);
   }
@@ -82,7 +82,7 @@ function fixture() {
     root,
     run(extraEnv: Record<string, string> = {}) {
       return spawnSync(process.execPath, [
-        join(commands, 'init-work.ts'),
+        join(commands, 'work-new.ts'),
         'ITEM-1', 'Réparer le plan', 'Fix a bug', 'plans/plan.md',
       ], { cwd: root, env: { ...env, ...extraEnv }, encoding: 'utf8' });
     },
@@ -104,7 +104,7 @@ function fixture() {
   };
 }
 
-test('init-work performs one transition, branch setup, request creation, and backlink', () => {
+test('work-new performs one transition, branch setup, request creation, and backlink', () => {
   const f = fixture();
   try {
     const result = f.run();
@@ -133,7 +133,7 @@ test('init-work performs one transition, branch setup, request creation, and bac
   }
 });
 
-test('init-work stops before Git when status transition is ambiguous', () => {
+test('work-new stops before Git when status transition is ambiguous', () => {
   const f = fixture();
   try {
     const result = f.run({ TEST_TRANSITION_FAILURE: '1' });
@@ -146,7 +146,7 @@ test('init-work stops before Git when status transition is ambiguous', () => {
   }
 });
 
-test('init-work stops before branch creation when the base remains dirty', () => {
+test('work-new stops before branch creation when the base remains dirty', () => {
   const f = fixture();
   try {
     const result = f.run({ TEST_DIRTY: '1' });
