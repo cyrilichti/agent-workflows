@@ -1,8 +1,8 @@
 ---
-import Default from '@astrojs/starlight/components/MarkdownContent.astro'
+import Default from '@astrojs/starlight/components/PageFrame.astro'
 import { ELEMENT_NODE, transform, walkSync } from 'ultrahtml'
 
-// Transform the rendered slot so Markdown, MDX, and component links share one rule.
+// Transform the rendered slot so Markdown, MDX, hero, and component links share one rule.
 // https://starlight.astro.build/guides/overriding-components/#reuse-a-built-in-component
 const content = await transform(await Astro.slots.render('default'), [
   (tree) => {
@@ -23,4 +23,8 @@ const content = await transform(await Astro.slots.render('default'), [
 ])
 ---
 
-<Default><Fragment set:html={content} /></Default>
+<Default>
+  <slot name="header" slot="header" />
+  <slot name="sidebar" slot="sidebar" />
+  <Fragment set:html={content} />
+</Default>

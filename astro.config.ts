@@ -19,7 +19,7 @@ export default defineConfig({
         'Move from work item to merged request with workflows that select the right skills, keep mutations explicit, and synchronize your providers.',
       customCss: ['./docs/styles/custom.css'],
       components: {
-        MarkdownContent: './docs/components/MarkdownContent.astro',
+        PageFrame: './docs/components/PageFrame.astro',
       },
       editLink: {
         baseUrl:
