@@ -55,7 +55,7 @@ exact request.
 
 ### 6. Follow Shared Execution
 
-Follow `./work-confirm.md` with:
+Follow `./work-item.md` with:
 
 ```text
 plan: selected plan
