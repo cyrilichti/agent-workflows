@@ -42,6 +42,13 @@ export default defineConfig({
               label: 'Orchestration',
               link: '/orchestration/',
             },
+            {
+              label: '☆ Star on GitHub',
+              link: 'https://github.com/cyrilichti/agent-workflows',
+              attrs: {
+                'aria-label': 'Star on GitHub (opens in a new tab)',
+              },
+            },
           ],
         }),
       ],
