@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { basename, join, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import test from 'node:test';
 
 const fakeCli = `#!/usr/bin/env node
@@ -97,11 +97,12 @@ function fixture(itemProvider: 'clickup' | 'linear', versionProvider: 'github' |
   for (const name of ['resolve-item-provider', 'transition-item-status', 'create-request', 'link-request-to-item']) {
     copyFileSync(resolve(`commands/${name}.ts`), join(root, 'commands', `${name}.ts`));
   }
-  for (const [provider, name] of [
+  const adapterFiles: Array<[string, string]> = [
     ['clickup', 'transition-item-status'], ['linear', 'transition-item-status'],
     ['clickup', 'add-request-backlink'], ['linear', 'add-request-backlink'],
     ['github', 'create-request'], ['gitlab', 'create-request'],
-  ]) {
+  ];
+  for (const [provider, name] of adapterFiles) {
     const directory = join(root, 'providers', provider);
     mkdirSync(directory, { recursive: true });
     copyFileSync(resolve(`providers/${provider}/${name}.ts`), join(directory, `${name}.ts`));

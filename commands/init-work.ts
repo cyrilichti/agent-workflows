@@ -84,8 +84,12 @@ function command(name: string, input: Record<string, unknown>): CommandResult {
   if (result.status !== 0 || output.status === 'failed') {
     const error = new Error(output.reason || result.stderr.trim() || `${name} failed.`) as CommandError;
     error.stage = output.stage || stage;
-    error.created_url = output.created_url;
-    error.request_id = output.request_id;
+    if (output.created_url !== undefined) {
+      error.created_url = output.created_url;
+    }
+    if (output.request_id !== undefined) {
+      error.request_id = output.request_id;
+    }
     throw error;
   }
   return output;
