@@ -21,13 +21,9 @@ try {
   const itemId = data.item_id;
   const url = data.request_url;
   const plan = data.plan_reference;
-  let prefix: string;
+  let prefix = 'Draft MR';
   if (data.request_kind === 'pull_request') {
     prefix = 'Draft PR';
-  } else if (data.request_kind === 'merge_request') {
-    prefix = 'Draft MR';
-  } else {
-    throw new Error('Unsupported request_kind.');
   }
   const comment = `${prefix}: ${url}\n\nAgent-Workflows-Plan: ${plan}`;
   const adapter = await import(`../providers/${provider}/add-request-backlink.ts`);
