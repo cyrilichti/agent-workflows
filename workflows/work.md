@@ -11,27 +11,21 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 
 ---
 
-## Input
+## Delivery Context
 
-| Entry | Input |
-| --- | --- |
-| `/pick` | `plan`: approved plan; `item`: complete official item context |
-| `/ready` or `/inspect` | `delivery-context`: conforming `Delivery Context` with `branch` and `request` |
-| Standalone `/work` | No caller handoff required |
-
-Stop before routing when a required input for the caller handoff is missing or
-incomplete.
+For a return from `/ready` or `/inspect`, require a conforming delivery context
+before routing; otherwise stop.
 
 ---
 
 ## Work Mode
 
-Set `work_mode` from the caller handoff:
+Set `work_mode` from the caller:
 
-| Handoff | `work_mode` |
+| Caller | `work_mode` |
 | --- | --- |
-| `plan` and `item` | `new` |
-| `delivery-context` | `resumed` |
+| `/pick` | `new` |
+| `/ready` or `/inspect` | `resumed` |
 
 ---
 
@@ -41,7 +35,7 @@ Select exactly one branch:
 
 | Situation | Workflow |
 | --- | --- |
-| Caller supplies `plan` and `item`, or `delivery-context` | `./work-item.md` |
+| Caller supplies an approved plan and its complete official item context | `./work-item.md` |
 | No caller handoff | `./work-standalone.md` |
 
 Both branches create or preserve a `Delivery Context`.

@@ -1,105 +1,19 @@
 # Work Item Branch
 
-## Input
-
-
-| Input              | Requirement            |
-| ------------------ | ---------------------- |
-| `work_mode`        | Required               |
-| `plan`             | Required for `new`     |
-| `item`             | Required for `new`     |
-| `delivery-context` | Required for `resumed` |
-
-
----
-
 ## Steps
 
-### 1. Start or Resume Work
+### 1. Preserve Context
 
-Follow the `work_mode` case.
+Preserve the supplied plan and complete official item context unchanged. Do
+not rediscover, rewrite, or approve the plan and do not reread the item.
 
-#### `new`
+### 2. Follow Shared Execution
 
-Run from this file's directory with the project-relative plan path:
-
-```sh
-node ../commands/work-new.ts "<item ID>" "<plan name>" "<plan objective>" "<plan path>"
-```
-
-On failure, report `stage`, `reason`, and completed identities; stop. On
-success, set the carried item's status to `resulting_status` and create or
-update `Delivery Context` with the plan path, item, `branch`, and `request`.
-
-#### `resumed`
-
-Pass the item ID, `delivery-context.request.request_id`, and
-`delivery-context.branch`. Stop if either context value is missing.
-
-Run from this file's directory:
-
-```sh
-node ../commands/work-resume.ts "<item ID>" "<request ID>" "<branch>"
-```
-
-On failure, report `stage`, `reason`, and completed identities; stop. On
-success, set the carried item's status to `resulting_status` and record the
-returned `branch` and `request` in `Delivery Context`.
-
-### 2. Execute the Plan
-
-#### Select the Next Todo
-
-Add an actionable `todo` to each `source_findings` record. Run from this file's
-directory, replacing `[]` with those records as JSON when present:
-
-```sh
-node ../commands/work-next-todo.ts "<plan path>" <<'JSON'
-[]
-JSON
-```
-
-If the command fails, report its `stage` and `reason`, then stop. On success,
-clear `source_findings`.
-
-#### Execute Each Todo
-
-For each returned `todo`:
-
-1. Reuse the active specialist while appropriate. Otherwise follow
-   `./specialist.md` with:
-
-   ```text
-   task_context: todo returned by work-next-todo.ts or work-complete-todo.ts
-   ```
-
-2. Implement and validate only that todo, then stage only its changes.
-3. Run one command from this file's directory:
-
-   With staged changes:
-
-   ```sh
-   node ../commands/work-complete-todo.ts "<plan path>" "<todo number>" "<Conventional Commit message>"
-   ```
-
-   Without staged changes:
-
-   ```sh
-   node ../commands/work-complete-todo.ts "<plan path>" "<todo number>"
-   ```
-
-On `todo`, repeat. On `ready` or `cancelled`, go to Step 3. On `failed`, report
-the command result and stop.
-
-### 3. Continue to Ready
-
-On `status: cancelled`, report no work and stop. When the command returns
-`status: ready`, follow `./ready.md` in caller mode:
+Follow `./work-confirm.md` with:
 
 ```text
-plan: authoritative plan
+plan: approved plan
 item: complete official item context
-request_id: current request ID
-delivery_context: current delivery context
+delivery_context: supplied delivery context, when available
+work_mode: work mode supplied by `/work`
 ```
-

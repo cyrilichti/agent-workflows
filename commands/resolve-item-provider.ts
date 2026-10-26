@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-export function resolveConfiguredProvider(configPath: string, kind: 'item' | 'version'): string | undefined {
+export function resolveItemProvider(configPath: string): string | undefined {
   const lines = readFileSync(configPath, 'utf8').split(/\r?\n/);
   const parents: Array<{ indent: number; key: string }> = [];
 
@@ -18,7 +18,7 @@ export function resolveConfiguredProvider(configPath: string, kind: 'item' | 've
       parents.pop();
     }
     const path = [...parents.map(parent => parent.key), key].join('.');
-    if (path === `mcp.${kind}.provider`) {
+    if (path === 'mcp.item.provider') {
       const scalar = (match[3] ?? '').replace(/\s+#.*$/, '').trim();
       return scalar.replace(/^(?:'([^']*)'|"([^"]*)")$/, (_value, single, double) => single ?? double);
     }
@@ -27,8 +27,4 @@ export function resolveConfiguredProvider(configPath: string, kind: 'item' | 've
     }
   }
   return undefined;
-}
-
-export function resolveItemProvider(configPath: string): string | undefined {
-  return resolveConfiguredProvider(configPath, 'item');
 }
