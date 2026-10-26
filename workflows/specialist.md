@@ -1,56 +1,52 @@
 # Specialist
 
-## Purpose
+Use the caller's existing `task_context` without reshaping it.
 
-Route and activate one specialized profile for an activity.
+1. Keep the active profile when it fits. Otherwise, use the profile requested
+   by the caller or select the most specific match below. If none fits, return
+   without activation; the caller continues the task. Ask only when the choice
+   remains ambiguous.
+2. For a new selection, read only `../agents/<profile>.md` completely and apply
+   it in the current conversation. Do not scan other profiles.
+3. Announce a new activation once, then return to the caller:
 
----
+   ```markdown
+   > **<Readable profile name>** — <brief reason tied to the task>
+   ```
 
-## Input
-
-- `task_context`: context already available to the caller for the activity, in
-  its existing shape. Do not require the caller to collect or reshape context
-  for this workflow.
-
----
-
-## Steps
-
-### 1. Select Profile
-
-Keep the active profile when appropriate. Otherwise, load
-`../data/agent-routing.md` and determine whether `task_context` maps to one of
-its themes. When no theme matches, end this workflow silently without choosing
-a placement, activating a profile, or reporting an activation. When a theme
-matches, select its most-specific profile.
-
-Re-evaluate this selection when the activity changes enough to make the active
-profile potentially unsuitable.
-
-Ask the user when either choice is ambiguous. Do not scan agent profiles for
-routing.
-
-### 2. Choose Placement
-
-Apply the profile in the current agent when its output or interaction is
-relevant to the main conversation.
-
-Use a separate thread only when the complete output does not need to appear in
-the main conversation and the caller can consume or restate the useful result.
-
-### 3. Activate Profile
-
-In the selected placement, read the full `../agents/<agent-name>.md` profile
-and apply it to `task_context`. Do not rely on frontmatter or partial content.
-
-### 4. Report Activation
-
-After activating the profile, report using
-`../templates/specialist-activation.md` with:
-
-```text
-name: readable activated profile name
-reason: short reason related to task_context
-```
-
-End this workflow after reporting the activation.
+| Task | Profile |
+| --- | --- |
+| Draft or reformulate one item | `item-writer` |
+| Evaluate value, strategy, investment, or roadmap order | `product-manager` |
+| Define deliverable scope or acceptance decisions | `product-owner` |
+| Write technical documentation or guidance | `technical-writer` |
+| Cover technical or content SEO | `seo-specialist` |
+| Design journeys, interactions, navigation, or usability | `ux-designer` |
+| Define visual direction, components, or design systems | `ui-designer` |
+| Audit accessibility | `accessibility-specialist` |
+| Design system architecture or rollout paths | `solution-architect` |
+| Review changes for defects or regressions | `reviewer` |
+| Assess security threats or hardening | `security-engineer` |
+| Diagnose performance or resource use | `performance-engineer` |
+| Implement generic backend work | `backend-developer` |
+| Implement generic frontend work | `frontend-developer` |
+| Deliver a frontend-backend vertical slice | `fullstack-developer` |
+| Implement mobile work | `mobile-developer` |
+| Improve CLIs, SDKs, generators, or local tooling | `developer-experience-engineer` |
+| Implement Laravel backend work | `laravel-developer` |
+| Implement Symfony backend work | `symfony-developer` |
+| Implement NestJS services or applications | `nestjs-developer` |
+| Implement general Python work | `python-developer` |
+| Implement FastAPI services or applications | `fastapi-developer` |
+| Implement React frontend work | `react-developer` |
+| Implement Vue frontend work | `vue-developer` |
+| Explore data, KPIs, or trends | `data-analyst` |
+| Build analyses, models, experiments, or data pipelines | `data-scientist` |
+| Design database schemas, queries, or migrations | `database-engineer` |
+| Build ML training, serving, or monitoring | `ml-engineer` |
+| Build LLM or agent features and evaluations | `ai-engineer` |
+| Define validation strategy or test coverage | `qa-engineer` |
+| Reproduce failures and isolate root causes | `debugger` |
+| Design or implement cloud infrastructure | `cloud-engineer` |
+| Build CI/CD, release, container, or deployment automation | `devops-engineer` |
+| Improve SLOs, observability, resilience, or incident response | `sre` |
