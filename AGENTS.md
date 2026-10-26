@@ -28,12 +28,9 @@
    ```
 
 3. When one route remains, read its workflow file completely and follow it.
-4. When no route matches, select a profile from the table in
-   `workflows/specialist.md`. If none fits, continue without a specialist.
-   Otherwise, follow `workflows/specialist.md` with:
+4. When no route matches, follow `workflows/specialist.md` with:
 
    ```text
-   profile: selected profile
    task_context: available request context
    ```
 

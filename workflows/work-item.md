@@ -66,11 +66,10 @@ clear `source_findings`.
 
 For each returned `todo`:
 
-1. Select a profile for the todo from the table in `./specialist.md`. If it is
-   not already active, follow `./specialist.md` with:
+1. Reuse the active specialist while appropriate. Otherwise follow
+   `./specialist.md` with:
 
    ```text
-   profile: selected profile
    task_context: todo returned by work-next-todo.ts or work-complete-todo.ts
    ```
 

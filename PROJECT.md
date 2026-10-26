@@ -6,7 +6,7 @@ Agent Workflows gives coding agents a structured path from an initial request to
 
 This repository is the source of an installable context bundle. Its `agents/`, `commands/`, `goals/`, `providers/`, `rules/`, `skills/`, `templates/`, and `workflows/` directories become managed content under `.agents/` in a consuming project. The consuming project's root `AGENTS.md` routes requests to the appropriate workflow.
 
-The routing table maps a request to one matching workflow. For example, writing one item routes to `/write`, selecting an item for delivery routes to `/pick`, and reviewing a request routes to `/inspect`. When no route matches, the caller chooses a profile from the task table in `workflows/specialist.md`, which activates that profile from `agents/`. An unmatched activity proceeds without a specialist profile.
+The routing table maps a request to one matching workflow. For example, writing one item routes to `/write`, selecting an item for delivery routes to `/pick`, and reviewing a request routes to `/inspect`. The task table and activation format for specialist profiles from `agents/` are embedded in `workflows/specialist.md`.
 
 Profiles define a role and conditionally load the skills useful for that activity. A technical writer can load `technical-writing` for documentation, while an AI engineer has different skill triggers. The profile does not load every listed skill for every task. Native skills such as `/write`, `/pick`, and `/work` also provide direct entry points: each reads its corresponding workflow file. Thus a request can reach a workflow through `AGENTS.md` routing or through an explicitly invoked skill.
 

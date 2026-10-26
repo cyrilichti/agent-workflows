@@ -11,10 +11,9 @@ Run with a resolved provider, complete official parent item, and preserved
 
 ### 1. Draft the Decomposition
 
-Select one profile from the table in `./specialist.md`, then follow it with:
+Follow `./specialist.md` with:
 
 ```text
-profile: selected profile
 task_context:
   parent_item: complete official parent item
   needs_refinement_findings: preserved refinement findings
