@@ -2,9 +2,9 @@
 
 ## Input
 
-| Entry | Input |
+| Input | Description |
 | --- | --- |
-| Any caller | `task_context`: available activity context, passed unchanged |
+| `task_context` | Available activity context, passed unchanged. |
 
 ## Routing
 
