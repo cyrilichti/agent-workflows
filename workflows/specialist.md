@@ -2,57 +2,68 @@
 
 ## Input
 
-| Input | Requirement |
-| --- | --- |
-| `task_context` | Existing activity context; do not reshape it. |
+- `task_context`: activity context already available to the caller. Pass it
+  unchanged.
 
 ## Routing
 
-Select the most specific profile matching `task_context` from the table below.
-If none matches, return without activation. Do not ask the user.
+Select one theme from `task_context`, then its most-specific agent from the
+following table. If no theme matches, end without activation or a report. Do
+not scan agent profiles to choose one.
 
-| Task | Profile |
-| --- | --- |
-| Draft or reformulate one item | `item-writer` |
-| Evaluate value, strategy, investment, or roadmap order | `product-manager` |
-| Define deliverable scope or acceptance decisions | `product-owner` |
-| Write technical documentation or guidance | `technical-writer` |
-| Cover technical or content SEO | `seo-specialist` |
-| Design journeys, interactions, navigation, or usability | `ux-designer` |
-| Define visual direction, components, or design systems | `ui-designer` |
-| Audit accessibility | `accessibility-specialist` |
-| Design system architecture or rollout paths | `solution-architect` |
-| Review changes for defects or regressions | `reviewer` |
-| Assess security threats or hardening | `security-engineer` |
-| Diagnose performance or resource use | `performance-engineer` |
-| Implement generic backend work | `backend-developer` |
-| Implement generic frontend work | `frontend-developer` |
-| Deliver a frontend-backend vertical slice | `fullstack-developer` |
-| Implement mobile work | `mobile-developer` |
-| Improve CLIs, SDKs, generators, or local tooling | `developer-experience-engineer` |
-| Implement Laravel backend work | `laravel-developer` |
-| Implement Symfony backend work | `symfony-developer` |
-| Implement NestJS services or applications | `nestjs-developer` |
-| Implement general Python work | `python-developer` |
-| Implement FastAPI services or applications | `fastapi-developer` |
-| Implement React frontend work | `react-developer` |
-| Implement Vue frontend work | `vue-developer` |
-| Explore data, KPIs, or trends | `data-analyst` |
-| Build analyses, models, experiments, or data pipelines | `data-scientist` |
-| Design database schemas, queries, or migrations | `database-engineer` |
-| Build ML training, serving, or monitoring | `ml-engineer` |
-| Build LLM or agent features and evaluations | `ai-engineer` |
-| Define validation strategy or test coverage | `qa-engineer` |
-| Reproduce failures and isolate root causes | `debugger` |
-| Design or implement cloud infrastructure | `cloud-engineer` |
-| Build CI/CD, release, container, or deployment automation | `devops-engineer` |
-| Improve SLOs, observability, resilience, or incident response | `sre` |
+| Theme | Agent | Use for |
+| --- | --- | --- |
+| Product and content | `item-writer` | Draft or reformulate one provider-neutral item. |
+| Product and content | `product-manager` | Evaluate value, strategy, investment, and roadmap order. |
+| Product and content | `product-owner` | Define deliverable scope and acceptance decisions. |
+| Product and content | `technical-writer` | Produce technical documentation and guidance. |
+| Product and content | `seo-specialist` | Cover technical and content SEO direction. |
+| Design and accessibility | `ux-designer` | Design journeys, interactions, navigation, and usability. |
+| Design and accessibility | `ui-designer` | Define visual direction, components, and design systems. |
+| Design and accessibility | `accessibility-specialist` | Audit semantics, keyboard use, assistive technology, and visual accessibility. |
+| Architecture and assurance | `solution-architect` | Design system architecture and rollout paths. |
+| Architecture and assurance | `reviewer` | Review changes for defects, regressions, and convention drift. |
+| Architecture and assurance | `security-engineer` | Assess threats, authorization, exposure, and hardening. |
+| Architecture and assurance | `performance-engineer` | Diagnose latency, throughput, scalability, and resource use. |
+| Application delivery | `backend-developer` | Implement generic backend work when no specialist fits. |
+| Application delivery | `frontend-developer` | Implement generic frontend work when no specialist fits. |
+| Application delivery | `fullstack-developer` | Deliver one atomic frontend-backend vertical slice. |
+| Application delivery | `mobile-developer` | Implement generic mobile work when no specialist fits. |
+| Application delivery | `developer-experience-engineer` | Improve CLIs, SDKs, generators, and local tooling. |
+| Specialized delivery | `laravel-developer` | Implement Laravel backend work. |
+| Specialized delivery | `symfony-developer` | Implement Symfony backend work. |
+| Specialized delivery | `nestjs-developer` | Implement NestJS services and applications. |
+| Specialized delivery | `python-developer` | Implement general Python work when no framework specialist fits. |
+| Specialized delivery | `fastapi-developer` | Implement FastAPI services and applications. |
+| Specialized delivery | `react-developer` | Implement React frontend work. |
+| Specialized delivery | `vue-developer` | Implement Vue frontend work. |
+| Data and AI | `data-analyst` | Explore data, define KPIs, and identify trends. |
+| Data and AI | `data-scientist` | Build advanced analyses, models, experiments, and data pipelines. |
+| Data and AI | `database-engineer` | Design schemas, queries, migrations, and integrity. |
+| Data and AI | `ml-engineer` | Build training, serving, monitoring, and model lifecycle. |
+| Data and AI | `ai-engineer` | Build LLM and agent features, retrieval, evaluations, and guardrails. |
+| Quality and diagnosis | `qa-engineer` | Define validation strategy and test coverage. |
+| Quality and diagnosis | `debugger` | Reproduce failures, test hypotheses, and isolate root causes. |
+| Operations | `cloud-engineer` | Design and implement cloud infrastructure. |
+| Operations | `devops-engineer` | Build CI/CD, release, container, and deployment automation. |
+| Operations | `sre` | Improve SLOs, observability, resilience, and incident response. |
+
+## Placement
+
+Apply the profile in the current agent when its output or interaction is
+relevant to the main conversation. Use a separate thread only when the complete
+output does not need to appear there and the caller can restate the result.
 
 ## Activation
 
-Read only the selected file in `../agents/` completely and apply it in the
-current conversation. Announce the activation once, then return to the caller:
+In the selected placement, read the full `../agents/<agent-name>.md` profile
+and apply it to `task_context`. Do not rely on frontmatter or partial content.
+
+## Report
+
+After activation, output exactly one blockquote with the readable profile name
+and a short task-specific reason, then end this workflow:
 
 ```markdown
-> **<Readable profile name>** — <brief reason tied to the task>
+> **<readable agent name>** — <short reason related to the task>
 ```
