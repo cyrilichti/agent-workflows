@@ -70,6 +70,23 @@
   color: var(--sl-color-gray-3);
 }
 
+.hero .sl-link-button.primary {
+  border-color: #2563eb;
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.hero .sl-link-button.primary:hover {
+  border-color: #1d4ed8;
+  background-color: #1d4ed8;
+  color: #fff;
+}
+
+.hero .sl-link-button.primary:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 3px;
+}
+
 .hero[data-layout="media-left"] .hero-image {
   order: 0;
   width: 100%;
