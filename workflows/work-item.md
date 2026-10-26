@@ -72,9 +72,6 @@ with:
 task_context: complete numbered todo list from the current plan
 ```
 
-Keep the selected specialist, if any, for this execution; do not route again
-inside the todo loop.
-
 #### Execute Each Todo
 
 For each returned `todo`:
