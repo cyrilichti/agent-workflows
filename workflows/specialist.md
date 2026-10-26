@@ -48,16 +48,9 @@ not scan agent profiles to choose one.
 | Operations | `devops-engineer` | Build CI/CD, release, container, and deployment automation. |
 | Operations | `sre` | Improve SLOs, observability, resilience, and incident response. |
 
-## Placement
-
-Apply the profile in the current agent when its output or interaction is
-relevant to the main conversation. Use a separate thread only when the complete
-output does not need to appear there and the caller can restate the result.
-
 ## Activation
 
-In the selected placement, read the full `../agents/<agent-name>.md` profile
-and apply it to `task_context`. Do not rely on frontmatter or partial content.
+Read `../agents/<agent-name>.md` completely and apply it to `task_context`.
 
 ## Report
 
