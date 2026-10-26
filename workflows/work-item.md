@@ -91,15 +91,9 @@ For each returned `todo`:
 On `todo`, repeat. On `ready` or `cancelled`, go to Step 3. On `failed`, report
 the command result and stop.
 
-### 3. Continue to Ready
+### 3. Report Completion
 
-On `status: cancelled`, report no work and stop. When the command returns
-`status: ready`, follow `./ready.md` in caller mode:
-
-```text
-plan: authoritative plan
-item: complete official item context
-request_id: current request ID
-delivery_context: current delivery context
-```
+On `status: cancelled`, report no completed work. When the command returns
+`status: ready`, report the completed work and the current delivery context.
+Use the result format in `../goals/work-complete.md` for either outcome.
 
