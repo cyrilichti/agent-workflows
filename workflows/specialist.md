@@ -2,8 +2,9 @@
 
 ## Input
 
-- `task_context`: activity context already available to the caller. Pass it
-  unchanged.
+| Entry | Input |
+| --- | --- |
+| Any caller | `task_context`: available activity context, passed unchanged |
 
 ## Routing
 
