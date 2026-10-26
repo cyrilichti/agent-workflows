@@ -5,12 +5,12 @@
 | Input | Requirement |
 | --- | --- |
 | `task_context` | Existing activity context; do not reshape it. |
-| `profile` | Optional profile already chosen by the caller. |
 
 ## Routing
 
-When `profile` is absent, return without activation. Otherwise, use it exactly;
-stop if it is not in the table. This workflow does not choose or switch profiles.
+The caller owns the profile choice. The table lists the available profiles;
+this workflow does not choose or switch between them. If the caller has not
+chosen one, return without activation.
 
 | Task | Profile |
 | --- | --- |
@@ -51,8 +51,8 @@ stop if it is not in the table. This workflow does not choose or switch profiles
 
 ## Activation
 
-Read only `../agents/<profile>.md` completely and apply it in the current
-conversation. Announce the activation once, then return to the caller:
+Read only the selected file in `../agents/` completely and apply it in the
+current conversation. Announce the activation once, then return to the caller:
 
 ```markdown
 > **<Readable profile name>** — <brief reason tied to the task>
