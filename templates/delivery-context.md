@@ -14,3 +14,13 @@ source_findings:
     head_sha: exact source HEAD SHA
     finding: exact complete source finding
 ```
+
+- Keep identities stable for one delivery run.
+- Read current plan content from `plan`; do not carry another authoritative
+  copy.
+- Omit `source_findings` when there is no corrective work.
+- Recheck mutable provider and Git state at each mutation or snapshot boundary.
+- `plan` belongs to `item`.
+- A caller handoff must already contain every identity available at its stage.
+  Preserve a complete caller-supplied plan and item pair without rediscovering
+  either solely to establish its association again.

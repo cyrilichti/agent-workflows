@@ -14,10 +14,9 @@ Read one request through the configured version-control provider.
 
 1. Load `../providers/<provider>/read-request.md`. Stop when it is missing.
 2. Run the operation with the supplied input.
-3. Return the provider-neutral request record with `request_id`, `kind`,
-   `title`, normalized `state`, `draft`, `source_branch`, `target_branch`, `url`,
-   and `body` normalized to an empty string when absent. Include author,
-   commits when requested, and diffs when requested.
+3. Return the complete provider-neutral request record defined by
+   `./create-request.md`, including the normalized `body`, plus author, commits
+   when requested, and diffs when requested.
 
 When `fields` contains `delivery_state`, also return:
 

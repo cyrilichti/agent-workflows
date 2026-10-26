@@ -49,23 +49,13 @@ run.
 
 ### 5. Create the Delivery Context
 
-For `resumed`, pass `{ "request_backlinks": <item.request_backlinks> }` as JSON on
-standard input and run from this file's directory:
-
-```sh
-node ../commands/resolve-work-request.ts
-```
-
-Stop if the command fails. Use its `request` and `branch` in the
-`Delivery Context`.
-
-Create `Delivery Context` with the local plan path and complete official item
-context, including its request backlinks. For `resumed`, include the returned
-`request` and `branch`.
+Create `../templates/delivery-context.md` with the local plan path and complete
+official item context, including any backlinks for `/ready` to resolve the
+exact request.
 
 ### 6. Follow Shared Execution
 
-Follow `./work-item.md` with:
+Follow `./work-confirm.md` with:
 
 ```text
 plan: selected plan

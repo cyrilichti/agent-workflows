@@ -1,0 +1,42 @@
+# Link Request to Item
+
+Add one discoverable draft request backlink to an official item.
+
+## Input
+
+- `provider`: resolved item provider.
+- `item_id`: official provider item ID.
+- `request_kind`: `merge_request` or `pull_request` from the created request.
+- `request_url`: newly created request URL.
+- `plan_reference`: project-relative authoritative plan file path.
+
+## Comment
+
+For `request_kind: merge_request`:
+
+```text
+Draft MR: <request_url>
+
+Agent-Workflows-Plan: <plan_reference>
+```
+
+For `request_kind: pull_request`:
+
+```text
+Draft PR: <request_url>
+
+Agent-Workflows-Plan: <plan_reference>
+```
+
+## Steps
+
+1. Load `../providers/<provider>/add-request-backlink.md`. Stop when it is
+   missing.
+2. Select the exact comment for `request_kind`. Stop when the kind is not
+   supported.
+3. Follow the operation with the item ID and exact comment.
+4. Return the created backlink.
+
+Do not update item status, title, description, assignment, labels, or any other
+item field. Call this command only after creating a new request and never while
+resuming existing work.
