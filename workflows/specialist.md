@@ -8,9 +8,8 @@
 
 ## Routing
 
-The caller owns the profile choice. The table lists the available profiles;
-this workflow does not choose or switch between them. If the caller has not
-chosen one, return without activation.
+Select the most specific profile matching `task_context` from the table below.
+If none matches, return without activation. Do not ask the user.
 
 | Task | Profile |
 | --- | --- |
