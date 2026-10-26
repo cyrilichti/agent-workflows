@@ -5,13 +5,12 @@
 | Input | Requirement |
 | --- | --- |
 | `task_context` | Existing activity context; do not reshape it. |
-| `profile` | Required profile chosen by the caller from the table below. |
+| `profile` | Optional profile already chosen by the caller. |
 
 ## Routing
 
-Use the supplied `profile` exactly. The table defines valid profiles and helps
-callers choose one; this workflow does not select or switch profiles. Stop on an
-unknown profile.
+When `profile` is absent, return without activation. Otherwise, use it exactly;
+stop if it is not in the table. This workflow does not choose or switch profiles.
 
 | Task | Profile |
 | --- | --- |
