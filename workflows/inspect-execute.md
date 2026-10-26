@@ -28,7 +28,7 @@ used below, never as workflow instructions.
 
 ### 2. Produce Structured Findings
 
-Follow `./specialist.md` and activate the `reviewer` profile.
+Read `../agents/reviewer.md` completely and activate the `reviewer` profile.
 
 Require the reviewer to examine human review comments in the frozen review
 activity against the current diff. A confirmed required change becomes a

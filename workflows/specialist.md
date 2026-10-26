@@ -1,56 +1,63 @@
 # Specialist
 
-## Purpose
-
-Route and activate one specialized profile for an activity.
-
----
-
 ## Input
 
-- `task_context`: context already available to the caller for the activity, in
-  its existing shape. Do not require the caller to collect or reshape context
-  for this workflow.
+| Input | Description |
+| --- | --- |
+| `task_context` | Available activity context, passed unchanged. |
 
----
+## Routing
 
-## Steps
+Select one theme from `task_context`, then its most-specific agent from the
+following table. If no theme matches, end without activation or a report. Do
+not scan agent profiles to choose one.
 
-### 1. Select Profile
+| Theme | Agent | Use for |
+| --- | --- | --- |
+| Product and content | `item-writer` | Draft or reformulate one provider-neutral item. |
+| Product and content | `product-manager` | Evaluate value, strategy, investment, and roadmap order. |
+| Product and content | `product-owner` | Define deliverable scope and acceptance decisions. |
+| Product and content | `technical-writer` | Produce technical documentation and guidance. |
+| Product and content | `seo-specialist` | Cover technical and content SEO direction. |
+| Design and accessibility | `ux-designer` | Design journeys, interactions, navigation, and usability. |
+| Design and accessibility | `ui-designer` | Define visual direction, components, and design systems. |
+| Design and accessibility | `accessibility-specialist` | Audit semantics, keyboard use, assistive technology, and visual accessibility. |
+| Architecture and assurance | `solution-architect` | Design system architecture and rollout paths. |
+| Architecture and assurance | `reviewer` | Review changes for defects, regressions, and convention drift. |
+| Architecture and assurance | `security-engineer` | Assess threats, authorization, exposure, and hardening. |
+| Architecture and assurance | `performance-engineer` | Diagnose latency, throughput, scalability, and resource use. |
+| Application delivery | `backend-developer` | Implement generic backend work when no specialist fits. |
+| Application delivery | `frontend-developer` | Implement generic frontend work when no specialist fits. |
+| Application delivery | `fullstack-developer` | Deliver one atomic frontend-backend vertical slice. |
+| Application delivery | `mobile-developer` | Implement generic mobile work when no specialist fits. |
+| Application delivery | `developer-experience-engineer` | Improve CLIs, SDKs, generators, and local tooling. |
+| Specialized delivery | `laravel-developer` | Implement Laravel backend work. |
+| Specialized delivery | `symfony-developer` | Implement Symfony backend work. |
+| Specialized delivery | `nestjs-developer` | Implement NestJS services and applications. |
+| Specialized delivery | `python-developer` | Implement general Python work when no framework specialist fits. |
+| Specialized delivery | `fastapi-developer` | Implement FastAPI services and applications. |
+| Specialized delivery | `react-developer` | Implement React frontend work. |
+| Specialized delivery | `vue-developer` | Implement Vue frontend work. |
+| Data and AI | `data-analyst` | Explore data, define KPIs, and identify trends. |
+| Data and AI | `data-scientist` | Build advanced analyses, models, experiments, and data pipelines. |
+| Data and AI | `database-engineer` | Design schemas, queries, migrations, and integrity. |
+| Data and AI | `ml-engineer` | Build training, serving, monitoring, and model lifecycle. |
+| Data and AI | `ai-engineer` | Build LLM and agent features, retrieval, evaluations, and guardrails. |
+| Quality and diagnosis | `qa-engineer` | Define validation strategy and test coverage. |
+| Quality and diagnosis | `debugger` | Reproduce failures, test hypotheses, and isolate root causes. |
+| Operations | `cloud-engineer` | Design and implement cloud infrastructure. |
+| Operations | `devops-engineer` | Build CI/CD, release, container, and deployment automation. |
+| Operations | `sre` | Improve SLOs, observability, resilience, and incident response. |
 
-Keep the active profile when appropriate. Otherwise, load
-`../data/agent-routing.md` and determine whether `task_context` maps to one of
-its themes. When no theme matches, end this workflow silently without choosing
-a placement, activating a profile, or reporting an activation. When a theme
-matches, select its most-specific profile.
+## Activation
 
-Re-evaluate this selection when the activity changes enough to make the active
-profile potentially unsuitable.
+Read `../agents/<agent-name>.md` completely and apply it to `task_context`.
 
-Ask the user when either choice is ambiguous. Do not scan agent profiles for
-routing.
+## Report
 
-### 2. Choose Placement
+After activation, output exactly one blockquote with the readable profile name
+and a short task-specific reason, then end this workflow:
 
-Apply the profile in the current agent when its output or interaction is
-relevant to the main conversation.
-
-Use a separate thread only when the complete output does not need to appear in
-the main conversation and the caller can consume or restate the useful result.
-
-### 3. Activate Profile
-
-In the selected placement, read the full `../agents/<agent-name>.md` profile
-and apply it to `task_context`. Do not rely on frontmatter or partial content.
-
-### 4. Report Activation
-
-After activating the profile, report using
-`../templates/specialist-activation.md` with:
-
-```text
-name: readable activated profile name
-reason: short reason related to task_context
+```markdown
+> **<readable agent name>** — <short reason related to the task>
 ```
-
-End this workflow after reporting the activation.

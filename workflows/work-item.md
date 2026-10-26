@@ -62,19 +62,22 @@ JSON
 If the command fails, report its `stage` and `reason`, then stop. On success,
 clear `source_findings`.
 
+#### Activate the Specialist
+
+When the command returns a `todo`, read the numbered todo list from the current
+plan, including any corrective todos just added. Follow `./specialist.md` once
+with:
+
+```text
+task_context: complete numbered todo list from the current plan
+```
+
 #### Execute Each Todo
 
 For each returned `todo`:
 
-1. Reuse the active specialist while appropriate. Otherwise follow
-   `./specialist.md` with:
-
-   ```text
-   task_context: todo returned by work-next-todo.ts or work-complete-todo.ts
-   ```
-
-2. Implement and validate only that todo, then stage only its changes.
-3. Run one command from this file's directory:
+1. Implement and validate only that todo, then stage only its changes.
+2. Run one command from this file's directory:
 
    With staged changes:
 
