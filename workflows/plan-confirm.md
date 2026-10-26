@@ -33,9 +33,10 @@ Continue on `refinement-not-needed`. On `needs-refinement`:
 
 ### 2. Resolve Planning Author
 
-Follow `./specialist.md` with `task_context` to activate one plan author. The
-author may inspect technical context read-only. If that reveals autonomous
-delivery units, reassess the expanded context with Step 1.
+Select one plan author from the table in `./specialist.md`, then follow it with
+`profile: selected profile` and `task_context`. The author may inspect technical
+context read-only. If that reveals autonomous delivery units, reassess the
+expanded context with Step 1.
 
 ### 3. Draft and Review the Plan
 

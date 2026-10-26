@@ -5,13 +5,13 @@
 | Input | Requirement |
 | --- | --- |
 | `task_context` | Existing activity context; do not reshape it. |
-| `profile` | Optional explicit profile named by the caller. |
+| `profile` | Required profile chosen by the caller from the table below. |
 
 ## Routing
 
-Keep the active profile when it fits. Otherwise, use the caller's `profile` or
-select the most specific match below. If none fits, return without activation;
-the caller continues the task. Ask only when the choice remains ambiguous.
+Use the supplied `profile` exactly. The table defines valid profiles and helps
+callers choose one; this workflow does not select or switch profiles. Stop on an
+unknown profile.
 
 | Task | Profile |
 | --- | --- |
@@ -52,9 +52,8 @@ the caller continues the task. Ask only when the choice remains ambiguous.
 
 ## Activation
 
-For a new selection, read only `../agents/<profile>.md` completely and apply it
-in the current conversation. Do not scan other profiles. Announce the activation
-once, then return to the caller:
+Read only `../agents/<profile>.md` completely and apply it in the current
+conversation. Announce the activation once, then return to the caller:
 
 ```markdown
 > **<Readable profile name>** — <brief reason tied to the task>
