@@ -66,8 +66,15 @@ clear `source_findings`.
 
 For each returned `todo`:
 
-1. Implement and validate only that todo, then stage only its changes.
-2. Run one command from this file's directory:
+1. Reuse the active specialist while appropriate. Otherwise follow
+   `./specialist.md` with:
+
+   ```text
+   task_context: todo returned by work-next-todo.ts or work-complete-todo.ts
+   ```
+
+2. Implement and validate only that todo, then stage only its changes.
+3. Run one command from this file's directory:
 
    With staged changes:
 
