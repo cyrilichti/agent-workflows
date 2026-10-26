@@ -1,18 +1,17 @@
 # Specialist
 
-Use the caller's existing `task_context` without reshaping it.
+## Input
 
-1. Keep the active profile when it fits. Otherwise, use the profile requested
-   by the caller or select the most specific match below. If none fits, return
-   without activation; the caller continues the task. Ask only when the choice
-   remains ambiguous.
-2. For a new selection, read only `../agents/<profile>.md` completely and apply
-   it in the current conversation. Do not scan other profiles.
-3. Announce a new activation once, then return to the caller:
+| Input | Requirement |
+| --- | --- |
+| `task_context` | Existing activity context; do not reshape it. |
+| `profile` | Optional explicit profile named by the caller. |
 
-   ```markdown
-   > **<Readable profile name>** — <brief reason tied to the task>
-   ```
+## Routing
+
+Keep the active profile when it fits. Otherwise, use the caller's `profile` or
+select the most specific match below. If none fits, return without activation;
+the caller continues the task. Ask only when the choice remains ambiguous.
 
 | Task | Profile |
 | --- | --- |
@@ -50,3 +49,13 @@ Use the caller's existing `task_context` without reshaping it.
 | Design or implement cloud infrastructure | `cloud-engineer` |
 | Build CI/CD, release, container, or deployment automation | `devops-engineer` |
 | Improve SLOs, observability, resilience, or incident response | `sre` |
+
+## Activation
+
+For a new selection, read only `../agents/<profile>.md` completely and apply it
+in the current conversation. Do not scan other profiles. Announce the activation
+once, then return to the caller:
+
+```markdown
+> **<Readable profile name>** — <brief reason tied to the task>
+```
