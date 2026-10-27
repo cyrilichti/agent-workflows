@@ -27,17 +27,6 @@ test('approved plan extraction preserves bytes and removes only the ClickUp wrap
   assert.throws(() => readItemPlan('linear', []), /approved plan/i);
 });
 
-test('standalone preparation rejects contradictory backlinks and Ticket references', async t => {
-  const root = fixture(t);
-  const official = item();
-  official.comments.push({ id: 'backlink', body: 'Agent-Workflows-Plan: plans/other.plan.md' });
-  await assert.rejects(prepareStandaloneWork(root, 'linear', official, '2026-10-27'), /contradict/i);
-  const wrongTicket = item();
-  wrongTicket.comments[0]!.body = wrongTicket.comments[0]!.body.replace('ICY-133]', 'ICY-999]');
-  await assert.rejects(prepareStandaloneWork(root, 'linear', wrongTicket, '2026-10-27'), /contradict/i);
-  assert.equal(existsSync(join(root, 'plans')), false);
-});
-
 test('new work reuses comments and materializes unchanged plan with collision-safe filename', async (t) => {
   const root = fixture(t);
   mkdirSync(join(root, 'plans'));
@@ -50,10 +39,9 @@ test('new work reuses comments and materializes unchanged plan with collision-sa
   assert.equal(readFileSync(join(root, 'plans/2026-10-27-fix-cta.plan.md'), 'utf8'), 'existing');
 });
 
-test('ineligible or contradictory items stop before writing the plan', async (t) => {
+test('ineligible items stop before writing the plan', async (t) => {
   const root = fixture(t);
-  for (const official of [{ ...item(), closed: true }, { ...item(), labels: [] },
-    { ...item(), comments: [{ id: 'p', body: `Agent-Workflows-Approved-Plan:\n\n${plan.replace('ICY-133]', 'ICY-999]')}` }] }]) {
+  for (const official of [{ ...item(), closed: true }, { ...item(), labels: [] }]) {
     await assert.rejects(prepareStandaloneWork(root, 'linear', official, '2026-10-27'));
   }
   assert.equal(existsSync(join(root, 'plans')), false);

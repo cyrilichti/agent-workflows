@@ -3,10 +3,14 @@ import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:pat
 import { resolveItemProvider } from './resolve-item-provider.ts';
 import { readItem } from './read-item.ts';
 import { resolveExistingItem } from './resolve-existing-item.ts';
-import type { ItemProvider, WorkItem } from './read-item.ts';
+import type { ItemComment, ItemProvider, WorkItem } from './read-item.ts';
 import { readItemPlan } from './read-item-plan.ts';
-import { establishPlanItemAssociation, planReferences } from './establish-plan-item-association.ts';
 import { resolveWorkRequestForProject } from './resolve-work-request.ts';
+
+function planReferences(comments: ItemComment[]): string[] {
+  return comments.flatMap(comment => [...comment.body.matchAll(/^Agent-Workflows-Plan:\s*(.+)$/gm)]
+    .map(match => match[1]!.trim()));
+}
 
 function planPath(root: string, reference: string): string {
   const local = relative(root, resolve(root, reference));
@@ -27,14 +31,13 @@ export async function prepareStandaloneWork(
   const work_mode = item.request_backlinks.length ? 'resumed' : 'new';
   let reference: string;
   let content: string;
-  let approved: string | undefined;
   if (work_mode === 'resumed') {
     const references = planReferences(item.comments.filter(comment => /^Draft (?:PR|MR):/m.test(comment.body)));
     if (!references.length) throw new Error('Missing plan reference in request backlink comment.');
     reference = planPath(root, references[0]!);
     content = readFileSync(join(root, reference), 'utf8');
   } else {
-    content = approved = readItemPlan(provider, item.comments);
+    content = readItemPlan(provider, item.comments);
     const title = /^# (.+)$/m.exec(content)?.[1];
     if (!title) throw new Error('Approved plan has no title.');
     const slug = title.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
@@ -44,7 +47,6 @@ export async function prepareStandaloneWork(
     reference = `${base}.plan.md`;
     for (let suffix = 2; existsSync(join(root, reference)); suffix++) reference = `${base}-${suffix}.plan.md`;
   }
-  establishPlanItemAssociation(reference, content, item, approved);
   const request = work_mode === 'resumed' ? resolveRequest(item.request_backlinks) : undefined;
   if (work_mode === 'new') {
     mkdirSync(dirname(join(root, reference)), { recursive: true });
