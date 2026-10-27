@@ -43,18 +43,16 @@ condition, and stop before creating the delivery context.
 
 ### 3. Establish the Plan and Item Association
 
-Establish the selected plan's association with the official item from at least
-one of:
+Run from this file's directory with the selected project-relative plan path:
 
-- an `Agent-Workflows-Plan:` comment matching the canonical local plan path;
-- the plan's exact Ticket ID and URL both matching the official item;
-- unchanged plan content read from that same item's approved-plan comment
-  during this run.
+```sh
+node ../commands/establish-plan-item-association.ts "<plan path>" <<'JSON'
+{ "item": <complete official item>, "approved_content": <unchanged approved plan content, when read in this run> }
+JSON
+```
 
-Use the comments and plan content already read in this run. Check every
-available plan backlink and Ticket reference for a contradiction with the
-selected pair. Stop before creating the delivery context when the association
-is missing or contradictory.
+Use the comments already read. Omit `approved_content` when unavailable.
+On failure, report `reason` and stop before creating the delivery context.
 
 ### 4. Return the Context
 

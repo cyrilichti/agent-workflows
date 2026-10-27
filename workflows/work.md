@@ -46,4 +46,10 @@ Select exactly one branch:
 
 Both branches create or preserve a `Delivery Context`.
 
-Read the selected workflow file completely and follow it.
+Read the selected workflow file completely and follow it. For
+`./work-standalone.md`, pass:
+
+```text
+reference: user-supplied item ID or native URL, when available
+query: user-supplied item title or search phrase, when available
+```
