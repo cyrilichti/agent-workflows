@@ -1,24 +1,22 @@
-# Work Standalone Branch
+# Work Standalone
 
 ## Input
 
 | Input | Description |
 | --- | --- |
-| `reference` | Item ID or native URL, when supplied. |
-| `query` | Item title or search phrase, when no reference is supplied. |
+| `reference` | Required item ID or native URL. |
 
 ## Steps
 
 ### 1. Prepare the Context
 
-Run from this file's directory, passing an empty string for an absent input:
+Run from this file's directory:
 
 ```sh
-node ../commands/work-standalone.ts "<reference>" "<query>"
+node ../commands/work-standalone.ts "<reference>"
 ```
 
-The command requires a reference or a unique title match. On failure, report
-`stage` and `reason`, then stop without asking a question or retrying.
+On failure, report `stage` and `reason`, then stop.
 
 ### 2. Execute the Plan
 

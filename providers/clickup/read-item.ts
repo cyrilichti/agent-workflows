@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import type { ItemComment, WorkItem } from '../../commands/read-item.ts';
 
 type Comment = { id: string; date: string; comment?: { text: string }[] };
-export function readJson(args: string[]): unknown {
+function readJson(args: string[]): unknown {
   const output = execFileSync('clickup-cli', args, {
     encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'],
   });
