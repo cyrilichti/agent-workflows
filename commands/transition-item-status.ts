@@ -11,7 +11,7 @@ type Adapter = {
   readStatuses(itemId: string, officialItem?: Record<string, unknown>): {
     current_status: Status;
     available_statuses: Status[];
-    item_reference?: string;
+    item_reference: string;
   };
   applyStatus(itemId: string, target: Status): Status;
 };
@@ -39,7 +39,10 @@ try {
     throw new Error('Multiple active statuses are available.');
   }
   const target = matches[0]!;
-  const itemReference = resolution.item_reference ?? itemId;
+  const itemReference = resolution.item_reference;
+  if (!itemReference) {
+    throw new Error('Item CLI reference is unavailable.');
+  }
   const resulting = adapter.applyStatus(itemReference, target);
   process.stdout.write(`${JSON.stringify({
     status: 'transitioned',

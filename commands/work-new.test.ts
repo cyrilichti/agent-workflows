@@ -52,7 +52,9 @@ if (name === 'transition-item-status.ts') {
     process.exitCode = 1;
   } else {
     process.stdout.write(JSON.stringify({
-      status: 'transitioned', item_reference: process.env.TEST_ITEM_REFERENCE || input.item_id,
+      status: 'transitioned',
+      item_reference: process.env.TEST_MISSING_REFERENCE === '1'
+        ? undefined : process.env.TEST_ITEM_REFERENCE || input.item_id,
       resulting_status: { id: 'active', name: 'En cours' },
     }) + '\\n');
   }
@@ -156,6 +158,19 @@ test('work-new stops before Git when status transition is ambiguous', () => {
     assert.equal(result.status, 1);
     assert.equal(JSON.parse(result.stdout).stage, 'start_item');
     assert.deepEqual(f.commandCalls().map(call => call.name), ['transition-item-status.ts']);
+    assert.deepEqual(f.gitCalls(), []);
+  } finally {
+    f.cleanup();
+  }
+});
+
+test('work-new stops before Git when transition omits the CLI item reference', () => {
+  const f = fixture();
+  try {
+    const result = f.run({ TEST_MISSING_REFERENCE: '1' });
+    assert.equal(result.status, 1);
+    assert.equal(JSON.parse(result.stdout).stage, 'start_item');
+    assert.match(JSON.parse(result.stdout).reason, /CLI reference/);
     assert.deepEqual(f.gitCalls(), []);
   } finally {
     f.cleanup();

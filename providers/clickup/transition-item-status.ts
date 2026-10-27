@@ -16,7 +16,7 @@ function normalize(status: NativeStatus): ItemStatus {
 }
 
 export function readStatuses(itemId: string, officialItem?: Record<string, unknown>): {
-  current_status: ItemStatus; available_statuses: ItemStatus[];
+  current_status: ItemStatus; available_statuses: ItemStatus[]; item_reference: string;
 } {
   let task: Record<string, unknown>;
   if (officialItem?.status && officialItem?.list) {
@@ -35,6 +35,7 @@ export function readStatuses(itemId: string, officialItem?: Record<string, unkno
   return {
     current_status: normalize(task.status as NativeStatus),
     available_statuses: list.statuses.map(normalize),
+    item_reference: itemId,
   };
 }
 

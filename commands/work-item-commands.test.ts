@@ -147,6 +147,7 @@ test('ClickUp transition uses native status type and stops before mutation on am
     const result = f.run('transition-item-status.ts', input);
     assert.equal(result.status, 0, result.stdout);
     assert.equal(JSON.parse(result.stdout).resulting_status.name, 'En cours');
+    assert.equal(JSON.parse(result.stdout).item_reference, 'ITEM-1');
     assert.deepEqual(f.calls().at(-1)?.args,
       ['task', 'update', 'ITEM-1', '--status', 'En cours', '--output', 'json']);
 

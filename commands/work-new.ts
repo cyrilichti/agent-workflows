@@ -168,8 +168,10 @@ try {
   const input = parseInput();
   const transition = command('transition-item-status.ts', { item_id: input.item_id });
   completed.resulting_status = transition.resulting_status;
-  const itemReference = typeof transition.item_reference === 'string'
-    ? transition.item_reference : input.item_id;
+  if (typeof transition.item_reference !== 'string' || !transition.item_reference.trim()) {
+    throw new Error('Transition did not return an item CLI reference.');
+  }
+  const itemReference = transition.item_reference;
 
   stage = 'prepare_base';
   const remote = pushRemote();
