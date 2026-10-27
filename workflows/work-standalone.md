@@ -4,16 +4,22 @@
 
 | Input | Description |
 | --- | --- |
-| `reference` | Required item ID or native URL. |
+| `item` | Required item ID, native URL, title, or search phrase. |
 
 ## Steps
 
 ### 1. Prepare the Context
 
-Run from this file's directory:
+Run from this file's directory. For an ID or native URL:
 
 ```sh
-node ../commands/work-standalone.ts "<reference>"
+node ../commands/work-standalone.ts "<item>"
+```
+
+For a title or search phrase:
+
+```sh
+node ../commands/work-standalone.ts --query "<item>"
 ```
 
 On failure, report `stage` and `reason`, then stop.

@@ -17,19 +17,39 @@ export type WorkItem = {
   request_backlinks: string[];
 };
 
-function requestBacklinks(comments: ItemComment[]): string[] {
-  return [...new Set(comments.flatMap(comment =>
-    [...comment.body.matchAll(/^Draft (?:PR|MR):\s*(https?:\/\/\S+)/gm)].map(match => match[1]!)))];
+function extractRequestBacklinks(comments: ItemComment[]): string[] {
+  const backlinks = new Set<string>();
+
+  for (const comment of comments) {
+    const matches = comment.body.matchAll(/^Draft (?:PR|MR):\s*(https?:\/\/\S+)/gm);
+    for (const match of matches) {
+      backlinks.add(match[1]!);
+    }
+  }
+
+  return [...backlinks];
 }
 
 export function normalizeItemReference(provider: ItemProvider, reference: string): string {
-  if (!reference.trim()) throw new Error('Supply an item reference.');
-  if (!reference.includes('://')) return reference;
+  if (!reference.trim()) {
+    throw new Error('Supply an item reference.');
+  }
+  if (!reference.includes('://')) {
+    return reference;
+  }
   const url = new URL(reference);
-  const match = provider === 'linear'
-    ? url.hostname === 'linear.app' && /\/issue\/([^/]+)(?:\/|$)/.exec(url.pathname)
-    : (url.hostname === 'app.clickup.com' || url.hostname === 'clickup.com') && /^\/t\/([^/]+)\/?$/.exec(url.pathname);
-  if (!match) throw new Error(`Invalid ${provider} item URL.`);
+  let match: RegExpExecArray | null = null;
+  if (provider === 'linear' && url.hostname === 'linear.app') {
+    match = /\/issue\/([^/]+)(?:\/|$)/.exec(url.pathname);
+  } else if (
+    provider === 'clickup' &&
+    (url.hostname === 'app.clickup.com' || url.hostname === 'clickup.com')
+  ) {
+    match = /^\/t\/([^/]+)\/?$/.exec(url.pathname);
+  }
+  if (!match) {
+    throw new Error(`Invalid ${provider} item URL.`);
+  }
   return decodeURIComponent(match[1]!);
 }
 
@@ -37,5 +57,5 @@ export function normalizeItemReference(provider: ItemProvider, reference: string
 export function readItem(provider: ItemProvider, reference: string): WorkItem {
   const id = normalizeItemReference(provider, reference);
   const item = provider === 'linear' ? readLinearItem(id) : readClickUpItem(id);
-  return { ...item, request_backlinks: requestBacklinks(item.comments) };
+  return { ...item, request_backlinks: extractRequestBacklinks(item.comments) };
 }
