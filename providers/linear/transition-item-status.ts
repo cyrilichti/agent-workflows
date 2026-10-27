@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 
 type NativeStatus = { id: string; name: string; type?: string };
-type Issue = { state: NativeStatus; team: { id: string; key?: string } };
+type Issue = { identifier: string; state: NativeStatus; team: { id: string; key?: string } };
 export type ItemStatus = { id: string; name: string; category: 'active' | 'review' | 'completed' | 'other' };
 
 function normalize(status: NativeStatus): ItemStatus {
@@ -18,21 +18,25 @@ function normalize(status: NativeStatus): ItemStatus {
 }
 
 export function readStatuses(itemId: string, officialItem?: Record<string, unknown>): {
-  current_status: ItemStatus; available_statuses: ItemStatus[];
+  current_status: ItemStatus; available_statuses: ItemStatus[]; item_reference: string;
 } {
   const suppliedState = officialItem?.state as NativeStatus | undefined;
   const suppliedTeam = officialItem?.team as Issue['team'] | undefined;
+  const suppliedIdentifier = officialItem?.identifier as string | undefined;
   let issue: Issue;
-  if (suppliedState && suppliedTeam) {
-    issue = { state: suppliedState, team: suppliedTeam };
+  if (suppliedState && suppliedTeam && suppliedIdentifier) {
+    issue = { identifier: suppliedIdentifier, state: suppliedState, team: suppliedTeam };
   } else {
     const output = execFileSync('linear', [
       '--no-input', 'api', '--variables-json', JSON.stringify({ id: itemId }),
     ], {
-      input: 'query CurrentStatus($id: String!) { issue(id: $id) { state { id name type } team { id key } } }',
+      input: 'query CurrentStatus($id: String!) { issue(id: $id) { identifier state { id name type } team { id key } } }',
       encoding: 'utf8',
     });
     issue = (JSON.parse(output) as { data: { issue: Issue } }).data.issue;
+  }
+  if (!issue?.identifier) {
+    throw new Error('Linear issue identifier is unavailable.');
   }
   const team = issue.team.key ?? issue.team.id;
   const statesOutput = execFileSync('linear', [
@@ -45,7 +49,11 @@ export function readStatuses(itemId: string, officialItem?: Record<string, unkno
   } else {
     states = response.states;
   }
-  return { current_status: normalize(issue.state), available_statuses: states.map(normalize) };
+  return {
+    current_status: normalize(issue.state),
+    available_statuses: states.map(normalize),
+    item_reference: issue.identifier,
+  };
 }
 
 export function applyStatus(itemId: string, target: ItemStatus): ItemStatus {
