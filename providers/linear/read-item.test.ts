@@ -85,4 +85,11 @@ test('installed standalone command prepares one context and writes the exact app
   assert.equal(output.delivery_context.item.comments.length, 1);
   const calls = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n');
   assert.equal(calls.length, 2);
+  const missing = spawnSync(process.execPath, ['../commands/work-standalone.ts', '', ''], {
+    cwd: join(project, '.agents/workflows'), encoding: 'utf8',
+  });
+  assert.equal(missing.status, 1);
+  assert.deepEqual(JSON.parse(missing.stdout), { status: 'failed', stage: 'resolve_item',
+    reason: 'Supply an item reference or title query.' });
+  assert.equal(readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n').length, 2);
 });

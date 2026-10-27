@@ -10,15 +10,12 @@ Resolve one existing official item from a configured provider.
 - `candidate_criteria`: optional criteria used only when neither reference nor
   query is supplied.
 - `fields`: optional caller-requested fields in addition to the core item.
-- `selection_only`: optional, defaults to `false`; return the selected provider
-  item ID for a caller that performs the official read.
 
 ## Steps
 
 1. When `reference` is available, load
    `../providers/<provider>/resolve-item-reference.md` and normalize the exact
    provider ID or native URL. Stop when the URL belongs to another provider.
-   When `selection_only` is `true`, return the normalized ID and stop.
    Run `./read-item.md` with the normalized ID and caller-requested fields.
    Return the official item and its provider ID, then stop this command.
 2. When neither `reference` nor `query` is available, remove any assignment
@@ -40,10 +37,9 @@ Resolve one existing official item from a configured provider.
      - label: <title, status, and destination when available>
        value: <internal provider item ID>
      ```
-4. When `selection_only` is `true`, return the selected provider item ID and
-   stop. Otherwise, run `./read-item.md` with the resolved provider, selected
-   provider ID, and caller-requested fields.
+4. Run `./read-item.md` with the resolved provider, selected provider ID, and
+   caller-requested fields.
 5. Return the official item and its provider ID to the caller.
 
 All candidates are hints only. Only the final `read-item` result is official
-context; `selection_only` delegates that read to the caller.
+context.

@@ -4,43 +4,25 @@
 
 | Input | Description |
 | --- | --- |
-| `reference` | Optional item ID or native URL supplied by the user. |
-| `query` | Optional item title or search phrase. |
+| `reference` | Item ID or native URL, when supplied. |
+| `query` | Item title or search phrase, when no reference is supplied. |
 
 ## Steps
 
-### 1. Select the Item
+### 1. Prepare the Context
 
-Use `reference` when supplied. Otherwise, load the following files together
-and follow them in order:
-
-```sh
-cat ../commands/resolve-item-provider.md ../commands/resolve-existing-item.md
-```
-
-Pass to `resolve-existing-item`:
-
-```text
-provider: resolved item provider
-query: supplied query, when available
-candidate_criteria:
-  status: open
-  label: agent-planned
-selection_only: true
-```
-
-Use the selected provider item ID as `reference`.
-
-### 2. Prepare the Context
-
-Run from this file's directory:
+Run from this file's directory, passing an empty string for an absent input:
 
 ```sh
-node ../commands/work-standalone.ts "<reference>"
+node ../commands/work-standalone.ts "<reference>" "<query>"
 ```
 
-On failure, report `stage` and `reason`, then stop. On success, follow
-`./work-item.md` with:
+The command requires a reference or a unique title match. On failure, report
+`stage` and `reason`, then stop without asking a question or retrying.
+
+### 2. Execute the Plan
+
+On success, follow `./work-item.md` with:
 
 ```text
 plan: result.delivery_context.plan
