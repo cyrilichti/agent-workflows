@@ -4,7 +4,6 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { readItemPlan } from './read-item-plan.ts';
-import { establishPlanItemAssociation } from './establish-plan-item-association.ts';
 import { prepareStandaloneWork } from './work-standalone.ts';
 import type { WorkItem } from './read-item.ts';
 
@@ -28,12 +27,15 @@ test('approved plan extraction preserves bytes and removes only the ClickUp wrap
   assert.throws(() => readItemPlan('linear', []), /approved plan/i);
 });
 
-test('association rejects contradictory references even when the approved content matches', () => {
+test('standalone preparation rejects contradictory backlinks and Ticket references', async t => {
+  const root = fixture(t);
   const official = item();
   official.comments.push({ id: 'backlink', body: 'Agent-Workflows-Plan: plans/other.plan.md' });
-  assert.throws(() => establishPlanItemAssociation('plans/cta.plan.md', plan, official, plan), /contradict/i);
-  assert.throws(() => establishPlanItemAssociation('plans/cta.plan.md', plan.replace('ICY-133]', 'ICY-999]'), item()), /contradict/i);
-  assert.throws(() => establishPlanItemAssociation('plans/cta.plan.md', '# No association', item()), /association/i);
+  await assert.rejects(prepareStandaloneWork(root, 'linear', official, '2026-10-27'), /contradict/i);
+  const wrongTicket = item();
+  wrongTicket.comments[0]!.body = wrongTicket.comments[0]!.body.replace('ICY-133]', 'ICY-999]');
+  await assert.rejects(prepareStandaloneWork(root, 'linear', wrongTicket, '2026-10-27'), /contradict/i);
+  assert.equal(existsSync(join(root, 'plans')), false);
 });
 
 test('new work reuses comments and materializes unchanged plan with collision-safe filename', async (t) => {
