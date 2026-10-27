@@ -1,35 +1,12 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { basename, dirname, isAbsolute, join, normalize, relative, resolve } from 'node:path';
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { resolveItemProvider } from './resolve-item-provider.ts';
 import { readItem } from './read-item.ts';
 import { resolveExistingItem } from './resolve-existing-item.ts';
-import type { ItemComment, ItemProvider, WorkItem } from './read-item.ts';
+import type { ItemProvider, WorkItem } from './read-item.ts';
 import { readItemPlan } from './read-item-plan.ts';
+import { establishPlanItemAssociation, planReferences } from './establish-plan-item-association.ts';
 import { resolveWorkRequestForProject } from './resolve-work-request.ts';
-
-function planReferences(comments: ItemComment[]): string[] {
-  return comments.flatMap(comment => [...comment.body.matchAll(/^Agent-Workflows-Plan:\s*(.+)$/gm)]
-    .map(match => match[1]!.trim()));
-}
-
-function establishPlanItemAssociation(
-  reference: string, content: string, item: WorkItem, approvedContent?: string,
-): void {
-  let associated = approvedContent !== undefined && content === approvedContent;
-  for (const backlink of planReferences(item.comments)) {
-    if (normalize(backlink) !== normalize(reference)) {
-      throw new Error('Contradictory plan backlink for the selected item.');
-    }
-    associated = true;
-  }
-  for (const ticket of content.matchAll(/^\*\*Ticket\s*:\*\*\s*\[([^\]]+)\]\(([^)]+)\)/gm)) {
-    if (![item.id, item.identifier].includes(ticket[1]) || ticket[2] !== item.url) {
-      throw new Error('Contradictory Ticket reference in the selected plan.');
-    }
-    associated = true;
-  }
-  if (!associated) throw new Error('No plan and item association is available.');
-}
 
 function planPath(root: string, reference: string): string {
   const local = relative(root, resolve(root, reference));
