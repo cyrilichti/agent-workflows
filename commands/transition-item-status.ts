@@ -11,6 +11,7 @@ type Adapter = {
   readStatuses(itemId: string, officialItem?: Record<string, unknown>): {
     current_status: Status;
     available_statuses: Status[];
+    item_reference?: string;
   };
   applyStatus(itemId: string, target: Status): Status;
 };
@@ -38,9 +39,11 @@ try {
     throw new Error('Multiple active statuses are available.');
   }
   const target = matches[0]!;
-  const resulting = adapter.applyStatus(itemId, target);
+  const itemReference = resolution.item_reference ?? itemId;
+  const resulting = adapter.applyStatus(itemReference, target);
   process.stdout.write(`${JSON.stringify({
     status: 'transitioned',
+    item_reference: itemReference,
     previous_status: resolution.current_status,
     resolved_target_status: target,
     resulting_status: resulting,

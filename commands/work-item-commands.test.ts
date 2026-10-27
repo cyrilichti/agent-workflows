@@ -42,6 +42,7 @@ if (program === 'clickup-cli') {
   if (args[0] === '--no-input' && args[1] === 'api') {
     const updated = existsSync(join(process.env.TEST_ROOT, 'linear-updated'));
     output({ data: { issue: {
+      identifier: process.env.TEST_LINEAR_IDENTIFIER || 'ITEM-1',
       state: updated
         ? { id: 'active', name: 'In Progress', type: 'started' }
         : { id: 'todo', name: 'À faire', type: 'unstarted' },
@@ -167,6 +168,21 @@ test('Linear transition selects In Progress and passes its name to the CLI', () 
     assert.equal(JSON.parse(result.stdout).resulting_status.id, 'active');
     assert.deepEqual(f.calls().find(call => call.args[1] === 'update')?.args,
       ['issue', 'update', 'ITEM-1', '--state', 'In Progress', '--no-input']);
+  } finally {
+    f.cleanup();
+  }
+});
+
+test('Linear transition resolves a UUID to the CLI issue identifier', () => {
+  const f = fixture('linear', 'gitlab');
+  try {
+    const result = f.run('transition-item-status.ts', {
+      item_id: 'e1f33d9f-c75b-4570-a5a5-ea1394dc0288',
+    }, { TEST_LINEAR_IDENTIFIER: 'ICY-133' });
+    assert.equal(result.status, 0, result.stdout);
+    assert.equal(JSON.parse(result.stdout).item_reference, 'ICY-133');
+    assert.deepEqual(f.calls().find(call => call.args[1] === 'update')?.args,
+      ['issue', 'update', 'ICY-133', '--state', 'In Progress', '--no-input']);
   } finally {
     f.cleanup();
   }

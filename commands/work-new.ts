@@ -168,6 +168,8 @@ try {
   const input = parseInput();
   const transition = command('transition-item-status.ts', { item_id: input.item_id });
   completed.resulting_status = transition.resulting_status;
+  const itemReference = typeof transition.item_reference === 'string'
+    ? transition.item_reference : input.item_id;
 
   stage = 'prepare_base';
   const remote = pushRemote();
@@ -196,14 +198,14 @@ try {
     source_branch: branch,
     target_branch: base,
     plan_name: input.plan_name,
-    item_id: input.item_id,
+    item_id: itemReference,
   });
   const request = created.request as Request;
   completed.request = request;
 
   stage = 'link_request_to_item';
   const linked = command('link-request-to-item.ts', {
-    item_id: input.item_id,
+    item_id: itemReference,
     request_kind: request.kind,
     request_url: request.url,
     plan_reference: input.plan_reference,

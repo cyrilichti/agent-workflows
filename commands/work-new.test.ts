@@ -52,7 +52,8 @@ if (name === 'transition-item-status.ts') {
     process.exitCode = 1;
   } else {
     process.stdout.write(JSON.stringify({
-      status: 'transitioned', resulting_status: { id: 'active', name: 'En cours' },
+      status: 'transitioned', item_reference: process.env.TEST_ITEM_REFERENCE || input.item_id,
+      resulting_status: { id: 'active', name: 'En cours' },
     }) + '\\n');
   }
 } else if (name === 'create-request.ts') {
@@ -80,10 +81,10 @@ function fixture() {
   const env = { ...process.env, PATH: `${bin}:${process.env.PATH}`, TEST_ROOT: root };
   return {
     root,
-    run(extraEnv: Record<string, string> = {}) {
+    run(extraEnv: Record<string, string> = {}, itemId = 'ITEM-1') {
       return spawnSync(process.execPath, [
         join(commands, 'work-new.ts'),
-        'ITEM-1', 'Réparer le plan', 'Fix a bug', 'plans/plan.md',
+        itemId, 'Réparer le plan', 'Fix a bug', 'plans/plan.md',
       ], { cwd: root, env: { ...env, ...extraEnv }, encoding: 'utf8' });
     },
     gitCalls() {
@@ -128,6 +129,21 @@ test('work-new performs one transition, branch setup, request creation, and back
       ['commit', '--allow-empty', '-m', 'Initialize Réparer le plan'],
       ['push', '--set-upstream', 'origin', 'fix/reparer-le-plan'],
     ]);
+  } finally {
+    f.cleanup();
+  }
+});
+
+test('work-new uses the resolved Linear identifier for the request and backlink', () => {
+  const f = fixture();
+  try {
+    const result = f.run({ TEST_ITEM_REFERENCE: 'ICY-133' },
+      'e1f33d9f-c75b-4570-a5a5-ea1394dc0288');
+    assert.equal(result.status, 0, result.stdout);
+    const calls = f.commandCalls();
+    assert.equal(calls[0]?.input.item_id, 'e1f33d9f-c75b-4570-a5a5-ea1394dc0288');
+    assert.equal(calls[1]?.input.item_id, 'ICY-133');
+    assert.equal(calls[2]?.input.item_id, 'ICY-133');
   } finally {
     f.cleanup();
   }
