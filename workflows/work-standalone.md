@@ -1,75 +1,36 @@
-# Work Standalone Branch
+# Work Standalone
+
+## Input
+
+| Input | Description |
+| --- | --- |
+| `item` | Required item ID, native URL, title, or search phrase. |
 
 ## Steps
 
-### 1. Resolve the Official Item
+### 1. Prepare the Context
 
-1. Run `../commands/resolve-item-provider.md`.
-
-2. Run `../commands/resolve-existing-item.md` with any supplied item reference
-   or title query and:
-
-   ```text
-   provider: resolved item provider
-   candidate_criteria:
-     status: open
-     label: agent-planned
-   fields: [labels, comments, request_backlinks]
-   ```
-
-3. Require the resolved item's `closed` field to be `false` and its labels to
-   contain `agent-planned`. Otherwise, identify the item, report the unmet
-   condition, and stop before resolving its plan.
-
-### 2. Resolve Work Mode
-
-Set `work_mode` to `resumed` when the official item contains a `Draft PR:` or
-`Draft MR:` backlink. Otherwise, set it to `new`.
-
-### 3. Resolve the Delivery Context
-
-For `resumed`:
-
-1. Select the plan reference from `Agent-Workflows-Plan:` in the backlink
-   comment.
-2. Read the referenced local plan. Stop when the plan reference or local file
-   is missing.
-
-For `new`:
-
-1. Run `../commands/read-item-plan.md` for the resolved item.
-2. Write the returned `plan_content` unchanged to the local `../plans/`
-   location defined by `../templates/plan.md`, using its filename rules.
-
-### 4. Establish the Plan and Item Association
-
-Apply Step 3 of `./delivery-context-standalone.md` to the resolved local plan
-and official item, using the comments and plan content already read in this
-run.
-
-### 5. Create the Delivery Context
-
-For `resumed`, pass `{ "request_backlinks": <item.request_backlinks> }` as JSON on
-standard input and run from this file's directory:
+Run from this file's directory. For an ID or native URL:
 
 ```sh
-node ../commands/resolve-work-request.ts
+node ../commands/work-standalone.ts "<item>"
 ```
 
-Stop if the command fails. Use its `request` and `branch` in the
-`Delivery Context`.
+For a title or search phrase:
 
-Create `Delivery Context` with the local plan path and complete official item
-context, including its request backlinks. For `resumed`, include the returned
-`request` and `branch`.
+```sh
+node ../commands/work-standalone.ts --query "<item>"
+```
 
-### 6. Follow Shared Execution
+On failure, report `stage` and `reason`, then stop.
 
-Follow `./work-item.md` with:
+### 2. Execute the Plan
+
+On success, follow `./work-item.md` with:
 
 ```text
-plan: selected plan
-item: selected complete official item context
-delivery_context: initialized delivery context
-work_mode: resolved work mode
+plan: result.delivery_context.plan
+item: result.delivery_context.item
+delivery_context: result.delivery_context
+work_mode: result.work_mode
 ```
