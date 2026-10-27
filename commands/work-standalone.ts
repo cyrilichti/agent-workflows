@@ -79,9 +79,10 @@ export async function prepareStandaloneWork(
     mkdirSync(dirname(join(root, reference)), { recursive: true });
     writeFileSync(join(root, reference), content, { flag: 'wx' });
   }
+  const { comments: _comments, ...itemContext } = item;
   const delivery_context = {
     plan: reference,
-    item,
+    item: itemContext,
     ...(request ? { request, branch: request.source_branch } : {}),
   };
   return { status: 'resolved', work_mode, delivery_context };

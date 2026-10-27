@@ -54,6 +54,7 @@ test('new work reuses comments and materializes unchanged plan with collision-sa
   assert.equal(result.delivery_context.plan, 'plans/2026-10-27-fix-cta-2.plan.md');
   assert.equal(readFileSync(join(root, result.delivery_context.plan), 'utf8'), plan);
   assert.equal(result.delivery_context.item.id, 'uuid');
+  assert.equal('comments' in result.delivery_context.item, false);
   assert.equal(readFileSync(join(root, 'plans/2026-10-27-fix-cta.plan.md'), 'utf8'), 'existing');
 });
 
@@ -98,6 +99,7 @@ test('resumed work reads the local plan and resolves its existing request', asyn
   assert.equal(result.delivery_context.plan, reference);
   assert.equal(result.delivery_context.branch, 'fix/cta');
   assert.deepEqual(result.delivery_context.request, request);
+  assert.equal('comments' in result.delivery_context.item, false);
   assert.equal(readFileSync(join(root, reference), 'utf8'), local);
 });
 

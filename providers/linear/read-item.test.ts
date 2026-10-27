@@ -156,7 +156,8 @@ test('installed standalone command prepares one context and writes the exact app
   );
   assert.equal(readFileSync(join(project, output.delivery_context.plan), 'utf8'), content);
   assert.equal(output.delivery_context.item.id, 'uuid');
-  assert.equal(output.delivery_context.item.comments.length, 1);
+  assert.equal('comments' in output.delivery_context.item, false);
+  assert.equal(result.stdout.includes('Agent-Workflows-Approved-Plan:'), false);
   const calls = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n');
   assert.equal(calls.length, 2);
   const searched = spawnSync(
