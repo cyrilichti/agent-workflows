@@ -2,10 +2,10 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { assertReadyPlan } from './ready-plan.ts';
-import { resolveWorkRequestForProject } from './resolve-work-request.ts';
+import { resolveRequestForProject } from './resolve-request.ts';
 import { updateRequest } from './update-request.ts';
 
-type Request = ReturnType<typeof resolveWorkRequestForProject>;
+type Request = ReturnType<typeof resolveRequestForProject>;
 type Context = {
   plan: string;
   item: unknown;
@@ -32,7 +32,7 @@ function equalBody(left: string, right: string): boolean {
   return left.replace(/[\r\n]+$/, '') === right.replace(/[\r\n]+$/, '');
 }
 function readExactRequest(context: Context): Request {
-  const request = resolveWorkRequestForProject(root, context.request.request_id, [], context.branch);
+  const request = resolveRequestForProject(root, context.request.request_id, [], context.branch);
   if (!request.head_sha) throw new Error('Request head SHA is unavailable.');
   return request;
 }

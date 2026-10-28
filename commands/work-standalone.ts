@@ -5,7 +5,7 @@ import { readItem } from './read-item.ts';
 import { resolveExistingItem } from './resolve-existing-item.ts';
 import type { ItemComment, ItemProvider, WorkItem } from './read-item.ts';
 import { readItemPlan } from './read-item-plan.ts';
-import { resolveWorkRequestForProject } from './resolve-work-request.ts';
+import { resolveRequestForProject } from './resolve-request.ts';
 
 function extractPlanReferences(comments: ItemComment[]): string[] {
   const references: string[] = [];
@@ -34,7 +34,7 @@ export async function prepareStandaloneWork(
   item: WorkItem,
   date = new Intl.DateTimeFormat('en-CA').format(new Date()),
   resolveRequest = (backlinks: string[]) => {
-    return resolveWorkRequestForProject(root, undefined, backlinks, undefined);
+    return resolveRequestForProject(root, undefined, backlinks, undefined);
   },
 ) {
   if (item.closed !== false || !item.labels.includes('agent-planned')) {

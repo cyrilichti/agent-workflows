@@ -13,7 +13,7 @@ type Pull = {
   html_url: string;
 };
 
-export function readWorkRequest(repository: GitHubRepository, requestId: number) {
+export function readRequest(repository: GitHubRepository, requestId: number) {
   const output = execFileSync('gh', [
     'api', '--hostname', repository.host,
     `repos/${repository.owner}/${repository.repo}/pulls/${requestId}`,

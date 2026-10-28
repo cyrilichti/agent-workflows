@@ -14,7 +14,7 @@ type MergeRequest = {
   web_url: string;
 };
 
-export function readWorkRequest(repository: GitLabRepository, requestId: number) {
+export function readRequest(repository: GitLabRepository, requestId: number) {
   const output = execFileSync('glab', [
     'api', '--hostname', repository.host,
     `projects/${encodeURIComponent(repository.path)}/merge_requests/${requestId}`,

@@ -5,7 +5,7 @@ import { resolveExistingItem } from './resolve-existing-item.ts';
 import { readItem } from './read-item.ts';
 import type { ItemProvider } from './read-item.ts';
 import { prepareStandaloneWork } from './work-standalone.ts';
-import { resolveWorkRequestForProject } from './resolve-work-request.ts';
+import { resolveRequestForProject } from './resolve-request.ts';
 
 const parent = dirname(import.meta.dirname);
 const root = basename(parent) === '.agents' ? dirname(parent) : parent;
@@ -52,7 +52,7 @@ if (import.meta.main) {
       throw new Error('Item has no linked pull or merge request and local plan.');
     }
     stage = 'resolve_request';
-    const request = resolveWorkRequestForProject(root, undefined, item.request_backlinks, undefined);
+    const request = resolveRequestForProject(root, undefined, item.request_backlinks, undefined);
     stage = 'switch_branch';
     const clean = spawnSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' });
     if (clean.error || clean.status !== 0 || clean.stdout.trim()) {
