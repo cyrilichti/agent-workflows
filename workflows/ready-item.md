@@ -15,7 +15,7 @@
 Run from this file's directory with the complete `delivery-context` as JSON:
 
 ```sh
-node ../commands/ready-promote.ts <<'JSON'
+node ../commands/update-request.ts <<'JSON'
 <delivery-context JSON>
 JSON
 ```

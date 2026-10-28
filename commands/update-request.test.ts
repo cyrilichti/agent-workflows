@@ -1,99 +1,107 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
 
-const cli = `#!/usr/bin/env node
-import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
-import { basename } from 'node:path';
+const plan = '# Fix CTA\n\n## Steps\n\n1. ✓ Fix color\n\n## Validation\n\n- [x] Run tests\n';
+const gitCli = `#!/usr/bin/env node
+const args = process.argv.slice(2);
+if (args[0] === 'status') {
+} else if (args[0] === 'branch') {
+  process.stdout.write('fix/cta\\n');
+} else if (args[0] === 'rev-parse') {
+  process.stdout.write('abc\\n');
+} else if (args[0] === 'rev-list') {
+  process.stdout.write('0\\t0\\n');
+} else if (args[0] === 'config') {
+  if (args[2] === 'branch.fix/cta.remote') process.stdout.write('origin\\n');
+  else process.exitCode = 1;
+} else if (args[0] === 'remote') {
+  process.stdout.write('https://github.com/acme/repo.git\\n');
+} else {
+  process.stderr.write('Unexpected git command: ' + args.join(' '));
+  process.exitCode = 2;
+}
+`;
+const ghCli = `#!/usr/bin/env node
+import { readFileSync, writeFileSync } from 'node:fs';
 const args = process.argv.slice(2);
 const file = process.env.TEST_REQUEST_STATE;
 const state = JSON.parse(readFileSync(file, 'utf8'));
-appendFileSync(process.env.TEST_REQUEST_CALLS, JSON.stringify({ program: basename(process.argv[1]), args }) + '\\n');
-if (args[0] === 'api' && !args.includes('PATCH')) {
-  process.stdout.write(JSON.stringify(state));
-} else if (basename(process.argv[1]) === 'gh' && args[0] === 'api') {
-  const patch = JSON.parse(readFileSync(0, 'utf8'));
-  Object.assign(state, patch);
+if (args[0] === 'api' && args.includes('PATCH')) {
+  Object.assign(state, JSON.parse(readFileSync(0, 'utf8')));
   writeFileSync(file, JSON.stringify(state));
-} else if (basename(process.argv[1]) === 'gh' && args[0] === 'pr' && args[1] === 'ready') {
+} else if (args[0] === 'api') {
+  process.stdout.write(JSON.stringify(state));
+} else if (args[0] === 'pr' && args[1] === 'ready') {
   state.draft = false;
   writeFileSync(file, JSON.stringify(state));
-} else if (basename(process.argv[1]) === 'glab' && args[0] === 'mr' && args[1] === 'update') {
-  const description = args.indexOf('--description');
-  const title = args.indexOf('--title');
-  if (description >= 0) state.description = args[description + 1];
-  if (title >= 0) state.title = args[title + 1];
-  if (args.includes('--ready')) state.draft = false;
-  writeFileSync(file, JSON.stringify(state));
 } else {
-  process.stderr.write('Unexpected request command');
   process.exitCode = 2;
 }
 `;
 
-function fixture(t: test.TestContext, program: 'gh' | 'glab', state: object) {
+function fixture(t: test.TestContext) {
   const root = mkdtempSync(join(tmpdir(), 'update-request-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
-  writeFileSync(join(root, program), cli, { mode: 0o755 });
-  writeFileSync(join(root, 'state.json'), JSON.stringify(state));
-  const env = { ...process.env, PATH: `${root}:${process.env.PATH}`,
-    TEST_REQUEST_STATE: join(root, 'state.json'), TEST_REQUEST_CALLS: join(root, 'calls.jsonl') };
+  mkdirSync(join(root, 'commands'));
+  mkdirSync(join(root, 'providers/github'), { recursive: true });
+  mkdirSync(join(root, 'providers/gitlab'), { recursive: true });
+  mkdirSync(join(root, 'bin'));
+  mkdirSync(join(root, 'plans'));
+  for (const name of ['update-request', 'resolve-request',
+    'resolve-item-provider', 'resolve-version-repository']) {
+    copyFileSync(resolve(`commands/${name}.ts`), join(root, 'commands', `${name}.ts`));
+  }
+  for (const provider of ['github', 'gitlab']) {
+    for (const name of ['read-request', 'update-request']) {
+      copyFileSync(resolve(`providers/${provider}/${name}.ts`),
+        join(root, 'providers', provider, `${name}.ts`));
+    }
+  }
+  writeFileSync(join(root, 'plans/cta.plan.md'), plan);
+  writeFileSync(join(root, 'agent-workflows.yaml'), 'mcp:\n  version:\n    provider: github\n');
+  writeFileSync(join(root, 'bin/git'), gitCli, { mode: 0o755 });
+  writeFileSync(join(root, 'bin/gh'), ghCli, { mode: 0o755 });
+  writeFileSync(join(root, 'request.json'), JSON.stringify({
+    number: 7, title: 'Draft: Fix CTA', state: 'open', merged: false, draft: true,
+    head: { ref: 'fix/cta', sha: 'abc' }, base: { ref: 'main' }, body: '',
+    html_url: 'https://github.com/acme/repo/pull/7',
+  }));
+  const env = { ...process.env, PATH: `${join(root, 'bin')}:${process.env.PATH}`,
+    TEST_REQUEST_STATE: join(root, 'request.json') };
+  const context = { plan: 'plans/cta.plan.md', item: { id: 'ITEM-1' }, branch: 'fix/cta',
+    request: { request_id: 7 } };
   return {
-    run(input: object) {
-      return spawnSync(process.execPath, [resolve('commands/update-request.ts')], {
-        env, input: JSON.stringify(input), encoding: 'utf8',
-      });
-    },
-    state() { return JSON.parse(readFileSync(join(root, 'state.json'), 'utf8')); },
-    calls() { return readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n')
-      .map(line => JSON.parse(line) as { program: string; args: string[] }); },
+    root,
+    run() { return spawnSync(process.execPath, [join(root, 'commands/update-request.ts')],
+      { cwd: root, env, input: JSON.stringify(context), encoding: 'utf8' }); },
+    state() { return JSON.parse(readFileSync(join(root, 'request.json'), 'utf8')); },
+    planPath: join(root, 'plans/cta.plan.md'),
   };
 }
 
-test('GitHub description replacement and ready transition preserve the exact body', (t) => {
-  const f = fixture(t, 'gh', {
-    number: 7, state: 'open', merged: false, draft: true, title: 'Draft: Fix CTA',
-    head: { ref: 'fix/cta', sha: 'abc' }, base: { ref: 'main' }, body: '',
-    html_url: 'https://github.com/acme/repo/pull/7',
-  });
-  const request = { request_id: 7, kind: 'pull_request',
-    url: 'https://github.com/acme/repo/pull/7', state: 'open', draft: true,
-    title: 'Draft: Fix CTA', source_branch: 'fix/cta', target_branch: 'main',
-    body: '', head_sha: 'abc' };
-  const body = '# Plan\n\n- [x] Check\n';
-  const replaced = f.run({ request, action: 'replace-description', body });
-  assert.equal(replaced.status, 0);
-  const updatedRequest = JSON.parse(replaced.stdout).request;
-  assert.equal(f.run({ request: updatedRequest, action: 'mark-ready' }).status, 0);
-  assert.equal(f.state().body, body);
-  assert.equal(f.state().title, 'Fix CTA');
+test('request update promotes a completed plan and returns the same request context', (t) => {
+  const f = fixture(t);
+  const result = f.run();
+  assert.equal(result.status, 0, result.stdout);
+  const output = JSON.parse(result.stdout);
+  assert.equal(output.status, 'promoted');
+  assert.equal(output.delivery_context.request.request_id, 7);
+  assert.equal(f.state().body, plan);
   assert.equal(f.state().draft, false);
-  assert.equal(f.calls().filter(call => call.args.includes('PATCH')).length, 2);
-  assert.equal(f.calls().filter(call => call.args[0] === 'pr').length, 1);
-  assert.equal(f.calls().filter(call => call.args[0] === 'api' &&
-    !call.args.includes('PATCH')).length, 0);
+  assert.equal(f.state().title, 'Fix CTA');
 });
 
-test('GitLab description replacement and ready transition use the same MR', (t) => {
-  const f = fixture(t, 'glab', {
-    iid: 8, state: 'opened', draft: true, title: 'Draft: Fix CTA',
-    source_branch: 'fix/cta', target_branch: 'main', sha: 'abc', description: '',
-    web_url: 'https://gitlab.example/acme/repo/-/merge_requests/8',
-  });
-  const request = { request_id: 8, kind: 'merge_request',
-    url: 'https://gitlab.example/acme/repo/-/merge_requests/8',
-    state: 'open', draft: true, title: 'Draft: Fix CTA',
-    source_branch: 'fix/cta', target_branch: 'main', body: '', head_sha: 'abc' };
-  const replaced = f.run({ request, action: 'replace-description', body: '# Plan' });
-  assert.equal(replaced.status, 0);
-  const updatedRequest = JSON.parse(replaced.stdout).request;
-  assert.equal(f.run({ request: updatedRequest, action: 'mark-ready' }).status, 0);
-  assert.equal(f.state().description, '# Plan');
-  assert.equal(f.state().title, 'Fix CTA');
-  assert.equal(f.state().draft, false);
-  assert.equal(f.calls().filter(call => call.args[0] === 'mr').length, 2);
-  assert.equal(f.calls().filter(call => call.args[0] === 'api').length, 0);
+test('request update stops before mutation when validation is unchecked', (t) => {
+  const f = fixture(t);
+  writeFileSync(f.planPath, plan.replace('[x]', '[ ]'));
+  const result = f.run();
+  assert.equal(result.status, 1);
+  assert.equal(JSON.parse(result.stdout).stage, 'check_plan');
+  assert.equal(f.state().body, '');
+  assert.equal(f.state().draft, true);
+  assert.equal(existsSync(f.planPath), true);
 });
