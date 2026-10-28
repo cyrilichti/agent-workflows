@@ -35,6 +35,19 @@ test('standalone ready reuses the linked local plan without creating one', async
   assert.equal(readFileSync(join(root, 'plans/cta.plan.md'), 'utf8'), plan);
 });
 
+test('standalone ready uses the backlink comment without matching the resolved request URL', async (t) => {
+  const root = mkdtempSync(join(tmpdir(), 'ready-'));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  mkdirSync(join(root, 'plans'));
+  writeFileSync(join(root, 'plans/cta.plan.md'), plan);
+  const official = item();
+  official.comments[0]!.body =
+    'Draft PR: https://github.com/acme/repo/pull/8\n\nAgent-Workflows-Plan: plans/cta.plan.md';
+  const result = await prepareStandaloneReady(root, 'linear', official, () => request);
+  assert.equal(result.delivery_context.plan, 'plans/cta.plan.md');
+  assert.equal(result.delivery_context.request?.request_id, 7);
+});
+
 test('standalone ready stops without a linked request or local plan', async (t) => {
   const root = mkdtempSync(join(tmpdir(), 'ready-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));

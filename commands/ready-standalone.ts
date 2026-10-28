@@ -24,13 +24,6 @@ export async function prepareStandaloneReady(
   if (result.work_mode !== 'resumed' || !result.delivery_context.request) {
     throw new Error('Ready requires an existing linked request and local plan.');
   }
-  const request = result.delivery_context.request;
-  const comments = item.comments.filter(comment =>
-    /^Draft (?:PR|MR):/m.test(comment.body) && comment.body.includes(request.url));
-  if (!comments.some(comment =>
-    comment.body.split(/\r?\n/).includes(`Agent-Workflows-Plan: ${result.delivery_context.plan}`))) {
-    throw new Error('The resolved request and local plan do not share one item backlink.');
-  }
   return { status: 'resolved' as const, delivery_context: result.delivery_context };
 }
 
