@@ -4,7 +4,7 @@
 
 | Input | Requirement |
 | --- | --- |
-| `delivery-context` | Complete context with `plan`, `item`, `branch`, and `request` |
+| `delivery-context` | Required |
 
 ---
 
