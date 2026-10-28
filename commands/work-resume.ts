@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { basename, dirname, join } from 'node:path';
-import { resolveWorkRequestForProject } from './resolve-work-request.ts';
+import { resolveRequestForProject } from './resolve-request.ts';
 
 const parent = dirname(import.meta.dirname);
 const root = basename(parent) === '.agents' ? dirname(parent) : parent;
@@ -25,7 +25,7 @@ function git(...args: string[]): string {
 
 try {
   const [itemId, requestId, branch] = process.argv.slice(2);
-  const request = resolveWorkRequestForProject(root,
+  const request = resolveRequestForProject(root,
     Number(requestId), [], branch);
   completed.request = request;
   completed.branch = request.source_branch;

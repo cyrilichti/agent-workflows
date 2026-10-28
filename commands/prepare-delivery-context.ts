@@ -5,7 +5,7 @@ import { readItem } from './read-item.ts';
 import { resolveExistingItem } from './resolve-existing-item.ts';
 import type { ItemComment, ItemProvider, WorkItem } from './read-item.ts';
 import { readItemPlan } from './read-item-plan.ts';
-import { resolveWorkRequestForProject } from './resolve-work-request.ts';
+import { resolveRequestForProject } from './resolve-request.ts';
 
 function extractPlanReferences(comments: ItemComment[]): string[] {
   const references: string[] = [];
@@ -28,19 +28,23 @@ function resolvePlanPath(root: string, reference: string): string {
   return local;
 }
 
-export async function prepareStandaloneWork(
+export async function prepareDeliveryContext(
   root: string,
   provider: ItemProvider,
   item: WorkItem,
   date = new Intl.DateTimeFormat('en-CA').format(new Date()),
   resolveRequest = (backlinks: string[]) => {
-    return resolveWorkRequestForProject(root, undefined, backlinks, undefined);
+    return resolveRequestForProject(root, undefined, backlinks, undefined);
   },
+  requireLinkedRequest = false,
 ) {
   if (item.closed !== false || !item.labels.includes('agent-planned')) {
     throw new Error(`Item ${item.identifier ?? item.id} must be open and labeled agent-planned.`);
   }
   const work_mode = item.request_backlinks.length ? 'resumed' : 'new';
+  if (requireLinkedRequest && work_mode === 'new') {
+    throw new Error('Item has no linked pull or merge request.');
+  }
   let reference: string;
   let content: string;
   if (work_mode === 'resumed') {
@@ -97,7 +101,9 @@ if (import.meta.main) {
       throw new Error('Configure item provider as linear or clickup.');
     }
     stage = 'resolve_item';
-    const [input, query] = process.argv.slice(2);
+    const args = process.argv.slice(2);
+    const requireLinkedRequest = args[0] === '--require-linked-request';
+    const [input, query] = requireLinkedRequest ? args.slice(1) : args;
     const reference =
       input === '--query'
         ? resolveExistingItem(provider, undefined, query)
@@ -105,7 +111,8 @@ if (import.meta.main) {
     stage = 'read_item';
     const item = readItem(provider, reference);
     stage = 'prepare_context';
-    const result = await prepareStandaloneWork(root, provider, item);
+    const result = await prepareDeliveryContext(root, provider, item,
+      undefined, undefined, requireLinkedRequest);
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
     process.stdout.write(

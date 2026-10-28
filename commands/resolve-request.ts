@@ -1,8 +1,8 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
-import { readWorkRequest as readGitHubRequest } from '../providers/github/read-work-request.ts';
-import { readWorkRequest as readGitLabRequest } from '../providers/gitlab/read-work-request.ts';
+import { readRequest as readGitHubRequest } from '../providers/github/read-request.ts';
+import { readRequest as readGitLabRequest } from '../providers/gitlab/read-request.ts';
 import { resolveConfiguredProvider } from './resolve-item-provider.ts';
 import { resolveVersionRepository } from './resolve-version-repository.ts';
 import type { GitHubRepository, GitLabRepository } from './resolve-version-repository.ts';
@@ -31,7 +31,7 @@ function gitlabBacklinkId(value: string, repository: GitLabRepository): number |
   return undefined;
 }
 
-export function resolveWorkRequest(
+export function resolveRequest(
   provider: 'github' | 'gitlab',
   repository: GitHubRepository | GitLabRepository,
   requestId: number | undefined,
@@ -104,7 +104,7 @@ function pushRemote(root: string): string {
   return remotes[0]!;
 }
 
-export function resolveWorkRequestForProject(
+export function resolveRequestForProject(
   root: string,
   requestId: number | undefined,
   backlinks: string[],
@@ -114,7 +114,7 @@ export function resolveWorkRequestForProject(
     'github' | 'gitlab';
   const remoteUrl = git(root, 'remote', 'get-url', '--push', pushRemote(root));
   const repository = resolveVersionRepository(remoteUrl, provider);
-  return resolveWorkRequest(provider, repository, requestId, backlinks, expectedBranch);
+  return resolveRequest(provider, repository, requestId, backlinks, expectedBranch);
 }
 
 if (import.meta.main) {
@@ -122,7 +122,7 @@ if (import.meta.main) {
     const parent = dirname(import.meta.dirname);
     const root = basename(parent) === '.agents' ? dirname(parent) : parent;
     const input = JSON.parse(readFileSync(0, 'utf8')) as { request_backlinks: string[] };
-    const request = resolveWorkRequestForProject(root, undefined, input.request_backlinks, undefined);
+    const request = resolveRequestForProject(root, undefined, input.request_backlinks, undefined);
     process.stdout.write(`${JSON.stringify({
       status: 'resolved', request, branch: request.source_branch,
     })}\n`);

@@ -66,14 +66,14 @@ function fixture(provider: 'github' | 'gitlab') {
   mkdirSync(commands);
   mkdirSync(bin);
   for (const name of ['work-resume', 'resolve-item-provider',
-    'resolve-version-repository', 'resolve-work-request']) {
+    'resolve-version-repository', 'resolve-request']) {
     copyFileSync(resolve(`commands/${name}.ts`), join(commands, `${name}.ts`));
   }
   for (const name of ['github', 'gitlab']) {
     const directory = join(root, 'providers', name);
     mkdirSync(directory, { recursive: true });
-    copyFileSync(resolve(`providers/${name}/read-work-request.ts`),
-      join(directory, 'read-work-request.ts'));
+    copyFileSync(resolve(`providers/${name}/read-request.ts`),
+      join(directory, 'read-request.ts'));
   }
   writeFileSync(join(commands, 'transition-item-status.ts'), transitionCommand);
   writeFileSync(join(bin, 'git'), gitCli, { mode: 0o755 });
@@ -88,7 +88,7 @@ function fixture(provider: 'github' | 'gitlab') {
   return {
     root,
     resolve(backlinks: string[]) {
-      return spawnSync(process.execPath, [join(commands, 'resolve-work-request.ts')], {
+      return spawnSync(process.execPath, [join(commands, 'resolve-request.ts')], {
         cwd: root, env, encoding: 'utf8',
         input: JSON.stringify({ request_backlinks: backlinks }),
       });
