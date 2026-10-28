@@ -7,7 +7,7 @@ type Pull = {
   state: string;
   merged: boolean;
   draft: boolean;
-  head: { ref: string };
+  head: { ref: string; sha: string };
   base: { ref: string };
   body: string | null;
   html_url: string;
@@ -26,6 +26,7 @@ export function readWorkRequest(repository: GitHubRepository, requestId: number)
     state: pull.merged ? 'merged' : pull.state,
     draft: pull.draft,
     source_branch: pull.head.ref,
+    head_sha: pull.head.sha,
     target_branch: pull.base.ref,
     body: pull.body ?? '',
     url: pull.html_url,

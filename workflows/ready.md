@@ -1,47 +1,34 @@
 # Ready
 
-## Purpose
-
-Verify completed work against its plan, repair gaps through `/work`, then
-promote it and continue through `/inspect` autonomously.
-
----
-
 ## Required Context
 
-Reuse any rules already active from the caller. From this workflow's directory,
-load the remaining rules in one `cat` command, omitting paths for active rules.
-Skip the command when all are active:
+From this file's directory, read only the files below that are not already
+active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md
+cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/ready-complete.md
 ```
 
-Load `../goals/ready-complete.md` once as this workflow's completion contract.
+---
+
+## Input
+
+| Entry | Input |
+| --- | --- |
+| `/work` | `delivery-context`: complete `Delivery Context` with `plan`, `item`, `branch`, and `request` |
+| Standalone `/ready` | `item`: official item ID, native URL, title, or search phrase |
+
+Stop before routing when a required caller handoff is missing or incomplete.
 
 ---
 
-## Steps
+## Branch Routing
 
-### 1. Follow One Context Branch
+Select exactly one branch:
 
-Follow exactly one branch:
+| Situation | Workflow |
+| --- | --- |
+| Caller supplies `delivery-context` | `./ready-item.md` |
+| No caller handoff | `./ready-standalone.md` |
 
-- follow `./ready-confirm.md` when the caller supplies a complete delivery
-  context with an authoritative plan;
-- otherwise, follow `./ready-standalone.md`.
-
-Preserve every identity supplied by the caller. Fail an incomplete caller
-handoff instead of switching it to standalone mode.
-
----
-
-## Safety
-
-- The standalone plan, item, and exact-request selections, or a complete caller
-  handoff, authorize readiness and promotion without another confirmation.
-- `/ready` may modify the authoritative plan only as needed for its readiness
-  activity. `/work` remains responsible for code changes, corrective todo
-  execution, and commits.
-- Do not force-push, merge, deploy, release, or run unplanned checks.
-- Invoke `/inspect` only after every required promotion mutation is observed.
+Read the selected workflow file completely and follow it.

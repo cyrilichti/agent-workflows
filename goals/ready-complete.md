@@ -2,17 +2,15 @@
 
 ## Outcome
 
-Completed work is checked directly against its plan, repaired through `/work`
-when necessary, then promoted and handed to `/inspect` autonomously.
+An existing plan with every todo completed and every global validation checked
+is published unchanged on its exact request, which is then made ready for
+inspection.
 
 ## Terminal Outcomes
 
-- Corrective: every concrete delivery gap is bound to a stable finding ID, its
-  exact explanation, and the verified HEAD SHA before the same delivery
-  context returns to resumed `/work`.
-- Promoted: the planned validation passed, the request body matches the
-  complete authoritative plan ignoring only trailing CR/LF characters,
-  the request is observed open and non-draft at the verified HEAD, and the
-  same delivery context is handed to `/inspect`.
-- Stopped: the exact operational blocker is reported without treating a
-  delivery gap as terminal or claiming an unobserved promotion.
+- Promoted: the request body matches the complete local plan ignoring only
+  trailing CR/LF characters, and the request is observed open and non-draft at
+  the verified HEAD before the same delivery context is handed to `/inspect`.
+- Stopped: a missing or ineligible plan, inconsistent identity, unsafe Git
+  state, failed mutation, or unobserved postcondition is reported without
+  claiming promotion.

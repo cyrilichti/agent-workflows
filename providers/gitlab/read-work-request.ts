@@ -8,6 +8,7 @@ type MergeRequest = {
   draft?: boolean;
   work_in_progress?: boolean;
   source_branch: string;
+  sha: string;
   target_branch: string;
   description?: string;
   web_url: string;
@@ -26,6 +27,7 @@ export function readWorkRequest(repository: GitLabRepository, requestId: number)
     state: request.state === 'opened' ? 'open' : request.state,
     draft: request.draft === true || request.work_in_progress === true,
     source_branch: request.source_branch,
+    head_sha: request.sha,
     target_branch: request.target_branch,
     body: request.description ?? '',
     url: request.web_url,
