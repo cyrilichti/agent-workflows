@@ -4,7 +4,6 @@ import { resolveExistingItem } from './resolve-existing-item.ts';
 import { readItem } from './read-item.ts';
 import type { ItemProvider } from './read-item.ts';
 import { prepareStandaloneWork } from './work-standalone.ts';
-import { resolveRequestForProject } from './resolve-request.ts';
 
 const parent = dirname(import.meta.dirname);
 const root = basename(parent) === '.agents' ? dirname(parent) : parent;
@@ -40,13 +39,8 @@ if (import.meta.main) {
       : resolveExistingItem(provider, input);
     stage = 'read_item';
     const item = readItem(provider, reference);
-    if (!item.request_backlinks.length) {
-      throw new Error('Item has no linked pull or merge request and local plan.');
-    }
-    stage = 'resolve_request';
-    const request = resolveRequestForProject(root, undefined, item.request_backlinks, undefined);
     stage = 'prepare_context';
-    const result = await prepareStandaloneReady(root, provider, item, () => request);
+    const result = await prepareStandaloneReady(root, provider, item);
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
     process.stdout.write(`${JSON.stringify({ status: 'failed', stage,
