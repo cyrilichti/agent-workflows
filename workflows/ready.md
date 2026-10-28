@@ -15,7 +15,7 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 
 | Entry | Input |
 | --- | --- |
-| `/work` | `delivery-context`: complete `Delivery Context` with `plan`, `item`, `branch`, and `request` |
+| `/work` | `delivery-context`: complete context with `plan`, `item`, `branch`, and `request` |
 | Standalone `/ready` | `item`: official item ID, native URL, title, or search phrase |
 
 Stop before routing when a required caller handoff is missing or incomplete.

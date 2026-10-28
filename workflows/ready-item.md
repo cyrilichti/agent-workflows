@@ -12,11 +12,11 @@
 
 ### 1. Publish and Promote
 
-Run from this file's directory with the complete `Delivery Context` as JSON:
+Run from this file's directory with the complete `delivery-context` as JSON:
 
 ```sh
 node ../commands/ready-promote.ts <<'JSON'
-<delivery context JSON>
+<delivery-context JSON>
 JSON
 ```
 
