@@ -26,7 +26,8 @@ appendFileSync(process.env.TEST_LOG, JSON.stringify({ args, input }) + '\\n');
   const repo = { host: 'github.com', owner: 'acme', repo: 'repo' };
   replaceDescription(repo, 7, '# Plan\n');
   markReady(repo, 7, 'Fix CTA', true);
-  const calls = readFileSync(join(bin, 'calls'), 'utf8').trim().split('\n').map(JSON.parse);
+  const calls = readFileSync(join(bin, 'calls'), 'utf8').trim().split('\n')
+    .map(value => JSON.parse(value));
   assert.equal(JSON.parse(calls[0].input).body, '# Plan\n');
   assert.equal(JSON.parse(calls[1].input).title, 'Fix CTA');
   assert.deepEqual(calls[2].args, ['pr', 'ready', '7', '--repo', 'github.com/acme/repo']);

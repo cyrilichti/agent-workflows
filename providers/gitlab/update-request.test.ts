@@ -24,7 +24,8 @@ appendFileSync(process.env.TEST_LOG, JSON.stringify(process.argv.slice(2)) + '\\
   const repo = { host: 'gitlab.example', path: 'acme/repo', url: 'https://gitlab.example/acme/repo' };
   replaceDescription(repo, 8, '# Plan\n');
   markReady(repo, 8, 'Fix CTA');
-  const calls = readFileSync(join(bin, 'calls'), 'utf8').trim().split('\n').map(JSON.parse);
+  const calls = readFileSync(join(bin, 'calls'), 'utf8').trim().split('\n')
+    .map(value => JSON.parse(value));
   assert.deepEqual(calls[0], ['mr', 'update', '8', '--repo', repo.url,
     '--description', '# Plan\n', '--yes']);
   assert.deepEqual(calls[1], ['mr', 'update', '8', '--repo', repo.url,

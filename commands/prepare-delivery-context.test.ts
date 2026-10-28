@@ -99,6 +99,7 @@ test('resumed work reads the local plan and resolves its existing request', asyn
     draft: true,
     title: 'Fix CTA',
     body: '',
+    head_sha: 'abc',
   };
   const result = await prepareDeliveryContext(root, 'linear', official, '2026-10-27', () => {
     return request;
