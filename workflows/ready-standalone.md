@@ -4,7 +4,7 @@
 
 | Input | Description |
 | --- | --- |
-| `item` | Required official item ID, native URL, title, or search phrase. |
+| `item` | Required item ID, native URL, title, or search phrase. |
 
 ## Steps
 

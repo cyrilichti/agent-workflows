@@ -17,7 +17,6 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 | --- | --- |
 | `/pick` | `plan`: approved plan; `item`: complete official item context |
 | `/ready` or `/inspect` | `delivery-context`: conforming `Delivery Context` with `branch` and `request` |
-| Standalone `/work` | No caller handoff required |
 
 Stop before routing when a required input for the caller handoff is missing or
 incomplete.
