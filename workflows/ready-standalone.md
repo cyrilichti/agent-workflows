@@ -13,13 +13,13 @@
 Run from this file's directory. For an ID or native URL:
 
 ```sh
-node ../commands/work-standalone.ts --require-linked-request "<item>"
+node ../commands/prepare-delivery-context.ts --require-linked-request "<item>"
 ```
 
 For a title or search phrase:
 
 ```sh
-node ../commands/work-standalone.ts --require-linked-request --query "<item>"
+node ../commands/prepare-delivery-context.ts --require-linked-request --query "<item>"
 ```
 
 On failure, report `stage` and `reason`, then stop.

@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import { readItemPlan } from './read-item-plan.ts';
-import { prepareStandaloneWork } from './work-standalone.ts';
+import { prepareDeliveryContext } from './prepare-delivery-context.ts';
 import type { WorkItem } from './read-item.ts';
 
 const plan =
@@ -49,7 +49,7 @@ test('new work reuses comments and materializes unchanged plan with collision-sa
   const root = createFixture(t);
   mkdirSync(join(root, 'plans'));
   writeFileSync(join(root, 'plans/2026-10-27-fix-cta.plan.md'), 'existing');
-  const result = await prepareStandaloneWork(root, 'linear', createItem(), '2026-10-27');
+  const result = await prepareDeliveryContext(root, 'linear', createItem(), '2026-10-27');
   assert.equal(result.work_mode, 'new');
   assert.equal(result.delivery_context.plan, 'plans/2026-10-27-fix-cta-2.plan.md');
   assert.equal(readFileSync(join(root, result.delivery_context.plan), 'utf8'), plan);
@@ -60,7 +60,7 @@ test('new work reuses comments and materializes unchanged plan with collision-sa
 test('ready mode stops without a linked request before creating a plan', async (t) => {
   const root = createFixture(t);
   await assert.rejects(
-    prepareStandaloneWork(root, 'linear', createItem(), '2026-10-27', undefined, true),
+    prepareDeliveryContext(root, 'linear', createItem(), '2026-10-27', undefined, true),
     /no linked pull or merge request/i,
   );
   assert.equal(existsSync(join(root, 'plans')), false);
@@ -72,7 +72,7 @@ test('ineligible items stop before writing the plan', async (t) => {
     { ...createItem(), closed: true },
     { ...createItem(), labels: [] },
   ]) {
-    await assert.rejects(prepareStandaloneWork(root, 'linear', official, '2026-10-27'));
+    await assert.rejects(prepareDeliveryContext(root, 'linear', official, '2026-10-27'));
   }
   assert.equal(existsSync(join(root, 'plans')), false);
 });
@@ -100,7 +100,7 @@ test('resumed work reads the local plan and resolves its existing request', asyn
     title: 'Fix CTA',
     body: '',
   };
-  const result = await prepareStandaloneWork(root, 'linear', official, '2026-10-27', () => {
+  const result = await prepareDeliveryContext(root, 'linear', official, '2026-10-27', () => {
     return request;
   });
   assert.equal(result.work_mode, 'resumed');
@@ -110,7 +110,7 @@ test('resumed work reads the local plan and resolves its existing request', asyn
   assert.equal(readFileSync(join(root, reference), 'utf8'), local);
 
   official.comments[1]!.body = `Draft PR: https://github.com/acme/repo/pull/8\nAgent-Workflows-Plan: ${reference}`;
-  const ready = await prepareStandaloneWork(root, 'linear', official, '2026-10-27',
+  const ready = await prepareDeliveryContext(root, 'linear', official, '2026-10-27',
     () => request, true);
   assert.equal(ready.delivery_context.plan, reference);
   assert.deepEqual(ready.delivery_context.request, request);
@@ -120,10 +120,10 @@ test('resumed work stops for a missing plan or missing backlink reference', asyn
   const root = createFixture(t);
   const official = createItem();
   official.request_backlinks = ['https://github.com/acme/repo/pull/7'];
-  await assert.rejects(prepareStandaloneWork(root, 'linear', official), /plan reference/i);
+  await assert.rejects(prepareDeliveryContext(root, 'linear', official), /plan reference/i);
   official.comments.push({
     id: 'b',
     body: 'Draft PR: https://github.com/acme/repo/pull/7\nAgent-Workflows-Plan: plans/missing.plan.md',
   });
-  await assert.rejects(prepareStandaloneWork(root, 'linear', official), /ENOENT/);
+  await assert.rejects(prepareDeliveryContext(root, 'linear', official), /ENOENT/);
 });

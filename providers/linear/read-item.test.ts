@@ -142,7 +142,7 @@ test('installed standalone command prepares one context and writes the exact app
     cpSync(resolve(directory), join(project, '.agents', directory), { recursive: true });
   }
   writeFileSync(join(project, 'agent-workflows.yaml'), 'mcp:\n  item:\n    provider: linear\n');
-  const result = spawnSync(process.execPath, ['../commands/work-standalone.ts', 'uuid'], {
+  const result = spawnSync(process.execPath, ['../commands/prepare-delivery-context.ts', 'uuid'], {
     cwd: join(project, '.agents/workflows'),
     encoding: 'utf8',
   });
@@ -161,7 +161,7 @@ test('installed standalone command prepares one context and writes the exact app
   assert.equal(calls.length, 2);
   const searched = spawnSync(
     process.execPath,
-    ['../commands/work-standalone.ts', '--query', 'Fix CTA'],
+    ['../commands/prepare-delivery-context.ts', '--query', 'Fix CTA'],
     {
       cwd: join(project, '.agents/workflows'),
       encoding: 'utf8',
@@ -173,7 +173,7 @@ test('installed standalone command prepares one context and writes the exact app
   assert.match(searchedContext.plan, /-fix-cta-2\.plan\.md$/);
   assert.equal(readFileSync(join(project, searchedContext.plan), 'utf8'), content);
 
-  const missing = spawnSync(process.execPath, ['../commands/work-standalone.ts'], {
+  const missing = spawnSync(process.execPath, ['../commands/prepare-delivery-context.ts'], {
     cwd: join(project, '.agents/workflows'),
     encoding: 'utf8',
   });
@@ -187,7 +187,7 @@ test('installed standalone command prepares one context and writes the exact app
 
   const ready = spawnSync(
     process.execPath,
-    ['../commands/work-standalone.ts', '--require-linked-request', 'uuid'],
+    ['../commands/prepare-delivery-context.ts', '--require-linked-request', 'uuid'],
     { cwd: join(project, '.agents/workflows'), encoding: 'utf8' },
   );
   assert.equal(ready.status, 1);

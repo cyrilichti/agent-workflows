@@ -28,7 +28,7 @@ function resolvePlanPath(root: string, reference: string): string {
   return local;
 }
 
-export async function prepareStandaloneWork(
+export async function prepareDeliveryContext(
   root: string,
   provider: ItemProvider,
   item: WorkItem,
@@ -111,7 +111,7 @@ if (import.meta.main) {
     stage = 'read_item';
     const item = readItem(provider, reference);
     stage = 'prepare_context';
-    const result = await prepareStandaloneWork(root, provider, item,
+    const result = await prepareDeliveryContext(root, provider, item,
       undefined, undefined, requireLinkedRequest);
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
