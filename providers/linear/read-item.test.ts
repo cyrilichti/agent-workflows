@@ -184,4 +184,12 @@ test('installed standalone command prepares one context and writes the exact app
     reason: 'Supply an item reference or title query.',
   });
   assert.equal(readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n').length, 5);
+
+  const ready = spawnSync(
+    process.execPath,
+    ['../commands/work-standalone.ts', '--require-linked-request', 'uuid'],
+    { cwd: join(project, '.agents/workflows'), encoding: 'utf8' },
+  );
+  assert.equal(ready.status, 1);
+  assert.match(JSON.parse(ready.stdout).reason, /no linked pull or merge request/i);
 });

@@ -57,6 +57,15 @@ test('new work reuses comments and materializes unchanged plan with collision-sa
   assert.equal(readFileSync(join(root, 'plans/2026-10-27-fix-cta.plan.md'), 'utf8'), 'existing');
 });
 
+test('ready mode stops without a linked request before creating a plan', async (t) => {
+  const root = createFixture(t);
+  await assert.rejects(
+    prepareStandaloneWork(root, 'linear', createItem(), '2026-10-27', undefined, true),
+    /no linked pull or merge request/i,
+  );
+  assert.equal(existsSync(join(root, 'plans')), false);
+});
+
 test('ineligible items stop before writing the plan', async (t) => {
   const root = createFixture(t);
   for (const official of [
@@ -99,6 +108,12 @@ test('resumed work reads the local plan and resolves its existing request', asyn
   assert.equal(result.delivery_context.branch, 'fix/cta');
   assert.deepEqual(result.delivery_context.request, request);
   assert.equal(readFileSync(join(root, reference), 'utf8'), local);
+
+  official.comments[1]!.body = `Draft PR: https://github.com/acme/repo/pull/8\nAgent-Workflows-Plan: ${reference}`;
+  const ready = await prepareStandaloneWork(root, 'linear', official, '2026-10-27',
+    () => request, true);
+  assert.equal(ready.delivery_context.plan, reference);
+  assert.deepEqual(ready.delivery_context.request, request);
 });
 
 test('resumed work stops for a missing plan or missing backlink reference', async (t) => {
