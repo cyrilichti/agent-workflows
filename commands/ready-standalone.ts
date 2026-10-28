@@ -1,4 +1,3 @@
-import { spawnSync } from 'node:child_process';
 import { basename, dirname, join } from 'node:path';
 import { resolveItemProvider } from './resolve-item-provider.ts';
 import { resolveExistingItem } from './resolve-existing-item.ts';
@@ -46,17 +45,6 @@ if (import.meta.main) {
     }
     stage = 'resolve_request';
     const request = resolveRequestForProject(root, undefined, item.request_backlinks, undefined);
-    stage = 'switch_branch';
-    const clean = spawnSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' });
-    if (clean.error || clean.status !== 0 || clean.stdout.trim()) {
-      throw new Error('Worktree or index is not clean.');
-    }
-    const switched = spawnSync('git', ['switch', '--no-guess', request.source_branch],
-      { cwd: root, encoding: 'utf8' });
-    if (switched.error || switched.status !== 0) {
-      throw new Error(switched.error?.message || switched.stderr.trim() ||
-        `Cannot switch to ${request.source_branch}.`);
-    }
     stage = 'prepare_context';
     const result = await prepareStandaloneReady(root, provider, item, () => request);
     process.stdout.write(`${JSON.stringify(result)}\n`);
