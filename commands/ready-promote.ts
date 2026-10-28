@@ -80,28 +80,14 @@ export function promoteReady(context: Context) {
       stage = 'push';
       git('push');
     }
-    stage = 'verify_head';
-    observed = readExactRequest(context);
-    if (observed.head_sha !== head) throw new Error('Request head does not match verified local HEAD.');
-
     if (!equalBody(observed.body, body)) {
       stage = 'replace_description';
-      updateRequest({ request: observed, action: 'replace-description', body });
-      observed = readExactRequest(context);
-      if (!equalBody(observed.body, body) || observed.head_sha !== head) {
-        throw new Error('Request description or head postcondition was not observed.');
-      }
+      observed = updateRequest({ request: observed, action: 'replace-description', body }).request;
     }
 
     if (observed.draft || /^Draft:\s*/.test(observed.title)) {
       stage = 'mark_ready';
-      updateRequest({ request: observed, action: 'mark-ready' });
-      observed = readExactRequest(context);
-    }
-    stage = 'verify_ready';
-    if (observed.state !== 'open' || observed.draft || /^Draft:\s*/.test(observed.title) ||
-      observed.head_sha !== head || !equalBody(observed.body, body)) {
-      throw new Error('Open, non-draft request at verified HEAD with the complete plan was not observed.');
+      observed = updateRequest({ request: observed, action: 'mark-ready' }).request;
     }
     return { status: 'promoted' as const,
       delivery_context: { ...context, plan: local, request: observed, branch } };

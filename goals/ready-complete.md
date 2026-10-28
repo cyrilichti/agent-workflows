@@ -8,9 +8,8 @@ inspection.
 
 ## Terminal Outcomes
 
-- Promoted: the request body matches the complete local plan ignoring only
-  trailing CR/LF characters, and the request is observed open and non-draft at
-  the verified HEAD before the same `delivery-context` is handed to `/inspect`.
+- Promoted: the complete local plan is sent as the request description, the
+  request is marked ready, and the same `delivery-context` is handed to
+  `/inspect` after successful provider operations.
 - Stopped: a missing or ineligible plan, inconsistent identity, unsafe Git
-  state, failed mutation, or unobserved postcondition is reported without
-  claiming promotion.
+  state, or failed mutation is reported without claiming promotion.

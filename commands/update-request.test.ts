@@ -59,15 +59,22 @@ test('GitHub description replacement and ready transition preserve the exact bod
     head: { ref: 'fix/cta', sha: 'abc' }, base: { ref: 'main' }, body: '',
     html_url: 'https://github.com/acme/repo/pull/7',
   });
-  const request = { request_id: 7, kind: 'pull_request', url: 'https://github.com/acme/repo/pull/7' };
+  const request = { request_id: 7, kind: 'pull_request',
+    url: 'https://github.com/acme/repo/pull/7', state: 'open', draft: true,
+    title: 'Draft: Fix CTA', source_branch: 'fix/cta', target_branch: 'main',
+    body: '', head_sha: 'abc' };
   const body = '# Plan\n\n- [x] Check\n';
-  assert.equal(f.run({ request, action: 'replace-description', body }).status, 0);
-  assert.equal(f.run({ request, action: 'mark-ready' }).status, 0);
+  const replaced = f.run({ request, action: 'replace-description', body });
+  assert.equal(replaced.status, 0);
+  const updatedRequest = JSON.parse(replaced.stdout).request;
+  assert.equal(f.run({ request: updatedRequest, action: 'mark-ready' }).status, 0);
   assert.equal(f.state().body, body);
   assert.equal(f.state().title, 'Fix CTA');
   assert.equal(f.state().draft, false);
   assert.equal(f.calls().filter(call => call.args.includes('PATCH')).length, 2);
   assert.equal(f.calls().filter(call => call.args[0] === 'pr').length, 1);
+  assert.equal(f.calls().filter(call => call.args[0] === 'api' &&
+    !call.args.includes('PATCH')).length, 0);
 });
 
 test('GitLab description replacement and ready transition use the same MR', (t) => {
@@ -77,11 +84,16 @@ test('GitLab description replacement and ready transition use the same MR', (t) 
     web_url: 'https://gitlab.example/acme/repo/-/merge_requests/8',
   });
   const request = { request_id: 8, kind: 'merge_request',
-    url: 'https://gitlab.example/acme/repo/-/merge_requests/8' };
-  assert.equal(f.run({ request, action: 'replace-description', body: '# Plan' }).status, 0);
-  assert.equal(f.run({ request, action: 'mark-ready' }).status, 0);
+    url: 'https://gitlab.example/acme/repo/-/merge_requests/8',
+    state: 'open', draft: true, title: 'Draft: Fix CTA',
+    source_branch: 'fix/cta', target_branch: 'main', body: '', head_sha: 'abc' };
+  const replaced = f.run({ request, action: 'replace-description', body: '# Plan' });
+  assert.equal(replaced.status, 0);
+  const updatedRequest = JSON.parse(replaced.stdout).request;
+  assert.equal(f.run({ request: updatedRequest, action: 'mark-ready' }).status, 0);
   assert.equal(f.state().description, '# Plan');
   assert.equal(f.state().title, 'Fix CTA');
   assert.equal(f.state().draft, false);
   assert.equal(f.calls().filter(call => call.args[0] === 'mr').length, 2);
+  assert.equal(f.calls().filter(call => call.args[0] === 'api').length, 0);
 });
