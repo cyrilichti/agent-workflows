@@ -1,4 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { resolveItemProvider } from './resolve-item-provider.ts';
 import { readItem } from './read-item.ts';
@@ -28,6 +29,37 @@ function resolvePlanPath(root: string, reference: string): string {
   return local;
 }
 
+function git(root: string, ...args: string[]): string {
+  const result = spawnSync('git', args, { cwd: root, encoding: 'utf8' });
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    throw new Error(result.stderr.trim() || `git ${args[0]} failed.`);
+  }
+  return result.stdout.trim();
+}
+
+function checkInspectionContext(item: WorkItem,
+  request: ReturnType<typeof resolveRequestForProject>,
+  readGit: (...args: string[]) => string): void {
+  if (!item.request_backlinks.includes(request.url)) {
+    throw new Error('Request is not linked from the official item.');
+  }
+  if (request.state !== 'open' || request.draft) {
+    throw new Error('Linked request must be open and non-draft.');
+  }
+  const ticket = /^\*\*Ticket\s*:\*\*\s*\[([^\]]+)\]\(([^)]+)\)\s*$/m.exec(request.body);
+  if (!ticket || ticket[1] !== (item.identifier ?? item.id) || ticket[2] !== item.url) {
+    throw new Error('Request description does not identify the official item.');
+  }
+  const branch = readGit('branch', '--show-current');
+  if (branch !== request.source_branch) {
+    throw new Error(`Current branch is ${branch}, expected ${request.source_branch}.`);
+  }
+  if (readGit('rev-parse', 'HEAD') !== request.head_sha) {
+    throw new Error('Local HEAD does not match the linked request head SHA.');
+  }
+}
+
 export async function prepareDeliveryContext(
   root: string,
   provider: ItemProvider,
@@ -37,17 +69,19 @@ export async function prepareDeliveryContext(
     return resolveRequestForProject(root, undefined, backlinks, undefined);
   },
   requireLinkedRequest = false,
+  inspection = false,
+  readGit = (...args: string[]) => git(root, ...args),
 ) {
   if (item.closed !== false || !item.labels.includes('agent-planned')) {
     throw new Error(`Item ${item.identifier ?? item.id} must be open and labeled agent-planned.`);
   }
   const work_mode = item.request_backlinks.length ? 'resumed' : 'new';
-  if (requireLinkedRequest && work_mode === 'new') {
+  if ((requireLinkedRequest || inspection) && work_mode === 'new') {
     throw new Error('Item has no linked pull or merge request.');
   }
-  let reference: string;
-  let content: string;
-  if (work_mode === 'resumed') {
+  let reference: string | undefined;
+  let content: string | undefined;
+  if (work_mode === 'resumed' && !inspection) {
     const backlinkComments = item.comments.filter((comment) => {
       return /^Draft (?:PR|MR):/m.test(comment.body);
     });
@@ -57,7 +91,7 @@ export async function prepareDeliveryContext(
     }
     reference = resolvePlanPath(root, references[0]!);
     content = readFileSync(join(root, reference), 'utf8');
-  } else {
+  } else if (work_mode === 'new') {
     content = readItemPlan(provider, item.comments);
     const title = /^# (.+)$/m.exec(content)?.[1];
     if (!title) {
@@ -79,12 +113,20 @@ export async function prepareDeliveryContext(
     }
   }
   const request = work_mode === 'resumed' ? resolveRequest(item.request_backlinks) : undefined;
+  if (inspection) {
+    if (!request) throw new Error('Linked request is required for inspection.');
+    checkInspectionContext(item, request, readGit);
+    return { status: 'resolved' as const, work_mode,
+      delivery_context: { item, request, branch: request.source_branch,
+        plan_content: request.body } };
+  }
   if (work_mode === 'new') {
+    if (!reference || content === undefined) throw new Error('Plan is unavailable.');
     mkdirSync(dirname(join(root, reference)), { recursive: true });
     writeFileSync(join(root, reference), content, { flag: 'wx' });
   }
   const delivery_context = {
-    plan: reference,
+    plan: reference!,
     item,
     ...(request ? { request, branch: request.source_branch } : {}),
   };
@@ -103,7 +145,8 @@ if (import.meta.main) {
     stage = 'resolve_item';
     const args = process.argv.slice(2);
     const requireLinkedRequest = args[0] === '--require-linked-request';
-    const [input, query] = requireLinkedRequest ? args.slice(1) : args;
+    const inspection = args[0] === '--inspect';
+    const [input, query] = requireLinkedRequest || inspection ? args.slice(1) : args;
     const reference =
       input === '--query'
         ? resolveExistingItem(provider, undefined, query)
@@ -112,7 +155,7 @@ if (import.meta.main) {
     const item = readItem(provider, reference);
     stage = 'prepare_context';
     const result = await prepareDeliveryContext(root, provider, item,
-      undefined, undefined, requireLinkedRequest);
+      undefined, undefined, requireLinkedRequest, inspection);
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
     process.stdout.write(
