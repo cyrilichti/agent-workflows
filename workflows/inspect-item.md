@@ -110,10 +110,16 @@ node ../commands/apply-item-label.ts <<'JSON'
 JSON
 ```
 
-Require `applied: true`.
-Then run `../commands/transition-item-status.ts` with the same item ID and
-`target_status: review`. Require `transitioned: true`. Report any failure with
-the final result contract below and the observed request and item states.
+Require `applied: true`, then run from this file's directory:
+
+```sh
+node ../commands/transition-item-status.ts <<'JSON'
+{"item_id":"<exact official item ID>","target_status":"review"}
+JSON
+```
+
+Require `status: transitioned`. Report any failure with the final result
+contract below and the observed request and item states.
 On success, preserve the resulting item state and present the final result.
 
 ## Inspection Result Contract
