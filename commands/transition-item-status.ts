@@ -15,7 +15,8 @@ type Adapter = {
   };
   applyStatus(itemId: string, target: Status): Status;
 };
-type Input = { item_id: string; official_item?: Record<string, unknown> };
+type Input = { item_id: string; official_item?: Record<string, unknown>;
+  target_status?: 'in progress' | 'review' };
 
 try {
   const parent = dirname(import.meta.dirname);
@@ -29,14 +30,21 @@ try {
   const provider = resolveItemProvider(join(root, 'agent-workflows.yaml'));
   const adapter = await import(`../providers/${provider}/transition-item-status.ts`) as Adapter;
   const resolution = adapter.readStatuses(itemId, data.official_item);
-  const candidates = resolution.available_statuses.filter(status => status.category === 'active');
-  const exact = candidates.filter(status => status.name.toLowerCase() === 'in progress');
+  const targetStatus = data.target_status ?? 'in progress';
+  const candidates = targetStatus === 'review'
+    ? resolution.available_statuses.filter(status => status.category === 'review' ||
+      /\b(review|revue|examen)\b/i.test(status.name))
+    : resolution.available_statuses.filter(status => status.category === 'active');
+  const exact = targetStatus === 'in progress'
+    ? candidates.filter(status => status.name.toLowerCase() === 'in progress') : [];
   const matches = exact.length === 1 ? exact : candidates;
   if (matches.length === 0) {
-    throw new Error('No active status is available.');
+    throw new Error(targetStatus === 'review'
+      ? 'No review status is available.' : 'No active status is available.');
   }
   if (matches.length > 1) {
-    throw new Error('Multiple active statuses are available.');
+    throw new Error(targetStatus === 'review'
+      ? 'Multiple review statuses are available.' : 'Multiple active statuses are available.');
   }
   const target = matches[0]!;
   const itemReference = resolution.item_reference;
