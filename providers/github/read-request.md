@@ -29,4 +29,8 @@ gh api --hostname <host> --paginate --slurp 'repos/<owner>/<repo>/pulls/<number>
 gh api --hostname <host> --paginate --slurp 'repos/<owner>/<repo>/issues/<number>/comments?per_page=100'
 ```
 
-For `review_snapshot`, include activity, full diff, and complete changed files. Derive valid inline anchors from paths and patches; reject missing patches needed for anchors or disagreement with the diff. Reread the request and require the same `head.sha`. Stop on stale, malformed, filtered, truncated, or ambiguous data. Do not retry failed reads or substitute search results. Pass arguments separately without a shell.
+For `review_snapshot`, include complete activity and the exact base and head
+SHAs for local Git comparison. Reread the request and require the same
+`head.sha`. Do not fetch provider diff content for inspection. Stop on stale,
+malformed, partial, or ambiguous data. Do not retry failed reads or substitute
+search results. Pass arguments separately without a shell.

@@ -2,16 +2,24 @@
 
 ## Steps
 
-### 1. Initialize the Delivery Context
+### 1. Prepare the Delivery Context
 
-Follow `./delivery-context-standalone.md` and keep its plan, item, and delivery
-context.
+Run from this file's directory. For an item ID or native URL:
 
-### 2. Resolve the Request
+```sh
+node ../commands/prepare-delivery-context.ts --require-linked-request "<item>"
+```
 
-Resolve the configured version provider and repository from the current Git
-push remote. Run `../commands/resolve-request.md` with the official item
-backlinks, any supplied request ID, and `require_non_draft: true`.
+For a title or search phrase:
 
-Add the current branch and exact request to the delivery context, then follow
-`./inspect-execute.md`.
+```sh
+node ../commands/prepare-delivery-context.ts --require-linked-request --query "<item>"
+```
+
+On failure, report `stage` and `reason`, then stop. This is the same context
+preparation used by `/ready`. Branch and HEAD are verified in the inspection
+snapshot step without switching branches.
+
+### 2. Inspect the Request
+
+On success, follow `./inspect-item.md` with the returned `delivery_context`.

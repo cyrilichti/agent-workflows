@@ -63,12 +63,10 @@ partial activity when any command fails or returns invalid JSON.
 
 For `review_snapshot`, also read
 `projects/<encoded_path>/merge_requests/<iid>/versions`, require its latest
-version to match the initial head SHA, and collect all diffs with the paginated
-diff command above. Derive the complete changed-file set and inline-anchor data
-from each diff's paths and the latest version's base, start, and head SHAs. Read
-the merge request again and require the same head SHA before returning the
-snapshot. Stop when activity, versions, or diffs are missing, partial,
-truncated, collapsed, too large, or stale.
+version to match the initial head SHA, and return its base, start, and head
+SHAs for local Git comparison. Read the merge request again and require the
+same head SHA before returning the snapshot. Do not fetch provider diff content
+for inspection. Stop when activity, versions, or SHAs are missing or stale.
 
 Pass every value as a separate process argument. Do not invoke a shell, retry a
 failed command, or recover with another provider or transport.

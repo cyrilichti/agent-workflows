@@ -6,6 +6,7 @@ import { readRequest as readGitLabRequest } from '../providers/gitlab/read-reque
 import { resolveConfiguredProvider } from './resolve-item-provider.ts';
 import { resolveVersionRepository } from './resolve-version-repository.ts';
 import type { GitHubRepository, GitLabRepository } from './resolve-version-repository.ts';
+import type { ReadFields } from '../providers/github/read-request.ts';
 
 function githubBacklinkId(value: string, repository: GitHubRepository): number | undefined {
   const url = new URL(value);
@@ -37,6 +38,7 @@ export function resolveRequest(
   requestId: number | undefined,
   backlinks: string[],
   expectedBranch: string | undefined,
+  fields?: ReadFields,
 ) {
   const ids = new Set<number>();
   if (requestId !== undefined) {
@@ -60,8 +62,8 @@ export function resolveRequest(
   }
   const id = [...ids][0]!;
   const request = provider === 'github'
-    ? readGitHubRequest(repository as GitHubRepository, id)
-    : readGitLabRequest(repository as GitLabRepository, id);
+    ? readGitHubRequest(repository as GitHubRepository, id, fields)
+    : readGitLabRequest(repository as GitLabRepository, id, fields);
   if (request.state !== 'open') {
     throw new Error(`Request ${id} is ${request.state}.`);
   }
@@ -109,20 +111,25 @@ export function resolveRequestForProject(
   requestId: number | undefined,
   backlinks: string[],
   expectedBranch: string | undefined,
+  fields?: ReadFields,
 ) {
   const provider = resolveConfiguredProvider(join(root, 'agent-workflows.yaml'), 'version') as
     'github' | 'gitlab';
   const remoteUrl = git(root, 'remote', 'get-url', '--push', pushRemote(root));
   const repository = resolveVersionRepository(remoteUrl, provider);
-  return resolveRequest(provider, repository, requestId, backlinks, expectedBranch);
+  return resolveRequest(provider, repository, requestId, backlinks, expectedBranch, fields);
 }
 
 if (import.meta.main) {
   try {
     const parent = dirname(import.meta.dirname);
     const root = basename(parent) === '.agents' ? dirname(parent) : parent;
-    const input = JSON.parse(readFileSync(0, 'utf8')) as { request_backlinks: string[] };
-    const request = resolveRequestForProject(root, undefined, input.request_backlinks, undefined);
+    const input = JSON.parse(readFileSync(0, 'utf8')) as {
+      request_backlinks?: string[]; request_id?: number; branch?: string;
+      fields?: ReadFields;
+    };
+    const request = resolveRequestForProject(root, input.request_id,
+      input.request_backlinks ?? [], input.branch, input.fields);
     process.stdout.write(`${JSON.stringify({
       status: 'resolved', request, branch: request.source_branch,
     })}\n`);

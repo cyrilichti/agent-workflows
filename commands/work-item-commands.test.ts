@@ -174,6 +174,20 @@ test('Linear transition selects In Progress and passes its name to the CLI', () 
   }
 });
 
+test('Linear transition selects the review status when requested', () => {
+  const f = fixture('linear', 'gitlab');
+  try {
+    const result = f.run('transition-item-status.ts',
+      { item_id: 'ITEM-1', target_status: 'review' });
+    assert.equal(result.status, 0, result.stdout);
+    assert.equal(JSON.parse(result.stdout).resulting_status.category, 'review');
+    assert.deepEqual(f.calls().find(call => call.args[1] === 'update')?.args,
+      ['issue', 'update', 'ITEM-1', '--state', 'In Review', '--no-input']);
+  } finally {
+    f.cleanup();
+  }
+});
+
 test('Linear transition resolves a UUID to the CLI issue identifier', () => {
   const f = fixture('linear', 'gitlab');
   try {

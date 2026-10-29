@@ -30,9 +30,10 @@ When `fields` contains `review_activity`, return the exact head SHA and every
 request comment, review discussion, reply, and verdict. Follow every page and
 stop if the activity is partial.
 
-When `fields` contains `review_snapshot`, include `review_activity`, the full
-diff, complete changed-file set, and valid inline-anchor data. Read the request
-again after collecting these fields and stop unless the head SHA is unchanged.
-Do not return a partial or stale snapshot.
+When `fields` contains `review_snapshot`, include `review_activity` and the
+provider comparison SHAs. Read the request again and stop unless its head SHA
+is unchanged. `read-local-review-snapshot.ts` computes the complete diff,
+changed-file set, and valid inline anchors from local Git. Do not return a
+partial or stale snapshot.
 
 If the request cannot be read, stop without substituting another search result.
