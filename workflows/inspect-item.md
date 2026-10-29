@@ -91,10 +91,4 @@ Then run `../commands/transition-item-status.ts` with the same item ID and
 `../templates/inspect-result.md` and the observed request and item states.
 On success, preserve the resulting item state, present
 `../templates/inspect-result.md`, and finish according to
-`../goals/inspect-complete.md` without invoking `/done`.
-
-## Safety
-
-- Inspection may publish new review content, apply the final label, and
-  transition the item to review. `/work` owns code, commits, branches, and
-  corrective todos.
+`../goals/inspect-complete.md`.

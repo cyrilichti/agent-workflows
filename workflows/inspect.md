@@ -31,11 +31,3 @@ Select exactly one branch:
 | No caller handoff | `./inspect-standalone.md` |
 
 Read the selected workflow file completely and follow it.
-
----
-
-## Safety
-
-- The resolved standalone item and linked request, or a complete caller
-  handoff, authorize inspection and publication without another confirmation.
-- Do not invoke `/done`.
