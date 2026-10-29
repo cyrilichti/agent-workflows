@@ -81,7 +81,7 @@ export async function prepareDeliveryContext(
   }
   let reference: string | undefined;
   let content: string | undefined;
-  if (work_mode === 'resumed' && !inspection) {
+  if (work_mode === 'resumed') {
     const backlinkComments = item.comments.filter((comment) => {
       return /^Draft (?:PR|MR):/m.test(comment.body);
     });
@@ -116,9 +116,6 @@ export async function prepareDeliveryContext(
   if (inspection) {
     if (!request) throw new Error('Linked request is required for inspection.');
     checkInspectionContext(item, request, readGit);
-    return { status: 'resolved' as const, work_mode,
-      delivery_context: { item, request, branch: request.source_branch,
-        plan_content: request.body } };
   }
   if (work_mode === 'new') {
     if (!reference || content === undefined) throw new Error('Plan is unavailable.');

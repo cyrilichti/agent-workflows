@@ -132,10 +132,14 @@ test('resumed work stops for a missing plan or missing backlink reference', asyn
   await assert.rejects(prepareDeliveryContext(root, 'linear', official), /ENOENT/);
 });
 
-test('inspection reuses delivery context without reading a local plan', async (t) => {
+test('inspection reuses the existing delivery context and checks the local request', async (t) => {
   const root = createFixture(t);
   const official = createItem();
   official.request_backlinks = ['https://github.com/acme/repo/pull/7'];
+  mkdirSync(join(root, 'plans'));
+  writeFileSync(join(root, 'plans/cta.plan.md'), plan);
+  official.comments.push({ id: 'b',
+    body: 'Draft PR: https://github.com/acme/repo/pull/7\nAgent-Workflows-Plan: plans/cta.plan.md' });
   const request = {
     request_id: 7, source_branch: 'fix/cta', head_sha: 'abc', state: 'open',
     kind: 'pull_request' as const, draft: false, target_branch: 'main',
@@ -144,16 +148,18 @@ test('inspection reuses delivery context without reading a local plan', async (t
   const result = await prepareDeliveryContext(root, 'linear', official, '2026-10-27',
     () => request, false, true,
     (...args) => args[0] === 'branch' ? 'fix/cta' : 'abc');
-  assert.ok('plan_content' in result.delivery_context);
-  assert.equal(result.delivery_context.plan_content, plan);
-  assert.equal('plan' in result.delivery_context, false);
-  assert.equal(existsSync(join(root, 'plans')), false);
+  assert.equal(result.delivery_context.plan, 'plans/cta.plan.md');
+  assert.equal(readFileSync(join(root, result.delivery_context.plan), 'utf8'), plan);
 });
 
 test('inspection stops on another local branch or request head', async (t) => {
   const root = createFixture(t);
   const official = createItem();
   official.request_backlinks = ['https://github.com/acme/repo/pull/7'];
+  mkdirSync(join(root, 'plans'));
+  writeFileSync(join(root, 'plans/cta.plan.md'), plan);
+  official.comments.push({ id: 'b',
+    body: 'Draft PR: https://github.com/acme/repo/pull/7\nAgent-Workflows-Plan: plans/cta.plan.md' });
   const request = {
     request_id: 7, source_branch: 'fix/cta', head_sha: 'abc', state: 'open',
     kind: 'pull_request' as const, draft: false, target_branch: 'main',

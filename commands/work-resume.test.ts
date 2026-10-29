@@ -35,7 +35,7 @@ if (args[0] === 'branch') {
 const ghCli = `#!/usr/bin/env node
 process.stdout.write(JSON.stringify({
   number: 7, title: 'Fix item', state: 'open', merged: false, draft: true,
-  head: { ref: process.env.TEST_REQUEST_BRANCH || 'feature/work' },
+  head: { ref: process.env.TEST_REQUEST_BRANCH || 'feature/work', sha: 'a'.repeat(40) },
   base: { ref: 'main' }, body: '',
   html_url: 'https://github.com/acme/repo/pull/7',
 }) + '\\n');
@@ -45,7 +45,7 @@ const glabCli = `#!/usr/bin/env node
 process.stdout.write(JSON.stringify({
   iid: 7, title: 'Fix item', state: 'opened', draft: true,
   source_branch: process.env.TEST_REQUEST_BRANCH || 'feature/work',
-  target_branch: 'main', description: '',
+  target_branch: 'main', sha: 'a'.repeat(40), description: '',
   web_url: 'https://gitlab.example/acme/repo/-/merge_requests/7',
 }) + '\\n');
 `;

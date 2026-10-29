@@ -124,8 +124,12 @@ if (import.meta.main) {
   try {
     const parent = dirname(import.meta.dirname);
     const root = basename(parent) === '.agents' ? dirname(parent) : parent;
-    const input = JSON.parse(readFileSync(0, 'utf8')) as { request_backlinks: string[] };
-    const request = resolveRequestForProject(root, undefined, input.request_backlinks, undefined);
+    const input = JSON.parse(readFileSync(0, 'utf8')) as {
+      request_backlinks?: string[]; request_id?: number; branch?: string;
+      fields?: ReadFields;
+    };
+    const request = resolveRequestForProject(root, input.request_id,
+      input.request_backlinks ?? [], input.branch, input.fields);
     process.stdout.write(`${JSON.stringify({
       status: 'resolved', request, branch: request.source_branch,
     })}\n`);
