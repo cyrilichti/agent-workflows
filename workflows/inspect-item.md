@@ -136,7 +136,6 @@ On success, preserve the resulting item state and present the final result.
 - `complete` requires the exact frozen SHA and explicit `Findings: none` or
   complete findings in the format below.
 - `incomplete` requires `Missing context` and contains no findings.
-- Never infer `Findings: none` from empty, missing, partial, or truncated output.
 
 ## Finding Contract
 
