@@ -50,7 +50,6 @@ test('new work reuses comments and materializes unchanged plan with collision-sa
   mkdirSync(join(root, 'plans'));
   writeFileSync(join(root, 'plans/2026-10-27-fix-cta.plan.md'), 'existing');
   const result = await prepareDeliveryContext(root, 'linear', createItem(), '2026-10-27');
-  assert.ok('plan' in result.delivery_context);
   assert.equal(result.work_mode, 'new');
   assert.equal(result.delivery_context.plan, 'plans/2026-10-27-fix-cta-2.plan.md');
   assert.equal(readFileSync(join(root, result.delivery_context.plan), 'utf8'), plan);
@@ -105,7 +104,6 @@ test('resumed work reads the local plan and resolves its existing request', asyn
   const result = await prepareDeliveryContext(root, 'linear', official, '2026-10-27', () => {
     return request;
   });
-  assert.ok('plan' in result.delivery_context);
   assert.equal(result.work_mode, 'resumed');
   assert.equal(result.delivery_context.plan, reference);
   assert.equal(result.delivery_context.branch, 'fix/cta');
@@ -115,7 +113,6 @@ test('resumed work reads the local plan and resolves its existing request', asyn
   official.comments[1]!.body = `Draft PR: https://github.com/acme/repo/pull/8\nAgent-Workflows-Plan: ${reference}`;
   const ready = await prepareDeliveryContext(root, 'linear', official, '2026-10-27',
     () => request, true);
-  assert.ok('plan' in ready.delivery_context);
   assert.equal(ready.delivery_context.plan, reference);
   assert.deepEqual(ready.delivery_context.request, request);
 });
@@ -130,44 +127,4 @@ test('resumed work stops for a missing plan or missing backlink reference', asyn
     body: 'Draft PR: https://github.com/acme/repo/pull/7\nAgent-Workflows-Plan: plans/missing.plan.md',
   });
   await assert.rejects(prepareDeliveryContext(root, 'linear', official), /ENOENT/);
-});
-
-test('inspection reuses the existing delivery context and checks the local request', async (t) => {
-  const root = createFixture(t);
-  const official = createItem();
-  official.request_backlinks = ['https://github.com/acme/repo/pull/7'];
-  mkdirSync(join(root, 'plans'));
-  writeFileSync(join(root, 'plans/cta.plan.md'), plan);
-  official.comments.push({ id: 'b',
-    body: 'Draft PR: https://github.com/acme/repo/pull/7\nAgent-Workflows-Plan: plans/cta.plan.md' });
-  const request = {
-    request_id: 7, source_branch: 'fix/cta', head_sha: 'abc', state: 'open',
-    kind: 'pull_request' as const, draft: false, target_branch: 'main',
-    title: 'Fix CTA', url: official.request_backlinks[0]!, body: plan,
-  };
-  const result = await prepareDeliveryContext(root, 'linear', official, '2026-10-27',
-    () => request, false, true,
-    (...args) => args[0] === 'branch' ? 'fix/cta' : 'abc');
-  assert.equal(result.delivery_context.plan, 'plans/cta.plan.md');
-  assert.equal(readFileSync(join(root, result.delivery_context.plan), 'utf8'), plan);
-});
-
-test('inspection stops on another local branch or request head', async (t) => {
-  const root = createFixture(t);
-  const official = createItem();
-  official.request_backlinks = ['https://github.com/acme/repo/pull/7'];
-  mkdirSync(join(root, 'plans'));
-  writeFileSync(join(root, 'plans/cta.plan.md'), plan);
-  official.comments.push({ id: 'b',
-    body: 'Draft PR: https://github.com/acme/repo/pull/7\nAgent-Workflows-Plan: plans/cta.plan.md' });
-  const request = {
-    request_id: 7, source_branch: 'fix/cta', head_sha: 'abc', state: 'open',
-    kind: 'pull_request' as const, draft: false, target_branch: 'main',
-    title: 'Fix CTA', url: official.request_backlinks[0]!, body: plan,
-  };
-  await assert.rejects(prepareDeliveryContext(root, 'linear', official, '2026-10-27',
-    () => request, false, true, () => 'wrong'), /Current branch/);
-  await assert.rejects(prepareDeliveryContext(root, 'linear', official, '2026-10-27',
-    () => request, false, true,
-    (...args) => args[0] === 'branch' ? 'fix/cta' : 'wrong'), /Local HEAD/);
 });

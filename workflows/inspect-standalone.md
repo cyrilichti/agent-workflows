@@ -7,18 +7,18 @@
 Run from this file's directory. For an item ID or native URL:
 
 ```sh
-node ../commands/prepare-delivery-context.ts --inspect "<item>"
+node ../commands/prepare-delivery-context.ts --require-linked-request "<item>"
 ```
 
 For a title or search phrase:
 
 ```sh
-node ../commands/prepare-delivery-context.ts --inspect --query "<item>"
+node ../commands/prepare-delivery-context.ts --require-linked-request --query "<item>"
 ```
 
-On failure, report `stage` and `reason`, then stop. The command prepares the
-same delivery context as `/ready`, then checks the current branch and HEAD
-against the linked request. It does not switch branches.
+On failure, report `stage` and `reason`, then stop. This is the same context
+preparation used by `/ready`. Branch and HEAD are verified in the inspection
+snapshot step without switching branches.
 
 ### 2. Inspect the Request
 
