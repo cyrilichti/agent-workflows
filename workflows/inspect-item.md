@@ -60,15 +60,28 @@ node ../commands/reconcile-inspection-publication.ts <<'JSON'
 JSON
 ```
 
-On failure, report the reason and stop. When `unseen_findings` is nonempty,
-run `../commands/publish-inspection-review.ts` with the exact request ID, URL,
-branch, head SHA, comparison SHAs, review activity, local anchors, and all
-findings. The command rechecks the request before publishing and observes the
-result. Do not set a blocking provider review verdict; severity controls the
-delivery loop. On `stale`, discard the result and restart at Step 1. On
-`failed` or unobserved publication, report the exact result and stop.
+On reconciliation failure, report the reason and stop. If `unseen_findings` is
+nonempty, run from this file's directory:
 
-When no publication is needed, run once from this file's directory:
+```sh
+node ../commands/publish-inspection-review.ts <<'JSON'
+{
+  "request_id": <exact request ID>,
+  "request_url": "<exact request URL>",
+  "branch": "<carried branch>",
+  "head_sha": "<frozen SHA>",
+  "comparison": <frozen comparison SHAs>,
+  "review_activity": <frozen review activity>,
+  "anchors": <local anchors>,
+  "findings": <all structured findings>
+}
+JSON
+```
+
+On `stale`, restart at Step 1. On failure, report the result and stop. Otherwise,
+use the returned `delivery_state`.
+
+If `unseen_findings` is empty, run from this file's directory:
 
 ```sh
 node ../commands/resolve-request.ts <<'JSON'
@@ -76,8 +89,8 @@ node ../commands/resolve-request.ts <<'JSON'
 JSON
 ```
 
-If its head SHA changed, restart at Step 1. Otherwise, use the publisher's
-returned `delivery_state` when publication occurred.
+If its head SHA changed, restart at Step 1. Otherwise, use the returned
+`delivery_state`.
 
 ### 4. Continue or Complete
 
