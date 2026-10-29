@@ -31,15 +31,15 @@ From this file's directory, read only the files below that are not already
 active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../agents/reviewer.md ../templates/inspect-context.md ../templates/inspect-finding.md
+cat ../agents/reviewer.md
 ```
 
 Activate the reviewer profile.
 
 Give the reviewer the complete official item and frozen `review_snapshot`,
 including its local diff, changed files, anchors, comparison SHAs, and full
-review activity. Require one result bound to the frozen SHA and validate both
-output contracts. Stop with `inspection incomplete` if the review result is
+review activity. Require one result bound to the frozen SHA and validate the
+inspection and finding contracts below. Stop with `inspection incomplete` if the result is
 incomplete, truncated, or ambiguous.
 
 Examine each human review comment against the local diff. A confirmed required
@@ -102,11 +102,92 @@ For every blocking finding, add a `source_findings` record to the delivery
 context using `workflow: inspect`, its exact ID and content, and the frozen
 head SHA. Follow `./work.md` in resumed caller mode.
 
-When no blocking finding exists, run `../commands/apply-item-label.md` with the
-exact official item ID and `label: agent-inspected`. Require `applied: true`.
+When no blocking finding exists, run from this file's directory:
+
+```sh
+node ../commands/apply-item-label.ts <<'JSON'
+{"item_id":"<exact official item ID>","label":"agent-inspected"}
+JSON
+```
+
+Require `applied: true`.
 Then run `../commands/transition-item-status.ts` with the same item ID and
 `target_status: review`. Require `transitioned: true`. Report any failure with
-`../templates/inspect-result.md` and the observed request and item states.
-On success, preserve the resulting item state, present
-`../templates/inspect-result.md`, and finish according to
-`../goals/inspect-complete.md`.
+the final result contract below and the observed request and item states.
+On success, preserve the resulting item state and present the final result.
+
+## Inspection Result Contract
+
+```markdown
+## Inspection <complete or incomplete>
+
+**Head SHA:** <observed SHA or unavailable>
+**Missing context:** <exact reason; incomplete only>
+
+**Findings:** <none or every complete finding in stable order; complete only>
+```
+
+- `complete` requires the exact frozen SHA and explicit `Findings: none` or
+  complete findings in the format below.
+- `incomplete` requires `Missing context` and contains no findings.
+- Never infer `Findings: none` from empty, missing, partial, or truncated output.
+
+## Finding Contract
+
+```markdown
+### Finding <RF-###>
+
+<!-- agent-workflows-finding id="<RF-###>" head="<frozen SHA>" -->
+
+Severity: <blocking or non-blocking>
+Source review: <provider-native review activity identity; omit for an independently found defect>
+Location: <file:line; omit without a valid snapshot anchor>
+
+Problem: <concrete problem>
+
+Impact: <user or system impact>
+
+Reasoning: <relevant item expectation and verifiable snapshot evidence>
+
+Direction: <recommended direction without a code correction>
+```
+
+- Require every field except conditional `Location` and `Source review`. Bind
+  the marker head to the frozen SHA.
+- `Source review` is required for a finding that validates a human review
+  entry. Use its exact identity from the frozen activity; omit it for an
+  independently found defect.
+- Tie the problem to the item outcome or acceptance criteria, unless the change
+  introduces a concrete defect or regression outside that scope.
+- Preserve an ID while its problem and impact remain the same. Start at
+  `RF-001`, advance after the highest prior ID, and never reuse an ID for a
+  different problem.
+- Normalize `Critical`, `Required`, and unprefixed required changes to
+  `blocking`; normalize complete `Optional` and `Consider` findings to
+  `non-blocking`; omit `Nit` and `FYI`.
+
+## Final Result Contract
+
+Use this block when inspection completes or stops after resolving the exact
+request and official item:
+
+```markdown
+## Inspect result
+
+**Request <provider/repository#ID>:** <request status>
+**Item <ID>:** <item status>
+
+**Remaining:** <exact request or item action; omit when none or no actionable next step is known>
+```
+
+- Copy the heading and field names literally. Use the exact English statuses
+  below, regardless of the response language. Put explanations after the block.
+- Request statuses: `inspection published`, `inspection completed without findings`,
+  `inspection incomplete`, `inspection failed`, `inspection not attempted`,
+  `unobserved`.
+- Item statuses: `agent-inspected applied`, `agent-inspected not applied`,
+  `unobserved`.
+- Report observed states. Use `agent-inspected not applied` before a label
+  attempt and `unobserved` if an attempted operation cannot be confirmed.
+- Start the final response with `## Inspect result`. Keep both exact identities
+  visible. Include `Remaining` only for one exact actionable mutation.

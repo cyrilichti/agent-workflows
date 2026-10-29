@@ -6,7 +6,7 @@ From this file's directory, read only the files below that are not already
 active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/inspect-complete.md ../templates/inspect-result.md ../templates/delivery-context.md
+cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/inspect-complete.md ../templates/delivery-context.md
 ```
 
 ---
