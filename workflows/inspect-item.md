@@ -50,15 +50,13 @@ identifying it.
 
 ### 3. Reconcile and Publish
 
-Convert each complete finding to the structured input in
-`../commands/reconcile-inspection-publication.ts`, preserving its exact body,
-marker, severity, source review identity, and a local anchor only when valid.
-Run the command with the frozen head SHA, all findings, and the frozen review
-activity:
+Pass the frozen head SHA, review activity, and complete findings. Each finding
+retains its exact body, marker, severity, source review identity, and only a
+valid local anchor:
 
 ```sh
 node ../commands/reconcile-inspection-publication.ts <<'JSON'
-<structured reconciliation input>
+{"head_sha":"<frozen SHA>","findings":<structured findings>,"review_activity":<frozen review activity>}
 JSON
 ```
 
