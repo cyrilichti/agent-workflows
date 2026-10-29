@@ -46,6 +46,22 @@ On failure, report `stage`, `reason`, and completed identities; stop. On
 success, set the carried item's status to `resulting_status` and record the
 returned `branch` and `request` in `Delivery Context`.
 
+When the resumed context has `plan_content` instead of `plan`, require
+`source_findings` from `/inspect` and require every finding SHA and the
+returned request HEAD to equal the carried request HEAD. Stop if any differ.
+Before selecting a todo, run from this
+file's directory with the complete request-body plan and its frozen head SHA:
+
+```sh
+node ../commands/materialize-inspection-plan.ts <<'JSON'
+{"item_id":"<official item ID>","item_url":"<official item URL>","head_sha":"<frozen inspection SHA>","plan_content":"<exact request-body plan>"}
+JSON
+```
+
+On failure, report the returned `stage` and `reason`, then stop. On success,
+set `delivery_context.plan` to the returned ignored project-relative path and
+remove `plan_content`. Do not change the request-body plan before this command.
+
 ### 2. Execute the Plan
 
 #### Select the Next Todo

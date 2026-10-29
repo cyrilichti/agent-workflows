@@ -28,7 +28,7 @@ function git(...args: string[]): string {
   return result.stdout.trim();
 }
 
-function checkPlan(content: string): void {
+export function checkPlan(content: string): void {
   const lines = content.split(/\r?\n/);
   const section = (heading: string): string[] => {
     const start = lines.findIndex(line => line === `## ${heading}`);
