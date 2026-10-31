@@ -17,6 +17,7 @@ type DoneResult = {
   status: 'complete' | 'stopped' | 'partial';
   request: { id?: number; repository?: string; state: string };
   item: { id?: string; status: string };
+  stage?: string;
   reason?: string;
   remaining?: string;
 };
@@ -41,6 +42,7 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
   };
   let merged = false;
   let itemMutationAttempted = false;
+  let stage = 'resolve_item';
   try {
     const configured = resolveConfiguredProvider(join(root, 'agent-workflows.yaml'), 'item');
     if (configured !== 'linear' && configured !== 'clickup') {
@@ -48,6 +50,7 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
     }
     const provider: ItemProvider = configured;
     const itemId = resolveExistingItem(provider, reference, query);
+    stage = 'read_item';
     const item = readItem(provider, itemId);
     const initialStatus = item.status as { name?: string; status?: string } | null;
     result.item = { id: item.identifier ?? item.id,
@@ -55,6 +58,7 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
     if (!item.labels.includes('agent-inspected')) {
       throw new Error('The official item lacks the agent-inspected label.');
     }
+    stage = 'resolve_request';
     const context = requestRepositoryForProject(root);
     const repositoryName = context.provider === 'github'
       ? `${context.repository.host}/${context.repository.owner}/${context.repository.repo}`
@@ -71,6 +75,7 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
     if (request.state === 'open' && delivery.merge_status !== 'mergeable') {
       throw new Error(`Request is ${delivery.merge_status}: ${delivery.blocker ?? 'no provider reason'}.`);
     }
+    stage = 'resolve_item_status';
     const statusAdapter = provider === 'linear' ? linearStatus : clickupStatus;
     const officialItem = provider === 'linear'
       ? { state: item.status, team: (item.destination as { team: unknown }).team,
@@ -89,6 +94,7 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
     }
     const alreadyDone = statusResolution.current_status.id === target.id;
     if (request.state === 'open') {
+      stage = 'recheck_request';
       const current = readDelivery(context, request.request_id);
       if (current.source_branch !== request.source_branch ||
         current.target_branch !== request.target_branch || current.head_sha !== request.head_sha ||
@@ -97,6 +103,7 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
         throw new Error('The linked request changed or is no longer mergeable.');
       }
       try {
+        stage = 'merge_request';
         if (context.provider === 'github') {
           mergeGitHub(context.repository as GitHubRepository, request.request_id, request.head_sha);
         } else {
@@ -121,6 +128,7 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
     merged = true;
     result.request.state = 'merged';
     if (!alreadyDone) {
+      stage = 'complete_item';
       itemMutationAttempted = true;
       statusAdapter.applyStatus(statusResolution.item_reference, target);
       const observedItem = readItem(provider, item.id);
@@ -136,6 +144,7 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
     result.status = 'complete';
     delete result.reason;
   } catch (error) {
+    result.stage = stage;
     result.reason = error instanceof Error ? error.message : String(error);
     if (merged) {
       result.status = 'partial';
@@ -157,6 +166,7 @@ if (import.meta.main) {
   } catch (error) {
     process.stdout.write(`${JSON.stringify({ status: 'stopped',
       request: { state: 'not attempted' }, item: { status: 'not attempted' },
+      stage: 'input',
       reason: error instanceof Error ? error.message : String(error) })}\n`);
     process.exitCode = 1;
   }

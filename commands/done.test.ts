@@ -160,12 +160,15 @@ test('done performs no mutation when request and item are already complete', () 
 });
 
 test('done stops before mutation on missing label, stale head, or ambiguous status', () => {
-  for (const scenario of [{ label: false }, { stale: true }, { ambiguous: true },
-    { blocked: true }]) {
+  for (const [scenario, stage] of [
+    [{ label: false }, 'read_item'], [{ stale: true }, 'recheck_request'],
+    [{ ambiguous: true }, 'resolve_item_status'], [{ blocked: true }, 'resolve_request'],
+  ] as const) {
     const f = fixture(scenario);
     try {
       const result = f.run();
       assert.equal(result.value.status, 'stopped');
+      assert.equal(result.value.stage, stage);
       assert.equal(f.state().mergeCalls, 0);
       assert.equal(f.state().itemUpdates, 0);
     } finally { f.cleanup(); }
@@ -191,6 +194,7 @@ test('done reports only the item transition after an observed merge', () => {
   try {
     const result = f.run();
     assert.equal(result.value.status, 'partial', JSON.stringify(result));
+    assert.equal(result.value.stage, 'complete_item');
     assert.equal(result.value.request.state, 'merged');
     assert.match(result.value.remaining, /item ICY-1.*done/);
     assert.equal(f.state().mergeCalls, 1);

@@ -1,32 +1,50 @@
 # Done
 
-Read any rules below that are not already active:
+## Required Context
+
+From this file's directory, read only the files below that are not already
+active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/git-authorization.md ../rules/user-facing-output.md ../rules/mutation-response.md
+cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/done-complete.md
 ```
 
-Invoking `/done` authorizes completion without another confirmation. Supply an
-item ID or native URL:
+---
+
+## Input
+
+| Input | Description |
+| --- | --- |
+| `item` | Required item ID, native URL, title, or search phrase. |
+
+Invoking `/done` authorizes the eligible completion without another
+confirmation.
+
+---
+
+## Steps
+
+### 1. Complete the Request and Item
+
+Run from this file's directory. For an ID or native URL:
 
 ```sh
 node ../commands/done.ts <<'JSON'
-{"reference":"<item ID or URL>"}
+{"reference":"<item>"}
 JSON
 ```
 
-For a title or search phrase, use `{"query":"<phrase>"}` instead. If no item
-is identifiable from the request, ask for one before running the command.
+For a title or search phrase:
 
-Report the command's observed result. A complete result means the request is
-merged and the item is done. A stopped result includes its reason; a partial
-result includes the remaining item action. Keep the exact identities visible:
-
-```markdown
-## Done result
-
-**Request <repository#ID or unavailable>:** <observed state>
-**Item <ID or unavailable>:** <observed status>
-**Reason:** <command reason, when present>
-**Remaining:** <command remaining action, when present>
+```sh
+node ../commands/done.ts <<'JSON'
+{"query":"<item>"}
+JSON
 ```
+
+If the item is missing, ask for it before running the command.
+
+### 2. Report
+
+Use the observed command result and the format in `../goals/done-complete.md`.
+On failure, include `stage` and `reason` when returned.
