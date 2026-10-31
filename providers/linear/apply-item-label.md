@@ -1,21 +1,24 @@
 # apply-item-label
 
-Find an active, non-group workspace label with the exact supplied name:
+Read the item's team and find active, non-group labels with the exact supplied
+name across the workspace and teams:
 
 ```sh
-linear api --variable "name=<supplied label>" --paginate <<'GRAPHQL'
-query FindLabel($name: String!, $after: String) {
-  issueLabels(filter: {name: {eq: $name}, isGroup: {eq: false}, team: {null: true}},
+linear api --variables-json '{"name":"<supplied label>","itemId":"<item ID>"}' <<'GRAPHQL'
+query FindLabel($name: String!, $itemId: String!, $after: String) {
+  issue(id: $itemId) { team { id } }
+  issueLabels(filter: {name: {eq: $name}, isGroup: {eq: false}},
               first: 250, after: $after, includeArchived: false) {
-    nodes { id name }
+    nodes { id name team { id } }
     pageInfo { hasNextPage endCursor }
   }
 }
 GRAPHQL
 ```
 
-`--paginate` returns the complete array of matching label nodes. Compare
-native names exactly. When no exact match exists, create a workspace label:
+Follow every page using `after`. Keep labels belonging to the item's team or
+the workspace, and compare native names exactly. Stop on multiple applicable
+matches. When no applicable label exists, create a workspace label:
 
 ```sh
 linear api --variable "name=<supplied label>" <<'GRAPHQL'

@@ -8,7 +8,7 @@ test('Linear reuses an existing workspace label before adding it to the item', (
     (program, args) => {
       calls.push([program, ...args]);
       if (args.includes('api')) {
-        return JSON.stringify({ data: { issueLabels: { nodes: [
+        return JSON.stringify({ data: { issue: { team: { id: 'team-icy' } }, issueLabels: { nodes: [
           { id: 'label-1', name: 'agent-inspected' },
         ], pageInfo: { hasNextPage: false, endCursor: null } } } });
       }
@@ -20,13 +20,38 @@ test('Linear reuses an existing workspace label before adding it to the item', (
     '--add-label', 'agent-inspected', '--no-input']);
 });
 
+test('Linear reuses an existing team label instead of trying to create a duplicate', () => {
+  const calls: string[][] = [];
+  const result = applyItemLabel('linear', { item_id: 'ICY-135', label: 'agent-planned' },
+    (program, args, input) => {
+      calls.push([program, ...args]);
+      if (input?.includes('query FindLabel')) {
+        if (input.includes('team: {null: true}')) {
+          return JSON.stringify({ data: { issueLabels: { nodes: [],
+            pageInfo: { hasNextPage: false, endCursor: null } } } });
+        }
+        return JSON.stringify({ data: { issue: { team: { id: 'team-icy' } },
+          issueLabels: { nodes: [{ id: 'label-1', name: 'agent-planned',
+            team: { id: 'team-icy' } }],
+            pageInfo: { hasNextPage: false, endCursor: null } } } });
+      }
+      if (input?.includes('mutation CreateLabel')) {
+        throw new Error('duplicate label name');
+      }
+      return '';
+    });
+  assert.equal(result.applied, true);
+  assert.equal(calls.at(-1)?.[1], 'issue');
+  assert.equal(calls.some((call) => call.includes('CreateLabel')), false);
+});
+
 test('Linear creates a missing workspace label before adding it', () => {
   const calls: string[][] = [];
   const result = applyItemLabel('linear', { item_id: 'ICY-134', label: 'agent-inspected' },
     (program, args, input) => {
       calls.push([program, ...args]);
       if (input?.includes('query FindLabel')) {
-        return JSON.stringify({ data: { issueLabels: { nodes: [],
+        return JSON.stringify({ data: { issue: { team: { id: 'team-icy' } }, issueLabels: { nodes: [],
           pageInfo: { hasNextPage: false, endCursor: null } } } });
       }
       if (input?.includes('mutation CreateLabel')) {
@@ -46,7 +71,7 @@ test('Linear stops before item update when label creation is unconfirmed', () =>
     { item_id: 'ICY-134', label: 'agent-inspected' }, (program, args, input) => {
       calls.push([program, ...args]);
       return input?.includes('query FindLabel')
-        ? JSON.stringify({ data: { issueLabels: { nodes: [],
+        ? JSON.stringify({ data: { issue: { team: { id: 'team-icy' } }, issueLabels: { nodes: [],
           pageInfo: { hasNextPage: false, endCursor: null } } } })
         : JSON.stringify({ data: { issueLabelCreate: { success: false } } });
     }), /not confirmed/);

@@ -5,7 +5,7 @@ import { resolveItemProvider } from './resolve-item-provider.ts';
 
 type Input = { item_id: string; label: string };
 type Run = (program: string, args: string[], input?: string) => string;
-type Label = { id: string; name: string };
+type Label = { id: string; name: string; team?: { id: string } | null };
 
 const runCli: Run = (program, args, input) => execFileSync(program, args, {
   encoding: 'utf8', input,
@@ -41,25 +41,33 @@ export function applyItemLabel(provider: 'linear' | 'clickup', input: Input,
     }
   }
 
-  const query = `query FindLabel($name: String!, $after: String) {
-    issueLabels(filter: {name: {eq: $name}, isGroup: {eq: false}, team: {null: true}},
+  const query = `query FindLabel($name: String!, $itemId: String!, $after: String) {
+    issue(id: $itemId) { team { id } }
+    issueLabels(filter: {name: {eq: $name}, isGroup: {eq: false}},
       first: 250, after: $after, includeArchived: false) {
-      nodes { id name }
+      nodes { id name team { id } }
       pageInfo { hasNextPage endCursor }
     }
   }`;
   const matches: Label[] = [];
   let after: string | null = null;
   const seen = new Set<string>();
+  let itemTeamId: string | undefined;
   for (;;) {
-    const data = linearApi(run, query, { name: input.label, after });
+    const data = linearApi(run, query, { name: input.label, itemId: input.item_id, after });
+    const teamId = (data.issue as { team?: { id?: string } } | undefined)?.team?.id;
+    if (!teamId || (itemTeamId && itemTeamId !== teamId)) {
+      throw new Error('Linear item team is unavailable or changed during label lookup.');
+    }
+    itemTeamId = teamId;
     const page = data.issueLabels as {
       nodes?: Label[]; pageInfo?: { hasNextPage: boolean; endCursor: string | null };
     } | undefined;
     if (!Array.isArray(page?.nodes) || !page.pageInfo) {
       throw new Error('Linear label lookup is incomplete.');
     }
-    matches.push(...page.nodes.filter(label => label.name === input.label && !!label.id));
+    matches.push(...page.nodes.filter(label => label.name === input.label && !!label.id &&
+      (!label.team || label.team.id === itemTeamId)));
     if (!page.pageInfo.hasNextPage) break;
     const cursor = page.pageInfo.endCursor;
     if (!cursor || seen.has(cursor)) throw new Error('Linear label lookup has an invalid cursor.');

@@ -25,7 +25,10 @@ Resolve one existing official item from a configured provider.
    `../templates/select-option.md` with every returned candidate plus `Search
    by title`. Return the selected candidate through Step 4, or continue with
    the supplied title phrase as `query`.
-3. Run `./search-items.md` once with `query`, then handle the tolerant result:
+3. Search with `./search-items.md` using `query`, then handle the tolerant result:
+   - For a Linear title query with an unformatted slash command and no match,
+     retry once with that command wrapped in code backticks. Keep the same
+     single-match and ambiguity rules for the retry.
    - If no item matches, ask the user to refine the search or stop. Repeat the
      search only when the user provides a refined phrase.
    - If exactly one item matches, select it without requiring an exact title.

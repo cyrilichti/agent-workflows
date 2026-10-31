@@ -21,7 +21,12 @@ fs.writeFileSync(root + '/args.json', JSON.stringify(process.argv.slice(2)));
 if (process.argv[2] === 'api') {
   fs.writeFileSync(root + '/query', fs.readFileSync(0, 'utf8'));
 }
-process.stdout.write(fs.readFileSync(root + '/response.json'));
+const response = JSON.parse(fs.readFileSync(root + '/response.json', 'utf8'));
+const queryArg = process.argv.find((arg) => arg.startsWith('query='));
+const selected = response.byQuery
+  ? response.byQuery[queryArg?.slice(6)] ?? { data: { issues: { nodes: [] } } }
+  : response;
+process.stdout.write(JSON.stringify(selected));
 `,
     { mode: 0o755 },
   );
@@ -68,6 +73,17 @@ test('Linear title search resolves a unique match and stops on empty or ambiguou
   assert.throws(() => {
     return resolveExistingItem('linear', '', 'Fix CTA');
   }, /search/i);
+});
+
+test('Linear title search finds a title when code backticks are omitted', (t) => {
+  const f = createFixture(t, 'linear');
+  const title = 'Refondre `/done` en parcours standalone sans confirmation';
+  f.respond({ byQuery: {
+    [title]: { data: { issues: { nodes: [{ id: 'issue-135', title,
+      state: { name: 'Backlog' }, team: { name: 'ICY' }, project: null }] } } },
+  } });
+  assert.equal(resolveExistingItem('linear', '',
+    'Refondre /done en parcours standalone sans confirmation'), 'issue-135');
 });
 
 test('ClickUp title search normalizes whitespace and stops on ambiguous first-page results', (t) => {

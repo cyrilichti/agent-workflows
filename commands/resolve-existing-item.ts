@@ -9,7 +9,12 @@ export function resolveExistingItem(provider: ItemProvider, reference = '', quer
   if (!query.trim()) {
     throw new Error('Supply an item reference or title query.');
   }
-  const matches = searchItems(provider, query.trim());
+  const phrase = query.trim();
+  let matches = searchItems(provider, phrase);
+  if (!matches.length && provider === 'linear') {
+    const formatted = phrase.replace(/(?<![\w`])\/[a-z][\w-]*/gi, (command) => `\`${command}\``);
+    if (formatted !== phrase) matches = searchItems(provider, formatted);
+  }
   if (!matches.length) {
     throw new Error(
       provider === 'clickup'
