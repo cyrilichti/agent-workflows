@@ -87,7 +87,7 @@ hero:
             <div class="workflow-demo__message workflow-demo__message--user"><b>You</b><p data-demo-typing>Merge it.</p></div>
             <div class="workflow-demo__message workflow-demo__message--agent" data-demo-answer><b>Agent</b><p>Merged to main. The Linear ticket is now complete.</p></div>
             <div class="workflow-demo__behind" data-demo-behind><h3>Behind the scenes</h3><ul>
-              <li><span>Workflow</span><p><a class="workflow-demo__workflow" href="/agent-workflows/workflows/done/">/done</a> merges after your confirmation.</p></li>
+              <li><span>Workflow</span><p>Invoking <a class="workflow-demo__workflow" href="/agent-workflows/workflows/done/">/done</a> authorizes the eligible merge and item completion.</p></li>
               <li><span>Integration</span><p>Linear records the completed ticket.</p></li>
             </ul></div>
           </article>
