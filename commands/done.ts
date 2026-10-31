@@ -154,29 +154,12 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
   return result;
 }
 
-export function parseDoneInput(args: string[]): { reference?: string; query?: string } {
-  if (args.length === 2 && args[0] === '--query' && args[1]?.trim()) {
-    return { query: args[1] };
-  }
-  if (args.length === 1 && args[0]?.trim() && args[0] !== '--query') {
-    return { reference: args[0] };
-  }
-  throw new Error('Supply an item ID or native URL, or use --query with a title phrase.');
-}
-
 if (import.meta.main) {
   const parent = dirname(import.meta.dirname);
   const root = basename(parent) === '.agents' ? dirname(parent) : parent;
-  try {
-    const input = parseDoneInput(process.argv.slice(2));
-    const result = completeDone(root, input.reference, input.query);
-    process.stdout.write(`${JSON.stringify(result)}\n`);
-    if (result.status !== 'complete') process.exitCode = 1;
-  } catch (error) {
-    process.stdout.write(`${JSON.stringify({ status: 'stopped',
-      request: { state: 'not attempted' }, item: { status: 'not attempted' },
-      stage: 'input',
-      reason: error instanceof Error ? error.message : String(error) })}\n`);
-    process.exitCode = 1;
-  }
+  const [input, query] = process.argv.slice(2);
+  const result = completeDone(root, input === '--query' ? '' : input,
+    input === '--query' ? query : '');
+  process.stdout.write(`${JSON.stringify(result)}\n`);
+  if (result.status !== 'complete') process.exitCode = 1;
 }

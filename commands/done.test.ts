@@ -4,15 +4,6 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
-import { parseDoneInput } from './done.ts';
-
-test('done CLI accepts an exact reference or an explicit title query', () => {
-  assert.deepEqual(parseDoneInput(['ICY-1']), { reference: 'ICY-1' });
-  assert.deepEqual(parseDoneInput(['--query', 'Refondre /done']),
-    { query: 'Refondre /done' });
-  assert.throws(() => parseDoneInput(['--query']), /Supply an item ID/);
-  assert.throws(() => parseDoneInput([]), /Supply an item ID/);
-});
 
 const cli = `#!/usr/bin/env node
 const fs = require('node:fs');
@@ -163,6 +154,17 @@ test('done performs no mutation when request and item are already complete', () 
   try {
     const result = f.run();
     assert.equal(result.value.status, 'complete', JSON.stringify(result));
+    assert.equal(f.state().mergeCalls, 0);
+    assert.equal(f.state().itemUpdates, 0);
+  } finally { f.cleanup(); }
+});
+
+test('done stops at item resolution when no item is supplied', () => {
+  const f = fixture();
+  try {
+    const result = f.run({});
+    assert.equal(result.value.status, 'stopped');
+    assert.equal(result.value.stage, 'resolve_item');
     assert.equal(f.state().mergeCalls, 0);
     assert.equal(f.state().itemUpdates, 0);
   } finally { f.cleanup(); }
