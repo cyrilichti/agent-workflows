@@ -16,7 +16,6 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 | Input | Description |
 | --- | --- |
 | `item` | Required item ID, native URL, title, or search phrase. |
-| `--query` | Use for a title or search phrase; omit for an ID or native URL. |
 
 Invoking `/done` authorizes the eligible completion without another
 confirmation.
@@ -27,10 +26,16 @@ confirmation.
 
 ### 1. Complete the Request and Item
 
-Run from this file's directory with the optional flag described above:
+Run from this file's directory. For an ID or native URL:
 
 ```sh
-node ../commands/done.ts [--query] "<item>"
+node ../commands/done.ts "<item>"
+```
+
+For a title or search phrase:
+
+```sh
+node ../commands/done.ts --query "<item>"
 ```
 
 If the item is missing, ask for it before running the command.
