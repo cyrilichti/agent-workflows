@@ -1,4 +1,4 @@
-# Ready Execute Branch
+# Ready Execute
 
 ## Input
 

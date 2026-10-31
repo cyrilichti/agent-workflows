@@ -1,4 +1,4 @@
-# Work Execute Branch
+# Work Execute
 
 ## Input
 
