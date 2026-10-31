@@ -6,7 +6,7 @@ From this file's directory, read only the files below that are not already
 active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/done-complete.md
+cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md
 ```
 
 ---
@@ -42,5 +42,15 @@ If the item is missing, ask for it before running the command.
 
 ### 2. Report
 
-Use the observed command result and the format in `../goals/done-complete.md`.
-On failure, include `stage` and `reason` when returned.
+Start the final response with this block, using the command's observed states.
+Keep both identities visible and use `unavailable` for an unresolved identity:
+
+```markdown
+## Done result
+
+**Request <repository#ID>:** <observed state>
+**Item <ID>:** <observed status>
+**Stage:** <failed stage, when returned>
+**Reason:** <failure reason, when returned>
+**Remaining:** <item action, only when returned>
+```
