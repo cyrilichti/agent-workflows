@@ -22,4 +22,4 @@ snapshot step without switching branches.
 
 ### 2. Inspect the Request
 
-On success, follow `./inspect-item.md` with the returned `delivery_context`.
+On success, follow `./inspect-execute.md` with the returned `delivery_context`.

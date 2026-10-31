@@ -10,11 +10,11 @@ eligible squash merge and item completion without another confirmation.
 
 ## How `/done` completes delivery
 
-<div className="write-flow done-flow" role="img" aria-label="The done workflow resolves one linked request and item, verifies the agent-inspected label, mergeability, and one done status, then rechecks the request before squash merge. After observing the merged state it completes the item.">
+<div className="write-flow done-flow" role="img" aria-label="The done workflow resolves one linked request and item, verifies the agent-inspected label, the inspected head SHA, review status, mergeability, and one done status, then rechecks the request before squash merge. After observing the merged state it completes the item.">
   <div className="write-flow__step write-flow__step--assisted">
     <small>01 · Resolve</small>
     <strong>Verify completion</strong>
-    <span>Require <code>agent-inspected</code>, one linked request, mergeability, and one <code>done</code> status.</span>
+    <span>Require <code>agent-inspected</code>, an inspection record for the current head SHA, review status, mergeability, and one <code>done</code> status.</span>
   </div>
 
   <span className="write-flow__connector" aria-hidden="true">↓</span>
@@ -46,7 +46,7 @@ stops before merge.
     <tr>
       <td>1</td>
       <th scope="row">Preflight</th>
-      <td>Resolve one official item and its linked request, require <code>agent-inspected</code>, and verify the remaining operations.</td>
+      <td>Resolve one official item and its linked request, require <code>agent-inspected</code> and an inspection record for the current head SHA, and verify the remaining operations.</td>
     </tr>
     <tr>
       <td>2</td>

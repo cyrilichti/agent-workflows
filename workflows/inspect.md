@@ -27,7 +27,7 @@ Select exactly one branch:
 
 | Situation | Workflow |
 | --- | --- |
-| Caller supplies `delivery-context` | `./inspect-item.md` |
+| Caller supplies `delivery-context` | `./inspect-execute.md` |
 | No caller handoff | `./inspect-standalone.md` |
 
 Read the selected workflow file completely and follow it.

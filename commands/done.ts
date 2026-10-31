@@ -11,6 +11,7 @@ import { squashMerge as mergeGitLab } from '../providers/gitlab/merge-request.ts
 import * as linearStatus from '../providers/linear/transition-item-status.ts';
 import * as clickupStatus from '../providers/clickup/transition-item-status.ts';
 import type { GitHubRepository, GitLabRepository } from './resolve-version-repository.ts';
+import { hasInspectionRecord } from './inspection-record.ts';
 
 type DoneResult = {
   status: 'complete' | 'stopped' | 'partial';
@@ -74,6 +75,10 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
     if (request.state === 'open' && delivery.merge_status !== 'mergeable') {
       throw new Error(`Request is ${delivery.merge_status}: ${delivery.blocker ?? 'no provider reason'}.`);
     }
+    stage = 'verify_inspection';
+    if (!hasInspectionRecord(item.comments, request.url, request.head_sha)) {
+      throw new Error('The current request head has no inspection record on the official item.');
+    }
     stage = 'resolve_item_status';
     const statusAdapter = provider === 'linear' ? linearStatus : clickupStatus;
     const officialItem = provider === 'linear'
@@ -81,6 +86,12 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
         identifier: item.identifier }
       : { status: item.status, list: (item.destination as { list: unknown }).list };
     const statusResolution = statusAdapter.readStatuses(item.id, officialItem);
+    const currentStatus = statusResolution.current_status;
+    const inReview = currentStatus.category === 'review' ||
+      /\b(review|revue|examen)\b/i.test(currentStatus.name);
+    if (!inReview && !(request.state === 'merged' && currentStatus.category === 'completed')) {
+      throw new Error('The official item is not in review.');
+    }
     const targets = statusResolution.available_statuses.filter(status =>
       status.category === 'completed');
     if (targets.length !== 1) {

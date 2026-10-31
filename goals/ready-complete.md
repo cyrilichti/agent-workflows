@@ -2,7 +2,8 @@
 
 ## Outcome
 
-An existing plan with every todo completed and every global validation checked
+An existing plan with no pending or in-progress todo, at least one completed
+todo, and every global validation checked
 is published unchanged on its exact request, which is then made ready for
 inspection.
 

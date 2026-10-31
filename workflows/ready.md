@@ -27,7 +27,7 @@ Select exactly one branch:
 
 | Situation | Workflow |
 | --- | --- |
-| Caller supplies `delivery-context` | `./ready-item.md` |
+| Caller supplies `delivery-context` | `./ready-execute.md` |
 | No caller handoff | `./ready-standalone.md` |
 
 Read the selected workflow file completely and follow it.

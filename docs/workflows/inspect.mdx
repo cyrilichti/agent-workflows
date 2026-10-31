@@ -43,7 +43,7 @@ curation.
   <div className="write-flow__step write-flow__step--assisted">
     <small>03 · Outcome</small>
     <strong>Apply <code>agent-inspected</code></strong>
-    <span>Mark the item as inspected, then move it to review and stop. Merge and <code>/done</code> remain human decisions.</span>
+    <span>Mark the item as inspected, move it to review, record the inspected head SHA, and stop. Merge and <code>/done</code> remain human decisions.</span>
   </div>
 </div>
 
@@ -79,7 +79,7 @@ curation.
     <tr>
       <td>4</td>
       <th scope="row">Resolve</th>
-      <td>Return blocking findings to <code>/work</code>; otherwise apply <code>agent-inspected</code>, move the item to review, and stop without invoking <code>/done</code>.</td>
+      <td>Return blocking findings to <code>/work</code>; otherwise apply <code>agent-inspected</code>, move the item to review, record the inspected request head, and stop without invoking <code>/done</code>.</td>
     </tr>
   </tbody>
 </table>

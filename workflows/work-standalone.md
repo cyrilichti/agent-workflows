@@ -26,7 +26,7 @@ On failure, report `stage` and `reason`, then stop.
 
 ### 2. Execute the Plan
 
-On success, follow `./work-item.md` with:
+On success, follow `./work-execute.md` with:
 
 ```text
 plan: result.delivery_context.plan
