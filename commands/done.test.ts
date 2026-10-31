@@ -4,6 +4,15 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
+import { parseDoneInput } from './done.ts';
+
+test('done CLI accepts an exact reference or an explicit title query', () => {
+  assert.deepEqual(parseDoneInput(['ICY-1']), { reference: 'ICY-1' });
+  assert.deepEqual(parseDoneInput(['--query', 'Refondre /done']),
+    { query: 'Refondre /done' });
+  assert.throws(() => parseDoneInput(['--query']), /Supply an item ID/);
+  assert.throws(() => parseDoneInput([]), /Supply an item ID/);
+});
 
 const cli = `#!/usr/bin/env node
 const fs = require('node:fs');

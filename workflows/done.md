@@ -26,20 +26,11 @@ confirmation.
 
 ### 1. Complete the Request and Item
 
-Run from this file's directory. For an ID or native URL:
+Run one command from this file's directory:
 
 ```sh
-node ../commands/done.ts <<'JSON'
-{"reference":"<item>"}
-JSON
-```
-
-For a title or search phrase:
-
-```sh
-node ../commands/done.ts <<'JSON'
-{"query":"<item>"}
-JSON
+node ../commands/done.ts "<item ID or native URL>"
+node ../commands/done.ts --query "<title or search phrase>"
 ```
 
 If the item is missing, ask for it before running the command.
