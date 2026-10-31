@@ -2,9 +2,8 @@
 
 ## Outcome
 
-One exact request whose current head is recorded as inspected on its official
-item is merged and the item is done, or the workflow stops with the exact
-observed blocker. An open request requires the item to be in review.
+One exact request is merged and its official item is done, or the workflow
+stops with the exact observed blocker.
 
 ## Terminal Outcomes
 

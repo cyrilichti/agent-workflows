@@ -18,7 +18,7 @@ const output = value => process.stdout.write(JSON.stringify(value) + '\\n');
 if (name === 'linear') {
   if (args.includes('api')) {
     output({ data: { issue: { id: 'uuid-1', identifier: 'ICY-1',
-      state: { id: state.done ? 'done' : state.itemStatus, name: state.done ? 'Done' : state.itemStatus,
+      state: { id: state.done ? 'done' : 'review', name: state.done ? 'Done' : 'Review',
         type: state.done ? 'completed' : 'started' },
       team: { id: 'team-1', key: 'ICY' }, project: null } } });
   } else if (args[0] === 'issue' && args[1] === 'view') {
@@ -29,10 +29,7 @@ if (name === 'linear') {
         : 'https://github.com/acme/repo/pull/7']).map((url, index) => ({
         id: 'comment-' + index, body: 'Draft ' + (state.versionProvider === 'gitlab' ? 'MR' : 'PR')
           + ': ' + url,
-      })).concat(state.inspectionRecord === false ? [] : [{ id: 'inspection',
-        body: 'Agent-Workflows-Inspected: ' + (state.versionProvider === 'gitlab'
-          ? 'https://gitlab.example/acme/repo/-/merge_requests/7'
-          : 'https://github.com/acme/repo/pull/7') + ' ' + state.inspectedSha }]) });
+      })) });
   } else if (args[0] === 'team' && args[1] === 'states') {
     const statuses = [
       { id: 'review', name: 'Review', type: 'started' },
@@ -56,7 +53,7 @@ if (name === 'linear') {
     output({ merged: true });
   } else {
     state.readCalls++;
-    const sha = state.stale && state.readCalls > 1 ? 'changed' : '${'a'.repeat(40)}';
+    const sha = state.stale && state.readCalls > 1 ? 'changed' : 'head-1';
     save();
       output({ number: 7, title: 'A task', state: state.merged ? 'closed' : 'open',
       merged: state.merged, draft: false, mergeable: !state.blocked, head: { ref: 'feature', sha },
@@ -70,7 +67,7 @@ if (name === 'linear') {
     save();
   } else if (args[0] === 'api') {
     state.readCalls++;
-    const sha = state.stale && state.readCalls > 1 ? 'changed' : '${'a'.repeat(40)}';
+    const sha = state.stale && state.readCalls > 1 ? 'changed' : 'head-1';
     save();
     output({ iid: 7, title: 'A task', state: state.merged ? 'merged' : 'opened',
       draft: false, source_branch: 'feature', sha, target_branch: 'main',
@@ -90,8 +87,7 @@ function fixture(overrides: Record<string, unknown> = {}, versionProvider: 'gith
   execFileSync('git', ['init', '-q', root]);
   execFileSync('git', ['-C', root, 'remote', 'add', 'origin', versionProvider === 'github'
     ? 'https://github.com/acme/repo.git' : 'https://gitlab.example/acme/repo.git']);
-  const initial = { label: true, merged: false, done: false, itemStatus: 'Review',
-    inspectionRecord: true, inspectedSha: 'a'.repeat(40), ambiguous: false, blocked: false,
+  const initial = { label: true, merged: false, done: false, ambiguous: false, blocked: false,
     stale: false, failItem: false, mergeCalls: 0, itemUpdates: 0, readCalls: 0,
     versionProvider,
     ...overrides };
@@ -128,7 +124,7 @@ test('done squash merges an unchanged request and completes its item', () => {
     assert.equal(f.state().mergeCalls, 1);
     assert.equal(f.state().itemUpdates, 1);
     assert.deepEqual(JSON.parse(f.state().mergeInput),
-      { sha: 'a'.repeat(40), merge_method: 'squash' });
+      { sha: 'head-1', merge_method: 'squash' });
   } finally { f.cleanup(); }
 });
 
@@ -138,7 +134,7 @@ test('done uses GitLab squash merge with the frozen head SHA', () => {
     const result = f.run();
     assert.equal(result.value.status, 'complete', JSON.stringify(result));
     assert.deepEqual(f.state().mergeArgs, ['mr', 'merge', '7', '--repo',
-      'https://gitlab.example/acme/repo', '--squash', '--sha', 'a'.repeat(40),
+      'https://gitlab.example/acme/repo', '--squash', '--sha', 'head-1',
       '--auto-merge=false', '--yes']);
   } finally { f.cleanup(); }
 });
@@ -183,23 +179,6 @@ test('done stops before mutation on missing label, stale head, or ambiguous stat
     try {
       const result = f.run();
       assert.equal(result.value.status, 'stopped');
-      assert.equal(result.value.stage, stage);
-      assert.equal(f.state().mergeCalls, 0);
-      assert.equal(f.state().itemUpdates, 0);
-    } finally { f.cleanup(); }
-  }
-});
-
-test('done refuses a missing or stale inspection record and an item outside review', () => {
-  for (const [scenario, stage] of [
-    [{ inspectionRecord: false }, 'verify_inspection'],
-    [{ inspectedSha: 'b'.repeat(40) }, 'verify_inspection'],
-    [{ itemStatus: 'In Progress' }, 'resolve_item_status'],
-  ] as const) {
-    const f = fixture(scenario);
-    try {
-      const result = f.run();
-      assert.equal(result.value.status, 'stopped', JSON.stringify(result));
       assert.equal(result.value.stage, stage);
       assert.equal(f.state().mergeCalls, 0);
       assert.equal(f.state().itemUpdates, 0);

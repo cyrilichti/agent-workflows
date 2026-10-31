@@ -118,18 +118,9 @@ node ../commands/transition-item-status.ts <<'JSON'
 JSON
 ```
 
-Require `status: transitioned`. Then record the inspected request head on the
-official item. Run from this file's directory:
-
-```sh
-node ../commands/record-inspection.ts <<'JSON'
-{"item_id":"<exact official item ID>","request_url":"<exact request URL>","head_sha":"<frozen SHA>"}
-JSON
-```
-
-Require `status: recorded`. Report any failure with the final result contract
-below and the observed request and item states. On success, preserve the
-resulting item state and present the final result.
+Require `status: transitioned`. Report any failure with the final result
+contract below and the observed request and item states.
+On success, preserve the resulting item state and present the final result.
 
 ## Inspection Result Contract
 
