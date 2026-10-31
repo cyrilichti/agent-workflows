@@ -38,8 +38,6 @@ For a title or search phrase:
 node ../commands/done.ts --query "<item>"
 ```
 
-If the item is missing, ask for it before running the command.
-
 ### 2. Report
 
 Use the final result contract below. On failure, put the returned `stage` and
