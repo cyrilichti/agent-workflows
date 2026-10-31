@@ -11,7 +11,8 @@ test('resolver reads only the request linked to the exact repository', (t) => {
   t.after(() => { process.env.PATH = oldPath; rmSync(bin, { recursive: true, force: true }); });
   writeFileSync(join(bin, 'gh'), `#!/usr/bin/env node
 process.stdout.write(JSON.stringify({
-  number: 7, title: 'Fix CTA', state: 'open', merged: false, draft: true,
+  number: 7, title: 'Fix CTA', state: process.env.TEST_REQUEST_MERGED ? 'closed' : 'open',
+  merged: Boolean(process.env.TEST_REQUEST_MERGED), draft: true,
   head: { ref: 'fix/cta', sha: 'abc' }, base: { ref: 'main' }, body: '',
   html_url: 'https://github.com/acme/repo/pull/7',
 }));
@@ -26,4 +27,11 @@ process.stdout.write(JSON.stringify({
   assert.equal(result.head_sha, 'abc');
   assert.throws(() => resolveRequest('github', repo, undefined, [], undefined),
     /exact pull request number/);
+  process.env.TEST_REQUEST_MERGED = '1';
+  t.after(() => { delete process.env.TEST_REQUEST_MERGED; });
+  assert.throws(() => resolveRequest('github', repo, undefined,
+    ['https://github.com/acme/repo/pull/7'], undefined, 'delivery_state'), /is merged/);
+  const merged = resolveRequest('github', repo, undefined,
+    ['https://github.com/acme/repo/pull/7'], undefined, 'delivery_state', ['open', 'merged']);
+  assert.equal(merged.state, 'merged');
 });

@@ -39,6 +39,7 @@ export function resolveRequest(
   backlinks: string[],
   expectedBranch: string | undefined,
   fields?: ReadFields,
+  allowedStates: readonly string[] = ['open'],
 ) {
   const ids = new Set<number>();
   if (requestId !== undefined) {
@@ -64,7 +65,7 @@ export function resolveRequest(
   const request = provider === 'github'
     ? readGitHubRequest(repository as GitHubRepository, id, fields)
     : readGitLabRequest(repository as GitLabRepository, id, fields);
-  if (request.state !== 'open') {
+  if (!allowedStates.includes(request.state)) {
     throw new Error(`Request ${id} is ${request.state}.`);
   }
   if (expectedBranch && request.source_branch !== expectedBranch) {
@@ -106,18 +107,30 @@ function pushRemote(root: string): string {
   return remotes[0]!;
 }
 
+export function requestRepositoryForProject(root: string):
+  { provider: 'github'; repository: GitHubRepository } |
+  { provider: 'gitlab'; repository: GitLabRepository } {
+  const provider = resolveConfiguredProvider(join(root, 'agent-workflows.yaml'), 'version');
+  if (provider !== 'github' && provider !== 'gitlab') {
+    throw new Error('Unsupported version provider.');
+  }
+  const remoteUrl = git(root, 'remote', 'get-url', '--push', pushRemote(root));
+  return provider === 'github'
+    ? { provider, repository: resolveVersionRepository(remoteUrl, 'github') }
+    : { provider, repository: resolveVersionRepository(remoteUrl, 'gitlab') };
+}
+
 export function resolveRequestForProject(
   root: string,
   requestId: number | undefined,
   backlinks: string[],
   expectedBranch: string | undefined,
   fields?: ReadFields,
+  allowedStates: readonly string[] = ['open'],
 ) {
-  const provider = resolveConfiguredProvider(join(root, 'agent-workflows.yaml'), 'version') as
-    'github' | 'gitlab';
-  const remoteUrl = git(root, 'remote', 'get-url', '--push', pushRemote(root));
-  const repository = resolveVersionRepository(remoteUrl, provider);
-  return resolveRequest(provider, repository, requestId, backlinks, expectedBranch, fields);
+  const { provider, repository } = requestRepositoryForProject(root);
+  return resolveRequest(provider, repository, requestId, backlinks, expectedBranch, fields,
+    allowedStates);
 }
 
 if (import.meta.main) {
