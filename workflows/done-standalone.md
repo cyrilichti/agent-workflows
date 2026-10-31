@@ -1,62 +1,46 @@
-# Done Standalone Branch
+# Done Standalone
 
 ## Steps
 
-### 1. Resolve the Official Item
+### 1. Complete One Linked Request and Item
 
-Run `../commands/resolve-item-provider.md`.
+Run from this file's directory. For an item ID or native URL:
 
-Run `../commands/select-review-item.md` with:
-
-```text
-provider: resolved item provider
-reference: supplied exact provider item ID, when available
-query: supplied title phrase, when no exact ID is available
+```sh
+node ../commands/done.ts <<'JSON'
+{"reference":"<item ID or URL>"}
+JSON
 ```
 
-Run `../commands/read-item.md` with:
+For a title or search phrase:
 
-```text
-provider: resolved item provider
-item_id: selected provider item ID
-fields:
-  - labels
-  - request_backlinks
+```sh
+node ../commands/done.ts <<'JSON'
+{"query":"<title or search phrase>"}
+JSON
 ```
 
-Keep the complete official item.
+Require one official item and one linked request in the current push repository.
+The command verifies `agent-inspected`, a unique done status, squash support,
+and an open, non-draft, mergeable request or an already merged request before
+mutation. An open request is reread immediately before squash merge; identity,
+branches, state, and head SHA must still match. The command observes the merged
+state before moving the item to done. It does not retry a merge or select a
+substitute request or item.
 
-### 2. Resolve the Exact Request
+### 2. Report
 
-Run `../commands/resolve-version-provider.md`. Read the current Git push remote
-without fetching, then run `../commands/resolve-version-repository.md` with:
+Use the command's observed result in this exact format:
 
-```text
-provider: resolved version provider
-push_remote: current push remote
+```markdown
+## Done result
+
+**Request <provider/repository#ID>:** <observed request result>
+**Item <ID>:** <observed item result>
+
+**Remaining:** <exact item action; only when the request is merged and the item remains>
 ```
 
-Run `../commands/resolve-request.md` with:
-
-```text
-provider: resolved version provider
-repository: resolved repository
-request_backlinks: official item request backlinks
-require_non_draft: true
-allowed_states:
-  - open
-  - merged
-fields: delivery_state
-```
-
-Keep the exact returned request.
-
-### 3. Follow Shared Completion
-
-Project the resolved records through `../templates/done-context.md`, then
-follow `./done-confirm.md` with:
-
-```text
-completion_context: compact projected Done Context
-entry_mode: standalone
-```
+For an early failure without resolved identities, report the command reason
+and any known identity. Never claim an unobserved mutation. After an observed
+merge, the item transition is the only remaining action.

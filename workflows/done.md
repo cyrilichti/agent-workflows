@@ -23,13 +23,9 @@ Load `../goals/done-complete.md` once as this workflow's completion contract.
 
 ## Steps
 
-### 1. Follow One Context Branch
-
-Follow exactly one branch:
-
-- follow `./done-confirm.md` when the caller supplies a `completion_context`,
-  with `entry_mode: caller`;
-- otherwise, follow `./done-standalone.md`.
+Follow `./done-standalone.md` for every invocation. Invoking `/done` authorizes
+the exact eligible squash merge and item completion. No separate confirmation
+or caller handoff is required.
 
 The selected branch owns validation of its input context. Never switch an
 explicit caller handoff to standalone mode.
