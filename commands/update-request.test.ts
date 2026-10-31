@@ -95,6 +95,26 @@ test('request update promotes a completed plan and returns the same request cont
   assert.equal(f.state().title, 'Fix CTA');
 });
 
+test('request update accepts completed and cancelled todos', (t) => {
+  const f = fixture(t);
+  writeFileSync(f.planPath, plan.replace('## Validation', '2. ⊘ Drop obsolete step\n\n## Validation'));
+  const result = f.run();
+  assert.equal(result.status, 0, result.stdout);
+  assert.equal(JSON.parse(result.stdout).status, 'promoted');
+});
+
+test('request update refuses pending, in-progress, or all-cancelled plans', (t) => {
+  for (const steps of ['1. ✓ Fix color\n2. ○ Open step',
+    '1. ✓ Fix color\n2. ◐ Active step', '1. ⊘ Drop obsolete step']) {
+    const f = fixture(t);
+    writeFileSync(f.planPath, plan.replace('1. ✓ Fix color', steps));
+    const result = f.run();
+    assert.equal(result.status, 1);
+    assert.equal(JSON.parse(result.stdout).stage, 'check_plan');
+    assert.equal(f.state().body, '');
+  }
+});
+
 test('request update stops before mutation when validation is unchecked', (t) => {
   const f = fixture(t);
   writeFileSync(f.planPath, plan.replace('[x]', '[ ]'));

@@ -6,7 +6,7 @@ From this file's directory, read only the files below that are not already
 active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/ready-complete.md
+cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/ready-complete.md ../templates/delivery-context.md
 ```
 
 ---
@@ -27,7 +27,7 @@ Select exactly one branch:
 
 | Situation | Workflow |
 | --- | --- |
-| Caller supplies `delivery-context` | `./ready-item.md` |
+| Caller supplies `delivery-context` | `./ready-execute.md` |
 | No caller handoff | `./ready-standalone.md` |
 
 Read the selected workflow file completely and follow it.

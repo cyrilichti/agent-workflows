@@ -1,41 +1,28 @@
 ---
 title: /ready
-description: Validate completed work, promote it, and continue to inspection autonomously.
+description: Check plan and branch state, promote the request, and continue to inspection.
 ---
 
-`/ready` receives a delivery context from `/work`, or in standalone mode asks
-for the plan, item, and exact request. It verifies the complete delivery
-against the approved plan, returns concrete gaps to `/work`, and promotes
-passing work for inspection.
+`/ready` receives a delivery context from `/work`, or in standalone mode
+resolves it from one item ID, URL, title, or search phrase. It checks the plan's
+todo states and validation checkboxes, verifies the local branch and linked
+request, then promotes the request for inspection.
 
 ## How `/ready` promotes completed work
 
-<div className="write-flow ready-flow" role="group" aria-label="The ready workflow verifies the completed branch against the approved plan. Concrete delivery gaps return to the work workflow as corrective todos and corrected work comes back through the same readiness loop. When validation passes, ready pushes the branch when needed, publishes the complete plan to the request, marks it ready for review, and continues automatically to inspect.">
-  <div className="write-flow__loop write-flow__loop--autonomous">
-    <span className="write-flow__loop-title">Readiness loop</span>
-    <div className="write-flow__step write-flow__step--focus">
-      <small>01 · Autonomous</small>
-      <strong>Verify delivery</strong>
-      <span>Run planned validation and compare the complete branch with the approved outcome.</span>
-    </div>
-    <div className="write-flow__loop-lines" aria-hidden="true">
-      <span className="write-flow__loop-line write-flow__loop-line--question"></span>
-      <span className="write-flow__loop-line write-flow__loop-line--answer"></span>
-    </div>
-    <a className="write-flow__step write-flow__step--workflow write-flow__step--focus" href="/agent-workflows/workflows/work/">
-      <small>Delivery gaps</small>
-      <strong>/work</strong>
-      <span>Create and execute corrective todos.</span>
-    </a>
-    <span className="write-flow__loop-return">Corrected work</span>
+<div className="write-flow ready-flow" role="group" aria-label="The ready workflow checks terminal todo states, validation checkboxes, a clean local branch, and the linked request. It pushes only when the branch is ahead, publishes the plan as the request description, marks the request ready, and continues to inspect.">
+  <div className="write-flow__step write-flow__step--focus">
+    <small>01 · Autonomous</small>
+    <strong>Check plan and branch</strong>
+    <span>Require no open todo, at least one completed todo, checked validation, and a clean branch with a usable upstream.</span>
   </div>
 
-  <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Validation passes</small>↓</span>
+  <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Checks pass</small>↓</span>
 
   <div className="write-flow__step write-flow__step--focus">
     <small>02 · Autonomous</small>
     <strong>Promote request</strong>
-    <span>Push the branch, publish the complete plan, and mark the request ready for review.</span>
+    <span>Push only if ahead, publish the complete plan, and mark the request ready for review.</span>
   </div>
 
   <span className="write-flow__connector" aria-hidden="true">↓</span>
@@ -47,9 +34,9 @@ passing work for inspection.
   </a>
 </div>
 
-`/ready` runs only the validation defined by the plan. It checks delivery
-completeness, but does not select a specialist or perform an independent code
-review.
+`/ready` checks that the plan records completed validation; it does not run
+those checks or inspect the implementation. A failed check stops the workflow
+with its stage and reason.
 
 ## What `/ready` does
 
@@ -58,22 +45,22 @@ review.
     <tr>
       <td>1</td>
       <th scope="row">Verify</th>
-      <td>Require a terminal plan, completed work, and one clean branch that is not behind or diverged.</td>
+      <td>Require at least one completed todo, no pending or in-progress todos, checked validation, and one clean branch that is not behind or diverged.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Match</th>
-      <td>Run only planned validation and compare the complete branch diff with the Objective and Expected Outcome.</td>
+      <th scope="row">Resolve</th>
+      <td>Require the current branch and exact linked request to match the delivery context.</td>
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Repair</th>
-      <td>Return each concrete gap to <code>/work</code> as a corrective todo, then verify the corrected delivery again.</td>
+      <th scope="row">Push</th>
+      <td>Push only when the local branch is ahead of its upstream.</td>
     </tr>
     <tr>
       <td>4</td>
       <th scope="row">Promote</th>
-      <td>Push when needed, use the complete plan as the request description, mark the request ready, and continue to inspection.</td>
+      <td>Use the complete plan as the request description and mark the request ready.</td>
     </tr>
     <tr>
       <td>5</td>

@@ -26,7 +26,7 @@ On failure, report `stage` and `reason`, then stop.
 
 ### 2. Promote the Request
 
-On success, follow `./ready-item.md` with:
+On success, follow `./ready-execute.md` with:
 
 ```text
 delivery_context: result.delivery_context

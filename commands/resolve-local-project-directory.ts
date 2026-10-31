@@ -112,23 +112,55 @@ function matchingRepositories(paths: string[], list: string): string[] {
   return family.filter(entry => entry.longest === longest).map(entry => entry.path);
 }
 
-function chooseRepository(paths: string[]): string {
+function referenceName(reference: string): string {
+  let value = reference.trim();
+  try {
+    value = new URL(value).pathname;
+  } catch {
+    // A repository name or owner/name is also an explicit reference.
+  }
+  return normalize(basename(value.replace(/\/$/, '').replace(/\.git$/, '')));
+}
+
+async function chooseRepository(paths: string[], itemId: string): Promise<string> {
+  if (paths.length === 1) return paths[0]!;
+  const root = basename(dirname(import.meta.dirname)) === '.agents'
+    ? dirname(dirname(import.meta.dirname)) : dirname(import.meta.dirname);
+  const { resolveItemProvider } = await import('./resolve-item-provider.ts');
+  const { readItem } = await import('./read-item.ts');
+  const provider = resolveItemProvider(join(root, 'agent-workflows.yaml'));
+  if (provider !== 'linear' && provider !== 'clickup') {
+    throw new Error('Configure item provider as linear or clickup to resolve repository ties.');
+  }
+  const item = readItem(provider, itemId);
+  const candidates = paths.map(path => ({ path, name: normalize(basename(path)) }));
+  const content = [item.title, item.description, ...item.comments.map(comment => comment.body)]
+    .join('\n');
+  const references = [...content.matchAll(/^(?:Primary repository|Repository|Repo):\s*(\S+)/gim)]
+    .map(match => referenceName(match[1]!));
+  const explicit = candidates.filter(candidate => references.includes(candidate.name));
+  if (explicit.length === 1) return explicit[0]!.path;
+  const mentioned = candidates.filter(candidate => {
+    const escaped = candidate.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`(^|[^a-z0-9])${escaped}($|[^a-z0-9])`, 'im').test(content);
+  });
+  if (mentioned.length === 1) return mentioned[0]!.path;
   const frontend = paths.filter(path => !/api|back/i.test(basename(path)));
   return (frontend.length ? frontend : paths)[0]!;
 }
 
-function result(paths: string[], list: string): SearchResult {
+async function result(paths: string[], list: string, itemId: string): Promise<SearchResult> {
   const configured = inspectConfigured(paths);
   const first = matchingRepositories(configured.repositories, list);
   if (first.length) {
     if (configured.incomplete) return { status: 'search incomplete' };
-    return { path: chooseRepository(first) };
+    return { path: await chooseRepository(first, itemId) };
   }
   const parents = inspectParents(paths);
   if (configured.incomplete || parents.incomplete) return { status: 'search incomplete' };
   const second = matchingRepositories(parents.repositories, list);
   if (!second.length) return { status: 'not found' };
-  return { path: chooseRepository(second) };
+  return { path: await chooseRepository(second, itemId) };
 }
 
 const list = process.argv[2];
@@ -137,7 +169,7 @@ const paths = process.argv[4];
 try {
   if (!list?.trim()) throw new Error('Missing list.');
   if (!itemId?.trim()) throw new Error('Missing item ID.');
-  process.stdout.write(`${JSON.stringify(result(configuredPaths(paths), list))}\n`);
+  process.stdout.write(`${JSON.stringify(await result(configuredPaths(paths), list, itemId))}\n`);
 } catch (error) {
   process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
   process.exitCode = 1;

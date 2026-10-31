@@ -1,8 +1,14 @@
-# Inspect Standalone Branch
+# Inspect Standalone
+
+## Input
+
+| Input | Description |
+| --- | --- |
+| `item` | Required item ID, native URL, title, or search phrase. |
 
 ## Steps
 
-### 1. Prepare the Delivery Context
+### 1. Prepare the Context
 
 Run from this file's directory. For an item ID or native URL:
 
@@ -22,4 +28,4 @@ snapshot step without switching branches.
 
 ### 2. Inspect the Request
 
-On success, follow `./inspect-item.md` with the returned `delivery_context`.
+On success, follow `./inspect-execute.md` with the returned `delivery_context`.

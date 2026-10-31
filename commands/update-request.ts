@@ -37,8 +37,9 @@ function checkPlan(content: string): void {
     return lines.slice(start + 1, end < 0 ? undefined : end);
   };
   const steps = section('Steps').filter(line => /^\d+\. /.test(line));
-  if (!steps.length || !steps.every(line => /^\d+\. ✓ \S/.test(line))) {
-    throw new Error('Every plan todo must be completed.');
+  if (!steps.some(line => /^\d+\. ✓ \S/.test(line)) ||
+      !steps.every(line => /^\d+\. [✓⊘] \S/.test(line))) {
+    throw new Error('Plan needs a completed todo and no pending or in-progress todos.');
   }
   const validation = section('Validation').filter(line => /^- /.test(line));
   if (!validation.length || !validation.every(line => /^- \[[xX]\] \S/.test(line))) {

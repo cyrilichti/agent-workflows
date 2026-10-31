@@ -40,7 +40,7 @@ Select exactly one branch:
 
 | Situation | Workflow |
 | --- | --- |
-| Caller supplies `plan` and `item`, or `delivery-context` | `./work-item.md` |
+| Caller supplies `plan` and `item`, or `delivery-context` | `./work-execute.md` |
 | No caller handoff | `./work-standalone.md` |
 
 Both branches create or preserve a `Delivery Context`.

@@ -94,7 +94,7 @@ plan directly to `/ready` without another approval.
     <span className="write-flow__loop-return">Next todo</span>
   </div>
 
-  <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>All todos complete</small>↓</span>
+  <span className="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>No open todo and at least one complete</small>↓</span>
 
   <a className="write-flow__step write-flow__step--workflow write-flow__step--focus" href="/agent-workflows/workflows/ready/">
     <small>Workflow</small>
@@ -159,7 +159,7 @@ when none are needed.
     <tr>
       <td>5</td>
       <th scope="row">Ready</th>
-      <td>When every todo is complete, continue automatically to <code>/ready</code>; later findings return through the same loop as corrective todos.</td>
+      <td>When no todo is pending or in progress and at least one is complete, continue automatically to <code>/ready</code>; later findings return through the same loop as corrective todos.</td>
     </tr>
   </tbody>
 </table>
