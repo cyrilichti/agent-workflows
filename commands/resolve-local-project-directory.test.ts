@@ -6,14 +6,30 @@ import { join, resolve } from 'node:path';
 import test from 'node:test';
 
 const program = resolve('commands/resolve-local-project-directory.ts');
+const itemCli = `#!/usr/bin/env node
+const args = process.argv.slice(2);
+if (args[0] === 'api') {
+  process.stdout.write(JSON.stringify({ data: { issue: { id: 'item-id',
+    identifier: 'ICY-1', state: { id: 'open', name: 'Open', type: 'started' },
+    team: { id: 'team-1' }, project: null } } }));
+} else if (args[0] === 'issue' && args[1] === 'view') {
+  process.stdout.write(JSON.stringify({ title: 'Task',
+    description: process.env.TEST_PROJECT_ITEM_DESCRIPTION ?? '',
+    url: 'https://linear.app/acme/issue/ICY-1', labels: [], comments: [] }));
+} else process.exit(2);
+`;
 
 function fixture(paths: string[]) {
   const root = mkdtempSync(join(tmpdir(), 'project-test-'));
+  const bin = join(root, 'bin');
+  mkdirSync(bin);
+  writeFileSync(join(bin, 'linear'), itemCli, { mode: 0o755 });
   return {
     root,
-    run: (list: string, configured = paths) => spawnSync(process.execPath,
+    run: (list: string, configured = paths, description = '') => spawnSync(process.execPath,
       [program, list, 'item-id', JSON.stringify(configured)], {
-      encoding: 'utf8',
+      encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}`,
+        TEST_PROJECT_ITEM_DESCRIPTION: description },
     }),
     cleanup: () => rmSync(root, { recursive: true, force: true }),
   };
@@ -51,6 +67,23 @@ test('family ties prefer names without api or back, then lexical paths', () => {
   try {
     assert.deepEqual(JSON.parse(f.run('foo').stdout), { path: realpathSync(front) });
     assert.deepEqual(JSON.parse(f.run('foo', [back, api]).stdout), { path: realpathSync(api) });
+  } finally {
+    f.cleanup();
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('repository ties use an explicit reference from the official item', () => {
+  const root = mkdtempSync(join(tmpdir(), 'project-item-tie-'));
+  const api = join(root, 'foo-api');
+  const web = join(root, 'foo-web');
+  repository(api);
+  repository(web);
+  const f = fixture([web, api]);
+  try {
+    const output = f.run('foo', [web, api], 'Primary repository: foo-api');
+    assert.equal(output.status, 0, output.stderr);
+    assert.deepEqual(JSON.parse(output.stdout), { path: realpathSync(api) });
   } finally {
     f.cleanup();
     rmSync(root, { recursive: true, force: true });
