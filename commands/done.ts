@@ -64,15 +64,13 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
       unknown as DeliveryRequest;
     result.request = { id: request.request_id,
       repository: `${context.provider}/${repositoryName}`, state: request.state };
-    if (request.draft || !request.head_sha || !request.source_branch ||
-      !request.target_branch || !request.url) {
+    if (request.draft || !request.source_branch || !request.target_branch) {
       throw new Error('The linked request identity or delivery state is incomplete.');
     }
     const delivery = request.delivery_state;
     if (request.state === 'open' && delivery.merge_status !== 'mergeable') {
       throw new Error(`Request is ${delivery.merge_status}: ${delivery.blocker ?? 'no provider reason'}.`);
     }
-    // Both configured version adapters expose only a squash merge operation.
     const statusAdapter = provider === 'linear' ? linearStatus : clickupStatus;
     const officialItem = provider === 'linear'
       ? { state: item.status, team: (item.destination as { team: unknown }).team,
@@ -92,8 +90,7 @@ export function completeDone(root: string, reference = '', query = ''): DoneResu
     const alreadyDone = statusResolution.current_status.id === target.id;
     if (request.state === 'open') {
       const current = readDelivery(context, request.request_id);
-      if (current.request_id !== request.request_id || current.url !== request.url ||
-        current.source_branch !== request.source_branch ||
+      if (current.source_branch !== request.source_branch ||
         current.target_branch !== request.target_branch || current.head_sha !== request.head_sha ||
         current.state !== 'open' || current.draft ||
         current.delivery_state.merge_status !== 'mergeable') {
