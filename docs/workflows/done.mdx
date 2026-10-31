@@ -3,36 +3,26 @@ title: /done
 description: Squash-merge one exact request, then complete its official item.
 ---
 
-`/done` is a separate, explicitly invoked completion workflow. Standalone
-entry resolves the item and request; caller entry reuses their exact context.
-Available item labels and status data are carried forward, while a minimal
-caller packet is completed with one item read. The shared completion branch
-then verifies the inspection and merge requirements and asks once before
-changing anything.
+`/done` is an explicitly invoked completion workflow. Give it an item ID,
+native URL, title, or narrow search phrase. It resolves one official item and
+its linked request in the current push repository. Invocation authorizes the
+eligible squash merge and item completion without another confirmation.
 
 ## How `/done` completes delivery
 
-<div className="write-flow done-flow" role="img" aria-label="The done workflow verifies that the exact request is unchanged, mergeable, and attached to an item labeled agent-inspected. It presents the remaining mutations and waits for one human confirmation. After confirmation it squash-merges an open request, observes the merged state, then moves the official item to done.">
+<div className="write-flow done-flow" role="img" aria-label="The done workflow resolves one linked request and item, verifies the agent-inspected label, mergeability, and one done status, then rechecks the request before squash merge. After observing the merged state it completes the item.">
   <div className="write-flow__step write-flow__step--assisted">
-    <small>01 · Preflight</small>
+    <small>01 · Resolve</small>
     <strong>Verify completion</strong>
-    <span>Require <code>agent-inspected</code>, an unchanged request, mergeability, and squash support.</span>
-  </div>
-
-  <span className="write-flow__connector" aria-hidden="true">↓</span>
-
-  <div className="write-flow__step write-flow__step--human">
-    <small>Human</small>
-    <strong>Confirm completion</strong>
-    <span>Approve the exact remaining request and item mutations, or stop without changes.</span>
+    <span>Require <code>agent-inspected</code>, one linked request, mergeability, and one <code>done</code> status.</span>
   </div>
 
   <span className="write-flow__connector" aria-hidden="true">↓</span>
 
   <div className="write-flow__step write-flow__step--focus">
-    <small>02 · After confirmation</small>
+    <small>02 · Recheck</small>
     <strong>Squash merge</strong>
-    <span>Recheck the same request and merge it when it is still open.</span>
+    <span>Recheck the same request and head SHA, then merge it when it is still open.</span>
   </div>
 
   <span className="write-flow__connector" aria-hidden="true">↓</span>
@@ -44,8 +34,10 @@ changing anything.
   </div>
 </div>
 
-`/done` stops on a changed or blocked request. It never modifies the delivered
-work, deploys, releases, retries, or invokes another workflow.
+For a request already merged, `/done` only completes the item when needed. If
+the merge is observed but item completion fails, it reports a partial result
+with the item transition as the remaining action. A changed or blocked request
+stops before merge.
 
 ## What `/done` does
 
@@ -54,17 +46,17 @@ work, deploys, releases, retries, or invokes another workflow.
     <tr>
       <td>1</td>
       <th scope="row">Preflight</th>
-      <td>Reuse or complete the current item context, require <code>agent-inspected</code>, and verify the remaining completion operations for the exact request.</td>
+      <td>Resolve one official item and its linked request, require <code>agent-inspected</code>, and verify the remaining operations.</td>
     </tr>
     <tr>
       <td>2</td>
-      <th scope="row">Confirm</th>
-      <td>Present the exact identities, states, merge method, and remaining mutations for one human decision.</td>
+      <th scope="row">Recheck</th>
+      <td>Require the request identity, branches, state, and head SHA to match the initial read.</td>
     </tr>
     <tr>
       <td>3</td>
       <th scope="row">Merge</th>
-      <td>Recheck the unchanged request and squash-merge it when it is still open and mergeable.</td>
+      <td>Squash-merge an unchanged open request and observe its merged state. Skip the merge when already merged.</td>
     </tr>
     <tr>
       <td>4</td>

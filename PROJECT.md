@@ -23,7 +23,7 @@ Workflows keep the active context narrow. A top-level workflow selects a branch 
 | `/work` | Requires an `agent-planned` item, materializes its plan locally for new work, executes plan todos, pushes each non-empty todo commit, and hands the result to `/ready`. |
 | `/ready` | Rechecks the plan and delivery, sends gaps back to `/work`, then publishes the plan to the request and passes it to `/inspect`. |
 | `/inspect` | Reviews a fixed request snapshot, publishes findings, sends blocking findings back to `/work`, or marks the item inspected. |
-| `/done` | Handles a separate human-confirmed merge and completes the official item. |
+| `/done` | Completes one linked request and official item after explicit invocation. |
 
 The main autonomous loop is `/work` → `/ready` → `/inspect`, with correction paths back to `/work`. `/pick` supplies the official item and approved plan before that loop begins. `/done` is a later human decision, not part of the automatic inspection loop.
 
