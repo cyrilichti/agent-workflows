@@ -54,15 +54,9 @@ export const agentSkillCohorts = [
 export const skillUrl = (skill) =>
   `https://github.com/${skill.source}/tree/HEAD/${skillsLock.skills[skill.name].skillPath.replace("/SKILL.md", "")}`;
 
-`/work` requires an `agent-planned` item and executes its approved plan
-autonomously, one todo at a time. Standalone work automatically resumes when the
-item contains a delivery backlink, keeping the referenced local plan and its
-todo states. It resolves the exact linked open request and safely switches to
-its existing source branch before changing any file. A missing local branch
-or unsafe checkout stops delivery. After checkout, the item
-moves to `in progress` while work and inspection run. Otherwise, it copies the published plan locally and initializes
-delivery. It routes each todo to the right specialist and hands the completed
-plan directly to `/ready` without another approval.
+`/work` implements an approved plan or resumes its delivery when there is work
+to complete. It executes and validates the todos, then continues automatically
+to `/ready` and inspection.
 
 ## How `/work` executes a plan
 
@@ -163,3 +157,14 @@ when none are needed.
     </tr>
   </tbody>
 </table>
+
+## Execution details
+
+`/work` requires an `agent-planned` item. Standalone work automatically resumes
+when the item contains a delivery backlink, keeping the referenced local plan and its
+todo states. It resolves the exact linked open request and safely switches to
+its existing source branch before changing any file. A missing local branch
+or unsafe checkout stops delivery. After checkout, the item moves to
+`in progress` while work and inspection run. Otherwise, it copies the published
+plan locally and initializes delivery. It routes each todo to the right specialist and hands the completed
+plan directly to `/ready` without another approval.

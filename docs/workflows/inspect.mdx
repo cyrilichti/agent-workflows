@@ -3,10 +3,9 @@ title: /inspect
 description: Inspect one exact request snapshot and publish any findings autonomously.
 ---
 
-`/inspect` receives the delivery context from `/ready`, or in standalone mode
-resolves it from one item ID, URL, title, or search phrase. It binds one complete review to one
-frozen request snapshot and publishes every valid finding without manual
-curation.
+`/inspect` reviews a pull or merge request with the `reviewer` profile and
+publishes its findings. Use it to check delivered work and return blocking
+findings to `/work` for correction.
 
 ## How `/inspect` closes the delivery loop
 
@@ -86,3 +85,10 @@ curation.
 
 A failed review transition leaves the inspection label applied and reports an
 incomplete delivery with the exact remaining status update.
+
+## Execution details
+
+`/inspect` receives the delivery context from `/ready`, or in standalone mode
+resolves it from one item ID, URL, title, or search phrase. It binds one complete review to one
+frozen request snapshot and publishes every valid finding without manual
+curation.

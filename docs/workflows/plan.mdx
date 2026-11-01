@@ -3,26 +3,9 @@ title: /plan
 description: Turn one delivery unit into an approved implementation plan.
 ---
 
-`/plan` turns one task into an approved implementation plan. It first checks
-that the task is one coherent delivery unit, routes the work to the right
-specialist, and resolves every material question before asking for approval.
-For an official item, it then publishes the approved plan in a dedicated
-comment and applies <code>agent-planned</code>. Before assessing an official
-item, it completes the supplied context with any missing labels, comments,
-linked resources, and attachments supported by the provider. On
-<code>needs-refinement</code>, it returns that complete context with its
-findings so <code>/pick</code> can pass them to <code>/refine</code>.
-
-An explicit item ID, URL, or title is resolved as official item context. A
-direct invocation still uses plan-only approval: it may publish an official
-item plan, but it does not start delivery. When `/plan` is called by `/pick`,
-approval also authorizes autonomous delivery and returns control to `/pick` so
-it can continue with `/work`.
-
-Each plan shows todo state beside its numbered step with one symbol: `○` for
-`pending`, `◐` for `in_progress`, `✓` for `completed`, and `⊘` for `cancelled`.
-`/work` updates the symbol, and `/ready` uses the step states when checking
-that delivery is complete.
+`/plan` creates an approved implementation plan when you need to prepare one
+delivery unit before starting work. Use it directly for planning only, or
+through `/pick` to continue into delivery after approval.
 
 ## How `/plan` reaches approval
 
@@ -154,3 +137,25 @@ that delivery is complete.
     </tr>
   </tbody>
 </table>
+
+## Execution details
+
+`/plan` first checks that the task is one coherent delivery unit, routes the
+work to the right specialist, and resolves every material question before asking for approval.
+For an official item, it then publishes the approved plan in a dedicated
+comment and applies <code>agent-planned</code>. Before assessing an official
+item, it completes the supplied context with any missing labels, comments,
+linked resources, and attachments supported by the provider. On
+<code>needs-refinement</code>, it returns that complete context with its
+findings so <code>/pick</code> can pass them to <code>/refine</code>.
+
+An explicit item ID, URL, or title is resolved as official item context. A
+direct invocation still uses plan-only approval: it may publish an official
+item plan, but it does not start delivery. When `/plan` is called by `/pick`,
+approval also authorizes autonomous delivery and returns control to `/pick` so
+it can continue with `/work`.
+
+Each plan shows todo state beside its numbered step with one symbol: `○` for
+`pending`, `◐` for `in_progress`, `✓` for `completed`, and `⊘` for `cancelled`.
+`/work` updates the symbol, and `/ready` uses the step states when checking
+that delivery is complete.

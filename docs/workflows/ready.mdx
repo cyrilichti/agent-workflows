@@ -3,10 +3,9 @@ title: /ready
 description: Check plan and branch state, promote the request, and continue to inspection.
 ---
 
-`/ready` receives a delivery context from `/work`, or in standalone mode
-resolves it from one item ID, URL, title, or search phrase. It checks the plan's
-todo states and validation checkboxes, verifies the local branch and linked
-request, then promotes the request for inspection.
+`/ready` prepares a completed implementation for review. It checks the recorded
+plan and branch state, promotes the linked request, and continues to
+`/inspect`.
 
 ## How `/ready` promotes completed work
 
@@ -69,3 +68,8 @@ with its stage and reason.
     </tr>
   </tbody>
 </table>
+
+## Execution details
+
+A delivery context can come directly from `/work`. In standalone mode,
+`/ready` resolves it from one item ID, URL, title, or search phrase.
