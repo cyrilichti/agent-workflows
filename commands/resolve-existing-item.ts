@@ -53,7 +53,8 @@ export function resolveExistingItem(provider: ItemProvider, reference = '', quer
   return matches[0]!.provider_id;
 }
 
-export function resolveItemContext(provider: ItemProvider, reference = '', query = '') {
+export function resolveItemContext(provider: ItemProvider, reference = '', query = '',
+  includeRelations = false) {
   let id = reference.trim();
   if (!id) {
     if (!query.trim()) throw new Error('Supply an item reference or title query.');
@@ -67,7 +68,7 @@ export function resolveItemContext(provider: ItemProvider, reference = '', query
     id = matches[0]!.provider_id;
   }
   return { status: 'resolved' as const, provider,
-    item: readItem(provider, normalizeItemReference(provider, id)) };
+    item: readItem(provider, normalizeItemReference(provider, id), includeRelations) };
 }
 
 if (import.meta.main) {
@@ -80,8 +81,10 @@ if (import.meta.main) {
       throw new Error('Configure item provider as linear or clickup.');
     }
     stage = 'resolve_item';
-    const { reference, query } = parseItemArguments(process.argv.slice(2));
-    const result = resolveItemContext(provider, reference, query);
+    const args = process.argv.slice(2);
+    const includeRelations = args[0] === '--with-relations';
+    const { reference, query } = parseItemArguments(includeRelations ? args.slice(1) : args);
+    const result = resolveItemContext(provider, reference, query, includeRelations);
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
     process.stdout.write(`${JSON.stringify({ status: 'failed', stage,

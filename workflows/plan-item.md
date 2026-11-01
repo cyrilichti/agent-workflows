@@ -5,7 +5,7 @@
 | Input | Requirement |
 | --- | --- |
 | `provider` | Resolved item provider |
-| `item` | Official item ID, core fields, labels, complete comments, and supported linked resources and attachments |
+| `item` | Official item ID, core fields, labels, complete comments, and supported linked resources, relations, and attachments |
 | `entry_mode` | `workflow` or `standalone` |
 
 The item content includes its acceptance criteria when present. Preserve a
@@ -13,11 +13,12 @@ complete supplied item. If a required field is missing, run from this file's
 directory with its official ID or identifier:
 
 ```sh
-node ../commands/resolve-existing-item.ts "<item ID or identifier>"
+node ../commands/resolve-existing-item.ts --with-relations "<item ID or identifier>"
 ```
 
-Use only the returned `resolved` item and provider. On failure, report `stage`
-and `reason` and stop.
+Add missing fields from the returned `resolved` item to the supplied context,
+preserving its existing fields and provider. On failure, report `stage` and
+`reason` and stop.
 
 ## Steps
 

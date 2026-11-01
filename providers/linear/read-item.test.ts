@@ -25,6 +25,7 @@ if (args[0] === 'api') {
   const query = fs.readFileSync(0, 'utf8');
   file = query.includes('SearchItems') ? '/search.json' : '/context.json';
 }
+if (args[0] === 'issue' && args[1] === 'relation') file = '/relations.txt';
 process.stdout.write(fs.readFileSync(root + file));
 `,
     { mode: 0o755 },
@@ -59,6 +60,8 @@ process.stdout.write(fs.readFileSync(root + file));
     ],
   };
   writeFileSync(join(root, 'view.json'), JSON.stringify(view));
+  writeFileSync(join(root, 'relations.txt'),
+    'Relations for ICY-133: Fix CTA\n\n  Blocked by ICY-42: Restore API\n');
   writeFileSync(
     join(root, 'search.json'),
     JSON.stringify({
@@ -100,6 +103,23 @@ test('Linear read normalizes UUID context and reads comments once through the na
     ['api', '--variable', 'id=uuid', '--no-input'],
     ['issue', 'view', 'ICY-133', '--json', '--no-input'],
   ]);
+});
+
+test('Linear includes issue relations only when requested for planning', (t) => {
+  const { root } = createFixture(t);
+  const item = readItem('linear', 'uuid', true);
+  assert.equal(typeof item.relations, 'string');
+  assert.match(item.relations as string, /Blocked by ICY-42: Restore API/);
+  const calls = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n')
+    .map(line => JSON.parse(line) as string[]);
+  assert.deepEqual(calls.at(-1),
+    ['issue', 'relation', 'list', 'ICY-133', '--no-input']);
+});
+
+test('Linear planning read rejects an incomplete relation result', (t) => {
+  const { root } = createFixture(t);
+  writeFileSync(join(root, 'relations.txt'), '');
+  assert.throws(() => readItem('linear', 'uuid', true), /relations are unavailable/);
 });
 
 test('Linear read rejects missing comments and GraphQL partial errors', (t) => {
@@ -196,4 +216,11 @@ test('installed standalone command prepares one context and writes the exact app
   );
   assert.equal(ready.status, 1);
   assert.match(JSON.parse(ready.stdout).reason, /no linked pull or merge request/i);
+
+  const planned = spawnSync(process.execPath,
+    ['../commands/resolve-existing-item.ts', '--with-relations', 'uuid'], {
+      cwd: join(project, '.agents/workflows'), encoding: 'utf8',
+    });
+  assert.equal(planned.status, 0, planned.stdout + planned.stderr);
+  assert.match(JSON.parse(planned.stdout).item.relations, /Blocked by ICY-42/);
 });
