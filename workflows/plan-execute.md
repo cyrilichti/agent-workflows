@@ -27,11 +27,17 @@ again if that inspection reveals separately deliverable units.
 
 ### 2. Author the Plan
 
-The specialist is the sole author. Load
-`../skills/planning-and-task-breakdown/SKILL.md` for every plan unless it is
-already active. Load `../skills/source-driven-development/SKILL.md` only when
-a decision depends on an unverified external versioned fact; use it only to
-verify and cite that fact. Announce each newly loaded Skill.
+The specialist is the sole author. From this file's directory, load applicable
+Skills in one `cat` command. Include `planning-and-task-breakdown` for every
+plan. Include `source-driven-development` only when a decision depends on an
+unverified external versioned fact; use it only to verify and cite that fact.
+Omit paths for Skills already active, and skip the command when none remain:
+
+```sh
+cat ../skills/planning-and-task-breakdown/SKILL.md ../skills/source-driven-development/SKILL.md
+```
+
+Announce each newly loaded Skill.
 
 Write the plan under `../plans/{YYYY-MM-DD}-{objective-slug}.plan.md` with a
 lowercase kebab-case slug of at most 40 characters; append `-2`, `-3`, etc.
