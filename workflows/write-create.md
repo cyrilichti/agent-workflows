@@ -1,47 +1,39 @@
-# Write Create Branch
+# Write Create
 
-## Purpose
+## Input
 
-Resolve create-only context, then follow the shared execution.
-
----
+| Input | Description |
+| --- | --- |
+| `intention` | Initial need when present. |
+| `destination reference` | Explicit destination when present. |
+| `current project name` | Active project name when present. |
 
 ## Steps
 
-### 1. Resolve Provider
+### 1. Resolve the Destination
 
-Run `../commands/resolve-item-provider.md`.
+Run from this file's directory with the explicit destination reference or
+current project name, if available. Omit `reference` when neither exists:
 
-### 2. Resolve Destination
-
-Keep an explicit destination reference from the activation context when one is
-available. Otherwise keep the current project name from the active execution
-context when available.
-
-Run `../commands/resolve-item-destination.md` with:
-
-```text
-provider: resolved item provider
-reference: explicit destination reference, when supplied
-current_project_name: current project name from the active execution context,
-  when available
+```sh
+node ../commands/resolve-item-destination.ts <<'JSON'
+{"reference":"<destination reference or current project name>"}
+JSON
 ```
 
-Use the returned destination.
+On `needs_reference` or `not_found`, ask for a more precise destination and
+repeat. On `ambiguous`, ask with `../templates/select-option.md` using each
+returned candidate's readable `label` and internal `value`; include `Refine
+destination reference` when all matches are only `possible`. On refinement,
+repeat with the new reference. On failure, report `stage` and `reason`, then
+stop.
 
-### 3. Collect Need Description
+### 2. Collect the Need
 
-Reuse the initial intention from the workflow activation context when it
-contains the need to author. Otherwise ask for a light free-form description.
-Keep the result as this run's `intention`.
+Reuse `intention` when it describes the need. Otherwise ask for a short
+free-form description.
 
-### 4. Follow Shared Execution
+### 3. Author the Item
 
-Follow `./write-confirm.md` with:
-
-```text
-provider: resolved item provider
-mode: create
-destination: selected create destination
-intention: collected need description
-```
+Follow `./write-execute.md` with the returned `provider` and selected
+`destination`, `mode: create`, and the need as `intention`.
