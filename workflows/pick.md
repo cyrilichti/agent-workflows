@@ -1,69 +1,73 @@
 # Pick
 
-## Purpose
+## Required Context
 
-Resolve one official item and stop when it is already planned. Otherwise,
-summarize it, create a plan via `/plan`, offer `/refine` on
-`needs-refinement`, or continue with `/work` after plan approval.
+From this file's directory, read only the files below that are not already
+active. Omit active paths from the `cat` command; skip it when none remain:
+
+```sh
+cat ../rules/default-language.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/pick-complete.md
+```
 
 ---
 
-## Required Context
+## Input
 
-Reuse any rules already active from the caller. From this workflow's directory,
-load the remaining rules in one `cat` command, omitting paths for active rules.
-Skip the command when all are active:
+| Input | Description |
+| --- | --- |
+| `item` | Optional official item ID, native URL, title, or search phrase |
 
-```sh
-cat ../rules/default-language.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md
-```
-
-Load `../goals/pick-complete.md` once as this workflow's completion contract.
+When no item is supplied, ask for an item ID, native URL, title, or search
+phrase before resolving it.
 
 ---
 
 ## Steps
 
-### 1. Resolve Context Provider
+### 1. Resolve the Item
 
-Run `../commands/resolve-item-provider.md`.
+Run from this file's directory. For an ID or native URL:
 
-### 2. Resolve Item
-
-Preserve a supplied exact provider ID or native item URL as `reference`.
-Preserve any supplied approximate title as `query`. Run
-`../commands/resolve-existing-item.md` once as the only item-resolution path:
-
-```text
-provider: resolved item provider
-reference: supplied exact provider ID or native URL, when available
-query: supplied approximate title, when available
-candidate_criteria:
-  label: agent-shaped
-fields: labels
+```sh
+node ../commands/resolve-existing-item.ts --with-relations "<item>"
 ```
 
-Require the returned official item's `closed` field to be `false`. Otherwise,
-identify the item, report its observed status or unavailable openness, and stop
-before summarizing or planning.
+For a title or search phrase:
 
-When the item already contains `agent-planned`, identify it, report that its
-plan is already available for `/work`, and stop before summarizing or planning.
+```sh
+node ../commands/resolve-existing-item.ts --with-relations --query "<item>"
+```
 
-Require the remaining item to contain the exact `agent-shaped` label.
-Otherwise, identify it, report that it is not ready for `/pick`, and stop.
+On `not_found`, ask for a better reference or search phrase and repeat. On
+`ambiguous`, ask with `../templates/select-option.md` using each candidate's
+title, status, and destination as its label and `item_id` as its value. Rerun
+the command with the selected ID as the positional `item`. On failure, report
+`stage` and `reason`, then stop. Use only the final `resolved` provider and
+item as official context.
 
-### 3. Summarize Item
+### 2. Check Eligibility
 
-Use the returned item and provider ID as the complete official item context.
+Pass the `resolved` result's complete official item to the eligibility command:
+
+```sh
+node ../commands/classify-pick-item.ts <<'JSON'
+<resolved item JSON>
+JSON
+```
+
+On failure, report `stage` and `reason`, then stop.
+
+On `ineligible`, identify the item and report its observed status or reason,
+then stop. On `already_planned`, identify the item and report that its plan is
+available for `/work`, then stop. Only `eligible` continues.
+
+### 3. Summarize and Plan
 
 Present with `../templates/ticket-summary.md`:
 
 ```text
 item: complete official item context
 ```
-
-### 4. Create Plan
 
 Follow `./plan.md` with:
 
@@ -73,13 +77,11 @@ provider: resolved item provider
 item: complete official item context
 ```
 
-Keep the official item context returned by `/plan` for either outcome.
+On an approved plan, continue to Step 4 with the complete official item
+context returned by `/plan`.
 
-On an approved plan, continue to Step 5.
-
-On `needs-refinement`, report the findings and explain that no plan can be
-created yet, then ask using
-`../templates/select-option.md` with:
+On `needs-refinement`, report the exact findings and that no plan was created.
+Ask with `../templates/select-option.md`:
 
 ```text
 question: Do you want to refine this item?
@@ -88,20 +90,19 @@ options:
 - Stop without changes
 ```
 
-- `Stop without changes`: stop.
-- `Refine item`: follow `./refine.md` in workflow mode with:
+On `Stop without changes`, stop. On `Refine item`, follow `./refine.md` with:
 
-  ```text
-  provider: resolved item provider
-  parent_item: complete official item context
-  needs_refinement_findings: exact findings returned by plan
-  ```
+```text
+provider: resolved item provider
+parent_item: unchanged complete official item context
+needs_refinement_findings: exact findings returned by /plan
+```
 
-  Then stop `/pick`.
+Then stop `/pick`.
 
-### 5. Continue with Work
+### 4. Continue with Work
 
-Follow `./work.md` in caller mode with:
+Follow `./work.md` with:
 
 ```text
 plan: approved plan
