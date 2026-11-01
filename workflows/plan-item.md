@@ -1,62 +1,46 @@
-# Plan Item Branch
+# Plan Item
 
-## Purpose
+## Input
 
-Use the supplied official-item planning context, then follow the shared
-execution.
+| Input | Requirement |
+| --- | --- |
+| `provider` | Resolved item provider |
+| `item` | Official item ID, core fields, labels, complete comments, and supported linked resources, relations, and attachments |
+| `entry_mode` | `workflow` or `standalone` |
 
----
+The item content includes its acceptance criteria when present. Preserve a
+complete supplied item. If a required field is missing, run from this file's
+directory with its official ID or identifier:
+
+```sh
+node ../commands/resolve-existing-item.ts --with-relations "<item ID or identifier>"
+```
+
+Add missing fields from the returned `resolved` item to the supplied context,
+preserving its existing fields and provider. On failure, report `stage` and
+`reason` and stop.
 
 ## Steps
 
-### 1. Complete Official Context
+1. Follow `./plan-execute.md` with the complete `item` as `task_context` and
+   the supplied `entry_mode`. On `needs-refinement`, return its exact findings
+   and unchanged official item context.
+2. For an approved plan, publish its exact authoritative file content:
 
-Preserve the supplied resolved item provider and official item context. Do not
-resolve them again. Before assessment, require the official core fields,
-including acceptance criteria present in the item content, current labels,
-complete comments, and supported linked resources and attachments.
+   ```sh
+   node ../commands/publish-item-plan.ts <<'JSON'
+   {"item_id":"<official item ID>","plan_path":"<canonical plan path>"}
+   JSON
+   ```
 
-Preserve supplied fields and known empty results. Run
-`../commands/read-item.md` with the resolved provider, official item ID, and
-only the missing fields, then add only those fields to the official context.
-Mark unsupported information explicitly as unavailable. Stop when supported
-required information cannot be read.
+   Require `published: true`; on failure report `stage` and `reason` and stop.
+3. Apply `agent-planned` using the same official item ID:
 
-### 2. Follow Shared Execution
+   ```sh
+   node ../commands/apply-item-label.ts <<'JSON'
+   {"item_id":"<official item ID>","label":"agent-planned"}
+   JSON
+   ```
 
-Follow `./plan-confirm.md` with:
-
-```text
-task_context: official item context plus supplied planning context
-entry_mode: supplied entry mode
-```
-
-On `needs-refinement`, return the exact findings and completed official item
-context to the caller without publishing a plan or applying a label. Otherwise,
-continue only with an approved plan.
-
-### 3. Publish the Approved Plan
-
-Read the exact complete approved plan from its authoritative file, then run
-`../commands/publish-item-plan.md` with:
-
-```text
-provider: supplied resolved item provider
-item_id: official item ID
-plan_content: exact complete approved plan content
-```
-
-Require `published: true` from the publication mutation response. Stop on a
-failed or inconclusive response. Do not reread item comments or compare the
-published content after the mutation.
-
-Then run `../commands/apply-item-label.md` with:
-
-```text
-provider: supplied resolved item provider
-item_id: official item ID
-label: agent-planned
-```
-
-Require `applied: true`. Add `agent-planned` to the preserved official item
-labels and return that updated item context with the approved plan.
+   Require `applied: true`; on failure report `stage` and `reason` and stop.
+   Add the label to the carried item and return it with the approved plan.

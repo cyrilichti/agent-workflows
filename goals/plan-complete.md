@@ -6,7 +6,7 @@ One task context produces an approved plan or `needs-refinement`.
 
 ## Terminal Outcomes
 
-- Approved: the plan follows `../templates/plan.md`, has no unresolved material
+- Approved: the plan follows `../workflows/plan-execute.md`, has no unresolved material
   question, exists under `../plans/` at its canonical project-relative path,
   and has explicit approval for the current entry mode. For an official item,
   its dedicated publication and `agent-planned` label are observed before the

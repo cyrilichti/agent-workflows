@@ -17,6 +17,7 @@ export type WorkItem = {
   request_backlinks: string[];
   attachments?: unknown[] | null;
   linked_resources?: unknown[] | null;
+  relations?: string | unknown[] | null;
 };
 
 function extractRequestBacklinks(comments: ItemComment[]): string[] {
@@ -56,8 +57,11 @@ export function normalizeItemReference(provider: ItemProvider, reference: string
 }
 
 // The standalone work read needs core context, labels, complete comments and backlinks.
-export function readItem(provider: ItemProvider, reference: string): WorkItem {
+export function readItem(provider: ItemProvider, reference: string,
+  includeRelations = false): WorkItem {
   const id = normalizeItemReference(provider, reference);
-  const item = provider === 'linear' ? readLinearItem(id) : readClickUpItem(id);
-  return { ...item, request_backlinks: extractRequestBacklinks(item.comments) };
+  const item = provider === 'linear' ? readLinearItem(id, includeRelations) : readClickUpItem(id);
+  return { ...item, request_backlinks: extractRequestBacklinks(item.comments),
+    ...(includeRelations && provider === 'clickup'
+      ? { relations: item.linked_resources ?? null } : {}) };
 }

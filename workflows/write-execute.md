@@ -53,8 +53,8 @@ as an open question. Honor an active Skill's terminal-turn rule.
 
 ### 3. Draft and Present
 
-Ask `item-writer` to return exactly one proposed item with a title and
-free-form Markdown body. Present it as:
+Ask `item-writer` to return exactly one proposed item following
+`../templates/item.md`. Present its title and free-form Markdown body as:
 
 ```markdown
 ### <item title>

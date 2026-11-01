@@ -4,11 +4,11 @@ import { applyItemLabel } from './apply-item-label.ts';
 
 test('Linear reuses an existing workspace label before adding it to the item', () => {
   const calls: string[][] = [];
-  const result = applyItemLabel('linear', { item_id: 'ICY-134', label: 'agent-inspected' },
+  const result = applyItemLabel('linear', { item_id: 'issue-uuid-134', label: 'agent-inspected' },
     (program, args) => {
       calls.push([program, ...args]);
       if (args.includes('api')) {
-        return JSON.stringify({ data: { issue: { team: { id: 'team-icy' } }, issueLabels: { nodes: [
+        return JSON.stringify({ data: { issue: { identifier: 'ICY-134', team: { id: 'team-icy' } }, issueLabels: { nodes: [
           { id: 'label-1', name: 'agent-inspected' },
         ], pageInfo: { hasNextPage: false, endCursor: null } } } });
       }
@@ -30,7 +30,7 @@ test('Linear reuses an existing team label instead of trying to create a duplica
           return JSON.stringify({ data: { issueLabels: { nodes: [],
             pageInfo: { hasNextPage: false, endCursor: null } } } });
         }
-        return JSON.stringify({ data: { issue: { team: { id: 'team-icy' } },
+        return JSON.stringify({ data: { issue: { identifier: 'ICY-135', team: { id: 'team-icy' } },
           issueLabels: { nodes: [{ id: 'label-1', name: 'agent-planned',
             team: { id: 'team-icy' } }],
             pageInfo: { hasNextPage: false, endCursor: null } } } });
@@ -51,7 +51,7 @@ test('Linear creates a missing workspace label before adding it', () => {
     (program, args, input) => {
       calls.push([program, ...args]);
       if (input?.includes('query FindLabel')) {
-        return JSON.stringify({ data: { issue: { team: { id: 'team-icy' } }, issueLabels: { nodes: [],
+        return JSON.stringify({ data: { issue: { identifier: 'ICY-134', team: { id: 'team-icy' } }, issueLabels: { nodes: [],
           pageInfo: { hasNextPage: false, endCursor: null } } } });
       }
       if (input?.includes('mutation CreateLabel')) {
@@ -71,7 +71,7 @@ test('Linear stops before item update when label creation is unconfirmed', () =>
     { item_id: 'ICY-134', label: 'agent-inspected' }, (program, args, input) => {
       calls.push([program, ...args]);
       return input?.includes('query FindLabel')
-        ? JSON.stringify({ data: { issue: { team: { id: 'team-icy' } }, issueLabels: { nodes: [],
+        ? JSON.stringify({ data: { issue: { identifier: 'ICY-134', team: { id: 'team-icy' } }, issueLabels: { nodes: [],
           pageInfo: { hasNextPage: false, endCursor: null } } } })
         : JSON.stringify({ data: { issueLabelCreate: { success: false } } });
     }), /not confirmed/);
