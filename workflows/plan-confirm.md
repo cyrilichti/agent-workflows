@@ -34,10 +34,11 @@ reveals separately deliverable units.
 
 ### 2. Author the Plan
 
-The specialist is the sole author. Load and announce
-`../skills/planning-and-task-breakdown/SKILL.md` for every plan. Load
-`../skills/source-driven-development/SKILL.md` only when a decision depends on
-an unverified external versioned fact; use it only to verify and cite that fact.
+The specialist is the sole author. Load
+`../skills/planning-and-task-breakdown/SKILL.md` for every plan unless it is
+already active. Load `../skills/source-driven-development/SKILL.md` only when
+a decision depends on an unverified external versioned fact; use it only to
+verify and cite that fact. Announce each newly loaded Skill.
 
 Write the plan under `../plans/{YYYY-MM-DD}-{objective-slug}.plan.md` with a
 lowercase kebab-case slug of at most 40 characters; append `-2`, `-3`, etc.

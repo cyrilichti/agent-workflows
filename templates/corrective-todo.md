@@ -3,8 +3,8 @@
 Use only in `/work` to translate one `/ready` gap or blocking `/inspect`
 finding into persisted plan work.
 
-Append a numbered step using the next number and the `pending` prefix from
-`../templates/plan.md`:
+Append a numbered step using the next number and the plan's `○` pending
+symbol:
 
 ```markdown
 <next number>. ○ <one-sentence actionable correction>
