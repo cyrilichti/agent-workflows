@@ -110,9 +110,9 @@ Choose a work tracker and a code host. Orchestration also needs an AI provider.
 - [x] Match specialized agent profiles with the Skills suited to each task.
 - [x] Orchestrate the delivery cycle with Kestra and the bridge.
 - [x] Trace the bridge's AI calls in Langfuse.
-- [ ] Use hybrid agent workflows that combine agent instructions with programmatic steps.
-- [ ] Reduce token use by limiting the context reinjected after each command.
-- [ ] Add Agent API as a bridge provider.
+- [x] Use hybrid agent workflows that combine agent instructions with programmatic steps.
+- [x] Reduce token use by limiting the context reinjected after each command.
+- Add Agent API as a bridge provider.
 
 ## Contribute
 
