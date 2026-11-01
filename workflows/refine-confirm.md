@@ -1,9 +1,12 @@
-# Refine Confirm Branch
+# Refine Confirm
 
-## Entry Condition
+## Input
 
-Run with a resolved provider, complete official parent item, and preserved
-`needs-refinement` findings.
+| Input | Requirement |
+| --- | --- |
+| `provider` | Resolved item provider |
+| `parent_item` | Complete official parent item |
+| `needs_refinement_findings` | Preserved assessment findings |
 
 ---
 
@@ -19,18 +22,17 @@ task_context:
   needs_refinement_findings: preserved refinement findings
 ```
 
-Keep the selected specialist as sole author. It may inspect user- or
-item-identified technical context read-only.
+Keep the selected specialist as sole author. It may inspect relevant technical
+context read-only.
 
-Have it load `../skills/to-tickets/SKILL.md` completely and run only Steps 1–3
-through `Draft vertical slices`. Require a provider-neutral draft containing at
-least two useful children that can be delivered or verified separately and
-cover the parent scope exactly once. Prefer vertical slices for features.
-Allow a justified expansion, migration, and removal sequence when one wide
-change cannot remain valid as independent vertical slices. Do not split one
-indivisible unit to reach two children; return `refinement-not-needed` instead.
-Each child has a stable reference, meaningful title, and free-form Markdown
-body that communicates:
+Have it load `../skills/to-tickets/SKILL.md` completely and apply only Steps
+1–3 through `Draft vertical slices`. The provider-neutral draft must contain
+at least two useful children that can be delivered or verified separately and
+cover the parent scope exactly once. Prefer vertical slices for features; use
+a justified expansion, migration, and removal sequence for a wide change when
+independent vertical slices cannot remain valid. If the scope is indivisible,
+return `refinement-not-needed`. Each child has a stable reference, meaningful
+title, and free-form Markdown body that communicates:
 
 - the observable outcome it delivers;
 - the verifiable conditions under which it is complete;
@@ -38,32 +40,46 @@ body that communicates:
 - every unresolved question that prevents an implementation decision, when
   applicable.
 
-These are content requirements, not required Markdown headings. Return an
-acyclic graph of only genuine blockers whose valid, non-self edges use:
+Return an acyclic graph of genuine blockers using:
 
 ```text
 blocked_ref: stable reference of the child that waits
 blocking_ref: stable reference of the child that must complete first
 ```
 
-Tracker setup is not required for this draft-only invocation. Return the draft
-to `/refine` before Step 4 of `to-tickets`; `/refine` owns confirmation and
-provider operations.
+Return the draft before Step 4 of `to-tickets`. This workflow owns confirmation
+and provider operations.
 
 ### 2. Review the Decomposition
 
-Verify the complete Step 1 contract. Return every deficiency and the complete
-draft to the same specialist for revision, then repeat this step before any
-preview.
+Verify the draft against Step 1. Return deficiencies and the complete draft to
+the same specialist for revision, then review it again before any preview.
 
 ### 3. Confirm the Decomposition
 
-Present using `../templates/decomposition-preview.md` with:
+Present the complete reviewed decomposition in this format:
 
-```text
-children: complete reviewed child proposals with stable references, titles, and bodies
-blocking_edges: complete reviewed blocked_ref and blocking_ref pairs, or none
+```markdown
+**Proposed decomposition**
+
+### 1. <child title>
+
+<exact child Markdown body>
+
+Blocked by: <number and title of each blocking child, when applicable>
+
+### 2. <child title>
+
+<exact child Markdown body>
+
+Blocked by: <number and title of each blocking child, when applicable>
 ```
+
+Repeat the child section in stable proposal order. Preserve each title and
+body exactly. Resolve `blocked_ref` to the child that displays `Blocked by` and
+`blocking_ref` to the numbered child it waits for. Omit that line when there
+is no blocker. Keep blocking relations outside child bodies. The preview does
+not include provider fields or imply creation.
 
 Then ask using `../templates/select-option.md` with:
 
@@ -77,8 +93,8 @@ options:
 
 - `Adjust the decomposition`: return the adjustment and current draft to the
   same specialist, then repeat Step 2.
-- `Cancel without changes`: finish according to
-  `../goals/refine-complete.md` without mutation.
+- `Cancel without changes`: report `cancelled` under
+  `../goals/refine-complete.md`.
 - `Confirm and create all child items`: preserve the exact latest preview and
   continue.
 
