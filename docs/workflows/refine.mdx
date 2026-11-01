@@ -4,18 +4,19 @@ description: Split one oversized work item into confirmed child items without ch
 ---
 
 `/refine` decomposes one oversized official item into autonomous child items.
-Direct invocation reads the complete item context, including comments, before
-assessing the need for decomposition. When called from `/pick`, it reuses the
-complete context and assessment returned by `/plan`. The parent stays unchanged,
-and no child is created before the human confirms the complete decomposition.
+Direct invocation resolves the item by ID, URL, or title, reads its complete
+context, and assesses the need for decomposition. When called from `/pick`, it
+reuses the complete context and findings returned by `/plan`. The parent stays
+unchanged, and no child is created before the human confirms the complete
+decomposition.
 
 ## How `/refine` decomposes an item
 
-<div class="write-flow refine-flow" role="img" aria-label="Direct refinement reads the complete official item context and assesses whether multiple useful units can be delivered or verified separately. Caller mode reuses the complete context and assessment returned by plan and starts drafting directly. The workflow then loops between drafting and validating child items. It prefers vertical feature slices and allows justified progressive migration sequences. It previews the complete decomposition for human adjustment, confirmation, or cancellation. After confirmation, it creates the children, labels, and blocking relations without changing the parent and reports partial failures after continuing feasible operations.">
+<div class="write-flow refine-flow" role="img" aria-label="Standalone refinement resolves and reads the complete official item context, then assesses whether multiple useful units exist. Caller mode reuses the complete context and findings from plan. Both paths draft, review, and preview child items and blocking relations for confirmation or adjustment. After confirmation, the workflow creates children, required labels, and blocking relations, continues feasible operations after failures, and leaves the parent unchanged.">
   <div class="write-flow__step write-flow__step--assisted">
     <small>01 · Standalone only</small>
     <strong>Complete and assess context</strong>
-    <span>Read the complete item context and confirm that multiple useful units exist. Caller mode reuses the assessment from /plan.</span>
+    <span>Resolve and read the complete item context, then assess it. Caller mode reuses the findings from /plan.</span>
   </div>
 
   <div class="plan-flow__scope">
@@ -91,11 +92,6 @@ and no child is created before the human confirms the complete decomposition.
 ## Skills used under the hood
 
 <div class="workflow-links">
-  <a href="https://github.com/addyosmani/agent-skills/tree/main/skills/planning-and-task-breakdown">
-    <small>Assessment</small>
-    <strong>planning-and-task-breakdown <span aria-hidden="true">↗</span></strong>
-    <span>Check whether the selected item contains multiple useful units that can be delivered or verified separately.</span>
-  </a>
   <a href="https://github.com/mattpocock/skills/tree/main/skills/engineering/to-tickets">
     <small>Decomposition</small>
     <strong>to-tickets <span aria-hidden="true">↗</span></strong>
@@ -110,7 +106,7 @@ and no child is created before the human confirms the complete decomposition.
     <tr>
       <td>1</td>
       <th scope="row">Assess</th>
-      <td>In standalone mode, read the complete context and stop without changes when the item is one indivisible delivery unit. Caller mode reuses the complete context and assessment from <code>/plan</code>.</td>
+      <td>In standalone mode, resolve and read the complete context, then stop without changes when the item is one indivisible delivery unit. Caller mode reuses the complete context and findings from <code>/plan</code>.</td>
     </tr>
     <tr>
       <td>2</td>

@@ -12,6 +12,6 @@ The parent content includes its acceptance criteria when present.
 
 ## Steps
 
-Follow `./refine-confirm.md` with the supplied `provider`, `parent_item`, and
+Follow `./refine-execute.md` with the supplied `provider`, `parent_item`, and
 `needs_refinement_findings`. Preserve the official context and findings without
 resolving or assessing them again.

@@ -48,7 +48,7 @@ findings.
 
 ### 3. Continue
 
-Follow `./refine-confirm.md` with:
+Follow `./refine-execute.md` with:
 
 ```text
 provider: resolved item provider
