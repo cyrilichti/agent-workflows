@@ -98,10 +98,16 @@ node ../commands/save-item.ts <<'JSON'
 JSON
 ```
 
-For `update`, pass `{"mode":"update","title":"<confirmed title>","body":"<confirmed Markdown body>","item_id":"<official item ID>"}` instead.
+For `update`, pass the official item ID:
 
-On failure, report `stage` and `reason`, then
-stop without reporting a successful save. On `saved`, run:
+```sh
+node ../commands/save-item.ts <<'JSON'
+{"mode":"update","title":"<confirmed title>","body":"<confirmed Markdown body>","item_id":"<official item ID>"}
+JSON
+```
+
+On failure, report `stage` and `reason`, then stop without reporting a
+successful save. On `saved`, run:
 
 ```sh
 node ../commands/apply-item-label.ts <<'JSON'
