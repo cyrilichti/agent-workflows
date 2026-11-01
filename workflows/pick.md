@@ -33,19 +33,29 @@ provider ID as `item`, or the supplied search phrase as a title query.
 Run from this file's directory. For an ID or native URL:
 
 ```sh
-node ../commands/resolve-pick-item.ts "<item>"
+node ../commands/resolve-existing-item.ts --with-relations "<item>"
 ```
 
 For a title or search phrase:
 
 ```sh
-node ../commands/resolve-pick-item.ts --query "<item>"
+node ../commands/resolve-existing-item.ts --with-relations --query "<item>"
 ```
 
 On `not_found`, ask for a better reference or search phrase and repeat. On
 `ambiguous`, ask with `../templates/select-option.md` using each candidate's
 title, status, and destination as its label and `item_id` as its value; rerun
 with the selected ID. On `failed`, report `stage` and `reason`, then stop.
+
+Pass the `resolved` result's complete official item to the eligibility command:
+
+```sh
+node ../commands/classify-pick-item.ts <<'JSON'
+<resolved item JSON>
+JSON
+```
+
+On `failed`, report `stage` and `reason`, then stop.
 
 On `ineligible`, identify the item and report its observed status or reason,
 then stop. On `already_planned`, identify the item and report that its plan is
