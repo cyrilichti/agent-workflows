@@ -93,8 +93,7 @@ options:
 
 - `Adjust the decomposition`: return the adjustment and current draft to the
   same specialist, then repeat Step 2.
-- `Cancel without changes`: report `cancelled` under
-  `../goals/refine-complete.md`.
+- `Cancel without changes`: report `cancelled` without mutation.
 - `Confirm and create all child items`: preserve the exact latest preview and
   continue.
 

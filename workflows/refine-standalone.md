@@ -12,21 +12,26 @@
 
 ### 1. Resolve the Parent
 
-Run `../commands/resolve-item-provider.md`, then
-`../commands/resolve-existing-item.md` with:
+Run from this file's directory. For an ID or native URL:
 
-```text
-provider: resolved item provider
-reference: supplied ID or URL, when available
-query: supplied title or search phrase, when available
-fields: comments, labels, linked resources, attachments
+```sh
+node ../commands/resolve-refine-item.ts "<item>"
 ```
 
-Use the final read result as the complete official parent context. Require
-the core fields, including acceptance criteria present in the content,
-current labels, complete comments, and supported linked resources and
-attachments. Mark unsupported fields unavailable; stop when a supported
-required field cannot be read.
+For a title or search phrase:
+
+```sh
+node ../commands/resolve-refine-item.ts --query "<item>"
+```
+
+On `needs_reference` or `not_found`, ask for a parent reference or a better
+title phrase and repeat. On `ambiguous`, ask with
+`../templates/select-option.md` using each candidate's title, status, and
+destination as its label and `item_id` as its value; rerun with the selected ID.
+On failure, report `stage` and `reason`, then stop. Use only the final
+`resolved` item as official context. It includes the core fields, labels,
+complete comments, attachments, and linked resources; unavailable optional
+fields are marked `null`.
 
 Present with `../templates/ticket-summary.md`:
 
@@ -42,9 +47,8 @@ Run `../commands/assess-refinement-need.md` with:
 context: complete official parent item
 ```
 
-On `refinement-not-needed`, report the findings and finish under
-`../goals/refine-complete.md`. On `needs-refinement`, preserve the exact
-findings.
+On `refinement-not-needed`, report the findings and stop. On
+`needs-refinement`, preserve the exact findings.
 
 ### 3. Continue
 

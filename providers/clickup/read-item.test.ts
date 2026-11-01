@@ -36,6 +36,8 @@ process.stdout.write('Warning: fixture\\n' + fs.readFileSync(root + '/' + file +
         description: 'plain fallback',
         status: { type: 'open' },
         tags: [{ name: 'agent-planned' }],
+        attachments: [{ id: 'attachment-1' }],
+        linked_tasks: [{ id: 'linked-1' }],
         list: { name: 'Queue' },
       },
     ]),
@@ -71,6 +73,8 @@ test('ClickUp read follows full comment pages, deduplicates and reconstructs unt
   assert.equal(item.comments.length, 26);
   assert.equal(item.comments[0]?.body, 'Full 0 content');
   assert.deepEqual(item.request_backlinks, ['https://gitlab.example/acme/repo/-/merge_requests/7']);
+  assert.deepEqual(item.attachments, [{ id: 'attachment-1' }]);
+  assert.deepEqual(item.linked_resources, [{ id: 'linked-1' }]);
   const calls = readFileSync(join(root, 'calls.jsonl'), 'utf8')
     .trim()
     .split('\n')

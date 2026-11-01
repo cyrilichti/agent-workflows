@@ -15,6 +15,8 @@ export type WorkItem = {
   labels: string[];
   comments: ItemComment[];
   request_backlinks: string[];
+  attachments?: unknown[] | null;
+  linked_resources?: unknown[] | null;
 };
 
 function extractRequestBacklinks(comments: ItemComment[]): string[] {

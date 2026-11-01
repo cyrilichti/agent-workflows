@@ -10,6 +10,7 @@ type Input = {
   body: string;
   destination?: Destination;
   item_id?: string;
+  parent_item_id?: string;
 };
 type Run = (program: string, args: string[], input?: string) => string;
 
@@ -40,6 +41,7 @@ export function saveItem(provider: 'linear' | 'clickup', input: Input, run: Run 
       }
       const variables = { payload: { teamId: destination.team,
         ...(destination.project ? { projectId: destination.project } : {}),
+        ...(input.parent_item_id ? { parentId: input.parent_item_id } : {}),
         title: input.title, description: input.body, useDefaultTemplate: false } };
       output = parseJson(run('linear', ['api', '--variables-json',
         JSON.stringify(variables), '--no-input'],
@@ -72,6 +74,7 @@ export function saveItem(provider: 'linear' | 'clickup', input: Input, run: Run 
         throw new Error('A ClickUp List destination is required.');
       }
       output = parseJson(run('clickup-cli', ['task', 'create', '--list', list,
+        ...(input.parent_item_id ? ['--parent', input.parent_item_id] : []),
         '--name', title, '--description', body, '--output', 'json']));
     } else {
       if (!input.item_id?.trim()) throw new Error('Existing item ID is required.');
@@ -94,6 +97,7 @@ export function saveItem(provider: 'linear' | 'clickup', input: Input, run: Run 
   return {
     status: 'saved' as const,
     item_id: id,
+    item_reference: typeof value.identifier === 'string' ? value.identifier : id,
     title: typeof value.title === 'string' ? value.title :
       typeof value.name === 'string' ? value.name : input.title,
     url: typeof value.url === 'string' ? value.url : undefined,
