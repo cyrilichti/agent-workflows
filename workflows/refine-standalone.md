@@ -41,10 +41,13 @@ item: complete official parent item
 
 ### 2. Assess the Parent
 
-Run `../commands/assess-refinement-need.md` with:
+Identify independently useful, verifiable delivery units and run from this
+file's directory:
 
-```text
-context: complete official parent item
+```sh
+node ../commands/assess-refinement-need.ts <<'JSON'
+{"autonomous_units":[{"outcome":"<independent outcome>","verification":"<independent check>"}]}
+JSON
 ```
 
 On `refinement-not-needed`, report the findings and stop. On

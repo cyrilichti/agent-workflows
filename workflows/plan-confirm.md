@@ -11,8 +11,20 @@
 
 ### 1. Assess the Delivery Unit
 
-Assess `task_context` with `../commands/assess-refinement-need.md`. Continue
-only on `refinement-not-needed`. On `needs-refinement`, return the exact
+Identify useful units that can be delivered or verified separately. Prefer
+vertical slices; allow expansion, migration, and removal sequences when one
+wide change cannot remain valid as independent slices. Multiple steps or
+technical layers within one coherent unit do not justify a split. Run from
+this file's directory with the assessed autonomous units, or one unit for
+coherent work:
+
+```sh
+node ../commands/assess-refinement-need.ts <<'JSON'
+{"autonomous_units":[{"outcome":"<independent outcome>","verification":"<independent check>"}]}
+JSON
+```
+
+Continue only on `refinement-not-needed`. On `needs-refinement`, return the exact
 findings to the caller in `workflow` mode, or report them and stop in
 `standalone` mode. Create no plan file before this decision.
 

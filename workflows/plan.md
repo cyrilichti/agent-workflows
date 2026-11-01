@@ -33,11 +33,18 @@ Select exactly one branch:
 | Standalone request identifies an existing official item | `./plan-item.md` |
 | Standalone request describes work without identifying an item | `./plan-standalone.md` |
 
-For a standalone official-item request, resolve the item with
-`../commands/resolve-existing-item.md` using its ID or native URL as
-`reference`, or its title as `query`. Preserve the returned provider and
-official item context. A quoted title that is the object of the plan request
-is an item query.
+For a standalone official-item request, run from this file's directory:
+
+```sh
+node ../commands/resolve-existing-item.ts "<item ID or native URL>"
+```
+
+For a title, use `node ../commands/resolve-existing-item.ts --query "<title>"`.
+On `not_found` or `ambiguous`, ask for a better reference or select a returned
+candidate with `../templates/select-option.md`, then rerun with its ID. On
+failure, report `stage` and `reason` and stop. Preserve only the final
+`resolved` provider and item as official context. A quoted title that is the
+object of the plan request is an item query.
 
 Read the selected workflow file completely and follow it. In `workflow` mode,
 return the branch result to the caller; in `standalone` mode, report it.

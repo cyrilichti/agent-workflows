@@ -8,19 +8,39 @@
 | `item` | Official item ID, core fields, labels, complete comments, and supported linked resources and attachments |
 | `entry_mode` | `workflow` or `standalone` |
 
-The item content includes its acceptance criteria when present. Preserve
-supplied fields and known empty results. Read only missing required fields
-with `../commands/read-item.md`; mark unsupported optional fields unavailable.
-Stop when a supported required field cannot be read.
+The item content includes its acceptance criteria when present. Preserve a
+complete supplied item. If a required field is missing, run from this file's
+directory with its official ID or identifier:
+
+```sh
+node ../commands/resolve-existing-item.ts "<item ID or identifier>"
+```
+
+Use only the returned `resolved` item and provider. On failure, report `stage`
+and `reason` and stop.
 
 ## Steps
 
 1. Follow `./plan-confirm.md` with the complete `item` as `task_context` and
    the supplied `entry_mode`. On `needs-refinement`, return its exact findings
    and unchanged official item context.
-2. For an approved plan, publish its exact authoritative file content with
-   `../commands/publish-item-plan.md`, passing `provider`, `item_id`, and
-   `plan_content`. Require `published: true`; stop on failure.
-3. Apply `agent-planned` with `../commands/apply-item-label.md`, passing
-   `provider`, `item_id`, and `label`. Require `applied: true`; then return the
-   approved plan with the updated item labels.
+2. For an approved plan, publish its exact authoritative file content:
+
+   ```sh
+   node ../commands/publish-item-plan.ts <<'JSON'
+   {"item_id":"<official item identifier or ID>","plan_path":"<canonical plan path>"}
+   JSON
+   ```
+
+   Use the Linear identifier when available. Require `published: true`; on
+   failure report `stage` and `reason` and stop.
+3. Apply `agent-planned` using the same identifier or ID:
+
+   ```sh
+   node ../commands/apply-item-label.ts <<'JSON'
+   {"item_id":"<official item identifier or ID>","label":"agent-planned"}
+   JSON
+   ```
+
+   Require `applied: true`; on failure report `stage` and `reason` and stop.
+   Add the label to the carried item and return it with the approved plan.
