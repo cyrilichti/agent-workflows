@@ -7,6 +7,10 @@
 - Return `refinement-not-needed` for one indivisible unit. Multiple steps,
   technical layers, or sequential changes do not justify an artificial split.
 
-Assess the context before calling `assess-refinement-need.ts`. Supply one
-coherent unit or each independently useful unit; the command returns the
-structured outcome from those assessed units.
+Return exactly one outcome with concise findings:
+
+- `refinement-not-needed`: one coherent delivery unit;
+- `needs-refinement`: multiple useful units that can be delivered or verified
+  separately.
+
+Do not draft, decompose, persist, or mutate items while assessing.

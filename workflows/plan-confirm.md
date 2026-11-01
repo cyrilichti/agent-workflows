@@ -17,13 +17,7 @@ From this file's directory, read the rule unless it is already active:
 cat ../rules/refinement-assessment.md
 ```
 
-Apply it to `task_context`, then run with the assessed units:
-
-```sh
-node ../commands/assess-refinement-need.ts <<'JSON'
-{"autonomous_units":[{"outcome":"<assessed outcome>","verification":"<check>"}]}
-JSON
-```
+Apply it to `task_context` and keep its exact outcome and findings.
 
 Continue only on `refinement-not-needed`. On `needs-refinement`, return the exact
 findings to the caller in `workflow` mode, or report them and stop in

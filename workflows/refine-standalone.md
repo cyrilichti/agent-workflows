@@ -47,14 +47,8 @@ From this file's directory, read the rule unless it is already active:
 cat ../rules/refinement-assessment.md
 ```
 
-Apply it to the complete official parent item, then run with the assessed
-units:
-
-```sh
-node ../commands/assess-refinement-need.ts <<'JSON'
-{"autonomous_units":[{"outcome":"<assessed outcome>","verification":"<check>"}]}
-JSON
-```
+Apply it to the complete official parent item and keep its exact outcome and
+findings.
 
 On `refinement-not-needed`, report the findings and stop. On
 `needs-refinement`, preserve the exact findings.
