@@ -1,61 +1,43 @@
 # Plan
 
-## Purpose
-
-Create and approve one plan, or return `needs-refinement` for multiple delivery
-units.
-
----
-
 ## Required Context
 
-Reuse any rules already active from the caller. From this workflow's directory,
-load the remaining rules in one `cat` command, omitting paths for active rules.
-Skip the command when all are active:
+From this file's directory, read only the files below that are not already
+active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/skill-activation.md ../rules/inclusive-wording.md
+cat ../rules/default-language.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/plan-complete.md
 ```
-
-Load `../goals/plan-complete.md` once as this workflow's completion contract.
 
 ---
 
-## Steps
+## Input
 
-### 1. Resolve Entry Mode
+| Entry | Input |
+| --- | --- |
+| `/pick` | `entry_mode: workflow`, `provider`: resolved item provider, `item`: official item context |
+| Standalone | Request context, optionally including an official item ID, native URL, or title |
 
-Use `workflow` only when the caller explicitly supplies that entry mode.
-Otherwise, use `standalone`.
+Stop before routing when any part of a caller handoff is missing or incomplete.
+Use `standalone` entry mode when no caller handoff is supplied.
 
-### 2. Resolve Explicit Item Context
+---
 
-Preserve official item context and its resolved provider when supplied by the
-caller.
+## Branch Routing
 
-Otherwise, when the request explicitly identifies an existing official item by
-provider ID, native URL, or title, run `../commands/resolve-item-provider.md`
-and treat a quoted title supplied as the object of the plan request as an
-explicit item title query.
+Select exactly one branch:
 
-Then run `../commands/resolve-existing-item.md` with the supplied value as
-`reference` or `query` and:
+| Situation | Workflow |
+| --- | --- |
+| Caller supplies `provider` and `item` | `./plan-item.md` |
+| Standalone request identifies an existing official item | `./plan-item.md` |
+| Standalone request describes work without identifying an item | `./plan-standalone.md` |
 
-```text
-provider: resolved item provider
-fields: labels
-```
+For a standalone official-item request, resolve the item with
+`../commands/resolve-existing-item.md` using its ID or native URL as
+`reference`, or its title as `query`. Preserve the returned provider and
+official item context. A quoted title that is the object of the plan request
+is an item query.
 
-Keep the returned item and provider as official context. Do not search for an
-item when the request only describes work without identifying one.
-
-### 3. Follow One Context Branch
-
-With official item context, follow `./plan-item.md` with that context, its
-resolved provider, and the resolved entry mode. Otherwise, follow
-`./plan-standalone.md`.
-
-### 4. Finish
-
-In `workflow` mode, return the branch result to the caller. In `standalone`
-mode, report the branch result and stop.
+Read the selected workflow file completely and follow it. In `workflow` mode,
+return the branch result to the caller; in `standalone` mode, report it.
