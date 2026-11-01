@@ -1,7 +1,6 @@
 # Copy this file to `agent-workflows.yaml` in a consuming project.
-# Provider access is configured in the agent's execution environment:
-# ClickUp uses clickup-cli, Linear uses schpet/linear-cli, and GitHub/GitLab use gh/glab.
 
+# Supported values: linear, clickup
 item:
   provider: clickup
 

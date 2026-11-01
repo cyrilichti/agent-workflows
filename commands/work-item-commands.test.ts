@@ -226,6 +226,25 @@ test('GitHub request and ClickUp backlink use the created request URL', () => {
   }
 });
 
+test('request creation reports a missing version provider without loading an undefined adapter', () => {
+  const f = fixture('linear', 'github');
+  try {
+    writeFileSync(join(f.root, 'agent-workflows.yaml'),
+      'mcp:\n  version:\n    provider: github\n');
+    const result = f.run('create-request.ts', {
+      push_remote_url: 'https://github.com/acme/repo.git',
+      source_branch: 'fix/plan', target_branch: 'main', plan_name: 'Plan',
+    });
+    assert.equal(result.status, 1);
+    const output = JSON.parse(result.stdout);
+    assert.equal(output.stage, 'create_request');
+    assert.match(output.reason, /Configure version\.provider as github or gitlab/);
+    assert.deepEqual(f.calls(), []);
+  } finally {
+    f.cleanup();
+  }
+});
+
 test('request read failure preserves the created URL for recovery', () => {
   const f = fixture('clickup', 'github');
   try {

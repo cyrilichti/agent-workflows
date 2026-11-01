@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { resolveConfiguredProvider, resolveItemProvider } from './resolve-item-provider.ts';
+import { requireVersionProvider, resolveConfiguredProvider, resolveItemProvider } from './resolve-item-provider.ts';
 
 function withConfig(content: string, check: (path: string) => void) {
   const root = mkdtempSync(join(tmpdir(), 'provider-config-'));
@@ -22,6 +22,7 @@ test('resolves root-level item and version providers independently', () => {
       withConfig(`item:\n  provider: ${item}\nversion:\n  provider: ${version}\n`, path => {
         assert.equal(resolveItemProvider(path), item);
         assert.equal(resolveConfiguredProvider(path, 'version'), version);
+        assert.equal(requireVersionProvider(path), version);
       });
     }
   }
@@ -49,5 +50,6 @@ test('a missing provider does not fall back to the other kind', () => {
   });
   withConfig('item:\n  provider: linear\n', path => {
     assert.equal(resolveConfiguredProvider(path, 'version'), undefined);
+    assert.throws(() => requireVersionProvider(path), /Configure version\.provider/);
   });
 });

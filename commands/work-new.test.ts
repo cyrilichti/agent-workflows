@@ -76,6 +76,10 @@ function fixture() {
   mkdirSync(commands);
   mkdirSync(bin);
   copyFileSync(resolve('commands/work-new.ts'), join(commands, 'work-new.ts'));
+  copyFileSync(resolve('commands/resolve-item-provider.ts'),
+    join(commands, 'resolve-item-provider.ts'));
+  writeFileSync(join(root, 'agent-workflows.yaml'),
+    'item:\n  provider: linear\nversion:\n  provider: github\n');
   for (const name of ['transition-item-status', 'create-request', 'link-request-to-item']) {
     writeFileSync(join(commands, `${name}.ts`), childCommand);
   }
@@ -98,8 +102,12 @@ function fixture() {
       }
     },
     commandCalls() {
-      return readFileSync(join(root, 'commands.jsonl'), 'utf8').trim().split('\n')
-        .map(line => JSON.parse(line) as { name: string; input: Record<string, unknown> });
+      try {
+        return readFileSync(join(root, 'commands.jsonl'), 'utf8').trim().split('\n')
+          .map(line => JSON.parse(line) as { name: string; input: Record<string, unknown> });
+      } catch {
+        return [];
+      }
     },
     cleanup() {
       rmSync(root, { recursive: true, force: true });
@@ -159,6 +167,23 @@ test('work-new stops before Git when status transition is ambiguous', () => {
     assert.equal(JSON.parse(result.stdout).stage, 'start_item');
     assert.deepEqual(f.commandCalls().map(call => call.name), ['transition-item-status.ts']);
     assert.deepEqual(f.gitCalls(), []);
+  } finally {
+    f.cleanup();
+  }
+});
+
+test('work-new stops before changing the item when the version provider is missing', () => {
+  const f = fixture();
+  try {
+    writeFileSync(join(f.root, 'agent-workflows.yaml'),
+      'mcp:\n  item:\n    provider: linear\n  version:\n    provider: github\n');
+    const result = f.run();
+    assert.equal(result.status, 1);
+    const output = JSON.parse(result.stdout);
+    assert.equal(output.stage, 'start_item');
+    assert.match(output.reason, /Configure version\.provider as github or gitlab/);
+    assert.deepEqual(f.gitCalls(), []);
+    assert.deepEqual(f.commandCalls(), []);
   } finally {
     f.cleanup();
   }

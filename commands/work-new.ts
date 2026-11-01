@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import { basename, dirname, join } from 'node:path';
+import { requireVersionProvider } from './resolve-item-provider.ts';
 
 type Input = {
   item_id: string;
@@ -166,6 +167,7 @@ function defaultBranch(remote: string): string {
 
 try {
   const input = parseInput();
+  requireVersionProvider(join(root, 'agent-workflows.yaml'));
   const transition = command('transition-item-status.ts', { item_id: input.item_id });
   completed.resulting_status = transition.resulting_status;
   if (typeof transition.item_reference !== 'string' || !transition.item_reference.trim()) {

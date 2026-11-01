@@ -32,3 +32,11 @@ export function resolveConfiguredProvider(configPath: string, kind: 'item' | 've
 export function resolveItemProvider(configPath: string): string | undefined {
   return resolveConfiguredProvider(configPath, 'item');
 }
+
+export function requireVersionProvider(configPath: string): 'github' | 'gitlab' {
+  const provider = resolveConfiguredProvider(configPath, 'version');
+  if (provider !== 'github' && provider !== 'gitlab') {
+    throw new Error('Configure version.provider as github or gitlab in agent-workflows.yaml.');
+  }
+  return provider;
+}
