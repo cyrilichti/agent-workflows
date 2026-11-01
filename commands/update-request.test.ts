@@ -62,7 +62,7 @@ function fixture(t: test.TestContext) {
     }
   }
   writeFileSync(join(root, 'plans/cta.plan.md'), plan);
-  writeFileSync(join(root, 'agent-workflows.yaml'), 'mcp:\n  version:\n    provider: github\n');
+  writeFileSync(join(root, 'agent-workflows.yaml'), 'version:\n  provider: github\n');
   writeFileSync(join(root, 'bin/git'), gitCli, { mode: 0o755 });
   writeFileSync(join(root, 'bin/gh'), ghCli, { mode: 0o755 });
   writeFileSync(join(root, 'request.json'), JSON.stringify({

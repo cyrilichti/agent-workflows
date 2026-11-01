@@ -20,7 +20,7 @@ function fixture(tasks: unknown[], provider = 'clickup', remainingLabels?: unkno
     mkdirSync(destination, { recursive: true });
     copyFileSync(resolve(`providers/${providerName}/select-next-item.ts`), join(destination, 'select-next-item.ts'));
   }
-  writeFileSync(join(root, 'agent-workflows.yaml'), `mcp:\n  item:\n    provider: ${provider}\n`);
+  writeFileSync(join(root, 'agent-workflows.yaml'), `item:\n  provider: ${provider}\n`);
   writeFileSync(join(root, 'tasks.json'), JSON.stringify(tasks));
   writeFileSync(join(root, 'linear-1.json'), JSON.stringify({ data: { issues: { nodes: tasks } } }));
   if (remainingLabels) writeFileSync(join(root, 'linear-2.json'), JSON.stringify(remainingLabels));

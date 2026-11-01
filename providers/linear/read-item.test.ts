@@ -165,7 +165,7 @@ test('installed standalone command prepares one context and writes the exact app
   for (const directory of ['commands', 'providers']) {
     cpSync(resolve(directory), join(project, '.agents', directory), { recursive: true });
   }
-  writeFileSync(join(project, 'agent-workflows.yaml'), 'mcp:\n  item:\n    provider: linear\n');
+  writeFileSync(join(project, 'agent-workflows.yaml'), 'item:\n  provider: linear\n');
   const result = spawnSync(process.execPath, ['../commands/prepare-delivery-context.ts', 'uuid'], {
     cwd: join(project, '.agents/workflows'),
     encoding: 'utf8',

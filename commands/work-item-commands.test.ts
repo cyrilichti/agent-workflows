@@ -112,7 +112,7 @@ function fixture(itemProvider: 'clickup' | 'linear', versionProvider: 'github' |
     copyFileSync(resolve(`providers/${provider}/${name}.ts`), join(directory, `${name}.ts`));
   }
   writeFileSync(join(root, 'agent-workflows.yaml'),
-    `mcp:\n  item:\n    provider: ${itemProvider}\n  version:\n    provider: ${versionProvider}\n`);
+    `item:\n  provider: ${itemProvider}\nversion:\n  provider: ${versionProvider}\n`);
   for (const name of ['clickup-cli', 'linear', 'gh', 'glab']) {
     writeFileSync(join(bin, name), fakeCli, { mode: 0o755 });
   }

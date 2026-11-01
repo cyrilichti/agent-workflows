@@ -83,7 +83,7 @@ function fixture(overrides: Record<string, unknown> = {}, versionProvider: 'gith
   const bin = join(root, 'bin');
   mkdirSync(bin);
   writeFileSync(join(root, 'agent-workflows.yaml'),
-    `mcp:\n  item:\n    provider: linear\n  version:\n    provider: ${versionProvider}\n`);
+    `item:\n  provider: linear\nversion:\n  provider: ${versionProvider}\n`);
   execFileSync('git', ['init', '-q', root]);
   execFileSync('git', ['-C', root, 'remote', 'add', 'origin', versionProvider === 'github'
     ? 'https://github.com/acme/repo.git' : 'https://gitlab.example/acme/repo.git']);
