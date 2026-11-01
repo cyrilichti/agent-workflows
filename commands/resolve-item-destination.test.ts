@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { resolveWriteDestination } from './resolve-write-destination.ts';
+import { resolveItemDestination } from './resolve-item-destination.ts';
 
 test('Linear project shared by two teams remains a user choice', () => {
-  const result = resolveWriteDestination('linear', 'Roadmap', (_program, args) => {
+  const result = resolveItemDestination('linear', 'Roadmap', (_program, args) => {
     if (args[0] === 'team') return JSON.stringify([]);
     if (args[0] === 'project') return JSON.stringify([
       { id: 'project-1', name: 'Roadmap', status: { type: 'planned' } },
@@ -17,7 +17,7 @@ test('Linear project shared by two teams remains a user choice', () => {
 });
 
 test('Linear exact team key resolves without a second choice', () => {
-  const result = resolveWriteDestination('linear', 'ICY', (_program, args) => {
+  const result = resolveItemDestination('linear', 'ICY', (_program, args) => {
     if (args[0] === 'team') return JSON.stringify([
       { id: 'team-1', key: 'ICY', name: 'Icyscreen' },
     ]);
@@ -29,7 +29,7 @@ test('Linear exact team key resolves without a second choice', () => {
 
 test('Linear native project URL resolves through its project and team', () => {
   const url = 'https://linear.app/acme/project/roadmap-123/overview';
-  const result = resolveWriteDestination('linear', url, (_program, args) => {
+  const result = resolveItemDestination('linear', url, (_program, args) => {
     if (args[0] === 'team') return JSON.stringify([]);
     if (args[0] === 'project') return JSON.stringify([{ id: 'project-1',
       name: 'Roadmap', url }]);
@@ -42,7 +42,7 @@ test('Linear native project URL resolves through its project and team', () => {
 });
 
 test('ClickUp exact list ID resolves after complete enumeration', () => {
-  const result = resolveWriteDestination('clickup', 'list-1', (_program, args) => {
+  const result = resolveItemDestination('clickup', 'list-1', (_program, args) => {
     if (args[0] === 'space') return JSON.stringify([{ id: 'space-1', name: 'Product' }]);
     if (args[0] === 'folder' && args[1] === 'list') return JSON.stringify([]);
     if (args[0] === 'list') return JSON.stringify([{ id: 'list-1', name: 'Ideas' }]);
@@ -53,7 +53,7 @@ test('ClickUp exact list ID resolves after complete enumeration', () => {
 });
 
 test('ClickUp resolves a List inside a Folder from Folder details', () => {
-  const result = resolveWriteDestination('clickup', 'Product / Delivery / Sprint',
+  const result = resolveItemDestination('clickup', 'Product / Delivery / Sprint',
     (_program, args) => {
       if (args[0] === 'space') return JSON.stringify([{ id: 'space-1', name: 'Product' }]);
       if (args[0] === 'folder' && args[1] === 'list') {
@@ -71,7 +71,7 @@ test('ClickUp resolves a List inside a Folder from Folder details', () => {
 });
 
 test('ClickUp native List URL reads the exact List', () => {
-  const result = resolveWriteDestination('clickup',
+  const result = resolveItemDestination('clickup',
     'https://app.clickup.com/123/v/li/list-1', (_program, args) => {
       assert.deepEqual(args, ['list', 'get', 'list-1', '--output', 'json']);
       return JSON.stringify({ id: 'list-1', name: 'Sprint' });
@@ -81,14 +81,14 @@ test('ClickUp native List URL reads the exact List', () => {
 });
 
 test('ClickUp rejects a foreign List URL before calling its CLI', () => {
-  assert.throws(() => resolveWriteDestination('clickup',
+  assert.throws(() => resolveItemDestination('clickup',
     'https://example.com/list/list-1', () => {
       throw new Error('CLI should not run.');
     }), /native ClickUp List URL/);
 });
 
 test('ClickUp does not present a folder List as folderless', () => {
-  const result = resolveWriteDestination('clickup', 'Product / Sprint',
+  const result = resolveItemDestination('clickup', 'Product / Sprint',
     (_program, args) => {
       if (args[0] === 'space') return JSON.stringify([{ id: 'space-1', name: 'Product' }]);
       if (args[0] === 'folder' && args[1] === 'list') {

@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { resolveExistingItem } from './resolve-existing-item.ts';
+import { parseItemArguments, resolveExistingItem, resolveItemContext } from './resolve-existing-item.ts';
 
 function createFixture(t: test.TestContext, provider: 'linear' | 'clickup') {
   const root = mkdtempSync(join(tmpdir(), 'resolve-work-item-'));
@@ -47,6 +47,31 @@ test('explicit references resolve without searching and absent input stops witho
   assert.throws(() => {
     return resolveExistingItem('linear');
   }, /reference or title query/i);
+});
+
+test('CLI accepts the shared positional and --query item signatures', () => {
+  assert.deepEqual(parseItemArguments(['ICY-123']), { reference: 'ICY-123', query: '' });
+  assert.deepEqual(parseItemArguments(['https://linear.app/icy/issue/ICY-123']), {
+    reference: 'https://linear.app/icy/issue/ICY-123', query: '',
+  });
+  assert.deepEqual(parseItemArguments(['--query', 'Refactor /write']), {
+    reference: '', query: 'Refactor /write',
+  });
+  assert.throws(() => parseItemArguments([]), /Supply an item/);
+  assert.throws(() => parseItemArguments(['--query']), /Supply an item/);
+});
+
+test('context resolution returns candidates for ambiguous title matches', (t) => {
+  const f = createFixture(t, 'linear');
+  f.respond({ data: { issues: { nodes: [
+    { id: 'a', title: 'Refactor write', state: { name: 'Todo' },
+      team: { name: 'Acme' }, project: null },
+    { id: 'b', title: 'Refactor write flow', state: { name: 'Todo' },
+      team: { name: 'Acme' }, project: null },
+  ] } } });
+  const result = resolveItemContext('linear', '', 'Refactor write');
+  assert.equal(result.status, 'ambiguous');
+  assert.deepEqual(result.candidates?.map(candidate => candidate.item_id), ['a', 'b']);
 });
 
 test('Linear title search resolves a unique match and stops on empty or ambiguous results', (t) => {

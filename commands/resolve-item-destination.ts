@@ -216,7 +216,7 @@ function clickupCandidates(reference: string, run: Run): Candidate[] {
   return candidates;
 }
 
-export function resolveWriteDestination(provider: Provider, reference: string,
+export function resolveItemDestination(provider: Provider, reference: string,
   run: Run = runCli) {
   if (!reference?.trim()) return { status: 'needs_reference' as const, provider };
   const candidates = provider === 'linear'
@@ -252,7 +252,7 @@ if (import.meta.main) {
     }
     stage = 'resolve_destination';
     const input = JSON.parse(readFileSync(0, 'utf8')) as { reference?: string };
-    const result = resolveWriteDestination(provider, input.reference || '');
+    const result = resolveItemDestination(provider, input.reference || '');
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
     process.stdout.write(`${JSON.stringify({ status: 'failed', stage,

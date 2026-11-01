@@ -14,13 +14,13 @@
 Run from this file's directory. For an ID or native URL:
 
 ```sh
-node ../commands/resolve-write-item.ts "<item>"
+node ../commands/resolve-existing-item.ts "<item>"
 ```
 
 For a title or search phrase:
 
 ```sh
-node ../commands/resolve-write-item.ts --query "<item>"
+node ../commands/resolve-existing-item.ts --query "<item>"
 ```
 
 On `not_found`, ask for a better reference or search phrase and repeat. On
