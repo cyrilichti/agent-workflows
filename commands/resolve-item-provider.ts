@@ -18,7 +18,7 @@ export function resolveConfiguredProvider(configPath: string, kind: 'item' | 've
       parents.pop();
     }
     const path = [...parents.map(parent => parent.key), key].join('.');
-    if (path === `mcp.${kind}.provider`) {
+    if (path === `${kind}.provider`) {
       const scalar = (match[3] ?? '').replace(/\s+#.*$/, '').trim();
       return scalar.replace(/^(?:'([^']*)'|"([^"]*)")$/, (_value, single, double) => single ?? double);
     }
