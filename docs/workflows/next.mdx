@@ -3,19 +3,9 @@ title: /next
 description: Select one eligible item and return its identity and destination.
 ---
 
-The `agent-planned` label or tag marks work whose approved plan is available on
-its item. Eligible work is waiting to start, or is in review without
-`agent-inspected`. `/next` selects the least recently modified eligible item
-from the configured provider's first returned page. Equal timestamps retain
-provider order. Each adapter maps provider statuses to that shared rule using
-the selection response.
-
-After human findings, remove `agent-inspected` to make a review item eligible
-again. It keeps its plan and request. Updating it gives older eligible work a
-turn in subsequent selections.
-
-Invoke it as `/next` or `$next`, or let the Kestra `work` workflow call it
-through the bridge. It needs no item reference.
+`/next` finds the next eligible work item with an approved plan when you need
+work to start or review again. It returns the item’s identity and destination
+for delivery.
 
 ## How `/next` selects
 

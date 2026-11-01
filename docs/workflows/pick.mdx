@@ -3,13 +3,9 @@ title: /pick
 description: Select one unplanned agent-shaped item, approve its plan, and start autonomous delivery.
 ---
 
-`/pick` resolves one official item and checks its provider-native status once,
-regardless of whether it was supplied by ID, native URL, title, or candidate
-selection. A closed item stops before summary and planning. An open item with
-`agent-planned` stops before planning and is left for `/work`. Otherwise,
-`/pick` requires `agent-shaped`, shows the current context, and sends it to
-planning. An approved plan starts autonomous delivery; an item containing
-multiple delivery units can be handed to `/refine` without changing it first.
+`/pick` plans an unplanned, shaped work item when you want to start its
+delivery. After you approve the plan, it hands the item to `/work` for
+autonomous implementation and review.
 
 ## How `/pick` routes the item
 

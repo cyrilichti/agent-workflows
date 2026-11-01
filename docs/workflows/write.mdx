@@ -3,14 +3,12 @@ title: /write
 description: Turn a rough need or existing item into one confirmed, provider-backed ticket.
 ---
 
-`/write` turns a rough need or an existing item into one confirmed,
-provider-backed ticket. It asks only for missing context, routes qualification
-to the best-fit writing skill when needed, and never saves without human
-approval.
+`/write` creates a work item from a rough need or reformulates an existing
+item. It presents a draft for your review and saves it after your approval.
 
 ## How `/write` shapes an item
 
-<div class="write-flow" role="img" aria-label="The write workflow resolves the target, loops between a focused question and a human answer until the need is clear, asks the human to confirm its understanding, then loops between drafting and human review until the item is approved for saving.">
+<div class="write-flow" role="img" aria-label="The write workflow resolves the target, loops between a focused question and a human answer until the need is clear, presents an understanding summary, then loops between drafting and human review until the item is approved for saving.">
   <div class="write-flow__step write-flow__step--assisted">
     <small>01 · Assisted</small>
     <strong>Resolve</strong>
@@ -40,10 +38,10 @@ approval.
 
   <span class="write-flow__connector write-flow__connector--labeled" aria-hidden="true"><small>Need is clear</small>↓</span>
 
-  <div class="write-flow__step write-flow__step--human">
-    <small>Human</small>
-    <strong>Confirm understanding</strong>
-    <span>Validate the outcome before drafting.</span>
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>Assisted</small>
+    <strong>Summarize understanding</strong>
+    <span>Present the qualified need, then continue to drafting.</span>
   </div>
 
   <span class="write-flow__connector" aria-hidden="true">↓</span>
@@ -121,7 +119,7 @@ applies, `/write` qualifies the need directly without loading a skill.
     <tr>
       <td>3</td>
       <th scope="row">Understand</th>
-      <td>For qualified needs, require human confirmation of the concise understanding before drafting.</td>
+      <td>Present a concise understanding of the qualified need, then continue to drafting. Immediate drafting requests and purely mechanical changes skip qualification.</td>
     </tr>
     <tr>
       <td>4</td>
