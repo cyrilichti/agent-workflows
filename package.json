@@ -11,7 +11,7 @@
   "scripts": {
     "start": "node src/server.ts",
     "build": "astro build",
-    "test": "node --test \"src/**/*.test.ts\" \"commands/**/*.test.ts\" \"providers/**/*.test.ts\"",
+    "test": "node --test \"src/**/*.test.ts\" \"commands/**/*.test.ts\" \"providers/**/*.test.ts\" \"orchestration/**/*.test.ts\"",
     "doc": "astro dev"
   },
   "dependencies": {

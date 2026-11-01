@@ -116,3 +116,9 @@ submitting a new request. Kestra and Langfuse data persist in Docker volumes.
 
 To stop, press `Ctrl+C` in the bridge terminal, then run `docker compose down`.
 This keeps the saved data.
+
+## Validate the work classifier
+
+Install `jq` on the host, then run `node --test orchestration/work.test.ts`.
+These regression tests execute the `is-success` filter from `orchestration/work.yaml`
+against success, partial, and invalid responses. They also run with `npm test`.
