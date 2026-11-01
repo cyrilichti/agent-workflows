@@ -1,36 +1,40 @@
-# Refine Standalone Branch
+# Refine Standalone
+
+## Input
+
+| Input | Description |
+| --- | --- |
+| `item` | Parent item ID, native URL, title, or search phrase when supplied |
+
+---
 
 ## Steps
 
-### 1. Resolve Official Parent Context
+### 1. Resolve the Parent
 
-Run `../commands/resolve-item-provider.md`.
-
-Then run `../commands/resolve-existing-item.md` with:
+Run `../commands/resolve-item-provider.md`, then
+`../commands/resolve-existing-item.md` with:
 
 ```text
 provider: resolved item provider
-reference: user-provided provider item ID, when available
-fields:
-  - comments
-  - labels
-  - linked resources
-  - attachments
+reference: supplied ID or URL, when available
+query: supplied title or search phrase, when available
+fields: comments, labels, linked resources, attachments
 ```
 
-Require the official core fields, including acceptance criteria present in
-the item content, current labels, complete comments, and supported linked
-resources and attachments. Mark unsupported information explicitly as
-unavailable. Stop when supported required information cannot be read.
+Use the final read result as the complete official parent context. Require
+the core fields, including acceptance criteria present in the content,
+current labels, complete comments, and supported linked resources and
+attachments. Mark unsupported fields unavailable; stop when a supported
+required field cannot be read.
 
-Use the returned item and provider ID as the complete official parent context.
 Present with `../templates/ticket-summary.md`:
 
 ```text
 item: complete official parent item
 ```
 
-### 2. Assess Refinement Need
+### 2. Assess the Parent
 
 Run `../commands/assess-refinement-need.md` with:
 
@@ -38,10 +42,11 @@ Run `../commands/assess-refinement-need.md` with:
 context: complete official parent item
 ```
 
-On `refinement-not-needed`, report the rationale and finish according to
-`../goals/refine-complete.md`. On `needs-refinement`, keep the exact findings.
+On `refinement-not-needed`, report the findings and finish under
+`../goals/refine-complete.md`. On `needs-refinement`, preserve the exact
+findings.
 
-### 3. Follow Shared Execution
+### 3. Continue
 
 Follow `./refine-confirm.md` with:
 
