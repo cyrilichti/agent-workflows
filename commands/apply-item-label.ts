@@ -42,7 +42,7 @@ export function applyItemLabel(provider: 'linear' | 'clickup', input: Input,
   }
 
   const query = `query FindLabel($name: String!, $itemId: String!, $after: String) {
-    issue(id: $itemId) { team { id } }
+    issue(id: $itemId) { identifier team { id } }
     issueLabels(filter: {name: {eq: $name}, isGroup: {eq: false}},
       first: 250, after: $after, includeArchived: false) {
       nodes { id name team { id } }
@@ -53,13 +53,20 @@ export function applyItemLabel(provider: 'linear' | 'clickup', input: Input,
   let after: string | null = null;
   const seen = new Set<string>();
   let itemTeamId: string | undefined;
+  let itemIdentifier: string | undefined;
   for (;;) {
     const data = linearApi(run, query, { name: input.label, itemId: input.item_id, after });
-    const teamId = (data.issue as { team?: { id?: string } } | undefined)?.team?.id;
+    const issue = data.issue as { identifier?: string; team?: { id?: string } } | undefined;
+    const teamId = issue?.team?.id;
+    const identifier = issue?.identifier;
     if (!teamId || (itemTeamId && itemTeamId !== teamId)) {
       throw new Error('Linear item team is unavailable or changed during label lookup.');
     }
+    if (!identifier?.trim() || (itemIdentifier && itemIdentifier !== identifier)) {
+      throw new Error('Linear item identifier is unavailable or changed during label lookup.');
+    }
     itemTeamId = teamId;
+    itemIdentifier = identifier;
     const page = data.issueLabels as {
       nodes?: Label[]; pageInfo?: { hasNextPage: boolean; endCursor: string | null };
     } | undefined;
@@ -88,7 +95,8 @@ export function applyItemLabel(provider: 'linear' | 'clickup', input: Input,
       throw new Error('Linear label creation was not confirmed.');
     }
   }
-  run('linear', ['issue', 'update', input.item_id, '--add-label', input.label,
+  if (!itemIdentifier) throw new Error('Linear item identifier is unavailable.');
+  run('linear', ['issue', 'update', itemIdentifier, '--add-label', input.label,
     '--no-input']);
   return { status: 'applied' as const, applied: true };
 }

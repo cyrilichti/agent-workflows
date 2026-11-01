@@ -6,8 +6,13 @@ const input = { item_id: 'ICY-137', plan_path: 'plans/approved.plan.md' };
 const plan = '# Plan\n\n1. ○ Step\n';
 
 test('Linear publishes the exact authoritative plan and requires a comment link', () => {
-  const result = publishItemPlan('linear', input, (program, args, body) => {
+  const result = publishItemPlan('linear', { ...input, item_id: 'issue-uuid-137' }, (program, args, body) => {
     assert.equal(program, 'linear');
+    if (args.includes('api')) {
+      assert.match(body!, /query PlanItemReference/);
+      assert.ok(args.includes('{"itemId":"issue-uuid-137"}'));
+      return JSON.stringify({ data: { issue: { identifier: 'ICY-137' } } });
+    }
     assert.deepEqual(args, ['issue', 'comment', 'add', 'ICY-137', '--body-file', '-',
       '--yes', '--no-input']);
     assert.equal(body, `Agent-Workflows-Approved-Plan:\n\n${plan}`);
@@ -15,8 +20,16 @@ test('Linear publishes the exact authoritative plan and requires a comment link'
   }, () => plan);
   assert.equal(result.published, true);
   assert.match(result.comment_url!, /#comment-abc$/);
-  assert.throws(() => publishItemPlan('linear', input, () => '✓ Added comment',
+  assert.throws(() => publishItemPlan('linear', input, (_program, args) => args.includes('api')
+    ? JSON.stringify({ data: { issue: { identifier: 'ICY-137' } } }) : '✓ Added comment',
     () => plan), /identify/);
+});
+
+test('Linear stops before publication when the item identifier is unavailable', () => {
+  assert.throws(() => publishItemPlan('linear', input, (_program, args) => {
+    assert.ok(args.includes('api'));
+    return JSON.stringify({ data: { issue: null } });
+  }, () => plan), /identifier is unavailable/);
 });
 
 test('ClickUp fences exact plan content and requires a created comment ID', () => {

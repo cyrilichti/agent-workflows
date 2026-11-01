@@ -28,17 +28,16 @@ and `reason` and stop.
 
    ```sh
    node ../commands/publish-item-plan.ts <<'JSON'
-   {"item_id":"<official item identifier or ID>","plan_path":"<canonical plan path>"}
+   {"item_id":"<official item ID>","plan_path":"<canonical plan path>"}
    JSON
    ```
 
-   Use the Linear identifier when available. Require `published: true`; on
-   failure report `stage` and `reason` and stop.
-3. Apply `agent-planned` using the same identifier or ID:
+   Require `published: true`; on failure report `stage` and `reason` and stop.
+3. Apply `agent-planned` using the same official item ID:
 
    ```sh
    node ../commands/apply-item-label.ts <<'JSON'
-   {"item_id":"<official item identifier or ID>","label":"agent-planned"}
+   {"item_id":"<official item ID>","label":"agent-planned"}
    JSON
    ```
 

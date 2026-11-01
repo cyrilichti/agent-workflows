@@ -37,7 +37,15 @@ export function publishItemPlan(provider: Provider, input: Input,
   const comment = formatPlanComment(provider, content);
 
   if (provider === 'linear') {
-    const output = run('linear', ['issue', 'comment', 'add', input.item_id,
+    const response = parseJson(run('linear', ['--no-input', 'api', '--variables-json',
+      JSON.stringify({ itemId: input.item_id })],
+    'query PlanItemReference($itemId: String!) { issue(id: $itemId) { identifier } }')) as
+      { data?: { issue?: { identifier?: string } | null }; errors?: unknown[] };
+    const identifier = response.data?.issue?.identifier;
+    if (response.errors?.length || !identifier?.trim()) {
+      throw new Error('Linear item identifier is unavailable.');
+    }
+    const output = run('linear', ['issue', 'comment', 'add', identifier,
       '--body-file', '-', '--yes', '--no-input'], comment);
     const url = output.match(/https:\/\/\S+#comment-[\w-]+/)?.[0];
     if (!url || !/Added comment to issue/.test(output)) {
