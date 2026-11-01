@@ -21,7 +21,7 @@ and `reason` and stop.
 
 ## Steps
 
-1. Follow `./plan-confirm.md` with the complete `item` as `task_context` and
+1. Follow `./plan-execute.md` with the complete `item` as `task_context` and
    the supplied `entry_mode`. On `needs-refinement`, return its exact findings
    and unchanged official item context.
 2. For an approved plan, publish its exact authoritative file content:

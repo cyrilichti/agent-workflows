@@ -24,5 +24,5 @@ title: meaningful item title
 body: free-form Markdown containing the objective, problem, and expected outcome
 ```
 
-Follow `./plan-confirm.md` with the complete conversational or transient item
+Follow `./plan-execute.md` with the complete conversational or transient item
 context as `task_context` and `entry_mode: standalone`.
