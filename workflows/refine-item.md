@@ -1,26 +1,17 @@
-# Refine Item Branch
+# Refine Item
 
-## Entry Condition
+## Input
 
-Run only when the caller supplies:
+| Input | Requirement |
+| --- | --- |
+| `provider` | Resolved item provider |
+| `parent_item` | Official parent ID, core fields, current labels, complete comments, and supported linked resources and attachments |
+| `needs_refinement_findings` | Exact `needs-refinement` findings from the caller |
 
-- `provider`: resolved item provider;
-- `parent_item`: complete official parent item, including core fields and
-  acceptance criteria present in its content, current labels, complete
-  comments, and supported linked resources and attachments;
-- `needs_refinement_findings`: exact findings that established the need for
-  refinement.
-
----
+The parent content includes its acceptance criteria when present.
 
 ## Steps
 
-### 1. Follow Shared Execution
-
-Follow `./refine-confirm.md` with:
-
-```text
-provider: resolved item provider
-parent_item: complete official parent item
-needs_refinement_findings: exact caller findings
-```
+Follow `./refine-execute.md` with the supplied `provider`, `parent_item`, and
+`needs_refinement_findings`. Preserve the official context and findings without
+resolving or assessing them again.

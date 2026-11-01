@@ -44,6 +44,8 @@ export function readItem(reference: string): Omit<WorkItem, 'request_backlinks'>
     url: string;
     labels?: { name: string }[];
     comments?: ItemComment[];
+    attachments?: unknown[];
+    documents?: unknown[];
   };
   if (
     !Array.isArray(view.labels) ||
@@ -72,5 +74,7 @@ export function readItem(reference: string): Omit<WorkItem, 'request_backlinks'>
     comments: view.comments.map(({ id, body }) => {
       return { id, body };
     }),
+    attachments: Array.isArray(view.attachments) ? view.attachments : null,
+    linked_resources: Array.isArray(view.documents) ? view.documents : null,
   };
 }

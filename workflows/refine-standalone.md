@@ -1,36 +1,45 @@
-# Refine Standalone Branch
+# Refine Standalone
+
+## Input
+
+| Input | Description |
+| --- | --- |
+| `item` | Parent item ID, native URL, title, or search phrase when supplied |
+
+---
 
 ## Steps
 
-### 1. Resolve Official Parent Context
+### 1. Resolve the Parent
 
-Run `../commands/resolve-item-provider.md`.
+Run from this file's directory. For an ID or native URL:
 
-Then run `../commands/resolve-existing-item.md` with:
-
-```text
-provider: resolved item provider
-reference: user-provided provider item ID, when available
-fields:
-  - comments
-  - labels
-  - linked resources
-  - attachments
+```sh
+node ../commands/resolve-refine-item.ts "<item>"
 ```
 
-Require the official core fields, including acceptance criteria present in
-the item content, current labels, complete comments, and supported linked
-resources and attachments. Mark unsupported information explicitly as
-unavailable. Stop when supported required information cannot be read.
+For a title or search phrase:
 
-Use the returned item and provider ID as the complete official parent context.
+```sh
+node ../commands/resolve-refine-item.ts --query "<item>"
+```
+
+On `needs_reference` or `not_found`, ask for a parent reference or a better
+title phrase and repeat. On `ambiguous`, ask with
+`../templates/select-option.md` using each candidate's title, status, and
+destination as its label and `item_id` as its value; rerun with the selected ID.
+On failure, report `stage` and `reason`, then stop. Use only the final
+`resolved` item as official context. It includes the core fields, labels,
+complete comments, attachments, and linked resources; unavailable optional
+fields are marked `null`.
+
 Present with `../templates/ticket-summary.md`:
 
 ```text
 item: complete official parent item
 ```
 
-### 2. Assess Refinement Need
+### 2. Assess the Parent
 
 Run `../commands/assess-refinement-need.md` with:
 
@@ -38,12 +47,12 @@ Run `../commands/assess-refinement-need.md` with:
 context: complete official parent item
 ```
 
-On `refinement-not-needed`, report the rationale and finish according to
-`../goals/refine-complete.md`. On `needs-refinement`, keep the exact findings.
+On `refinement-not-needed`, report the findings and stop. On
+`needs-refinement`, preserve the exact findings.
 
-### 3. Follow Shared Execution
+### 3. Continue
 
-Follow `./refine-confirm.md` with:
+Follow `./refine-execute.md` with:
 
 ```text
 provider: resolved item provider

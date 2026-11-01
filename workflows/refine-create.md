@@ -1,73 +1,66 @@
-# Refine Create Branch
+# Refine Create
 
-## Entry Condition
+## Input
 
-Run only with a resolved provider, complete official parent item, and the exact
-children and blocking edges from the latest confirmed preview.
+| Input | Requirement |
+| --- | --- |
+| `provider` | Resolved item provider |
+| `parent_item` | Complete official parent item with provider ID and destination |
+| `children` | Exact confirmed children in preview order, each with a stable reference, title, and body |
+| `blocking_edges` | Exact confirmed `blocked_ref` and `blocking_ref` pairs, or none |
 
 ---
 
 ## Steps
 
-### 1. Require Creation Prerequisites
+### 1. Check Creation Prerequisites
 
-Before the first provider mutation, require the resolved provider, the official
-parent ID and destination, every confirmed child's stable reference, title,
-and body, and every confirmed blocking edge. Stop without creating any child
-when one of these prerequisites is missing.
+Before the first provider mutation, require every input above. On a missing
+input, report `stopped` without creating a child.
 
 ### 2. Create Children
 
-For each child in preview order, run `../commands/create-child-item.md` once
-with:
+For each child in preview order, run from this file's directory:
 
-```text
-provider: resolved item provider
-parent: complete official parent item with its provider ID and destination
-content:
-  title: exact confirmed child title
-  body: exact confirmed child Markdown body
+```sh
+node ../commands/create-child-item.ts <<'JSON'
+{"parent_item":<complete official parent item JSON>,"child":{"title":"<confirmed child title>","body":"<confirmed child Markdown body>"}}
+JSON
 ```
 
-Map results to local references. Record failures and continue without
-replacement.
+Map each `saved` result to its stable child reference, including its `item_id`,
+`item_reference`, title, and URL. Record failures and continue.
 
 ### 3. Apply Required Child Labels
 
-Check whether the official parent item contains the exact `agent-shaped`
-label. When it does, run `../commands/apply-item-label.md` once for every
-successfully created child in preview order with:
+When the official parent has the exact `agent-shaped` label, run from this
+file's directory once for every created child in preview order:
 
-```text
-provider: resolved item provider
-item_id: created child provider ID
-label: agent-shaped
+```sh
+node ../commands/apply-item-label.ts <<'JSON'
+{"item_id":"<created child item_reference>","label":"agent-shaped"}
+JSON
 ```
 
-Record the label result against each child. Record failures and continue. When
-the parent does not contain `agent-shaped`, do not run a label operation.
+Record each label result and continue on failure. Otherwise skip child labels.
 
 ### 4. Create Blocking Relations
 
-Group every confirmed `blocking_ref` by its `blocked_ref`, then resolve both
-only through successful Step 2 results. For each group whose blocked child and
-at least one blocking child were created, run
-`../commands/create-blocking-relations.md` once with:
+Group confirmed `blocking_ref` values by `blocked_ref` and resolve them through
+successful Step 2 results. For each group with a created blocked child and at
+least one created blocker, run from this file's directory:
 
-```text
-provider: resolved item provider
-blocked_item_id: provider ID of the blocked child
-blocking_item_ids:
-  - provider ID of each successfully created blocking child
+```sh
+node ../commands/create-blocking-relations.ts <<'JSON'
+{"blocked_item_ref":"<created blocked child item_reference>","blocking_item_refs":["<created blocker item_reference>"]}
+JSON
 ```
 
-Record every edge with a missing endpoint without a provider call. Do not call
-the command when no blocker in the group was created. Record operation failures
-and continue.
+Pass every created blocker reference in the group. Record created and failed
+relations, and edges with missing endpoints. Continue with remaining groups.
 
 ### 5. Finish
 
 After the first child creation call, do not stop for a child creation, required
 label, or relation failure. Continue every operation whose prerequisites are
-satisfied, then finish according to `../goals/refine-complete.md` using the
-observed child, required label, and relation results.
+satisfied, then report the observed child, required label, and relation results.

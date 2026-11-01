@@ -38,3 +38,28 @@ test('ClickUp create preserves a literal leading @ in the body', () => {
   });
   assert.equal(result.item_id, 'task-1');
 });
+
+test('Linear child create preserves the parent and returns a CLI reference', () => {
+  const result = saveItem('linear', { mode: 'create', title: 'Child', body: 'Body',
+    destination: { team: 'team-1' }, parent_item_id: 'parent-uuid' },
+  (_program, args) => {
+    const variables = JSON.parse(args[2]!) as { payload: Record<string, unknown> };
+    assert.deepEqual(variables.payload, { teamId: 'team-1', parentId: 'parent-uuid',
+      title: 'Child', description: 'Body', useDefaultTemplate: false });
+    return JSON.stringify({ data: { issueCreate: { success: true, issue: {
+      id: 'child-uuid', identifier: 'ICY-201', title: 'Child', url: 'https://linear.app/icy/issue/ICY-201',
+    } } } });
+  });
+  assert.equal(result.item_id, 'child-uuid');
+  assert.equal(result.item_reference, 'ICY-201');
+});
+
+test('ClickUp child create includes the parent task', () => {
+  const result = saveItem('clickup', { mode: 'create', title: 'Child', body: 'Body',
+    destination: 'list-1', parent_item_id: 'parent-1' }, (_program, args) => {
+    assert.deepEqual(args, ['task', 'create', '--list', 'list-1', '--parent', 'parent-1',
+      '--name', 'Child', '--description', 'Body', '--output', 'json']);
+    return JSON.stringify([{ id: 'child-1', name: 'Child' }]);
+  });
+  assert.equal(result.item_reference, 'child-1');
+});

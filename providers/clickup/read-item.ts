@@ -23,6 +23,8 @@ export function readItem(reference: string): Omit<WorkItem, 'request_backlinks'>
     status?: { type?: string };
     date_closed?: string | null;
     tags?: { name: string }[];
+    attachments?: unknown[];
+    linked_tasks?: unknown[];
     list: unknown;
     folder: unknown;
     space: unknown;
@@ -100,5 +102,7 @@ export function readItem(reference: string): Omit<WorkItem, 'request_backlinks'>
       return tag.name;
     }),
     comments,
+    attachments: Array.isArray(task.attachments) ? task.attachments : null,
+    linked_resources: Array.isArray(task.linked_tasks) ? task.linked_tasks : null,
   };
 }

@@ -49,6 +49,8 @@ process.stdout.write(fs.readFileSync(root + file));
     description: '',
     url: 'https://linear.app/acme/issue/ICY-133/fix',
     labels: [{ name: 'agent-planned' }],
+    attachments: [{ id: 'attachment-1' }],
+    documents: [{ id: 'document-1' }],
     comments: [
       {
         id: 'c',
@@ -85,6 +87,8 @@ test('Linear read normalizes UUID context and reads comments once through the na
   assert.equal(item.closed, false);
   assert.equal(item.description, '');
   assert.deepEqual(item.labels, ['agent-planned']);
+  assert.deepEqual(item.attachments, [{ id: 'attachment-1' }]);
+  assert.deepEqual(item.linked_resources, [{ id: 'document-1' }]);
   assert.deepEqual(item.request_backlinks, ['https://github.com/acme/repo/pull/7']);
   const calls = readFileSync(join(root, 'calls.jsonl'), 'utf8')
     .trim()
