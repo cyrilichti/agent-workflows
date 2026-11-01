@@ -16,12 +16,36 @@ cat ../rules/default-language.md ../rules/skill-activation.md ../rules/inclusive
 | Entry | Input |
 | --- | --- |
 | `/pick` | `entry_mode: workflow`, `provider`: resolved item provider, `item`: official item context |
-| Standalone | Request context, optionally including an official item ID, native URL, or title |
+| Standalone | `intention`: planning request; optional `item`: official item ID, native URL, title, or search phrase |
 
 Stop before routing when any part of a caller handoff is missing or incomplete.
 Use `standalone` entry mode when no caller handoff is supplied.
 
 ---
+
+## Resolve a Standalone Official Item
+
+When the intention explicitly identifies an existing official item, run from
+this file's directory. For an ID or native URL:
+
+```sh
+node ../commands/resolve-existing-item.ts "<item>"
+```
+
+For a title or search phrase:
+
+```sh
+node ../commands/resolve-existing-item.ts --query "<item>"
+```
+
+On `not_found`, ask for a better reference or search phrase and repeat. On
+`ambiguous`, ask with `../templates/select-option.md` using each candidate's
+title, status, and destination as its label and `item_id` as its value. Rerun
+with the selected ID as the positional `item`. On failure, report `stage` and
+`reason`, then stop. Use only the final `resolved` provider and item as
+official context. Treat a quoted title supplied as the object of the plan
+request as an explicit item query. Do not search when the intention only
+describes work.
 
 ## Branch Routing
 
@@ -29,22 +53,8 @@ Select exactly one branch:
 
 | Situation | Workflow |
 | --- | --- |
-| Caller supplies `provider` and `item` | `./plan-item.md` |
-| Standalone request identifies an existing official item | `./plan-item.md` |
-| Standalone request describes work without identifying an item | `./plan-standalone.md` |
-
-For a standalone official-item request, run from this file's directory:
-
-```sh
-node ../commands/resolve-existing-item.ts "<item ID or native URL>"
-```
-
-For a title, use `node ../commands/resolve-existing-item.ts --query "<title>"`.
-On `not_found` or `ambiguous`, ask for a better reference or select a returned
-candidate with `../templates/select-option.md`, then rerun with its ID. On
-failure, report `stage` and `reason` and stop. Preserve only the final
-`resolved` provider and item as official context. A quoted title that is the
-object of the plan request is an item query.
+| Caller supplies `provider` and `item`, or standalone resolution returns them | `./plan-item.md` |
+| Standalone intention describes work without identifying an item | `./plan-standalone.md` |
 
 Read the selected workflow file completely and follow it. In `workflow` mode,
 return the branch result to the caller; in `standalone` mode, report it.
