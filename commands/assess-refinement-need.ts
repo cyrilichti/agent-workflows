@@ -4,7 +4,8 @@ type Unit = { outcome: string; verification: string };
 type Input = { autonomous_units: Unit[] };
 
 export function assessRefinementNeed(input: Input) {
-  if (!Array.isArray(input.autonomous_units) || !input.autonomous_units.every(unit =>
+  if (!Array.isArray(input.autonomous_units) || !input.autonomous_units.length ||
+    !input.autonomous_units.every(unit =>
     typeof unit.outcome === 'string' && unit.outcome.trim() &&
     typeof unit.verification === 'string' && unit.verification.trim())) {
     throw new Error('Supply assessed autonomous units with outcomes and verification.');

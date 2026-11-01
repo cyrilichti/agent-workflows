@@ -17,6 +17,8 @@ test('independently verifiable units require refinement with exact findings', ()
 });
 
 test('incomplete assessments fail', () => {
+  assert.throws(() => assessRefinementNeed({ autonomous_units: [] }),
+    /Supply assessed/);
   assert.throws(() => assessRefinementNeed({ autonomous_units: [
     { outcome: 'A', verification: '' },
   ] }), /Supply assessed/);
