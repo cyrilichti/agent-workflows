@@ -1,9 +1,8 @@
 ---
 name: refine
 description: >-
-  Decompose one oversized official item into confirmed provider-backed child
-  items. Use when explicitly invoked with `/refine` or `$refine`, or when
-  another workflow delegates an item that needs refinement.
+  When explicitly invoked with `/refine` or `$refine`, decompose one oversized
+  official item into confirmed provider-backed child items.
 disable-model-invocation: true
 ---
 

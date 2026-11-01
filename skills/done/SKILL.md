@@ -1,9 +1,8 @@
 ---
 name: done
 description: >-
-  Finalize one exact pull or merge request through its configured provider,
-  then complete its official work item. Use when explicitly invoked with
-  `/done` or `$done`.
+  When explicitly invoked with `/done` or `$done`, squash-merge one linked
+  request and complete its official item.
 disable-model-invocation: true
 ---
 

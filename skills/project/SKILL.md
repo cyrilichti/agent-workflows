@@ -1,8 +1,8 @@
 ---
 name: project
 description: >-
-  Resolve a list value and item ID to one absolute local project
-  directory. Use when explicitly invoked with /project or $project.
+  When explicitly invoked with `/project` or `$project`, resolve a destination
+  name and item ID to one absolute local project directory.
 disable-model-invocation: true
 ---
 

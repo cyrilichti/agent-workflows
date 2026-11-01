@@ -1,9 +1,8 @@
 ---
 name: write
 description: >-
-  Write or reformulate one item through adaptive drafting, focused review,
-  confirmation, save, and agent-shaped labeling. Use when explicitly invoked
-  with `/write` or `$write`.
+  When explicitly invoked with `/write` or `$write`, create or reformulate one
+  confirmed, provider-backed item.
 disable-model-invocation: true
 ---
 

@@ -1,9 +1,8 @@
 ---
 name: next
 description: >-
-  Find the least recently modified eligible agent-planned item in the configured Linear or
-  ClickUp provider's returned page and return its name, ID, URL, and destination name.
-  Use when explicitly invoked with `/next` or `$next`.
+  When explicitly invoked with `/next` or `$next`, select the least recently
+  modified eligible item and return its identity and destination.
 disable-model-invocation: true
 ---
 

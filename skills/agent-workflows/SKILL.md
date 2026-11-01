@@ -1,8 +1,8 @@
 ---
 name: agent-workflows
 description: >-
-  Install or update agent-workflows in the current project. Use only when
-  explicitly invoked with `/agent-workflows` or `$agent-workflows`.
+  When explicitly invoked with `/agent-workflows` or `$agent-workflows`,
+  install or update Agent Workflows in the current project.
 disable-model-invocation: true
 ---
 
