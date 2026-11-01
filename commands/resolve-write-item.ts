@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
 import { resolveItemProvider } from './resolve-item-provider.ts';
 import { normalizeItemReference, readItem } from './read-item.ts';
@@ -6,6 +5,16 @@ import { searchItems } from './search-items.ts';
 import type { ItemProvider } from './read-item.ts';
 
 type Input = { reference?: string; query?: string };
+
+export function parseWriteItemArguments(args: string[]): Input {
+  if (args.length === 1 && args[0] !== '--query' && args[0]?.trim()) {
+    return { reference: args[0] };
+  }
+  if (args.length === 2 && args[0] === '--query' && args[1]?.trim()) {
+    return { query: args[1] };
+  }
+  throw new Error('Supply an item ID or native URL, or --query with a title phrase.');
+}
 
 export function resolveWriteItem(provider: ItemProvider, input: Input) {
   let reference = input.reference?.trim();
@@ -45,7 +54,7 @@ if (import.meta.main) {
       throw new Error('Configure item provider as linear or clickup.');
     }
     stage = 'resolve_item';
-    const input = JSON.parse(readFileSync(0, 'utf8')) as Input;
+    const input = parseWriteItemArguments(process.argv.slice(2));
     const result = resolveWriteItem(provider, input);
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
