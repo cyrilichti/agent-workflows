@@ -5,7 +5,8 @@ description: Connect item and version operations to their configured providers.
 
 Agent Workflows separates where work is managed from where code is delivered.
 Configure one provider for each responsibility; workflows route every operation
-to the integration selected by the project.
+to the integration selected by the project. Set the root-level `item` and
+`version` blocks in `agent-workflows.yaml`.
 
 ## Work items: ClickUp or Linear
 
@@ -14,9 +15,8 @@ changes. Approved plans are published and read through the same provider
 boundary.
 
 ```yaml
-mcp:
-  item:
-    provider: linear # or clickup
+item:
+  provider: linear # or clickup
 ```
 
 ## Code delivery: GitHub or GitLab
@@ -24,13 +24,9 @@ mcp:
 The version provider owns branches, commits, pull or merge requests, and reviews.
 
 ```yaml
-mcp:
-  version:
-    provider: github # or gitlab
+version:
+  provider: github # or gitlab
 ```
-
-The `mcp.version.provider` key is retained for existing project configurations;
-`github` selects the `gh` CLI.
 
 ## Configure provider access
 
@@ -54,8 +50,7 @@ linear auth login
 ```
 
 The provider contracts use native `linear` commands and `linear api` for
-focused GraphQL queries. The `mcp.item.provider` key is retained for existing
-project configurations; `clickup` and `linear` select their respective CLIs.
+focused GraphQL queries.
 
 GitHub operations use the official [`gh` CLI](https://cli.github.com/). Install
 it and authenticate it for the repository's host before selecting GitHub:
@@ -67,8 +62,8 @@ gh auth login --hostname github.example.com
 For GitHub.com, use `gh auth login`.
 
 GitLab operations use the official
-[`glab` CLI](https://docs.gitlab.com/cli/installation/) instead of an MCP
-server. Install it, then authenticate it for the repository's host before
+[`glab` CLI](https://docs.gitlab.com/cli/installation/). Install it, then
+authenticate it for the repository's host before
 selecting GitLab:
 
 ```bash

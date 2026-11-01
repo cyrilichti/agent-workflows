@@ -79,7 +79,7 @@ function fixture(provider: 'github' | 'gitlab') {
   writeFileSync(join(bin, 'git'), gitCli, { mode: 0o755 });
   writeFileSync(join(bin, 'gh'), ghCli, { mode: 0o755 });
   writeFileSync(join(bin, 'glab'), glabCli, { mode: 0o755 });
-  writeFileSync(join(root, 'agent-workflows.yaml'), `mcp:\n  version:\n    provider: ${provider}\n`);
+  writeFileSync(join(root, 'agent-workflows.yaml'), `version:\n  provider: ${provider}\n`);
   const remote = provider === 'github'
     ? 'https://github.com/acme/repo.git'
     : 'https://gitlab.example/acme/repo.git';

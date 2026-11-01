@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { basename, dirname, join } from 'node:path';
-import { resolveConfiguredProvider } from './resolve-item-provider.ts';
+import { requireVersionProvider } from './resolve-item-provider.ts';
 import { resolveVersionRepository } from './resolve-version-repository.ts';
 
 type Input = {
@@ -19,7 +19,7 @@ try {
   }
   process.chdir(root);
   const data = JSON.parse(readFileSync(0, 'utf8')) as Input;
-  const provider = resolveConfiguredProvider(join(root, 'agent-workflows.yaml'), 'version') as 'github' | 'gitlab';
+  const provider = requireVersionProvider(join(root, 'agent-workflows.yaml'));
   const remote = data.push_remote_url;
   const source = data.source_branch;
   const target = data.target_branch;

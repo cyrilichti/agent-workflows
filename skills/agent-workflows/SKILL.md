@@ -201,10 +201,10 @@ For GitHub.com, use `gh auth login`; for GitLab.com, use `glab auth login`.
 When `agent-workflows.yaml` already exists:
 
 1. Preserve the configured item provider and every unrelated setting.
-2. When `mcp.version.provider` is absent, ask which version provider the
+2. When `version.provider` is absent, ask which version provider the
    project uses with the selection below, then add the selected value.
-3. When `mcp.version.provider` is `github` or `gitlab`, preserve it.
-4. When `mcp.version.provider` has another value, stop and list the supported
+3. When `version.provider` is `github` or `gitlab`, preserve it.
+4. When `version.provider` has another value, stop and list the supported
    values. Do not overwrite the existing value.
 
 When `agent-workflows.yaml` is absent:
@@ -233,10 +233,10 @@ When `agent-workflows.yaml` is absent:
 
 3. Copy the downloaded `agent-workflows.example.yaml` to
    `agent-workflows.yaml`.
-4. Set `mcp.item.provider` and `mcp.version.provider` to the selected values.
+4. Set `item.provider` and `version.provider` to the selected values.
 
 Use the same version-provider selection when an existing configuration is
-missing `mcp.version.provider`.
+missing `version.provider`.
 
 ## Validate
 
@@ -251,8 +251,8 @@ Before reporting success, verify:
 - the project lock contains every downloaded Skill entry;
 - every declared Skill is installed;
 - `agent-workflows.yaml` exists;
-- `mcp.item.provider` is either `clickup` or `linear`.
-- `mcp.version.provider` is either `github` or `gitlab`.
+- `item.provider` is either `clickup` or `linear`.
+- `version.provider` is either `github` or `gitlab`.
 - a repeated deployment of the same downloaded version would produce no
   filesystem change.
 

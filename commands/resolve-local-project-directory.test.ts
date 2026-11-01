@@ -35,7 +35,7 @@ function fixture(paths: string[]) {
     copyFileSync(resolve('providers', provider, 'read-item.ts'),
       join(root, 'providers', provider, 'read-item.ts'));
   }
-  writeFileSync(join(root, 'agent-workflows.yaml'), 'mcp:\n  item:\n    provider: linear\n');
+  writeFileSync(join(root, 'agent-workflows.yaml'), 'item:\n  provider: linear\n');
   return {
     root,
     run: (list: string, configured = paths, description = '') => spawnSync(process.execPath,

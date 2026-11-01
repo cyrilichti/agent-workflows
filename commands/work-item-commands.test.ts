@@ -112,7 +112,7 @@ function fixture(itemProvider: 'clickup' | 'linear', versionProvider: 'github' |
     copyFileSync(resolve(`providers/${provider}/${name}.ts`), join(directory, `${name}.ts`));
   }
   writeFileSync(join(root, 'agent-workflows.yaml'),
-    `mcp:\n  item:\n    provider: ${itemProvider}\n  version:\n    provider: ${versionProvider}\n`);
+    `item:\n  provider: ${itemProvider}\nversion:\n  provider: ${versionProvider}\n`);
   for (const name of ['clickup-cli', 'linear', 'gh', 'glab']) {
     writeFileSync(join(bin, name), fakeCli, { mode: 0o755 });
   }
@@ -221,6 +221,25 @@ test('GitHub request and ClickUp backlink use the created request URL', () => {
     assert.equal(linked.status, 0, linked.stdout);
     assert.equal(JSON.parse(linked.stdout).comment,
       'Draft PR: https://github.com/acme/repo/pull/7\n\nAgent-Workflows-Plan: plans/plan.md');
+  } finally {
+    f.cleanup();
+  }
+});
+
+test('request creation reports a missing version provider without loading an undefined adapter', () => {
+  const f = fixture('linear', 'github');
+  try {
+    writeFileSync(join(f.root, 'agent-workflows.yaml'),
+      'mcp:\n  version:\n    provider: github\n');
+    const result = f.run('create-request.ts', {
+      push_remote_url: 'https://github.com/acme/repo.git',
+      source_branch: 'fix/plan', target_branch: 'main', plan_name: 'Plan',
+    });
+    assert.equal(result.status, 1);
+    const output = JSON.parse(result.stdout);
+    assert.equal(output.stage, 'create_request');
+    assert.match(output.reason, /Configure version\.provider as github or gitlab/);
+    assert.deepEqual(f.calls(), []);
   } finally {
     f.cleanup();
   }
