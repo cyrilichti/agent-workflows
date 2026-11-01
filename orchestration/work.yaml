@@ -12,7 +12,7 @@ description: |
   | 1. Select | `/next` returns the first eligible `agent-planned` item or reports that none is available. |
   | 2. Resolve | For a selected item, `/project` returns its local repository path or an explicit unresolved result. |
   | 3. Deliver | `/work` executes the approved plan and continues through `/ready` and `/inspect`. Readiness gaps and blocking findings return to `/work` before this cycle ends. |
-  | 4. Check | Accept completion only when the inspection result names the selected item and confirms inspection plus `agent-inspected`. Record incomplete or invalid results as failures. |
+  | 4. Check | Accept completion only when the inspection statuses confirm inspection plus `agent-inspected`. Record incomplete or invalid results as failures. |
   | 5. Wait | `sleep` waits `intervalSeconds` (default `300`), then another selection starts. |
   | 6. Stop | Kill this execution in Kestra to stop the loop. Merge and `/done` remain human decisions. |
 inputs:
@@ -194,7 +194,7 @@ tasks:
                           | 4. Commit | Commit the result, persist todo completion immediately, push the commit, and continue. A todo without a commit causes no push. |
                           | 5. Ready | When every todo is complete, continue automatically to `/ready`; later findings return through the same loop as corrective todos. `/ready` verifies the completed branch against the approved plan, returns concrete gaps to `/work`, then promotes passing work for review. |
                           | 6. Inspect | `/ready` continues automatically to `/inspect` after the required request updates are observed. `/inspect` reviews one frozen request snapshot and head SHA, publishes each unseen valid finding once, and returns blocking findings to `/work`. When none remain, it applies `agent-inspected` and stops without invoking `/done`. |
-                          | 7. Report | Kestra checks the bridge's `## Inspect result` for this same item before recording completion. Merge and `/done` remain human decisions. |
+                          | 7. Report | Kestra checks the bridge's inspection statuses before recording completion. Merge and `/done` remain human decisions. |
                         uri: '{{ envs.bridge_url }}/'
                         method: POST
                         contentType: application/json
@@ -216,44 +216,35 @@ tasks:
                       - id: is-success
                         type: io.kestra.plugin.core.flow.Switch
                         description: |
-                          This switch checks the bridge's `## Inspect result`
-                          against the selected item. It records completion
-                          only when inspection succeeded and the item has the
-                          `agent-inspected` label.
+                          This switch classifies the bridge response from stable
+                          inspection and label statuses, tolerating Markdown
+                          escaping and whitespace changes.
 
                           | Result | Execution |
                           | --- | --- |
                           | Success | Inspection was published or completed without findings, and `agent-inspected` was applied to the selected item. Route to `work-sucess`. |
                           | Partial | A valid result reports unfinished work or inspection. Route to `work-partial` and retain the result for follow-up. |
-                          | Invalid | The result is absent, malformed, or names another item. Route to `work-error`. |
+                          | Invalid | Required statuses are absent, unknown, or contradictory. Route to `work-error`. |
                         value: >-
-                          {{ {
-                            "response": fromJson(outputs['work'].body).text,
-                            "item": fromJson(fromJson(outputs.next.body).text).id
-                          } | toJson | jq('
+                          {{ fromJson(outputs['work'].body).text | toJson | jq('
                             try (
-                              (.response | gsub("\r\n?"; "\n") | split("\n")
-                                | map(sub("[ \t]+$"; ""))) as $lines
-                              | ($lines | index("## Inspect result")) as $start
-                              | if $start == null then "error"
-                                else ($lines[$start:] | map(select(. != "")) | .[:3]) as $result
-                                | ($result[1] | capture("^\\*\\*Request \\S.*:\\*\\* (?<status>\\S.*)$") // {}) as $request
-                                | ($result[2] | capture("^\\*\\*Item (?:\\[(?<linked>[^]]+)\\]\\([^)]*\\)|(?<plain>\\S+)):\\*\\* (?<status>\\S.*)$") // {}) as $item
-                                | ($item.linked // $item.plain // ""
-                                  | sub(" [—–-] \\S.*$"; "")) as $item_id
-                                | ($request.status // "" | sub(" [—–-] \\S.*$"; "")) as $request_status
-                                | ($item.status // "" | sub("^`agent-inspected` "; "agent-inspected ")
-                                  | sub(" [—–-] \\S.*$"; "")) as $item_status
-                                | if (["inspection published", "inspection completed without findings", "inspection incomplete", "inspection failed", "inspection not attempted", "unobserved"]
-                                    | index($request_status)) == null
-                                  or (["agent-inspected applied", "agent-inspected not applied", "unobserved"]
-                                    | index($item_status)) == null
-                                  or $item_id != .item then "error"
-                                  elif (["inspection published", "inspection completed without findings"]
-                                    | index($request_status)) != null
-                                    and $item_status == "agent-inspected applied" then "success"
-                                  else "partial"
-                                  end
+                              gsub("\\\\[rnt]"; " ") | gsub("[\\\\`*_]"; "") | gsub("\\s+"; " ")
+                              | . as $text
+                              | ([scan("\\binspection (?:completed without findings|not attempted|[a-z-]+)\\b")]
+                                + [scan("\\bRequest [^:]*: (unobserved)\\b") | .[]])
+                                | unique as $inspection
+                              | ([$text | scan("\\bagent-inspected (?:not applied|[a-z-]+)\\b")]
+                                + [$text | scan("\\bItem [^:]*: (unobserved)\\b") | .[]])
+                                | unique as $label
+                              | if ($inspection | length) != 1 or ($label | length) != 1
+                                or (["inspection published", "inspection completed without findings", "inspection incomplete", "inspection failed", "inspection not attempted", "unobserved"]
+                                  | index($inspection[0])) == null
+                                or (["agent-inspected applied", "agent-inspected not applied", "unobserved"]
+                                  | index($label[0])) == null then "error"
+                                elif (["inspection published", "inspection completed without findings"]
+                                  | index($inspection[0])) != null
+                                  and $label[0] == "agent-inspected applied" then "success"
+                                else "partial"
                                 end
                             ) catch "error"
                           ') | first }}
@@ -268,10 +259,10 @@ tasks:
 
                                 | Step | Execution |
                                 | --- | --- |
-                                | 1. Fail | Reject a missing, malformed, or mismatched inspection result. |
+                                | 1. Fail | Reject missing, unknown, or contradictory inspection statuses. |
                                 | 2. Diagnose | Include the received text in the error, then continue to `sleep`. |
                               errorMessage: |-
-                                Invalid /work response: expected the inspect-result template for the selected item. Received response:
+                                Invalid /work response: expected recognized, consistent inspection and label statuses. Received response:
                                 {{ fromJson(outputs['work'].body).text | default('No textual response received.') }}
                           partial:
                             - id: work-partial
