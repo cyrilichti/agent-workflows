@@ -231,10 +231,10 @@ tasks:
                               gsub("\\\\[rnt]"; " ") | gsub("[\\\\`*_]"; "") | gsub("\\s+"; " ")
                               | . as $text
                               | ([scan("\\binspection (?:completed without findings|not attempted|[a-z-]+)\\b")]
-                                + [scan("\\bRequest [^:]*: (unobserved)\\b") | .[]])
+                                + [scan("\\bRequest [^:]*: *(unobserved)\\b") | .[]])
                                 | unique as $inspection
                               | ([$text | scan("\\bagent-inspected (?:not applied|[a-z-]+)\\b")]
-                                + [$text | scan("\\bItem [^:]*: (unobserved)\\b") | .[]])
+                                + [$text | scan("\\bItem [^:]*: *(unobserved)\\b") | .[]])
                                 | unique as $label
                               | if ($inspection | length) != 1 or ($label | length) != 1
                                 or (["inspection published", "inspection completed without findings", "inspection incomplete", "inspection failed", "inspection not attempted", "unobserved"]
