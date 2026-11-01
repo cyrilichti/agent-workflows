@@ -1,9 +1,8 @@
 ---
 name: work
 description: >-
-  Execute a selected plan and corrective findings autonomously, then continue
-  through readiness and inspection. Use when explicitly invoked with `/work`
-  or `$work`, or when `/ready` or `/inspect` returns findings.
+  When explicitly invoked with `/work` or `$work`, execute an approved plan
+  autonomously through readiness and inspection.
 disable-model-invocation: true
 ---
 

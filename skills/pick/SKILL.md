@@ -1,8 +1,8 @@
 ---
 name: pick
 description: >-
-  Select an item, approve its plan, and run autonomous delivery through
-  inspection. Use when explicitly invoked with `/pick` or `$pick`.
+  When explicitly invoked with `/pick` or `$pick`, select one unplanned
+  agent-shaped item, obtain plan approval, and start autonomous delivery.
 disable-model-invocation: true
 ---
 

@@ -1,9 +1,8 @@
 ---
 name: plan
 description: >-
-  Activate and execute the repository planning workflow. Use when the user
-  invokes `/plan` or `$plan`, or explicitly asks to create a plan before
-  implementation.
+  When explicitly invoked with `/plan` or `$plan`, turn one delivery unit into
+  an approved implementation plan.
 disable-model-invocation: true
 ---
 
