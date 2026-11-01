@@ -11,16 +11,17 @@
 
 ### 1. Assess the Delivery Unit
 
-Identify useful units that can be delivered or verified separately. Prefer
-vertical slices; allow expansion, migration, and removal sequences when one
-wide change cannot remain valid as independent slices. Multiple steps or
-technical layers within one coherent unit do not justify a split. Run from
-this file's directory with the assessed autonomous units, or one unit for
-coherent work:
+From this file's directory, read the rule unless it is already active:
+
+```sh
+cat ../rules/refinement-assessment.md
+```
+
+Apply it to `task_context`, then run with the assessed units:
 
 ```sh
 node ../commands/assess-refinement-need.ts <<'JSON'
-{"autonomous_units":[{"outcome":"<independent outcome>","verification":"<independent check>"}]}
+{"autonomous_units":[{"outcome":"<assessed outcome>","verification":"<check>"}]}
 JSON
 ```
 

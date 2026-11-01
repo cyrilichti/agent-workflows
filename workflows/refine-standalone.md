@@ -41,12 +41,18 @@ item: complete official parent item
 
 ### 2. Assess the Parent
 
-Identify independently useful, verifiable delivery units and run from this
-file's directory:
+From this file's directory, read the rule unless it is already active:
+
+```sh
+cat ../rules/refinement-assessment.md
+```
+
+Apply it to the complete official parent item, then run with the assessed
+units:
 
 ```sh
 node ../commands/assess-refinement-need.ts <<'JSON'
-{"autonomous_units":[{"outcome":"<independent outcome>","verification":"<independent check>"}]}
+{"autonomous_units":[{"outcome":"<assessed outcome>","verification":"<check>"}]}
 JSON
 ```
 
