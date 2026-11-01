@@ -17,12 +17,10 @@ cat ../agents/item-writer.md ../templates/item.md
 ```
 
 Apply `item-writer` to the request, relevant conversation, and only references
-identified by the user. Keep its one lightweight item as transient context:
-
-```text
-title: meaningful item title
-body: free-form Markdown containing the objective, problem, and expected outcome
-```
+identified by the user. Ask it to return one lightweight item following
+`../templates/item.md`: a meaningful title and a free-form Markdown body
+containing the objective, problem, and expected outcome. Keep that item as
+transient context.
 
 Follow `./plan-execute.md` with the complete conversational or transient item
 context as `task_context` and `entry_mode: standalone`.
