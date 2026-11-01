@@ -1,104 +1,114 @@
-# Plan Confirm Branch
+# Plan Confirm
 
-## Purpose
+## Input
 
-Assess, author, and confirm one plan.
-
----
-
-## Entry Condition
-
-Run from a context branch with:
-
-- `task_context`: objective, problem, and expected outcome;
-- `entry_mode`: `workflow` or `standalone`.
-
----
+| Input | Requirement |
+| --- | --- |
+| `task_context` | Objective, problem, and expected outcome |
+| `entry_mode` | `workflow` or `standalone` |
 
 ## Steps
 
-### 1. Check Planifiability
+### 1. Assess the Delivery Unit
 
-Run `../commands/assess-refinement-need.md` with:
+Assess `task_context` with `../commands/assess-refinement-need.md`. Continue
+only on `refinement-not-needed`. On `needs-refinement`, return the exact
+findings to the caller in `workflow` mode, or report them and stop in
+`standalone` mode. Create no plan file before this decision.
 
-```text
-context: task_context
+Follow `./specialist.md` once with `task_context` to activate the plan author.
+The author may inspect technical context read-only. Reassess if that inspection
+reveals separately deliverable units.
+
+### 2. Author the Plan
+
+The specialist is the sole author. Load and announce
+`../skills/planning-and-task-breakdown/SKILL.md` for every plan. Load
+`../skills/source-driven-development/SKILL.md` only when a decision depends on
+an unverified external versioned fact; use it only to verify and cite that fact.
+
+Write the plan under `../plans/{YYYY-MM-DD}-{objective-slug}.plan.md` with a
+lowercase kebab-case slug of at most 40 characters; append `-2`, `-3`, etc.
+when the filename exists. Its project-relative path is the canonical plan
+reference and its H1 is the plan name. Use only supplied or inspected context,
+the fewest small, verifiable todos, and this format:
+
+```markdown
+# <Plan title>
+
+<for an official item: **Ticket :** [<exact item ID>](<exact item URL>)>
+
+## Overview
+
+<one-line objective and approach>
+
+## Objective
+
+<what must be achieved>
+
+## Problem
+
+<what must be solved and why it matters>
+
+## Expected Outcome
+
+<how success will be recognized>
+
+## Steps
+
+1. ○ <one-sentence actionable step>
+
+## Validation
+
+- [ ] <how the work will be checked>
 ```
 
-Continue on `refinement-not-needed`. On `needs-refinement`:
+The numbered `## Steps` list alone defines todo content, order, and state.
+Use `○` pending, `◐` in progress, `✓` completed, or `⊘` cancelled between
+number and content. Begin every todo pending; allow at most one in progress.
+Only `/work` appends corrective todos, and cancellation requires explicit user
+confirmation. Do not infer todo state from Validation checkboxes. Preserve
+step text and order when changing state. Add `## Open Questions` only for
+unresolved decisions. Use the exact supplied item ID and URL; omit the ticket
+line for standalone plans. Add no other item, provider, Git, or request
+metadata, Skill-specific format, estimate, file list, or checkpoint.
 
-- in `workflow` mode, return the findings through the context branch to the
-  caller that owns any refinement offer;
-- in `standalone` mode, report the findings and stop.
+For high-risk or unfamiliar decisions, load and announce
+`doubt-driven-development` and invoke one fresh-context reviewer with the
+affected decision excerpts and `task_context` plus the plan contract. Apply
+CLAIM, EXTRACT, DOUBT, and RECONCILE once. Pass no planning history or author
+reasoning. Ask the same author for one revision: implementation gaps become
+todos, verification gaps become Validation, and unresolved decisions become
+Open Questions. Report remaining substantive uncertainty.
 
-### 2. Resolve Planning Author
+### 3. Resolve Material Questions
 
-Follow `./specialist.md` with `task_context` to activate one plan author. The
-author may inspect technical context read-only. If that reveals autonomous
-delivery units, reassess the expanded context with Step 1.
+Collect answers to every question that could change Objective, Expected
+Outcome, todos, their order, or Validation. Give answers to the same author and
+require a complete revised plan until no material question remains.
 
-### 3. Draft and Review the Plan
+### 4. Confirm the Plan
 
-The specialist is the sole plan author. Before drafting, apply
-`../rules/skill-activation.md` with these triggers and limits:
+Present the complete final plan, then show:
 
-| Skill | Trigger | Bounded use |
-| --- | --- | --- |
-| `planning-and-task-breakdown` | Every plan, after Step 1 confirms one delivery unit | Apply its planning method. |
-| `source-driven-development` | A decision depends on an unverified external versioned fact | Verify and cite only that fact. Ignore its implementation process. |
+```markdown
+**Plan ready — <plan H1>**
 
-Have the specialist write using `../templates/plan.md` with:
+[Open plan](<canonical plan file link>)
 
-```text
-task_context: resolved task context
+- **Todos:** <number of steps>
 ```
 
-For high-risk or unfamiliar decisions, the workflow—not the author—loads
-`doubt-driven-development` and invokes one fresh-context reviewer while keeping
-the plan author active. Apply only CLAIM, EXTRACT, DOUBT, and RECONCILE once
-with:
-
-```text
-artifact: affected decision excerpts
-contract: task_context and local plan contract
-```
-
-Do not pass planning history or author reasoning. Reconcile findings and ask the
-same author for one revision: implementation gaps go to todos, verification
-gaps to `Validation`, and unresolved decisions to `Open Questions`. Ignore
-multi-cycle and cross-model procedures, discard review commentary, and report
-remaining substantive uncertainty. Run no further review unless requested.
-
-### 4. Resolve Material Questions
-
-Before presenting the final plan, collect every question whose answer could
-materially change its Objective, Expected Outcome, todos, order, or Validation.
-Return the answers to the same specialist and require a revised complete plan.
-Repeat until no material question remains.
-
-### 5. Confirm Plan
-
-Present the complete final plan, then use `../templates/plan-summary.md` with:
-
-```text
-name: created plan name
-file: created plan path
-todo_count: number of created plan todos
-```
-
-Set `approval_option` to `Approve plan and autonomous delivery` in `workflow`
-mode, or `Approve plan` in `standalone` mode.
-
-In `workflow` mode, state that approval authorizes non-empty commits, normal
-pushes, request creation and promotion, request comments, item transitions and
-labels, review publication, and corrective loops through successful `/inspect`.
-It never authorizes merge, completion, or `/done`.
-
-In `standalone` mode, state that approval approves the plan and, for an
-official item, its publication and label. It does not start or authorize
+Use `Approve plan and autonomous delivery` in `workflow` mode, or `Approve
+plan` in `standalone` mode. In `workflow` mode, explain that approval
+authorizes non-empty commits, normal pushes, request creation and promotion,
+request comments, item transitions and labels, review publication, and
+corrective loops through successful `/inspect`; it does not authorize merge,
+completion, or `/done`. In `standalone` mode, explain that approval covers the
+plan and, for an official item, publication and labeling, without starting
 delivery.
 
-Then ask once using `../templates/select-option.md` with:
+Ask once with `../templates/select-option.md`:
 
 ```text
 question: What do you want to do with this plan?
@@ -107,11 +117,6 @@ options:
 - Adjust plan
 ```
 
-On `Adjust plan`, give the adjustment to the active specialist, then repeat
-this step with the revised plan.
-
-Continue only on `approval_option`.
-
-### 6. Finish
-
-Return the approved plan to the calling context branch.
+On `Adjust plan`, give the adjustment to the active author, then present the
+revised complete plan and ask again. Return only an explicitly approved plan
+to the calling context branch.
