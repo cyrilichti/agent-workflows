@@ -35,5 +35,5 @@ free-form description.
 
 ### 3. Author the Item
 
-Follow `./write-confirm.md` with the returned `provider` and selected
+Follow `./write-execute.md` with the returned `provider` and selected
 `destination`, `mode: create`, and the need as `intention`.

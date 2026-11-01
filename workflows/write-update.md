@@ -38,5 +38,5 @@ Otherwise ask only for the missing revision context.
 
 ### 3. Author the Item
 
-Follow `./write-confirm.md` with `mode: update`, the returned `provider` and
+Follow `./write-execute.md` with `mode: update`, the returned `provider` and
 official `item`, and the revision as `intention`.
