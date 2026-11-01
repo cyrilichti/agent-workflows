@@ -23,16 +23,13 @@ input, report `stopped` without creating a child.
 For each child in preview order, run from this file's directory:
 
 ```sh
-node ../commands/save-item.ts <<'JSON'
-{"mode":"create","title":"<confirmed child title>","body":"<confirmed child Markdown body>","parent_item_id":"<official parent ID>","destination":<parent destination JSON>}
+node ../commands/create-child-item.ts <<'JSON'
+{"parent_item":<complete official parent item JSON>,"child":{"title":"<confirmed child title>","body":"<confirmed child Markdown body>"}}
 JSON
 ```
 
-For Linear, pass `destination` as `{"team":"<parent team ID>",
-"project":"<parent project ID>"}` and omit `project` when absent. For
-ClickUp, pass the parent's List ID as `destination`. Map each `saved` result
-to its stable child reference, including its `item_id`, `item_reference`,
-title, and URL. Record failures and continue.
+Map each `saved` result to its stable child reference, including its `item_id`,
+`item_reference`, title, and URL. Record failures and continue.
 
 ### 3. Apply Required Child Labels
 
