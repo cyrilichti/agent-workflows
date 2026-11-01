@@ -1,49 +1,40 @@
-# Write Update Branch
+# Write Update
 
-## Purpose
+## Input
 
-Resolve update-only context, then follow the shared execution.
+| Input | Description |
+| --- | --- |
+| `intention` | Initial revision request when present. |
+| `item` | Existing item ID, native URL, title, or search phrase when present. |
 
 ## Steps
 
-### 1. Collect Item Expression
+### 1. Resolve the Item
 
-Reuse an available provider item ID, native URL, or title query from the
-workflow activation context. Otherwise ask for the item title or a short title
-search phrase. Do not continue until this input exists.
+If `item` is missing, ask for its ID, URL, or title. Run from this file's
+directory with an ID or native URL:
 
-### 2. Resolve Provider and Item
-
-Run `../commands/resolve-item-provider.md`.
-
-Then run `../commands/resolve-existing-item.md` with:
-
-```text
-provider: resolved item provider
-reference: user-provided provider item ID or native URL, when available
-query: collected title query, when no direct reference is available
+```sh
+node ../commands/resolve-write-item.ts <<'JSON'
+{"reference":"<item ID or native URL>"}
+JSON
 ```
 
-Identify the resolved item to the user using its title, status, and link when
-available.
+For a title phrase, pass `{"query":"<title phrase>"}` instead.
 
-### 3. Collect Need Description
+On `not_found`, ask for a better reference or search phrase and repeat. On
+`ambiguous`, ask with `../templates/select-option.md` using each candidate's
+title, status, and destination as its label and `item_id` as its value. Rerun
+the command with the selected ID as `reference`. On failure, report `stage`
+and `reason`, then stop. Use only the final `resolved` item as official context.
+Identify it to the user by title, status, and link when available.
 
-After identifying the official item, reuse the intention from the workflow
-activation context when it already says what should change and in which
-direction. Otherwise ask only for that missing reformulation context. Keep the
-result as this run's `intention`.
+### 2. Collect the Revision
 
-### 4. Follow Shared Execution
+Reuse `intention` when it describes what to change and in which direction.
+Otherwise ask only for the missing revision context.
 
-Follow `./write-confirm.md` with:
+### 3. Author the Item
 
-```text
-provider: resolved item provider
-mode: update
-item_id: resolved official item ID
-item_title: resolved official item title
-item_description: resolved official item description
-item_link: official item link, when available
-intention: collected need description
-```
+Follow `./write-confirm.md` with `mode: update`, the returned `provider` and
+official `item`, and the revision as `intention`.

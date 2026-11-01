@@ -1,40 +1,25 @@
 # Write
 
-## Purpose
-
-Create or reformulate exactly one provider-backed item.
-
----
-
 ## Required Context
 
-Reuse any rules already active from the caller. From this workflow's directory,
-load the remaining rules in one `cat` command, omitting paths for active rules.
-Skip the command when all are active:
+From this file's directory, read only the files below that are not already
+active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md
+cat ../rules/default-language.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/write-complete.md
 ```
-
-Load `../goals/write-complete.md` once as this workflow's completion contract.
 
 ---
 
-## Steps
+## Input
 
-### 1. Resolve Authoring Mode and Intention
+| Input | Description |
+| --- | --- |
+| `intention` | Available request to create or reformulate one item. |
 
-Use the conversational context available when the workflow is activated as the
-source of the initial authoring intention. Reuse it when it contains
-substantive need or revision context.
-
-Infer `create` when the request unambiguously asks to write, draft, or create a
-new item. Infer `update` when it explicitly asks to update, rewrite, or
-reformulate an existing item. Do not display a mode selection after either
-reliable inference.
-
-For a bare `/write` invocation or a genuinely ambiguous request, ask using
-`../templates/select-option.md` with:
+Infer `create` for a new item and `update` for an existing item when the
+intention makes the mode clear. For a bare `/write` or a genuinely ambiguous
+request, ask with `../templates/select-option.md`:
 
 ```text
 question: What do you want to write?
@@ -43,12 +28,16 @@ options:
 - Reformulate an existing item
 ```
 
-### 2. Follow One Mode Branch
+---
 
-Follow exactly one branch:
+## Branch Routing
 
-- for inferred `create` or `Create a new item`, follow `./write-create.md`;
-- for inferred `update` or `Reformulate an existing item`, follow
-  `./write-update.md`.
+Select exactly one branch:
 
-Pass the preserved initial intention to the selected branch when available.
+| Mode | Workflow |
+| --- | --- |
+| `create` | `./write-create.md` |
+| `update` | `./write-update.md` |
+
+Pass the initial intention when available. Read the selected workflow file
+completely and follow it.

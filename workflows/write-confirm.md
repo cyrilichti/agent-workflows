@@ -1,50 +1,41 @@
-# Write Confirm Branch
+# Write Confirm
 
-## Purpose
+## Input
 
-Guide authoring, confirm, save, and label one item.
-
----
-
-## Entry Condition
-
-Run only from a mode branch with:
-
-- `provider`: resolved item provider.
-- `intention`: initial working context collected for this run.
-- `create`: `mode` and resolved `destination`.
-- `update`: `mode`, official `item_id`, `item_title`,
-  `item_description`, and `item_link` when available.
-
----
+| Input | Requirement |
+| --- | --- |
+| `mode` | `create` or `update` |
+| `provider` | Resolved item provider |
+| `intention` | Need or revision context |
+| `destination` | Required for `create` |
+| `item` | Complete official item required for `update` |
 
 ## Steps
 
-### 1. Build Authoring Context and Load the Specialist
+### 1. Prepare the Writer
 
-Build the working context according to `../templates/authoring-context.md` from
-the collected intention and, for updates, the official item content.
+From this file's directory, read only the files below that are not already
+active. Omit active paths from the `cat` command; skip it when none remain:
 
-Read the complete `../agents/item-writer.md` profile and apply it directly to
-the working context. Its qualification output follows
-`../templates/item-understanding.md`; its drafting output follows
-`../templates/item.md`.
+```sh
+cat ../agents/item-writer.md ../templates/authoring-context.md ../templates/item-understanding.md ../templates/item.md
+```
 
-When the activation context explicitly requests `to-spec` or a specification
-format, record `to_spec: accepted`. Do not infer this field from detailed or
-internally consistent input.
+Build the `authoring-context` from `intention` and, for `update`, the official
+item's title and body. Apply the `item-writer` profile to that context. Record
+`to_spec: accepted` only when the activation request explicitly asks for a
+specification format.
 
 ### 2. Qualify the Need
 
-When the activation context explicitly requests immediate drafting, or the
-request is purely mechanical and requires no substantive decision, continue to
-Step 4. Otherwise, ask `item-writer` to qualify the working context and follow
-exactly one returned phase:
+When the activation request explicitly asks for immediate drafting, or the
+change is purely mechanical, go to Step 3. Otherwise ask `item-writer` to
+qualify the context. Follow its returned phase:
 
-- focused question: collect one answer or source, update the working context,
-  and repeat this step;
-- `to-spec` suggestion: present its reason, then ask using
-  `../templates/select-option.md` with:
+- For a focused question, collect one answer or source, update the context,
+  and repeat this step.
+- For a `to-spec` suggestion, present the reason and ask with
+  `../templates/select-option.md`:
 
   ```text
   question: Do you want to use the suggested specification format?
@@ -53,45 +44,30 @@ exactly one returned phase:
   - Continue without specification format
   ```
 
-  Record `to_spec: accepted` after acceptance or `to_spec: declined` after
-  refusal, then repeat this step;
-- understanding summary: continue to Step 3.
+  Record `to_spec: accepted` or `to_spec: declined`, then repeat this step.
+- For an understanding summary, present it and continue to Step 3. Use it as
+  the current intention while retaining established facts and open questions.
 
 If the user leaves a blocking question unanswered, ask whether to preserve it
-as an open question.
+as an open question. Honor an active Skill's terminal-turn rule.
 
-### 3. Confirm Understanding
+### 3. Draft and Present
 
-Present the returned understanding summary using
-`../templates/item-understanding.md`, then ask using
-`../templates/select-option.md` with:
+Ask `item-writer` to return exactly one proposed item with a title and
+free-form Markdown body. Present it as:
 
-```text
-question: What do you want to do with this understanding?
-options:
-- Confirm understanding
-- Adjust understanding
+```markdown
+### <item title>
+
+<free-form Markdown body>
 ```
 
-- `Adjust understanding`: collect one adjustment, update the working context,
-  and return to Step 2;
-- `Confirm understanding`: replace `intention` with the exact summary and
-  continue to Step 4.
+Preserve the body's Markdown. Put the writer's review notes after the preview.
+Keep Skill announcements outside the preview.
 
-Stop without drafting or mutation when confirmation is refused or unavailable.
-Honor a selected Skill's terminal-turn rule before continuing to Step 4.
+### 4. Save or Adjust
 
-### 4. Draft and Present the Item
-
-Ask `item-writer` to draft from the current working context. Require exactly one
-complete proposed item following `../templates/item.md`, then present it using
-`../templates/item-preview.md` followed by its current review notes.
-
-### 5. Confirm or Adjust the Item
-
-Require the latest complete preview or localized change summary to reflect the
-current authoring context. Then ask using
-`../templates/select-option.md` with:
+Ask with `../templates/select-option.md`:
 
 ```text
 question: What do you want to do with this item?
@@ -100,43 +76,56 @@ options:
 - Adjust item
 ```
 
-If the user selects `Adjust item`, update the working context with
-`current_proposal` and `last_adjustment`, then ask `item-writer` to draft the
-revision. When it returns `qualification required`, update `intention` with the
-confirmed understanding, `last_adjustment`, and the returned reason, remove
-`current_proposal` and `last_adjustment`, then return to Step 2. Otherwise
-present the revised item according to `../templates/item-change-summary.md` and
-repeat this step.
+On `Adjust item`, give the writer `current_proposal` and `last_adjustment`.
+If it returns `qualification required`, update the intention with the
+adjustment and reason, clear those two fields, and return to Step 2. Otherwise
+present the revision using the complete preview when the title, structure, or
+several sections change, or when the user asks for it. For a localized change,
+show only content changes under the applicable **Added**, **Modified**, and
+**Removed** labels. Repeat this step with the current proposal.
 
-Do not continue until the user explicitly selects `Save item`.
-If confirmation is refused or unavailable, stop without mutation.
+Continue only after the user explicitly selects `Save item`. If that choice
+is unavailable, stop without mutation.
 
-### 6. Save and Label Item
+### 5. Save and Label
 
-Run `../commands/save-item.md` with:
+Run from this file's directory with the confirmed title and Markdown body.
+For `create`, pass the selected destination:
 
-- selected mode and provider;
-- only the confirmed title and Markdown body;
-- destination when mode is `create`;
-- existing item ID when mode is `update`.
-
-Use the `save-item` result for subsequent labeling and reporting, then run
-`../commands/apply-item-label.md` with:
-
-```text
-provider: resolved item provider
-item_id: saved item ID
-label: agent-shaped
+```sh
+node ../commands/save-item.ts <<'JSON'
+{"mode":"create","title":"<confirmed title>","body":"<confirmed Markdown body>","destination":<selected destination JSON>}
+JSON
 ```
 
-Finish according to `../goals/write-complete.md`. Present the outcome using
-`../templates/write-result.md` with:
+For `update`, pass `{"mode":"update","title":"<confirmed title>","body":"<confirmed Markdown body>","item_id":"<official item ID>"}` instead.
 
-```text
-Provider: resolved provider display name
-Item title: returned or carried item title, or Item unavailable
-Item URL: returned or carried item URL, when available
-Status: returned or carried provider status, or Unavailable
-Label applied: returned label result
-Label reason: returned reason when the label was not applied
+On failure, report `stage` and `reason`, then
+stop without reporting a successful save. On `saved`, run:
+
+```sh
+node ../commands/apply-item-label.ts <<'JSON'
+{"item_id":"<saved item ID>","label":"agent-shaped"}
+JSON
 ```
+
+Report the observed save and label results using the contract below. A label
+failure does not erase a successful save.
+
+## Final Result Contract
+
+Use this block after a successful save:
+
+```markdown
+## <saved item title, or Write result unavailable>
+
+[Open in <provider display name> ↗](<saved or carried item URL>)
+
+- **Status:** <observed provider status, or Unavailable>
+- **Label:** <agent-shaped applied, or agent-shaped not applied with reason>
+```
+
+- Omit the link when the URL is unavailable; never show a raw URL.
+- Use the status returned by the mutation, or the carried official status for
+  an update when the mutation does not return one.
+- Report observed states rather than intended states.
