@@ -14,7 +14,7 @@ test('Linear publishes the exact authoritative plan and requires a comment link'
     return '✓ Added comment to issue ICY-137\nhttps://linear.app/example/issue/ICY-137/x#comment-abc\n';
   }, () => plan);
   assert.equal(result.published, true);
-  assert.match(result.comment_url, /#comment-abc$/);
+  assert.match(result.comment_url!, /#comment-abc$/);
   assert.throws(() => publishItemPlan('linear', input, () => '✓ Added comment',
     () => plan), /identify/);
 });

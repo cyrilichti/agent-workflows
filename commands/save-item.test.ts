@@ -3,7 +3,7 @@ import test from 'node:test';
 import { saveItem } from './save-item.ts';
 
 test('Linear create sends only confirmed fields and selected destination', () => {
-  const calls: Array<{ program: string; args: string[]; input?: string }> = [];
+  const calls: Array<{ program: string; args: string[]; input: string | undefined }> = [];
   const saved = saveItem('linear', { mode: 'create', title: 'Clarify write',
     body: 'Free-form body', destination: { team: 'team-1', project: 'project-2' } },
   (program, args, input) => {
