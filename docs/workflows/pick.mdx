@@ -83,13 +83,3 @@ autonomous implementation and review.
     </tr>
   </tbody>
 </table>
-
-## Execution details
-
-`/pick` resolves one official item and checks its provider-native status once,
-regardless of whether it was supplied by ID, native URL, title, or candidate
-selection. A closed item stops before summary and planning. An open item with
-`agent-planned` stops before planning and is left for `/work`. Otherwise,
-`/pick` requires `agent-shaped`, shows the current context, and sends it to
-planning. An item containing multiple delivery units can be handed to `/refine` without
-changing it first.

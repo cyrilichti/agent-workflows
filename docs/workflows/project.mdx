@@ -67,11 +67,3 @@ an unresolved status.
     </tr>
   </tbody>
 </table>
-
-## Execution details
-
-Invoke `/project` or `$project` with the destination name and item ID, or let
-the Kestra `work` flow call it after `/next` returns an item. It reads the item
-only when several repositories match the destination. Configured project paths
-take priority when available; each selected search tier is completed so
-competing matches can be resolved independently of discovery order.

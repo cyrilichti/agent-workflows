@@ -127,11 +127,3 @@ leaving the parent unchanged.
     </tr>
   </tbody>
 </table>
-
-## Execution details
-
-Direct invocation resolves the item by ID, URL, or title, reads its complete
-context, and assesses the need for decomposition. When called from `/pick`, it
-reuses the complete context and findings returned by `/plan`. The parent stays
-unchanged, and no child is created before the human confirms the complete
-decomposition.
