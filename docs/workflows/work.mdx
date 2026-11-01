@@ -60,7 +60,7 @@ to `/ready` and inspection.
 
 ## How `/work` executes a plan
 
-<div className="write-flow work-flow" role="group" aria-label="New work initializes delivery. New or resumed work executes plan todos, then continues to ready. Findings return as corrective todos.">
+<div className="write-flow work-flow" role="group" aria-label="New work initializes delivery. New or resumed work executes plan todos, then continues to ready. Blocking findings from inspect return as corrective todos. A ready failure stops delivery with its stage and reason.">
   <div className="write-flow__step write-flow__step--focus">
     <small>01 · New work only</small>
     <strong>Initialize delivery</strong>
@@ -98,7 +98,7 @@ to `/ready` and inspection.
 
   <div className="work-flow__corrective-note">
     <small>Corrective loop</small>
-    <span>Readiness gaps or blocking inspection findings return to <code>/work</code> as new todos.</span>
+    <span>Blocking findings from <code>/inspect</code> return to <code>/work</code> as new todos. A failure in <code>/ready</code> stops delivery with its stage and reason.</span>
   </div>
 </div>
 
@@ -153,7 +153,7 @@ when none are needed.
     <tr>
       <td>5</td>
       <th scope="row">Ready</th>
-      <td>When no todo is pending or in progress and at least one is complete, continue automatically to <code>/ready</code>; later findings return through the same loop as corrective todos.</td>
+      <td>When no todo is pending or in progress and at least one is complete, continue automatically to <code>/ready</code>; blocking findings from <code>/inspect</code> return through the same loop as corrective todos.</td>
     </tr>
   </tbody>
 </table>
