@@ -131,7 +131,4 @@ Use this block after a successful save:
 - **Label:** <agent-shaped applied, or agent-shaped not applied with reason>
 ```
 
-- Omit the link when the URL is unavailable; never show a raw URL.
-- Use the status returned by the mutation, or the carried official status for
-  an update when the mutation does not return one.
-- Report observed states rather than intended states.
+Omit the link when the URL is unavailable.
