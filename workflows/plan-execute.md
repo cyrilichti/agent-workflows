@@ -11,21 +11,19 @@
 
 ### 1. Assess the Delivery Unit
 
-From this file's directory, read the rule unless it is already active:
+Run `../commands/assess-refinement-need.md` with:
 
-```sh
-cat ../rules/refinement-assessment.md
+```text
+context: task_context
 ```
-
-Apply it to `task_context` and keep its exact outcome and findings.
 
 Continue only on `refinement-not-needed`. On `needs-refinement`, return the exact
 findings to the caller in `workflow` mode, or report them and stop in
 `standalone` mode. Create no plan file before this decision.
 
 Follow `./specialist.md` once with `task_context` to activate the plan author.
-The author may inspect technical context read-only. Reassess if that inspection
-reveals separately deliverable units.
+The author may inspect technical context read-only. Run the same assessment
+again if that inspection reveals separately deliverable units.
 
 ### 2. Author the Plan
 

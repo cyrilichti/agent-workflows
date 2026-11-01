@@ -41,14 +41,11 @@ item: complete official parent item
 
 ### 2. Assess the Parent
 
-From this file's directory, read the rule unless it is already active:
+Run `../commands/assess-refinement-need.md` with:
 
-```sh
-cat ../rules/refinement-assessment.md
+```text
+context: complete official parent item
 ```
-
-Apply it to the complete official parent item and keep its exact outcome and
-findings.
 
 On `refinement-not-needed`, report the findings and stop. On
 `needs-refinement`, preserve the exact findings.
