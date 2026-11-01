@@ -24,10 +24,23 @@ function fixture(paths: string[]) {
   const bin = join(root, 'bin');
   mkdirSync(bin);
   writeFileSync(join(bin, 'linear'), itemCli, { mode: 0o755 });
+  mkdirSync(join(root, 'commands'));
+  mkdirSync(join(root, 'providers', 'linear'), { recursive: true });
+  mkdirSync(join(root, 'providers', 'clickup'), { recursive: true });
+  for (const file of ['resolve-local-project-directory.ts', 'resolve-item-provider.ts',
+    'read-item.ts']) {
+    copyFileSync(resolve('commands', file), join(root, 'commands', file));
+  }
+  for (const provider of ['linear', 'clickup']) {
+    copyFileSync(resolve('providers', provider, 'read-item.ts'),
+      join(root, 'providers', provider, 'read-item.ts'));
+  }
+  writeFileSync(join(root, 'agent-workflows.yaml'), 'mcp:\n  item:\n    provider: linear\n');
   return {
     root,
     run: (list: string, configured = paths, description = '') => spawnSync(process.execPath,
-      [program, list, 'item-id', JSON.stringify(configured)], {
+      [join(root, 'commands', 'resolve-local-project-directory.ts'),
+        list, 'item-id', JSON.stringify(configured)], {
       encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}`,
         TEST_PROJECT_ITEM_DESCRIPTION: description },
     }),
