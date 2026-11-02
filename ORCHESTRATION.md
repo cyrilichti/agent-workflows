@@ -90,6 +90,34 @@ Kestra reaches the bridge through `BRIDGE_URL`, which defaults to
 `0.0.0.0` so containers can connect; keep this port accessible only to trusted
 clients. Task requests require the shared token.
 
+## Direct item selection
+
+Kestra calls authenticated `POST /next` on the host bridge. The bridge runs
+`select-next-item.ts` with its own Node.js 24+ executable and returns the
+selector's JSON without an AI call. Selection has a 60-second execution limit;
+execution failures return HTTP 502 and timeouts return HTTP 504. The flow
+records failed attempts and waits before selecting again.
+
+Set `CODEX_WORKING_DIRECTORY` to the absolute project directory containing
+`agent-workflows.yaml` and the installed `.agents/commands` and `.agents/providers`
+files. In this source repository, `commands` and `providers` are used directly.
+The provider configured under `item.provider` must have its CLI (`linear` or
+`clickup-cli`) on the bridge process's `PATH`, authenticated under the host user
+running the bridge. CLI credentials and environment variables must be available
+to that process; values parsed from `.env` are not exported to selector children.
+See [Providers](./docs/providers.mdx) for provider setup. Restart the bridge after
+changing its configuration.
+
+### Upgrade an existing Kestra flow
+
+The Compose installer retains existing flows, including local edits. After
+updating this repository and restarting the bridge, stop the running
+`agent-workflows/work` execution in Kestra. Back up its flow YAML, then replace
+its source in the Kestra editor with [orchestration/work.yaml](./orchestration/work.yaml).
+Save the flow, reapply any needed local customizations, and start a new execution.
+Confirm its `next` task calls `/next` and returns direct JSON. New installations
+import this flow automatically.
+
 ## Execution behavior
 
 Each Codex task starts a fresh, ephemeral CLI session using your local settings.
