@@ -1,52 +1,71 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { TaskController } from './controllers/task.controller.ts';
-import type { HealthEntity } from './entities/health.entity.ts';
-import type { NextSelectionService } from './services/next-selection.service.ts';
-import type { ProjectResolutionService } from './services/project-resolution.service.ts';
+import { TaskController } from './controllers/task.controller.ts';
+import { HealthEntity } from './entities/health.entity.ts';
+import { NextSelectionService } from './services/next-selection.service.ts';
+import { ProjectResolutionService } from './services/project-resolution.service.ts';
 import { TaskRequestService } from './services/task-request.service.ts';
 import { TaskHttpResponseService } from './services/task-http-response.service.ts';
 import { JsonHttpResponseService } from './core/services/json-http-response.service.ts';
-
-export type RouteContext = {
-  health: () => HealthEntity;
-  task: () => TaskController;
-  next: () => Pick<NextSelectionService, 'select'>;
-  project: () => Pick<ProjectResolutionService, 'resolve'>;
-};
+import { TaskService } from './services/task.service.ts';
+import { TraceService } from './services/trace.service.ts';
+import { AiProviderService } from './services/ai-provider.service.ts';
+import type { AppConfig } from './types/app-config.types.ts';
 
 type Route = {
   path: string;
   method: 'GET' | 'POST';
   public?: boolean;
-  controller: (context: RouteContext) => (request: IncomingMessage, response: ServerResponse) => void | Promise<void>;
+  controller: (request: IncomingMessage, response: ServerResponse) => void | Promise<void>;
 };
 
-export const routes: readonly Route[] = [
-  {
-    path: '/health', method: 'GET', public: true,
-    controller: (context) => (_request, response) => {
-      new JsonHttpResponseService().send(response, 200, context.health());
+export function createRoutes(config: AppConfig, shutdown?: AbortSignal): readonly Route[] {
+  let taskController: TaskController | undefined;
+  let next: NextSelectionService | undefined;
+  let project: ProjectResolutionService | undefined;
+  return [
+    {
+      path: '/health', method: 'GET', public: true,
+      controller: (_request, response) => {
+        const health = new HealthEntity(config.providerName, config.execution.enabled);
+        new JsonHttpResponseService().send(response, 200, health);
+      },
     },
-  },
-  {
-    path: '/', method: 'POST',
-    controller: (context) => async (request, response) => {
-      const input = await new TaskRequestService().parseTaskInput(request);
-      const result = await context.task().postTask(input);
-      new TaskHttpResponseService().sendTask(response, result);
+    {
+      path: '/', method: 'POST',
+      controller: async (request, response) => {
+        const input = await new TaskRequestService().parseTaskInput(request);
+        if (!taskController) {
+          const traceService = new TraceService(config.langfuse);
+          const taskExecution = new TaskService({
+            provider: new AiProviderService().create(config.providerName, config.providerOptions),
+            providerName: config.providerName,
+            model: config.model || 'configured-default',
+            trace: (record) => traceService.send(record),
+            publicUrl: config.langfuse.publicUrl,
+            projectId: config.langfuse.projectId,
+            ...config.execution,
+          });
+          shutdown?.addEventListener('abort', () => taskExecution.cancelActiveTask(), { once: true });
+          taskController = new TaskController({ taskExecution });
+        }
+        const result = await taskController.postTask(input);
+        new TaskHttpResponseService().sendTask(response, result);
+      },
     },
-  },
-  {
-    path: '/next', method: 'POST',
-    controller: (context) => async (_request, response) => {
-      new JsonHttpResponseService().send(response, 200, await context.next().select());
+    {
+      path: '/next', method: 'POST',
+      controller: async (_request, response) => {
+        next ??= new NextSelectionService(config.providerOptions.directory);
+        new JsonHttpResponseService().send(response, 200, await next.select());
+      },
     },
-  },
-  {
-    path: '/project', method: 'POST',
-    controller: (context) => async (request, response) => {
-      const input = await new TaskRequestService().parseTaskInput(request);
-      new JsonHttpResponseService().send(response, 200, await context.project().resolve(input));
+    {
+      path: '/project', method: 'POST',
+      controller: async (request, response) => {
+        const input = await new TaskRequestService().parseTaskInput(request);
+        project ??= new ProjectResolutionService(config.providerOptions.directory);
+        new JsonHttpResponseService().send(response, 200, await project.resolve(input));
+      },
     },
-  },
-];
+  ];
+}
