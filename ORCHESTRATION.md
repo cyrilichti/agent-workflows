@@ -90,13 +90,17 @@ Kestra reaches the bridge through `BRIDGE_URL`, which defaults to
 `0.0.0.0` so containers can connect; keep this port accessible only to trusted
 clients. Task requests require the shared token.
 
-## Direct item selection
+## Direct item selection and project resolution
 
 Kestra calls authenticated `POST /next` on the host bridge. The bridge runs
 `select-next-item.ts` with its own Node.js 24+ executable and returns the
 selector's JSON without an AI call. Selection has a 60-second execution limit;
 execution failures return HTTP 502 and timeouts return HTTP 504. The flow
 records failed attempts and waits before selecting again.
+
+For a selected item, Kestra calls authenticated `POST /project` with the
+item's `list` and `id`. A resolved path starts `/work`; `not found` or
+`search incomplete` records a failed attempt before the next cycle.
 
 Set `CODEX_WORKING_DIRECTORY` to the absolute project directory containing
 `agent-workflows.yaml` and the installed `.agents/commands` and `.agents/providers`
@@ -115,8 +119,8 @@ updating this repository and restarting the bridge, stop the running
 `agent-workflows/work` execution in Kestra. Back up its flow YAML, then replace
 its source in the Kestra editor with [orchestration/work.yaml](./orchestration/work.yaml).
 Save the flow, reapply any needed local customizations, and start a new execution.
-Confirm its `next` task calls `/next` and returns direct JSON. New installations
-import this flow automatically.
+Confirm its `next` task calls `/next` and its `project` task calls `/project`;
+both return direct JSON. New installations import this flow automatically.
 
 ## Execution behavior
 
@@ -135,8 +139,7 @@ The bridge returns HTTP 200 for completed inference, 502 for a failed inference,
 and 504 when the outcome is unknown. Error responses retain the trace URL in
 their JSON body, so Kestra can fail the HTTP task without a separate status
 check after each call. In `agent-workflows.work`, no eligible item skips project
-resolution; an unresolved project leaves `projectDirectory` empty for a later
-stage to handle conditionally.
+resolution; an unresolved project records a failed attempt and skips `/work`.
 
 Execution times out after 30 minutes by default (`REQUEST_TIMEOUT_MS`). A failed
 or interrupted task may already have changed files: inspect its outcome before

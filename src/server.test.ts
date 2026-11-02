@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, execFileSync } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdtempSync, mkdirSync, copyFileSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, copyFileSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -14,8 +14,16 @@ const flow = readFileSync(new URL('../orchestration/work.yaml', import.meta.url)
 const selection = flow.slice(flow.indexOf('          - id: has-item'), flow.indexOf('                - id: has-project'));
 const filter = selection.match(/jq\('([\s\S]*?)'\)/)?.[1];
 assert.ok(filter, 'Selection switch must contain its jq filter');
+const projectSelection = flow.slice(flow.indexOf('                - id: has-project'), flow.indexOf('                  cases:', flow.indexOf('                - id: has-project')));
+const projectFilter = projectSelection.match(/jq\('([\s\S]*?)'\)/)?.[1];
+assert.ok(projectFilter, 'Project switch must contain its jq filter');
 function selectionRoute(body: string): string {
   return execFileSync('jq', ['-r', filter!], {
+    input: JSON.stringify(body), encoding: 'utf8',
+  }).trim();
+}
+function projectRoute(body: string): string {
+  return execFileSync('jq', ['-r', projectFilter!], {
     input: JSON.stringify(body), encoding: 'utf8',
   }).trim();
 }
@@ -31,6 +39,23 @@ test('Kestra routes invalid selection responses and waits after failed attempts'
   assert.match(flow, /no-item:\s+- id: no-item\s+type: io\.kestra\.plugin\.core\.log\.Log/);
   assert.match(flow, /error:\s+- id: next-error\s+type: io\.kestra\.plugin\.core\.execution\.Fail/);
   assert.match(flow, /\n      - id: sleep\s+type: io\.kestra\.plugin\.core\.flow\.Sleep/);
+});
+
+test('Kestra routes direct project results and calls the dedicated endpoint', () => {
+  assert.equal(projectRoute('{"path":"/projects/example"}'), 'project');
+  assert.equal(projectRoute('{"status":"not found"}'), 'no-project');
+  assert.equal(projectRoute('{"status":"search incomplete"}'), 'no-project');
+  for (const body of ['invalid', '{}', '{"path":" "}', '{"status":"other"}',
+    '{"path":"/projects/example","status":"not found"}', '{"text":"{\\"path\\":\\"/projects/example\\"}"}']) {
+    assert.equal(projectRoute(body), 'error', body);
+  }
+  const projectTask = flow.slice(flow.indexOf('                - id: project\n'), flow.indexOf('                - id: has-project'));
+  assert.match(projectTask, /uri: '\{\{ envs\.bridge_url \}\}\/project'/);
+  assert.match(projectTask, /"list": fromJson\(outputs\.next\.body\)\.list/);
+  assert.match(projectTask, /"id": fromJson\(outputs\.next\.body\)\.id/);
+  assert.doesNotMatch(projectTask, /"prompt"|"requestId"/);
+  assert.match(flow, /"directory": fromJson\(outputs\.project\.body\)\.path/);
+  assert.doesNotMatch(flow, /fromJson\(fromJson\(outputs\.project\.body\)\.text\)/);
 });
 
 test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, async (t) => {
@@ -49,9 +74,16 @@ test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, asyn
   mkdirSync(commands, { recursive: true });
   mkdirSync(linearProvider, { recursive: true });
   copyFileSync(fileURLToPath(new URL('../commands/select-next-item.ts', import.meta.url)), join(commands, 'select-next-item.ts'));
+  copyFileSync(fileURLToPath(new URL('../commands/resolve-local-project-directory.ts', import.meta.url)),
+    join(commands, 'resolve-local-project-directory.ts'));
   copyFileSync(fileURLToPath(new URL('../commands/resolve-item-provider.ts', import.meta.url)), join(commands, 'resolve-item-provider.ts'));
   copyFileSync(fileURLToPath(new URL('../providers/linear/select-next-item.ts', import.meta.url)), join(linearProvider, 'select-next-item.ts'));
   writeFileSync(join(directory, 'agent-workflows.yaml'), 'item:\n  provider: linear\n');
+  const repository = join(directory, 'example-repo');
+  mkdirSync(join(repository, '.git'), { recursive: true });
+  const codexHome = join(directory, 'codex-home');
+  mkdirSync(codexHome);
+  writeFileSync(join(codexHome, 'config.toml'), `[projects.${JSON.stringify(repository)}]\ntrust_level = "trusted"\n`);
   const bin = join(directory, 'bin');
   mkdirSync(bin);
   const fixture = join(directory, 'linear.json');
@@ -74,7 +106,7 @@ test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, asyn
   const child = spawn(process.execPath, [entry], {
     cwd: directory,
     env: { PATH: `${bin}:${process.env.PATH ?? ''}`, HOME: process.env.HOME,
-      NEXT_CLI_FIXTURE: fixture, CODEX_WORKING_DIRECTORY: directory },
+      NEXT_CLI_FIXTURE: fixture, CODEX_WORKING_DIRECTORY: directory, CODEX_HOME: codexHome },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   const closed = new Promise<void>((resolve) => child.once('close', () => resolve()));
@@ -114,6 +146,23 @@ test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, asyn
   const unauthorized = await fetch(url, { method: 'POST', body: 'Hello', signal: AbortSignal.timeout(3_000) });
   assert.equal(unauthorized.status, 401);
   assert.equal((await fetch(`${url}/next`, { method: 'POST' })).status, 401);
+  assert.equal((await fetch(`${url}/project`, { method: 'POST' })).status, 401);
+  const invalidProject = await fetch(`${url}/project`, {
+    method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ list: ' ', id: 'issue-1' }),
+  });
+  assert.equal(invalidProject.status, 400);
+  assert.deepEqual(await invalidProject.json(), { error: 'invalid_project_input' });
+  const projectRequest = (list: string) => fetch(`${url}/project`, {
+    method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ list, id: 'issue-1' }), signal: AbortSignal.timeout(3_000),
+  });
+  const resolved = await projectRequest('example repo');
+  assert.equal(resolved.status, 200);
+  assert.deepEqual(await resolved.json(), { path: realpathSync(repository) });
+  const missing = await projectRequest('unmatched');
+  assert.equal(missing.status, 200);
+  assert.deepEqual(await missing.json(), { status: 'not found' });
   const selected = await fetch(`${url}/next`, {
     method: 'POST', headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(3_000),
   });
@@ -143,4 +192,8 @@ test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, asyn
   });
   assert.equal(failed.status, 502);
   assert.deepEqual(await failed.json(), { error: 'selection_failed' });
+  writeFileSync(join(commands, 'resolve-local-project-directory.ts'), 'process.exit(2);\n');
+  const failedProject = await projectRequest('example repo');
+  assert.equal(failedProject.status, 502);
+  assert.deepEqual(await failedProject.json(), { error: 'project_failed' });
 });

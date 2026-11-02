@@ -5,6 +5,7 @@ import { TaskRequestService } from './task-request.service.ts';
 import { TaskHttpResponseService } from './task-http-response.service.ts';
 import { JsonHttpResponseService } from '../core/services/json-http-response.service.ts';
 import { NextSelectionService } from './next-selection.service.ts';
+import { ProjectResolutionService } from './project-resolution.service.ts';
 
 export class TaskRouteService {
   private readonly controller: TaskController;
@@ -13,11 +14,14 @@ export class TaskRouteService {
   private readonly responses = new TaskHttpResponseService();
   private readonly json = new JsonHttpResponseService();
   private readonly next: NextSelectionService;
+  private readonly project: ProjectResolutionService;
 
-  constructor(controller: TaskController, security: SecurityService, next = new NextSelectionService()) {
+  constructor(controller: TaskController, security: SecurityService,
+    next = new NextSelectionService(), project = new ProjectResolutionService()) {
     this.controller = controller;
     this.security = security;
     this.next = next;
+    this.project = project;
   }
 
   async dispatch(request: IncomingMessage, response: ServerResponse): Promise<void> {
@@ -32,6 +36,8 @@ export class TaskRouteService {
         this.responses.sendTask(response, result);
       } else if (request.method === 'POST' && request.url === '/next') {
         this.json.send(response, 200, await this.next.select());
+      } else if (request.method === 'POST' && request.url === '/project') {
+        this.json.send(response, 200, await this.project.resolve(await this.requests.parseTaskInput(request)));
       } else {
         this.json.send(response, 404, { error: 'not_found' });
       }

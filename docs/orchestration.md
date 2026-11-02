@@ -54,6 +54,9 @@ host or sends the task to the OpenAI API, returns a JSON result to Kestra,
 and sends a trace to Langfuse. The bridge must be running for Kestra to
 reach either provider.
 
+The `work` flow uses `POST /next` to select an item and `POST /project` to
+resolve its local repository. Only a resolved path proceeds to `/work`.
+
 ## Start the architecture locally
 
 You need Node.js 24+, npm, and Docker with Compose 2.24+. To use the local
