@@ -1,12 +1,37 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { spawn, execFileSync } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdtempSync, mkdirSync, copyFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, copyFileSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+// Exercise the flow's jq program with the toJson encoding applied to the
+// HTTP response body. This checks routing without starting a Kestra instance.
+const flow = readFileSync(new URL('../orchestration/work.yaml', import.meta.url), 'utf8');
+const selection = flow.slice(flow.indexOf('          - id: has-item'), flow.indexOf('                - id: has-project'));
+const filter = selection.match(/jq\('([\s\S]*?)'\)/)?.[1];
+assert.ok(filter, 'Selection switch must contain its jq filter');
+function selectionRoute(body: string): string {
+  return execFileSync('jq', ['-r', filter!], {
+    input: JSON.stringify(body), encoding: 'utf8',
+  }).trim();
+}
+
+test('Kestra routes invalid selection responses and waits after failed attempts', () => {
+  for (const body of ['invalid', 'null', '{}', '{"name":" "}',
+    '{"status":"no eligible item","extra":true}', '{"text":"{}"}']) {
+    assert.equal(selectionRoute(body), 'error', body);
+  }
+  assert.match(flow, /id: start\s+type: io\.kestra\.plugin\.core\.flow\.AllowFailure/);
+  assert.match(flow, /uri: '\{\{ envs\.bridge_url \}\}\/next'/);
+  assert.match(selection, /cases:\s+item:\s+- id: project/);
+  assert.match(flow, /no-item:\s+- id: no-item\s+type: io\.kestra\.plugin\.core\.log\.Log/);
+  assert.match(flow, /error:\s+- id: next-error\s+type: io\.kestra\.plugin\.core\.execution\.Fail/);
+  assert.match(flow, /\n      - id: sleep\s+type: io\.kestra\.plugin\.core\.flow\.Sleep/);
+});
 
 test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, async (t) => {
   const portReservation = createServer();
@@ -93,15 +118,25 @@ test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, asyn
     method: 'POST', headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(3_000),
   });
   assert.equal(selected.status, 200);
-  assert.deepEqual(await selected.json(), {
+  const selectedBody = await selected.text();
+  assert.equal(selectionRoute(selectedBody), 'item');
+  assert.deepEqual(JSON.parse(selectedBody), {
     name: 'Ready item', id: 'issue-1', url: 'https://linear.test/issue-1', list: 'Project',
   });
+  // These are the actual field expressions used by the project/work prompts.
+  for (const field of ['id', 'list']) {
+    const expression = new RegExp(`fromJson\\(outputs.next.body\\)\\.${field}`, 'g');
+    assert.ok(flow.match(expression)?.length, `${field} must use the direct response`);
+  }
+  assert.doesNotMatch(flow, /fromJson\(fromJson\(outputs.next.body\).text\)/);
   writeFileSync(fixture, JSON.stringify({ data: { issues: { nodes: [] } } }));
   const empty = await fetch(`${url}/next`, {
     method: 'POST', headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(3_000),
   });
   assert.equal(empty.status, 200);
-  assert.deepEqual(await empty.json(), { status: 'no eligible item' });
+  const emptyBody = await empty.text();
+  assert.equal(selectionRoute(emptyBody), 'no-item');
+  assert.deepEqual(JSON.parse(emptyBody), { status: 'no eligible item' });
   writeFileSync(fixture, 'invalid');
   const failed = await fetch(`${url}/next`, {
     method: 'POST', headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(3_000),
