@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, execFileSync } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdtempSync, mkdirSync, copyFileSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, copyFileSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -49,9 +49,16 @@ test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, asyn
   mkdirSync(commands, { recursive: true });
   mkdirSync(linearProvider, { recursive: true });
   copyFileSync(fileURLToPath(new URL('../commands/select-next-item.ts', import.meta.url)), join(commands, 'select-next-item.ts'));
+  copyFileSync(fileURLToPath(new URL('../commands/resolve-local-project-directory.ts', import.meta.url)),
+    join(commands, 'resolve-local-project-directory.ts'));
   copyFileSync(fileURLToPath(new URL('../commands/resolve-item-provider.ts', import.meta.url)), join(commands, 'resolve-item-provider.ts'));
   copyFileSync(fileURLToPath(new URL('../providers/linear/select-next-item.ts', import.meta.url)), join(linearProvider, 'select-next-item.ts'));
   writeFileSync(join(directory, 'agent-workflows.yaml'), 'item:\n  provider: linear\n');
+  const repository = join(directory, 'example-repo');
+  mkdirSync(join(repository, '.git'), { recursive: true });
+  const codexHome = join(directory, 'codex-home');
+  mkdirSync(codexHome);
+  writeFileSync(join(codexHome, 'config.toml'), `[projects.${JSON.stringify(repository)}]\ntrust_level = "trusted"\n`);
   const bin = join(directory, 'bin');
   mkdirSync(bin);
   const fixture = join(directory, 'linear.json');
@@ -74,7 +81,7 @@ test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, asyn
   const child = spawn(process.execPath, [entry], {
     cwd: directory,
     env: { PATH: `${bin}:${process.env.PATH ?? ''}`, HOME: process.env.HOME,
-      NEXT_CLI_FIXTURE: fixture, CODEX_WORKING_DIRECTORY: directory },
+      NEXT_CLI_FIXTURE: fixture, CODEX_WORKING_DIRECTORY: directory, CODEX_HOME: codexHome },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   const closed = new Promise<void>((resolve) => child.once('close', () => resolve()));
@@ -114,6 +121,23 @@ test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, asyn
   const unauthorized = await fetch(url, { method: 'POST', body: 'Hello', signal: AbortSignal.timeout(3_000) });
   assert.equal(unauthorized.status, 401);
   assert.equal((await fetch(`${url}/next`, { method: 'POST' })).status, 401);
+  assert.equal((await fetch(`${url}/project`, { method: 'POST' })).status, 401);
+  const invalidProject = await fetch(`${url}/project`, {
+    method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ list: ' ', id: 'issue-1' }),
+  });
+  assert.equal(invalidProject.status, 400);
+  assert.deepEqual(await invalidProject.json(), { error: 'invalid_project_input' });
+  const projectRequest = (list: string) => fetch(`${url}/project`, {
+    method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ list, id: 'issue-1' }), signal: AbortSignal.timeout(3_000),
+  });
+  const resolved = await projectRequest('example repo');
+  assert.equal(resolved.status, 200);
+  assert.deepEqual(await resolved.json(), { path: realpathSync(repository) });
+  const missing = await projectRequest('unmatched');
+  assert.equal(missing.status, 200);
+  assert.deepEqual(await missing.json(), { status: 'not found' });
   const selected = await fetch(`${url}/next`, {
     method: 'POST', headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(3_000),
   });

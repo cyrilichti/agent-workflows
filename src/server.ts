@@ -6,6 +6,7 @@ import { TaskService } from './services/task.service.ts';
 import { TraceService } from './services/trace.service.ts';
 import { TaskRouteService } from './services/task-route.service.ts';
 import { NextSelectionService } from './services/next-selection.service.ts';
+import { ProjectResolutionService } from './services/project-resolution.service.ts';
 import { TaskController } from './controllers/task.controller.ts';
 import { SecurityService } from './core/services/security.service.ts';
 import { HTTP_REQUEST_TIMEOUT_MS } from './config/keys.ts';
@@ -28,6 +29,7 @@ const routes = new TaskRouteService(
   new TaskController({ taskExecution }),
   new SecurityService(appConfig.http.token),
   new NextSelectionService(appConfig.providerOptions.directory),
+  new ProjectResolutionService(appConfig.providerOptions.directory),
 );
 const httpServer = createServer((request, response) => void routes.dispatch(request, response));
 httpServer.requestTimeout = HTTP_REQUEST_TIMEOUT_MS;
