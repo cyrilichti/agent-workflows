@@ -45,7 +45,7 @@ Kestra (Docker) ──authenticated HTTP──> bridge (host) ──> Codex CLI 
                                               └──> Langfuse traces (Docker)
 ```
 
-The bridge exposes an authenticated task endpoint and a health endpoint. It selects the configured AI adapter and runs one inference at a time. Every accepted call starts a new inference, including calls with a repeated request ID. The request ID correlates responses and traces. A trace is sent once after inference; trace delivery failure does not change the inference result.
+The bridge exposes authenticated task, item-selection, and project-resolution endpoints plus a health endpoint. The `/next` and `/project` endpoints run on the host; only task calls use the configured AI adapter. Every accepted task call starts a new inference, including calls with a repeated request ID. The request ID correlates responses and traces. A trace is sent once after inference; trace delivery failure does not change the inference result.
 
 The Codex adapter starts a fresh, ephemeral CLI execution using local settings. The API adapter sends a request with its separately configured API credential. Both return a common task result for the bridge to return and trace. Langfuse receives the response, status, duration, and observed token usage through its tracing endpoint. Its web and worker services use PostgreSQL, ClickHouse, Redis, and MinIO for their supporting storage and processing.
 

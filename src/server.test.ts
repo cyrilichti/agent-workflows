@@ -192,4 +192,8 @@ test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, asyn
   });
   assert.equal(failed.status, 502);
   assert.deepEqual(await failed.json(), { error: 'selection_failed' });
+  writeFileSync(join(commands, 'resolve-local-project-directory.ts'), 'process.exit(2);\n');
+  const failedProject = await projectRequest('example repo');
+  assert.equal(failedProject.status, 502);
+  assert.deepEqual(await failedProject.json(), { error: 'project_failed' });
 });
