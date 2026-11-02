@@ -10,6 +10,9 @@ PostgreSQL, ClickHouse, Redis, and MinIO services. The bridge runs separately
 on your machine, where it can use your local Codex CLI, project files, and
 authentication. It can also call the OpenAI API when configured to do so.
 
+For item selection, Kestra calls `POST /next` on the bridge. The bridge runs
+`select-next-item.ts` with the host's Linear or ClickUp CLI, without an AI call.
+
 ## How the pieces connect
 
 <div class="orchestration-map" role="group" aria-label="Kestra sends an HTTP request to the host bridge. The bridge calls Codex CLI or the OpenAI API and sends tracing data to Langfuse.">
@@ -53,6 +56,10 @@ shared bearer token. The bridge starts a fresh Codex CLI execution on the
 host or sends the task to the OpenAI API, returns a JSON result to Kestra,
 and sends a trace to Langfuse. The bridge must be running for Kestra to
 reach either provider.
+
+The authenticated `/next` endpoint returns the selector's JSON directly to
+Kestra. To update an existing flow, run
+`docker compose run --rm -e KESTRA_UPDATE_WORKFLOW=true workflow-init`.
 
 ## Start the architecture locally
 

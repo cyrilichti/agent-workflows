@@ -3,7 +3,7 @@ import { pathToFileURL } from 'node:url';
 
 import type { InstallWorkflowOptions } from './types/install-workflow.types.ts';
 
-export async function installWorkflow({ url, email, password, workflow, namespace, id, fetchImpl = fetch }: InstallWorkflowOptions): Promise<'created' | 'retained'> {
+export async function installWorkflow({ url, email, password, workflow, namespace, id, updateExisting = false, fetchImpl = fetch }: InstallWorkflowOptions): Promise<'created' | 'retained' | 'updated'> {
   if (!url || !email || !password) {
     throw new Error('Configure KESTRA_URL, KESTRA_ADMIN_EMAIL and KESTRA_ADMIN_PASSWORD.');
   }
@@ -16,7 +16,17 @@ export async function installWorkflow({ url, email, password, workflow, namespac
     signal: AbortSignal.timeout(30000),
   });
   if (existing.ok) {
-    return 'retained';
+    if (!updateExisting) return 'retained';
+    const updated = await fetchImpl(`${endpoint}/${namespace}/${id}`, {
+      method: 'PUT',
+      headers: { ...headers, 'Content-Type': 'application/x-yaml' },
+      body: workflow,
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!updated.ok) {
+      throw new Error(`Kestra workflow update failed (HTTP ${updated.status}). Check docker compose logs kestra.`);
+    }
+    return 'updated';
   }
   if (existing.status !== 404) {
     throw new Error(
@@ -45,6 +55,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       password: process.env.KESTRA_ADMIN_PASSWORD,
       namespace: 'agent-workflows',
       id: 'work',
+      updateExisting: process.env.KESTRA_UPDATE_WORKFLOW === 'true',
       workflow: readFileSync(new URL('../orchestration/work.yaml', import.meta.url), 'utf8'),
     });
     console.log(`Workflow agent-workflows/work ${status}. Kestra: http://localhost:3000.`);

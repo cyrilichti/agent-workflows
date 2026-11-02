@@ -4,6 +4,9 @@ Kestra runs workflows. A bridge running on your computer forwards their AI tasks
 to your local Codex CLI or the OpenAI API. Langfuse records the responses and
 observed token usage.
 
+The bridge also serves `POST /next`, which runs the item selector directly with
+the host's configured Linear or ClickUp CLI, without an AI call.
+
 Kestra and Langfuse run in Docker; the bridge runs on the host so Codex can use
 your local files, configuration, authentication, tools and integrations.
 
@@ -76,6 +79,10 @@ npm start
 The Kestra image is built from [.docker/kestra/Dockerfile](./.docker/kestra/Dockerfile), which
 prepares the storage directory for its user.
 
+To update an existing `agent-workflows/work` flow with this repository's YAML,
+run `docker compose run --rm -e KESTRA_UPDATE_WORKFLOW=true workflow-init`.
+By default, initialization retains existing flows and manual edits.
+
 Keep `npm start` running in your terminal, under your usual Codex user account.
 Restart it after changing `.env`.
 
@@ -89,6 +96,12 @@ Kestra reaches the bridge through `BRIDGE_URL`, which defaults to
 `http://host.docker.internal:8787`. The example configuration listens on
 `0.0.0.0` so containers can connect; keep this port accessible only to trusted
 clients. Task requests require the shared token.
+
+`POST /` runs an AI task. Authenticated `POST /next` runs
+`commands/select-next-item.ts` on the host using `agent-workflows.yaml` and
+the host's item-provider CLI. It returns an item or
+`{"status":"no eligible item"}` as JSON. CLI failures return HTTP 502;
+selection has a 60-second deadline.
 
 ## Execution behavior
 

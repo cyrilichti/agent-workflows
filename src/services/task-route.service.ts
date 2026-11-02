@@ -12,11 +12,12 @@ export class TaskRouteService {
   private readonly requests = new TaskRequestService();
   private readonly responses = new TaskHttpResponseService();
   private readonly json = new JsonHttpResponseService();
-  private readonly next = new NextSelectionService();
+  private readonly next: NextSelectionService;
 
-  constructor(controller: TaskController, security: SecurityService) {
+  constructor(controller: TaskController, security: SecurityService, next = new NextSelectionService()) {
     this.controller = controller;
     this.security = security;
+    this.next = next;
   }
 
   async dispatch(request: IncomingMessage, response: ServerResponse): Promise<void> {

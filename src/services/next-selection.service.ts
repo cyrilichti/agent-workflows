@@ -1,11 +1,11 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { join } from 'node:path';
+import { existsSync } from 'node:fs';
 import { PROJECT_ROOT } from '../config/keys.ts';
 import { HttpError } from '../core/errors/http.error.ts';
 
 const run = promisify(execFile);
-const command = join(PROJECT_ROOT, 'commands/select-next-item.ts');
 
 export type NextSelection =
   | { name: string; id: string; url: string; list: string }
@@ -17,11 +17,20 @@ function isItem(value: Record<string, unknown>): boolean {
 }
 
 export class NextSelectionService {
+  private readonly directory: string;
+  private readonly command: string;
+
+  constructor(directory = PROJECT_ROOT) {
+    this.directory = directory;
+    const installed = join(directory, '.agents/commands/select-next-item.ts');
+    this.command = existsSync(installed) ? installed : join(directory, 'commands/select-next-item.ts');
+  }
+
   async select(): Promise<NextSelection> {
     let stdout: string;
     try {
-      ({ stdout } = await run(process.execPath, [command], {
-        cwd: PROJECT_ROOT,
+      ({ stdout } = await run(process.execPath, [this.command], {
+        cwd: this.directory,
         timeout: 60_000,
         maxBuffer: 1024 * 1024,
       }));
