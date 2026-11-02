@@ -2,14 +2,14 @@ id: work
 namespace: agent-workflows
 description: |
   This flow processes eligible items **one at a time**. It selects an approved
-  item, resolves its local Git repository, and runs its plan through `/work`,
+  item through the bridge's direct `/next` endpoint, resolves its local Git repository, and runs its plan through `/work`,
   `/ready`, and `/inspect`. Each completed, empty, or failed cycle waits before
   the next selection. Kill the execution in Kestra to stop the loop; a second
   concurrent execution is rejected.
 
   | Step | Execution |
   | --- | --- |
-  | 1. Select | `/next` returns the first eligible `agent-planned` item or reports that none is available. |
+  | 1. Select | The bridge runs the deterministic selector and returns the oldest eligible `agent-planned` item or reports that none is available. |
   | 2. Resolve | For a selected item, `/project` returns its local repository path or an explicit unresolved result. |
   | 3. Deliver | `/work` executes the approved plan and continues through `/ready` and `/inspect`. Readiness gaps and blocking findings return to `/work` before this cycle ends. |
   | 4. Check | Accept completion only when the inspection statuses confirm inspection plus `agent-inspected`. Record incomplete or invalid results as failures. |
@@ -38,7 +38,7 @@ tasks:
       | --- | --- |
       | 1. Start | Run `start` to select and process at most one item. |
       | 2. Wait | Run `sleep` after the attempt finishes, including when it found no item or failed. |
-      | 3. Repeat | Return to `/next` only after the delay. No cycles overlap. |
+      | 3. Repeat | Return to the bridge's `/next` endpoint only after the delay. No cycles overlap. |
     condition: '{{ false }}'
     checkFrequency:
       interval: PT0.001S
@@ -52,7 +52,7 @@ tasks:
 
           | Step | Execution |
           | --- | --- |
-          | 1. Select | Call `/next` and validate its result. An empty result ends this attempt. |
+          | 1. Select | Call the bridge's `/next` endpoint and validate its result. An empty result ends this attempt. |
           | 2. Resolve | For an item, call `/project` and require a usable repository path. |
           | 3. Deliver | Call `/work` in that repository and classify the inspection result. |
           | 4. Finish | On failure, skip remaining steps and retain the failure in Kestra logs. `sleep` runs before another attempt; the failed step is not retried within this attempt. |
@@ -60,40 +60,29 @@ tasks:
           - id: next
             type: io.kestra.plugin.core.http.Request
             description: |
-              The `agent-planned` label marks work whose approved plan is available on its
-              item. `/next` selects the
-              first eligible item in the configured provider's returned page. It does not
-              choose the most recently created or updated item: neither provider query
-              specifies that ordering. The provider-specific status rules below narrow the
-              eligible set.
+              The bridge runs `select-next-item.ts` directly on the host. It uses the
+              configured Linear or ClickUp CLI and selects the eligible item with
+              the oldest update timestamp from the provider's returned page.
 
               | Step | Execution |
               | --- | --- |
               | 1. Configure | Read the Linear or ClickUp provider from `agent-workflows.yaml`; no item reference is needed. |
-              | 2. Filter | Linear selects the first unarchived issue in the returned page with the exact `agent-planned` label and a `Backlog` or `Open` status. ClickUp selects a task tagged `agent-planned` and excludes closed tasks. |
+              | 2. Filter | Require `agent-planned` and a waiting or review status. Exclude review items already labeled `agent-inspected`. |
               | 3. Return | A found item returns only `{"name":"…","id":"…","url":"…","list":"…"}`. `list` is the Linear project name or ClickUp list name. No match returns `{"status":"no eligible item"}`; a missing destination or provider failure is an error. |
-              | 4. Stop | Selection ends without reading another item, creating a plan, changing the ticket, or starting delivery. `/work` starts delivery for the selected item. |
-            uri: '{{ envs.bridge_url }}/'
+              | 4. Stop | Selection does not invoke Codex or change the item. `/work` starts delivery for the selected item. |
+            uri: '{{ envs.bridge_url }}/next'
             method: POST
-            contentType: application/json
             headers:
               Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-            body: >-
-              {{ {
-                "requestId": execution.id ~ "-next-" ~ uuid(),
-                "trace": {"name": "agent-workflows.work.next", "observationName": "next", "tags": ["next"], "sessionId": execution.id},
-                "prompt": "Execute /next",
-                "timeoutMs": 285000
-              } | toJson }}
-            timeout: PT5M
+            timeout: PT65S
             options:
               timeout:
                 connectTimeout: PT5S
-                readIdleTimeout: PT4M55S
+                readIdleTimeout: PT60S
           - id: has-item
             type: io.kestra.plugin.core.flow.Switch
             description: |
-              This switch validates the structured `/next` response before
+              This switch validates the direct JSON `/next` response before
               attempting repository resolution.
 
               | Result | Execution |
@@ -103,7 +92,7 @@ tasks:
               | Invalid | Any malformed or unexpected response routes to `next-error`. |
             value: >-
               {{ outputs.next.body | toJson | jq('
-                try (fromjson | .text | fromjson) catch null
+                try fromjson catch null
                 | if . == {"status":"no eligible item"} then "no-item"
                   elif type == "object" and (try (
                     (.name | type) == "string" and (.name | test("\\S"))
@@ -141,7 +130,7 @@ tasks:
                     {{ {
                       "requestId": execution.id ~ "-project-" ~ uuid(),
                       "trace": {"name": "agent-workflows.work.project", "observationName": "project", "tags": ["project"], "sessionId": execution.id},
-                      "prompt": "Execute /project with list: " ~ fromJson(fromJson(outputs.next.body).text).list ~ " and item ID: " ~ fromJson(fromJson(outputs.next.body).text).id,
+                      "prompt": "Execute /project with list: " ~ fromJson(outputs.next.body).list ~ " and item ID: " ~ fromJson(outputs.next.body).id,
                       "timeoutMs": 285000
                     } | toJson }}
                   timeout: PT5M
@@ -204,7 +193,7 @@ tasks:
                           {{ {
                             "requestId": execution.id ~ "-work-" ~ uuid(),
                             "trace": {"name": "agent-workflows.work.work", "observationName": "work", "tags": ["work"], "sessionId": execution.id},
-                            "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).text).id ~ ".",
+                            "prompt": "Execute /work for item " ~ fromJson(outputs.next.body).id ~ ".",
                             "directory": fromJson(fromJson(outputs.project.body).text).path,
                             "timeoutMs": 3585000
                           } | toJson }}

@@ -77,6 +77,13 @@ Then start the bridge **on the host machine**, under your usual user account
 npm start
 ```
 
+The work flow selects items through authenticated `POST /next`, which runs the
+TypeScript selector on the host without an AI call. Configure the selector's
+project, provider CLI, and credentials using
+[Direct item selection](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#direct-item-selection).
+Existing Kestra flows are retained at startup; follow that guide's upgrade
+procedure to install the changed flow.
+
 Keep this process running. Kestra reaches the host bridge through
 `BRIDGE_URL`. The local service addresses are:
 

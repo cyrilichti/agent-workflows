@@ -5,6 +5,7 @@ import { AiProviderService } from './services/ai-provider.service.ts';
 import { TaskService } from './services/task.service.ts';
 import { TraceService } from './services/trace.service.ts';
 import { TaskRouteService } from './services/task-route.service.ts';
+import { NextSelectionService } from './services/next-selection.service.ts';
 import { TaskController } from './controllers/task.controller.ts';
 import { SecurityService } from './core/services/security.service.ts';
 import { HTTP_REQUEST_TIMEOUT_MS } from './config/keys.ts';
@@ -23,7 +24,11 @@ const taskExecution = new TaskService({
   projectId: appConfig.langfuse.projectId,
   ...appConfig.execution,
 });
-const routes = new TaskRouteService(new TaskController({ taskExecution }), new SecurityService(appConfig.http.token));
+const routes = new TaskRouteService(
+  new TaskController({ taskExecution }),
+  new SecurityService(appConfig.http.token),
+  new NextSelectionService(appConfig.providerOptions.directory),
+);
 const httpServer = createServer((request, response) => void routes.dispatch(request, response));
 httpServer.requestTimeout = HTTP_REQUEST_TIMEOUT_MS;
 httpServer.listen(appConfig.http.port, appConfig.http.host, () => {
