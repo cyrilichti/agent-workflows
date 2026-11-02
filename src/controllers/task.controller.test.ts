@@ -1,10 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
-import { createServer } from 'node:http';
-import { TaskRouteService } from '../services/task-route.service.ts';
+import { createBridgeServer } from '../server.ts';
 import { TaskController } from './task.controller.ts';
-import { SecurityService } from '../core/services/security.service.ts';
 import { TaskService } from '../services/task.service.ts';
 import { TaskResponseEntity } from '../entities/task-response.entity.ts';
 import { TaskResultEntity } from '../entities/task-result.entity.ts';
@@ -13,8 +11,12 @@ import type { TaskResponse } from '../types/task.types.ts';
 import type { Server } from 'node:http';
 
 function createTaskServer(token: string, taskExecution: Pick<TaskService, 'getHealth' | 'executeTask'>) {
-  const routes = new TaskRouteService(new TaskController({ taskExecution }), new SecurityService(token));
-  return createServer((request, response) => void routes.dispatch(request, response));
+  return createBridgeServer(token, {
+    health: () => taskExecution.getHealth(),
+    task: () => new TaskController({ taskExecution }),
+    next: () => assert.fail('Unexpected next controller'),
+    project: () => assert.fail('Unexpected project controller'),
+  });
 }
 
 function serverUrl(server: Server): string {
