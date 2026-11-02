@@ -1,10 +1,9 @@
 import test from 'node:test';
+import type { TestContext } from 'node:test';
+import { bridgeConfig } from '../fixtures/bridge-config.ts';
 import assert from 'node:assert/strict';
 import { once } from 'node:events';
-import { createServer } from 'node:http';
-import { TaskRouteService } from '../services/task-route.service.ts';
-import { TaskController } from './task.controller.ts';
-import { SecurityService } from '../core/services/security.service.ts';
+import { createBridgeServer } from '../server.ts';
 import { TaskService } from '../services/task.service.ts';
 import { TaskResponseEntity } from '../entities/task-response.entity.ts';
 import { TaskResultEntity } from '../entities/task-result.entity.ts';
@@ -12,9 +11,9 @@ import { MAX_HTTP_BODY_BYTES } from '../config/keys.ts';
 import type { TaskResponse } from '../types/task.types.ts';
 import type { Server } from 'node:http';
 
-function createTaskServer(token: string, taskExecution: Pick<TaskService, 'getHealth' | 'executeTask'>) {
-  const routes = new TaskRouteService(new TaskController({ taskExecution }), new SecurityService(token));
-  return createServer((request, response) => void routes.dispatch(request, response));
+function createTaskServer(t: TestContext, token: string, taskExecution: Pick<TaskService, 'getHealth' | 'executeTask'>) {
+  t.mock.method(TaskService.prototype, 'executeTask', taskExecution.executeTask.bind(taskExecution));
+  return createBridgeServer({ ...bridgeConfig, http: { ...bridgeConfig.http, token } });
 }
 
 function serverUrl(server: Server): string {
@@ -34,7 +33,7 @@ function taskResponse(status: TaskResponse['status'], traceUrl = '', error: Task
 test('HTTP bridge authenticates before executing and accepts a task without a project', async (t) => {
   const token = 'test-only-token-'.repeat(4);
   const calls: unknown[] = [];
-  const server = createTaskServer(token, {
+  const server = createTaskServer(t, token, {
     getHealth() { return { status: 'ok', provider: 'codex', inferenceEnabled: true }; },
     async executeTask(body) {
       calls.push(body);
@@ -103,7 +102,7 @@ test('HTTP bridge returns 429 for a concurrent call with the same request ID', a
     projectId: 'agent-workflows',
     enabled: true,
   });
-  const server = createTaskServer(token, taskExecution);
+  const server = createTaskServer(t, token, taskExecution);
   t.after(() => {
     server.closeAllConnections();
     server.close();
@@ -127,7 +126,7 @@ test('HTTP bridge returns 429 for a concurrent call with the same request ID', a
 
 test('HTTP bridge reports inference failures through HTTP while preserving the trace', async (t) => {
   const token = 'test-only-token-'.repeat(4);
-  const server = createTaskServer(token, {
+  const server = createTaskServer(t, token, {
       getHealth: () => ({ status: 'ok', provider: 'codex', inferenceEnabled: true }),
       async executeTask() {
         return taskResponse('failed', 'http://localhost:3001/project/agent-workflows/traces/123');
@@ -150,7 +149,7 @@ test('HTTP bridge reports inference failures through HTTP while preserving the t
 
 test('HTTP bridge distinguishes an unknown inference outcome from a failure', async (t) => {
   const token = 'test-only-token-'.repeat(4);
-  const server = createTaskServer(token, {
+  const server = createTaskServer(t, token, {
       getHealth: () => ({ status: 'ok', provider: 'codex', inferenceEnabled: true }),
       async executeTask() {
         return taskResponse('unknown', 'http://localhost:3001/trace', { code: 'timeout', message: 'Timed out' });
