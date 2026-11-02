@@ -53,7 +53,7 @@ test('declared routes resolve only the selected controller after authorization a
   for (const [method, path] of [
     ['GET', '/missing'], ['POST', '/'], ['POST', '/next'], ['POST', '/project'],
     ['POST', '/health'], ['GET', '/health?probe=1'],
-  ]) {
+  ] as const) {
     const response = await fetch(`${url}${path}`, { method });
     assert.equal(response.status, 401, `${method} ${path}`);
     assert.deepEqual(await response.json(), { error: 'unauthorized' });
@@ -61,7 +61,7 @@ test('declared routes resolve only the selected controller after authorization a
   for (const [method, path] of [
     ['GET', '/'], ['GET', '/next'], ['GET', '/project'], ['POST', '/health'],
     ['POST', '/missing'], ['GET', '/health?probe=1'], ['POST', '/next/'],
-  ]) {
+  ] as const) {
     const response = await fetch(`${url}${path}`, { method, headers });
     assert.equal(response.status, 404, `${method} ${path}`);
     assert.deepEqual(await response.json(), { error: 'not_found' });

@@ -12,6 +12,8 @@ import { TaskHttpResponseService } from './services/task-http-response.service.t
 import { HealthEntity } from './entities/health.entity.ts';
 import { routes } from './routes.ts';
 import type { RouteContext } from './routes.ts';
+import type { AppConfig } from './types/app-config.types.ts';
+import type { Validator } from './types/validator.types.ts';
 import { HTTP_REQUEST_TIMEOUT_MS } from './config/keys.ts';
 
 export function createBridgeServer(token: string, context: RouteContext) {
@@ -38,7 +40,8 @@ export function createBridgeServer(token: string, context: RouteContext) {
 
 if (import.meta.main) {
   const { appConfig } = await import('./config/app.config.ts');
-  new ConfigValidator().validate(appConfig);
+  const configValidator: Validator<AppConfig> = new ConfigValidator();
+  configValidator.validate(appConfig);
   let taskExecution: TaskService | undefined;
   let taskController: TaskController | undefined;
   let next: NextSelectionService | undefined;
