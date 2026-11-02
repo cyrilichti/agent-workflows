@@ -220,15 +220,15 @@ tasks:
                                 | unique as $inspection
                               | ([$text | scan("\\bagent-inspected (?:not applied|[a-z-]+)\\b")]
                                 + [$text | scan("\\bItem [^:]*: *(unobserved)\\b") | .[]])
-                                | unique as $label
-                              | if ($inspection | length) != 1 or ($label | length) != 1
+                                | unique as $labelStatus
+                              | if ($inspection | length) != 1 or ($labelStatus | length) != 1
                                 or (["inspection published", "inspection completed without findings", "inspection incomplete", "inspection failed", "inspection not attempted", "unobserved"]
                                   | index($inspection[0])) == null
                                 or (["agent-inspected applied", "agent-inspected not applied", "unobserved"]
-                                  | index($label[0])) == null then "error"
+                                  | index($labelStatus[0])) == null then "error"
                                 elif (["inspection published", "inspection completed without findings"]
                                   | index($inspection[0])) != null
-                                  and $label[0] == "agent-inspected applied" then "success"
+                                  and $labelStatus[0] == "agent-inspected applied" then "success"
                                 else "partial"
                                 end
                             ) catch "error"
