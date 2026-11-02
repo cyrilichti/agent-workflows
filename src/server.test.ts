@@ -14,8 +14,16 @@ const flow = readFileSync(new URL('../orchestration/work.yaml', import.meta.url)
 const selection = flow.slice(flow.indexOf('          - id: has-item'), flow.indexOf('                - id: has-project'));
 const filter = selection.match(/jq\('([\s\S]*?)'\)/)?.[1];
 assert.ok(filter, 'Selection switch must contain its jq filter');
+const projectSelection = flow.slice(flow.indexOf('                - id: has-project'), flow.indexOf('                  cases:', flow.indexOf('                - id: has-project')));
+const projectFilter = projectSelection.match(/jq\('([\s\S]*?)'\)/)?.[1];
+assert.ok(projectFilter, 'Project switch must contain its jq filter');
 function selectionRoute(body: string): string {
   return execFileSync('jq', ['-r', filter!], {
+    input: JSON.stringify(body), encoding: 'utf8',
+  }).trim();
+}
+function projectRoute(body: string): string {
+  return execFileSync('jq', ['-r', projectFilter!], {
     input: JSON.stringify(body), encoding: 'utf8',
   }).trim();
 }
@@ -31,6 +39,23 @@ test('Kestra routes invalid selection responses and waits after failed attempts'
   assert.match(flow, /no-item:\s+- id: no-item\s+type: io\.kestra\.plugin\.core\.log\.Log/);
   assert.match(flow, /error:\s+- id: next-error\s+type: io\.kestra\.plugin\.core\.execution\.Fail/);
   assert.match(flow, /\n      - id: sleep\s+type: io\.kestra\.plugin\.core\.flow\.Sleep/);
+});
+
+test('Kestra routes direct project results and calls the dedicated endpoint', () => {
+  assert.equal(projectRoute('{"path":"/projects/example"}'), 'project');
+  assert.equal(projectRoute('{"status":"not found"}'), 'no-project');
+  assert.equal(projectRoute('{"status":"search incomplete"}'), 'no-project');
+  for (const body of ['invalid', '{}', '{"path":" "}', '{"status":"other"}',
+    '{"path":"/projects/example","status":"not found"}', '{"text":"{\\"path\\":\\"/projects/example\\"}"}']) {
+    assert.equal(projectRoute(body), 'error', body);
+  }
+  const projectTask = flow.slice(flow.indexOf('                - id: project\n'), flow.indexOf('                - id: has-project'));
+  assert.match(projectTask, /uri: '\{\{ envs\.bridge_url \}\}\/project'/);
+  assert.match(projectTask, /"list": fromJson\(outputs\.next\.body\)\.list/);
+  assert.match(projectTask, /"id": fromJson\(outputs\.next\.body\)\.id/);
+  assert.doesNotMatch(projectTask, /"prompt"|"requestId"/);
+  assert.match(flow, /"directory": fromJson\(outputs\.project\.body\)\.path/);
+  assert.doesNotMatch(flow, /fromJson\(fromJson\(outputs\.project\.body\)\.text\)/);
 });
 
 test('bridge command starts and serves HTTP requests', { timeout: 15_000 }, async (t) => {

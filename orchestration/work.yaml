@@ -108,12 +108,10 @@ tasks:
                 - id: project
                   type: io.kestra.plugin.core.http.Request
                   description: |
-                    `/project` finds the local Git repository for a destination name (`list`) and
-                    an exact item ID. Invoke it as `/project` or `$project` with both values, or let
-                    the Kestra `work` flow call it after `/next` returns an item. It reads the item
-                    only when several repositories match the destination. Configured project paths
-                    take priority when available; each selected search tier is completed so
-                    competing exact matches can be resolved independently of discovery order.
+                    The bridge runs `resolve-local-project-directory.ts` directly on the host
+                    with the selected destination name (`list`) and exact item ID (`id`).
+                    It reads the item only when several repositories match the destination.
+                    Configured project paths take priority when available.
 
                     | Step | Execution |
                     | --- | --- |
@@ -121,17 +119,15 @@ tasks:
                     | 2. Search | Search configured project directories first, then neighboring repositories and the home directory if needed. Complete the first matching tier, retain all exact matches when present, and otherwise retain prefix matches. |
                     | 3. Choose | For several matches, use the complete item to identify the primary repository, then apply stable tie breaks. |
                     | 4. Return | Return one absolute path, `not found`, or `search incomplete`. Invalid input or a failed search is an error. |
-                  uri: '{{ envs.bridge_url }}/'
+                  uri: '{{ envs.bridge_url }}/project'
                   method: POST
                   contentType: application/json
                   headers:
                     Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
                   body: >-
                     {{ {
-                      "requestId": execution.id ~ "-project-" ~ uuid(),
-                      "trace": {"name": "agent-workflows.work.project", "observationName": "project", "tags": ["project"], "sessionId": execution.id},
-                      "prompt": "Execute /project with list: " ~ fromJson(outputs.next.body).list ~ " and item ID: " ~ fromJson(outputs.next.body).id,
-                      "timeoutMs": 285000
+                      "list": fromJson(outputs.next.body).list,
+                      "id": fromJson(outputs.next.body).id
                     } | toJson }}
                   timeout: PT5M
                   options:
@@ -152,13 +148,13 @@ tasks:
                     | Invalid | Any other result routes to `project-error`. |
                   value: >-
                     {{ outputs.project.body | toJson | jq('
-                      try (fromjson | .text | fromjson) catch null
+                      try fromjson catch null
                       | if type == "object" and (try (
-                          (.path | type) == "string" and (.path | test("\\S"))
+                          (keys == ["path"]) and (.path | type) == "string" and (.path | test("\\S"))
                         ) catch false) then "project"
                         elif type == "object" and (try (
-                          ((.status == "not found") or (.status == "search incomplete"))
-                          and (has("path") | not)
+                          (keys == ["status"])
+                          and ((.status == "not found") or (.status == "search incomplete"))
                         ) catch false) then "no-project"
                         else "error"
                         end
@@ -194,7 +190,7 @@ tasks:
                             "requestId": execution.id ~ "-work-" ~ uuid(),
                             "trace": {"name": "agent-workflows.work.work", "observationName": "work", "tags": ["work"], "sessionId": execution.id},
                             "prompt": "Execute /work for item " ~ fromJson(outputs.next.body).id ~ ".",
-                            "directory": fromJson(fromJson(outputs.project.body).text).path,
+                            "directory": fromJson(outputs.project.body).path,
                             "timeoutMs": 3585000
                           } | toJson }}
                         timeout: PT1H
@@ -297,7 +293,7 @@ tasks:
                           | `not found` | Report that the local project must be created or configured. |
                           | `search incomplete` | Report that local repository search must be restored. |
                           | After failure | Run `sleep`, then allow another selection. |
-                        errorMessage: "{{ fromJson(fromJson(outputs.project.body).text).status == 'not found' ? 'No local project was found for this item. Set up or configure the project before running the flow again.' : 'The local project search did not complete. Restore search availability before running the flow again.' }}"
+                        errorMessage: "{{ fromJson(outputs.project.body).status == 'not found' ? 'No local project was found for this item. Set up or configure the project before running the flow again.' : 'The local project search did not complete. Restore search availability before running the flow again.' }}"
                     error:
                       - id: project-error
                         type: io.kestra.plugin.core.execution.Fail
