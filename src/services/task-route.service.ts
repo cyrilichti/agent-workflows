@@ -4,6 +4,7 @@ import { SecurityService } from '../core/services/security.service.ts';
 import { TaskRequestService } from './task-request.service.ts';
 import { TaskHttpResponseService } from './task-http-response.service.ts';
 import { JsonHttpResponseService } from '../core/services/json-http-response.service.ts';
+import { NextSelectionService } from './next-selection.service.ts';
 
 export class TaskRouteService {
   private readonly controller: TaskController;
@@ -11,6 +12,7 @@ export class TaskRouteService {
   private readonly requests = new TaskRequestService();
   private readonly responses = new TaskHttpResponseService();
   private readonly json = new JsonHttpResponseService();
+  private readonly next = new NextSelectionService();
 
   constructor(controller: TaskController, security: SecurityService) {
     this.controller = controller;
@@ -27,6 +29,8 @@ export class TaskRouteService {
         const input = await this.requests.parseTaskInput(request);
         const result = await this.controller.postTask(input);
         this.responses.sendTask(response, result);
+      } else if (request.method === 'POST' && request.url === '/next') {
+        this.json.send(response, 200, await this.next.select());
       } else {
         this.json.send(response, 404, { error: 'not_found' });
       }
