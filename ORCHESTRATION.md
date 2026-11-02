@@ -79,10 +79,6 @@ npm start
 The Kestra image is built from [.docker/kestra/Dockerfile](./.docker/kestra/Dockerfile), which
 prepares the storage directory for its user.
 
-To update an existing `agent-workflows/work` flow with this repository's YAML,
-run `docker compose run --rm -e KESTRA_UPDATE_WORKFLOW=true workflow-init`.
-By default, initialization retains existing flows and manual edits.
-
 Keep `npm start` running in your terminal, under your usual Codex user account.
 Restart it after changing `.env`.
 

@@ -40,23 +40,6 @@ test('restarting retains the existing workflow without overwriting edits', async
   );
   assert.equal(calls, 1);
 });
-test('an explicit upgrade replaces the existing flow with the supplied YAML', async () => {
-  const calls: Array<{ url: RequestInfo | URL; options?: RequestInit }> = [];
-  const result = await installWorkflow({
-    ...demoConfig,
-    updateExisting: true,
-    fetchImpl: async (url, options) => {
-      calls.push({ url, options });
-      return Response.json({ id: 'demo' });
-    },
-  });
-  assert.equal(result, 'updated');
-  assert.equal(calls.length, 2);
-  assert.equal(calls[1]?.url, 'http://kestra:8080/api/v1/main/flows/demo/demo');
-  assert.equal(calls[1]?.options?.method, 'PUT');
-  assert.equal(calls[1]?.options?.body, config.workflow);
-  assert.equal(new Headers(calls[1]?.options?.headers).get('Content-Type'), 'application/x-yaml');
-});
 test('the work flow is imported under its own namespace and retained later', async () => {
   const calls: { url: RequestInfo | URL; request: RequestInit | undefined }[] = [];
   const options = {
