@@ -77,9 +77,14 @@ test('procedural bridge preserves HTTP contracts and shutdown', { timeout: 30_00
   // Extend only the table to check dynamic dispatch and guard-before-constructor ordering.
   const declaration = `
     import { routes } from ${JSON.stringify(new URL('./routes.ts', import.meta.url).href)};
+    import { TaskRequestService } from ${JSON.stringify(new URL('./services/task-request.service.ts', import.meta.url).href)};
+    import { JsonHttpResponseService } from ${JSON.stringify(new URL('./core/services/json-http-response.service.ts', import.meta.url).href)};
     class DeclaredController {
-      constructor(services) { this.json = services.json; }
-      handle(input, response) { this.json.send(response, 201, { declared: input }); }
+      constructor(request, response) { this.request = request; this.response = response; }
+      async handle() {
+        const input = await new TaskRequestService().parseTaskInput(this.request);
+        new JsonHttpResponseService().send(this.response, 201, { declared: input });
+      }
     }
     routes.push({ method: 'POST', path: '/declared', controller: DeclaredController,
       action: 'handle', guard: routes[1].guard });
@@ -140,7 +145,7 @@ test('procedural bridge preserves HTTP contracts and shutdown', { timeout: 30_00
     assert.equal(result.text, 'Hello\n"world"');
     assert.equal(result.requestId, 'request-001');
     assert.equal(result.traceStatus, 'accepted');
-    for (const path of ['/', '/scripts', '/broken']) {
+    for (const path of ['/', '/scripts']) {
       const invalid = await fetch(`${url}${path}`, { method: 'POST', headers, body: '{' });
       assert.equal(invalid.status, 400);
       assert.deepEqual(await invalid.json(), { error: 'invalid_json' });

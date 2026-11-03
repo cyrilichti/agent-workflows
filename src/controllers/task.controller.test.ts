@@ -1,31 +1,54 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ControllerServices } from '../services/controller-services.service.ts';
+import { IncomingMessage, ServerResponse } from 'node:http';
+import { Socket } from 'node:net';
 import { TaskController } from './task.controller.ts';
 import { HealthController } from './health.controller.ts';
 import { ScriptController } from './script.controller.ts';
 import { TaskService } from '../services/task.service.ts';
+import { ScriptExecutionService } from '../services/script-execution.service.ts';
+import { AiProviderService } from '../services/ai-provider.service.ts';
 import { bridgeConfig } from '../fixtures/bridge-config.ts';
 
-test('controller dependencies are lazy, reused within a server, and isolated between servers', (t) => {
-  const services = new ControllerServices(bridgeConfig);
-  const other = new ControllerServices(bridgeConfig);
+function request() {
+  const message = new IncomingMessage(new Socket());
+  message.headers['content-type'] = 'application/json';
+  message.push('{}');
+  message.push(null);
+  return message;
+}
+
+test('controllers own dependencies, reuse them per server, and cancel only initialized tasks', async (t) => {
+  const shutdown = new AbortController();
+  const other = new AbortController();
+  const provider = t.mock.method(AiProviderService.prototype, 'create');
   const cancel = t.mock.method(TaskService.prototype, 'cancelActiveTask', () => {});
-  services.cancelActiveTask();
-  new HealthController(services);
-  services.cancelActiveTask();
+  const failure = new Error('execution observed');
+  const tasks = t.mock.method(TaskService.prototype, 'executeTask', async () => { throw failure; });
+  const scripts = t.mock.method(ScriptExecutionService.prototype, 'execute', async () => { throw failure; });
+  const healthRequest = request();
+  new HealthController(healthRequest, new ServerResponse(healthRequest), bridgeConfig, shutdown.signal);
+  assert.equal(provider.mock.callCount(), 0);
+  const unused = new AbortController();
+  unused.abort();
   assert.equal(cancel.mock.callCount(), 0);
-  new TaskController(services);
-  const tasks = services.tasks;
-  new TaskController(services);
-  assert.equal(services.tasks, tasks);
-  assert.notEqual(other.tasks, tasks);
-  new ScriptController(services);
-  const scripts = services.scripts;
-  new ScriptController(services);
-  assert.equal(services.scripts, scripts);
-  assert.notEqual(other.scripts, scripts);
-  services.cancelActiveTask();
+  for (const signal of [shutdown.signal, shutdown.signal, other.signal]) {
+    const taskRequest = request();
+    await assert.rejects(new TaskController(taskRequest, new ServerResponse(taskRequest), bridgeConfig, signal).handle(), failure);
+    const scriptRequest = request();
+    await assert.rejects(new ScriptController(scriptRequest, new ServerResponse(scriptRequest), bridgeConfig, signal).handle(), failure);
+  }
+  assert.equal(provider.mock.callCount(), 2);
+  for (const mock of [tasks.mock, scripts.mock]) {
+    const [first, second, third] = mock.calls;
+    assert.ok(first && second && third);
+    assert.equal(first.this, second.this);
+    assert.notEqual(first.this, third.this);
+  }
+  shutdown.abort();
   assert.equal(cancel.mock.callCount(), 1);
-  assert.equal(cancel.mock.calls[0].this, tasks);
+  const [cancelled] = cancel.mock.calls;
+  const [executed] = tasks.mock.calls;
+  assert.ok(cancelled && executed);
+  assert.equal(cancelled.this, executed.this);
 });
