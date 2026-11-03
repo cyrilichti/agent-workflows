@@ -27,7 +27,9 @@ if (import.meta.main) {
         json.send(response, 404, { error: 'not_found' });
         return;
       }
-      const controller = new route.controller(request, response, appConfig, shutdown.signal);
+      const controller = new route.controller(request, response, appConfig, shutdown.signal) as Record<
+        typeof route.action, () => void | Promise<void>
+      >;
       await controller[route.action]();
     } catch (error) {
       responses.sendError(response, error);

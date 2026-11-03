@@ -13,7 +13,7 @@ export class HealthController {
     this.response = response;
   }
 
-  handle(): void {
+  reportHealth(): void {
     this.responses.send(this.response, 200, new HealthEntity(this.config.providerName, this.config.execution.enabled));
   }
 }
