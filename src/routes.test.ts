@@ -95,6 +95,11 @@ test('procedural bridge preserves HTTP contracts and shutdown', { timeout: 30_00
     class BrokenController { constructor() { throw new Error('private failure'); } }
     routes.push({ method: 'POST', path: '/broken', controller: BrokenController,
       action: 'executeBroken', guard: routes[1].guard });
+    class InvalidController { executeInvalid = 'not callable'; }
+    for (const [path, action] of [['/missing-action', 'executeMissing'], ['/invalid-action', 'executeInvalid']]) {
+      routes.push({ method: 'POST', path, controller: InvalidController,
+        action, guard: routes[1].guard });
+    }
   `;
   const child = spawn(process.execPath, [
     '--import', `data:text/javascript,${encodeURIComponent(declaration)}`,
@@ -119,7 +124,7 @@ test('procedural bridge preserves HTTP contracts and shutdown', { timeout: 30_00
     const health = await fetch(`${url}/health`);
     assert.equal(health.status, 200);
     assert.deepEqual(await health.json(), { status: 'ok', provider: 'codex', inferenceEnabled: true });
-    for (const path of ['/', '/scripts', '/missing', '/declared', '/broken', '/health?probe=1']) {
+    for (const path of ['/', '/scripts', '/missing', '/declared', '/broken', '/missing-action', '/invalid-action', '/health?probe=1']) {
       const denied = await fetch(`${url}${path}`, { method: 'POST', body: '{' });
       assert.equal(denied.status, 401, path);
       assert.deepEqual(await denied.json(), { error: 'unauthorized' });
@@ -135,9 +140,11 @@ test('procedural bridge preserves HTTP contracts and shutdown', { timeout: 30_00
     const declared = await fetch(`${url}/declared`, { method: 'POST', headers, body: '{"value":"from route"}' });
     assert.equal(declared.status, 201);
     assert.deepEqual(await declared.json(), { declared: { value: 'from route' } });
-    const broken = await fetch(`${url}/broken`, { method: 'POST', headers, body: '{}' });
-    assert.equal(broken.status, 500);
-    assert.deepEqual(await broken.json(), { error: 'internal_error', message: 'Local service failed.' });
+    for (const path of ['/broken', '/missing-action', '/invalid-action']) {
+      const broken = await fetch(`${url}${path}`, { method: 'POST', headers, body: '{}' });
+      assert.equal(broken.status, 500, path);
+      assert.deepEqual(await broken.json(), { error: 'internal_error', message: 'Local service failed.' });
+    }
   });
 
   await t.test('tasks preserve text, parsing errors, body limits and trace outcomes', async () => {

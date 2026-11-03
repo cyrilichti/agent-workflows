@@ -27,10 +27,12 @@ if (import.meta.main) {
         json.send(response, 404, { error: 'not_found' });
         return;
       }
-      const controller = new route.controller(request, response, appConfig, shutdown.signal) as Record<
-        string, () => void | Promise<void>
-      >;
-      await controller[route.action]();
+      const controller = new route.controller(request, response, appConfig, shutdown.signal);
+      const action = (controller as Record<string, unknown>)[route.action];
+      if (typeof action !== 'function') {
+        throw new TypeError(`Controller action ${route.action} is not callable.`);
+      }
+      await action.call(controller);
     } catch (error) {
       responses.sendError(response, error);
     }
