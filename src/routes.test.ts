@@ -18,7 +18,7 @@ const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application
 test('declared routes resolve only the selected controller after authorization and parsing', async (t) => {
   const config = { ...bridgeConfig, execution: { ...bridgeConfig.execution, enabled: false } };
   assert.deepEqual(createRoutes(config).map(({ method, path }) => [method, path]), [
-    ['GET', '/health'], ['POST', '/'], ['POST', '/next'], ['POST', '/project'],
+    ['GET', '/health'], ['POST', '/'], ['POST', '/scripts'], ['POST', '/next'], ['POST', '/project'],
   ]);
   const calls: string[] = [];
   const inputs: unknown[] = [];

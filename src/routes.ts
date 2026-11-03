@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { TaskController } from './controllers/task.controller.ts';
 import { HealthEntity } from './entities/health.entity.ts';
+import { ScriptExecutionService } from './services/script-execution.service.ts';
 import { NextSelectionService } from './services/next-selection.service.ts';
 import { ProjectResolutionService } from './services/project-resolution.service.ts';
 import { TaskRequestService } from './services/task-request.service.ts';
@@ -20,6 +21,7 @@ type Route = {
 
 export function createRoutes(config: AppConfig, shutdown?: AbortSignal): readonly Route[] {
   let taskController: TaskController | undefined;
+  let scripts: ScriptExecutionService | undefined;
   let next: NextSelectionService | undefined;
   let project: ProjectResolutionService | undefined;
   return [
@@ -50,6 +52,14 @@ export function createRoutes(config: AppConfig, shutdown?: AbortSignal): readonl
         }
         const result = await taskController.postTask(input);
         new TaskHttpResponseService().sendTask(response, result);
+      },
+    },
+    {
+      path: '/scripts', method: 'POST',
+      controller: async (request, response) => {
+        const input = await new TaskRequestService().parseTaskInput(request);
+        scripts ??= new ScriptExecutionService(config.providerOptions.directory);
+        new JsonHttpResponseService().send(response, 200, await scripts.execute(input));
       },
     },
     {
