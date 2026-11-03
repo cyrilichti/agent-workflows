@@ -123,7 +123,7 @@ test('procedural bridge preserves HTTP contracts and shutdown', { timeout: 30_00
     for (const [method, path] of [
       ['GET', '/'], ['GET', '/scripts'], ['POST', '/health'], ['POST', '/missing'],
       ['GET', '/health?probe=1'], ['POST', '/scripts/'],
-    ]) {
+    ] as const) {
       const response = await fetch(`${url}${path}`, { method, headers });
       assert.equal(response.status, 404, `${method} ${path}`);
       assert.deepEqual(await response.json(), { error: 'not_found' });
