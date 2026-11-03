@@ -1,8 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { TaskController } from './controllers/task.controller.ts';
 import { HealthEntity } from './entities/health.entity.ts';
-import { NextSelectionService } from './services/next-selection.service.ts';
-import { ProjectResolutionService } from './services/project-resolution.service.ts';
+import { ScriptExecutionService } from './services/script-execution.service.ts';
 import { TaskRequestService } from './services/task-request.service.ts';
 import { TaskHttpResponseService } from './services/task-http-response.service.ts';
 import { JsonHttpResponseService } from './core/services/json-http-response.service.ts';
@@ -20,8 +19,7 @@ type Route = {
 
 export function createRoutes(config: AppConfig, shutdown?: AbortSignal): readonly Route[] {
   let taskController: TaskController | undefined;
-  let next: NextSelectionService | undefined;
-  let project: ProjectResolutionService | undefined;
+  let scripts: ScriptExecutionService | undefined;
   return [
     {
       path: '/health', method: 'GET', public: true,
@@ -53,18 +51,11 @@ export function createRoutes(config: AppConfig, shutdown?: AbortSignal): readonl
       },
     },
     {
-      path: '/next', method: 'POST',
-      controller: async (_request, response) => {
-        next ??= new NextSelectionService(config.providerOptions.directory);
-        new JsonHttpResponseService().send(response, 200, await next.select());
-      },
-    },
-    {
-      path: '/project', method: 'POST',
+      path: '/scripts', method: 'POST',
       controller: async (request, response) => {
         const input = await new TaskRequestService().parseTaskInput(request);
-        project ??= new ProjectResolutionService(config.providerOptions.directory);
-        new JsonHttpResponseService().send(response, 200, await project.resolve(input));
+        scripts ??= new ScriptExecutionService(config.providerOptions.directory);
+        new JsonHttpResponseService().send(response, 200, await scripts.execute(input));
       },
     },
   ];

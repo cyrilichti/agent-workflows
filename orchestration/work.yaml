@@ -2,7 +2,7 @@ id: work
 namespace: agent-workflows
 description: |
   This flow processes eligible items **one at a time**. It selects an approved
-  item through the bridge's direct `/next` endpoint, resolves its local Git repository, and runs its plan through `/work`,
+  item through the bridge's `/scripts` endpoint, resolves its local Git repository, and runs its plan through `/work`,
   `/ready`, and `/inspect`. Each completed, empty, or failed cycle waits before
   the next selection. Kill the execution in Kestra to stop the loop; a second
   concurrent execution is rejected.
@@ -10,17 +10,21 @@ description: |
   | Step | Execution |
   | --- | --- |
   | 1. Select | The bridge runs the deterministic selector and returns the oldest eligible `agent-planned` item or reports that none is available. |
-  | 2. Resolve | For a selected item, `/project` returns its local repository path or an explicit unresolved result. |
+  | 2. Resolve | For a selected item, `resolve-local-project-directory.ts` returns its local repository path or an explicit unresolved result. |
   | 3. Deliver | `/work` executes the approved plan and continues through `/ready` and `/inspect`. Readiness gaps and blocking findings return to `/work` before this cycle ends. |
   | 4. Check | Accept completion only when the inspection statuses confirm inspection plus `agent-inspected`. Record incomplete or invalid results as failures. |
   | 5. Wait | `sleep` waits `intervalSeconds` (default `300`), then another selection starts. |
   | 6. Stop | Kill this execution in Kestra to stop the loop. Merge and `/done` remain human decisions. |
 inputs:
+  - id: commandsDirectory
+    type: STRING
+    description: Project-relative command directory; use commands for a source checkout or .agents/commands for an installed project.
+    defaults: commands
   - id: intervalSeconds
     type: STRING
     description: |
       **Delay between cycles**, in whole seconds. Defaults to `300` (five
-      minutes). The next `/next` call starts only after the current cycle and
+      minutes). The next selector call starts only after the current cycle and
       this delay have finished.
     validator: '^[1-9][0-9]*$'
     defaults: "300"
@@ -38,7 +42,7 @@ tasks:
       | --- | --- |
       | 1. Start | Run `start` to select and process at most one item. |
       | 2. Wait | Run `sleep` after the attempt finishes, including when it found no item or failed. |
-      | 3. Repeat | Return to the bridge's `/next` endpoint only after the delay. No cycles overlap. |
+      | 3. Repeat | Return to the selector through `/scripts` only after the delay. No cycles overlap. |
     condition: '{{ false }}'
     checkFrequency:
       interval: PT0.001S
@@ -52,8 +56,8 @@ tasks:
 
           | Step | Execution |
           | --- | --- |
-          | 1. Select | Call the bridge's `/next` endpoint and validate its result. An empty result ends this attempt. |
-          | 2. Resolve | For an item, call `/project` and require a usable repository path. |
+          | 1. Select | Call the selector through `/scripts` and validate its result. An empty result ends this attempt. |
+          | 2. Resolve | For an item, run the resolver through `/scripts` and require a usable repository path. |
           | 3. Deliver | Call `/work` in that repository and classify the inspection result. |
           | 4. Finish | On failure, skip remaining steps and retain the failure in Kestra logs. `sleep` runs before another attempt; the failed step is not retried within this attempt. |
         tasks:
@@ -70,29 +74,32 @@ tasks:
               | 2. Filter | Require `agent-planned` and a waiting or review status. Exclude review items already labeled `agent-inspected`. |
               | 3. Return | A found item returns only `{"name":"…","id":"…","url":"…","list":"…"}`. `list` is the Linear project name or ClickUp list name. No match returns `{"status":"no eligible item"}`; a missing destination or provider failure is an error. |
               | 4. Stop | Selection does not invoke Codex or change the item. `/work` starts delivery for the selected item. |
-            uri: '{{ envs.bridge_url }}/next'
+            uri: '{{ envs.bridge_url }}/scripts'
             method: POST
+            contentType: application/json
+            body: >-
+              {{ {"path": inputs.commandsDirectory ~ "/select-next-item.ts"} | toJson }}
             headers:
               Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-            timeout: PT65S
+            timeout: PT5M
             options:
               timeout:
                 connectTimeout: PT5S
-                readIdleTimeout: PT60S
+                readIdleTimeout: PT4M55S
           - id: has-item
             type: io.kestra.plugin.core.flow.Switch
             description: |
-              This switch validates the direct JSON `/next` response before
+              This switch validates the selector JSON from the `/scripts` response’s `stdout` before
               attempting repository resolution.
 
               | Result | Execution |
               | --- | --- |
               | Item | Nonblank `name`, `id`, `url`, and `list` route to `project`. |
-              | No item | Exactly `{"status":"no eligible item"}` routes to `no-item`; skip `/project` and `/work`. |
+              | No item | Exactly `{"status":"no eligible item"}` routes to `no-item`; skip `resolve-local-project-directory.ts` and `/work`. |
               | Invalid | Any malformed or unexpected response routes to `next-error`. |
             value: >-
               {{ outputs.next.body | toJson | jq('
-                try fromjson catch null
+                try (fromjson | .stdout | fromjson) catch null
                 | if . == {"status":"no eligible item"} then "no-item"
                   elif type == "object" and (try (
                     (.name | type) == "string" and (.name | test("\\S"))
@@ -119,15 +126,16 @@ tasks:
                     | 2. Search | Search configured project directories first, then neighboring repositories and the home directory if needed. Complete the first matching tier, retain all exact matches when present, and otherwise retain prefix matches. |
                     | 3. Choose | For several matches, use the complete item to identify the primary repository, then apply stable tie breaks. |
                     | 4. Return | Return one absolute path, `not found`, or `search incomplete`. Invalid input or a failed search is an error. |
-                  uri: '{{ envs.bridge_url }}/project'
+                  uri: '{{ envs.bridge_url }}/scripts'
                   method: POST
                   contentType: application/json
                   headers:
                     Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
                   body: >-
                     {{ {
-                      "list": fromJson(outputs.next.body).list,
-                      "id": fromJson(outputs.next.body).id
+                      "path": inputs.commandsDirectory ~ "/resolve-local-project-directory.ts",
+                      "args": [fromJson(fromJson(outputs.next.body).stdout).list,
+                        fromJson(fromJson(outputs.next.body).stdout).id]
                     } | toJson }}
                   timeout: PT5M
                   options:
@@ -138,7 +146,7 @@ tasks:
                   type: io.kestra.plugin.core.flow.Switch
                   description: |
                     This switch accepts a verified local repository path or
-                    records why `/project` could not resolve one. It never
+                    records why `resolve-local-project-directory.ts` could not resolve one. It never
                     passes an invalid directory to `/work`.
 
                     | Result | Execution |
@@ -148,7 +156,7 @@ tasks:
                     | Invalid | Any other result routes to `project-error`. |
                   value: >-
                     {{ outputs.project.body | toJson | jq('
-                      try fromjson catch null
+                      try (fromjson | .stdout | fromjson) catch null
                       | if type == "object" and (try (
                           (keys == ["path"]) and (.path | type) == "string" and (.path | test("\\S"))
                         ) catch false) then "project"
@@ -189,8 +197,8 @@ tasks:
                           {{ {
                             "requestId": execution.id ~ "-work-" ~ uuid(),
                             "trace": {"name": "agent-workflows.work.work", "observationName": "work", "tags": ["work"], "sessionId": execution.id},
-                            "prompt": "Execute /work for item " ~ fromJson(outputs.next.body).id ~ ".",
-                            "directory": fromJson(outputs.project.body).path,
+                            "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).stdout).id ~ ".",
+                            "directory": fromJson(fromJson(outputs.project.body).stdout).path,
                             "timeoutMs": 3585000
                           } | toJson }}
                         timeout: PT1H
@@ -285,7 +293,7 @@ tasks:
                         type: io.kestra.plugin.core.execution.Fail
                         description: |
                           This task records an explicit unresolved repository
-                          result from `/project`. `/work` cannot run without a
+                          result from `resolve-local-project-directory.ts`. `/work` cannot run without a
                           verified local path, but the loop continues later.
 
                           | Result | Execution |
@@ -293,12 +301,12 @@ tasks:
                           | `not found` | Report that the local project must be created or configured. |
                           | `search incomplete` | Report that local repository search must be restored. |
                           | After failure | Run `sleep`, then allow another selection. |
-                        errorMessage: "{{ fromJson(outputs.project.body).status == 'not found' ? 'No local project was found for this item. Set up or configure the project before running the flow again.' : 'The local project search did not complete. Restore search availability before running the flow again.' }}"
+                        errorMessage: "{{ fromJson(fromJson(outputs.project.body).stdout).status == 'not found' ? 'No local project was found for this item. Set up or configure the project before running the flow again.' : 'The local project search did not complete. Restore search availability before running the flow again.' }}"
                     error:
                       - id: project-error
                         type: io.kestra.plugin.core.execution.Fail
                         description: |
-                          This task rejects a malformed `/project` response.
+                          This task rejects a malformed `resolve-local-project-directory.ts` response.
                           Only a nonblank `path` or a documented unresolved
                           status can be used to choose the next branch.
 
@@ -306,18 +314,18 @@ tasks:
                           | --- | --- |
                           | 1. Fail | Reject any other response instead of passing an unverified directory to `/work`. |
                           | 2. Continue | Record the error and let the loop reach `sleep`. |
-                        errorMessage: 'Invalid /project response: expected a nonblank string path or a documented unresolved status without a path.'
+                        errorMessage: 'Invalid project script output: expected a nonblank string path or a documented unresolved status without a path.'
               no-item:
                 - id: no-item
                   type: io.kestra.plugin.core.log.Log
                   description: |
-                    This task records that `/next` found no eligible item in
+                    This task records that `select-next-item.ts` found no eligible item in
                     the provider page it inspected. An empty selection is a
                     normal outcome for this cycle.
 
                     | Step | Execution |
                     | --- | --- |
-                    | 1. Skip | Do not call `/project` or `/work`. |
+                    | 1. Skip | Skip repository resolution and `/work`. |
                     | 2. Log | Record the empty selection without treating it as an error. |
                     | 3. Continue | Run `sleep`, then query the provider again. |
                   level: INFO
@@ -326,7 +334,7 @@ tasks:
                 - id: next-error
                   type: io.kestra.plugin.core.execution.Fail
                   description: |
-                    This task rejects a successful `/next` HTTP response whose
+                    This task rejects a successful `/scripts` HTTP response whose selector
                     content is neither a complete item nor the exact
                     `no eligible item` result. HTTP failures are recorded by
                     `next` itself.
@@ -335,15 +343,15 @@ tasks:
                     | --- | --- |
                     | 1. Fail | Record the invalid content as a failed attempt. |
                     | 2. Continue | Run `sleep` before another selection. |
-                  errorMessage: Invalid /next response.
+                  errorMessage: Invalid selection script output.
       - id: sleep
         type: io.kestra.plugin.core.flow.Sleep
         description: |
-          This task waits after each attempt before the loop calls `/next`
+          This task waits after each attempt before the loop runs `select-next-item.ts`
           again. It ensures that selection never overlaps the previous item.
 
           | Step | Execution |
           | --- | --- |
           | 1. Wait | Sleep for `intervalSeconds`, default `300` seconds (five minutes). |
-          | 2. Repeat | After completed work, an empty selection, or a failure, return to `/next` only when this delay finishes. |
+          | 2. Repeat | After completed work, an empty selection, or a failure, return to `select-next-item.ts` only when this delay finishes. |
         duration: "PT{{ inputs.intervalSeconds }}S"

@@ -54,8 +54,12 @@ host or sends the task to the OpenAI API, returns a JSON result to Kestra,
 and sends a trace to Langfuse. The bridge must be running for Kestra to
 reach either provider.
 
-The `work` flow uses `POST /next` to select an item and `POST /project` to
-resolve its local repository. Only a resolved path proceeds to `/work`.
+The `work` flow uses authenticated `POST /scripts` to run the selector and
+project resolver on the host. Kestra parses their `stdout` and proceeds to
+`/work` only with a resolved repository path. Scripts retain the permissions
+of the bridge process; path checks restrict their entrypoint to the configured
+project. See the [script contract](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#project-script-execution)
+for request, output, and execution limits.
 
 ## Start the architecture locally
 
@@ -80,11 +84,12 @@ Then start the bridge **on the host machine**, under your usual user account
 npm start
 ```
 
-The work flow selects items through authenticated `POST /next`, which runs the
+The work flow selects items through authenticated `POST /scripts`, which runs the
 TypeScript selector on the host without an AI call. Configure the selector's
 project, provider CLI, and credentials using
-[Direct item selection](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#direct-item-selection).
-Existing Kestra flows are retained at startup; follow that guide's upgrade
+[Item selection and project resolution](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#item-selection-and-project-resolution).
+Use flow input `commandsDirectory=commands` for a source checkout or
+`.agents/commands` for an installed project. Existing Kestra flows are retained at startup; follow that guide's upgrade
 procedure to install the changed flow.
 
 Keep this process running. Kestra reaches the host bridge through

@@ -90,37 +90,75 @@ Kestra reaches the bridge through `BRIDGE_URL`, which defaults to
 `0.0.0.0` so containers can connect; keep this port accessible only to trusted
 clients. Task requests require the shared token.
 
-## Direct item selection and project resolution
+## Project script execution
 
-Kestra calls authenticated `POST /next` on the host bridge. The bridge runs
-`select-next-item.ts` with its own Node.js 24+ executable and returns the
-selector's JSON without an AI call. Selection has a 60-second execution limit;
-execution failures return HTTP 502 and timeouts return HTTP 504. The flow
-records failed attempts and waits before selecting again.
+Authenticated `POST /scripts` runs any project-relative TypeScript file with
+Node.js 24+, independently of `INFERENCE_ENABLED`. The bridge's route table is
+`GET /health` (public), `POST /` (AI tasks), and `POST /scripts` (scripts).
+Use the same bearer token for both POST routes.
 
-For a selected item, Kestra calls authenticated `POST /project` with the
-item's `list` and `id`. A resolved path starts `/work`; `not found` or
-`search incomplete` records a failed attempt before the next cycle.
+```http
+POST /scripts
+Authorization: Bearer <decoded SECRET_BRIDGE_TOKEN>
+Content-Type: application/json
+
+{"path":"commands/resolve-local-project-directory.ts","args":["Project name","item-id"]}
+```
+
+`path` is a nonblank relative `.ts` path; `args` is an optional array of strings
+(default `[]`). The bridge canonicalizes the configured project and entrypoint,
+requires a regular `.ts` file inside that project, and rejects traversal and
+symlinks leading outside it. It runs Node with the canonical file and separate
+arguments, without shell interpolation, from the canonical project directory.
+The path check limits the chosen entrypoint; the executed script retains the
+bridge process's permissions, environment, and access to files and programs.
+
+Successful execution returns HTTP 200 with `{"stdout":"…","stderr":"…"}`.
+The bridge does not parse or validate script output. Execution is limited to
+285 seconds and 1 MiB of combined stdout/stderr; exceeding either limit kills
+the process group. Errors use `{"error":"<code>"}`:
+
+| HTTP | Code | Meaning |
+| --- | --- | --- |
+| 400 | `invalid_json` | Malformed request JSON. |
+| 400 | `invalid_script_input` | Invalid path or arguments. |
+| 400 | `invalid_script_path` | Missing, outside-project, or ineligible target. |
+| 413 | `body_too_large` | Request body exceeds the bridge limit. |
+| 500 | `script_project_unavailable` | Configured project cannot be resolved. |
+| 502 | `script_failed` | Script failed to start or exited unsuccessfully. |
+| 502 | `script_output_too_large` | Combined output limit exceeded. |
+| 504 | `script_timeout` | Execution deadline exceeded. |
+
+### Item selection and project resolution
+
+The `work` flow calls `/scripts` for `select-next-item.ts` and, for a selected
+item, `resolve-local-project-directory.ts` with the item's `list` and `id` as
+arguments. Kestra parses `stdout` as JSON before applying the item and project
+switches. A resolved path starts `/work`; `not found` or `search incomplete`
+records a failed attempt. Empty selection ends the attempt normally. Malformed
+output or HTTP failure fails the attempt. Every attempt waits before retrying.
 
 Set `CODEX_WORKING_DIRECTORY` to the absolute project directory containing
-`agent-workflows.yaml` and the installed `.agents/commands` and `.agents/providers`
-files. In this source repository, `commands` and `providers` are used directly.
+`agent-workflows.yaml`. Set the flow input `commandsDirectory` to `commands`
+(the default) for this source checkout, or `.agents/commands` for an installed
+project with `.agents/commands` and `.agents/providers` files.
 The provider configured under `item.provider` must have its CLI (`linear` or
 `clickup-cli`) on the bridge process's `PATH`, authenticated under the host user
 running the bridge. CLI credentials and environment variables must be available
-to that process; values parsed from `.env` are not exported to selector children.
+to that process; values parsed from `.env` are not exported to script children.
 See [Providers](./docs/providers.mdx) for provider setup. Restart the bridge after
 changing its configuration.
 
 ### Upgrade an existing Kestra flow
 
-The Compose installer retains existing flows, including local edits. After
-updating this repository and restarting the bridge, stop the running
-`agent-workflows/work` execution in Kestra. Back up its flow YAML, then replace
-its source in the Kestra editor with [orchestration/work.yaml](./orchestration/work.yaml).
-Save the flow, reapply any needed local customizations, and start a new execution.
-Confirm its `next` task calls `/next` and its `project` task calls `/project`;
-both return direct JSON. New installations import this flow automatically.
+The Compose installer retains existing flows, including local edits. Stop the
+running `agent-workflows/work` execution in Kestra and back up its flow YAML.
+Update this repository, restart the bridge, and replace the flow's source in
+the Kestra editor with [orchestration/work.yaml](./orchestration/work.yaml).
+Save it, reapply needed local customizations, and start a new execution with
+`commandsDirectory` set for your installation. Confirm that `next` and `project`
+both call `/scripts` and that their switches parse the response's `stdout`.
+New installations import this flow automatically.
 
 ## Execution behavior
 
