@@ -17,10 +17,14 @@ import { MAX_HTTP_BODY_BYTES } from './config/keys.ts';
 test('route declarations and imports have no startup effects', () => {
   assert.deepEqual(routes.map(({ method, path, controller, action, guard }) =>
     [method, path, controller, action, guard]), [
-    ['GET', '/health', HealthController, 'handle', undefined],
-    ['POST', '/', TaskController, 'handle', tokenGuard],
-    ['POST', '/scripts', ScriptController, 'handle', tokenGuard],
+    ['GET', '/health', HealthController, 'reportHealth', undefined],
+    ['POST', '/', TaskController, 'executeTask', tokenGuard],
+    ['POST', '/scripts', ScriptController, 'executeScript', tokenGuard],
   ]);
+  for (const { controller, action } of routes) {
+    assert.equal(typeof controller.prototype[action], 'function');
+    assert.equal('handle' in controller.prototype, false);
+  }
   execFileSync(process.execPath, ['--input-type=module', '-e', `
     import assert from 'node:assert/strict';
     const before = process.getActiveResourcesInfo();
@@ -81,16 +85,16 @@ test('procedural bridge preserves HTTP contracts and shutdown', { timeout: 30_00
     import { JsonHttpResponseService } from ${JSON.stringify(new URL('./core/services/json-http-response.service.ts', import.meta.url).href)};
     class DeclaredController {
       constructor(request, response) { this.request = request; this.response = response; }
-      async handle() {
+      async executeDeclared() {
         const input = await new TaskRequestService().parseTaskInput(this.request);
         new JsonHttpResponseService().send(this.response, 201, { declared: input });
       }
     }
     routes.push({ method: 'POST', path: '/declared', controller: DeclaredController,
-      action: 'handle', guard: routes[1].guard });
+      action: 'executeDeclared', guard: routes[1].guard });
     class BrokenController { constructor() { throw new Error('private failure'); } }
     routes.push({ method: 'POST', path: '/broken', controller: BrokenController,
-      action: 'handle', guard: routes[1].guard });
+      action: 'executeBroken', guard: routes[1].guard });
   `;
   const child = spawn(process.execPath, [
     '--import', `data:text/javascript,${encodeURIComponent(declaration)}`,
