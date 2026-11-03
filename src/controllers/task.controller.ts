@@ -1,19 +1,22 @@
-import type { TaskControllerOptions } from '../types/http.types.ts';
-import type { HealthEntity } from '../entities/health.entity.ts';
+import type { ServerResponse } from 'node:http';
+import type { TaskService } from '../services/task.service.ts';
+import type { TaskHttpResponseService } from '../services/task-http-response.service.ts';
 import type { TaskResponseEntity } from '../entities/task-response.entity.ts';
 
 export class TaskController {
-  private readonly options: TaskControllerOptions;
+  private readonly taskExecution: Pick<TaskService, 'executeTask'>;
+  private readonly responses: TaskHttpResponseService;
 
-  constructor(options: TaskControllerOptions) {
-    this.options = options;
-  }
-
-  getHealth(): HealthEntity {
-    return this.options.taskExecution.getHealth();
+  constructor(taskExecution: Pick<TaskService, 'executeTask'>, responses: TaskHttpResponseService) {
+    this.taskExecution = taskExecution;
+    this.responses = responses;
   }
 
   postTask(input: unknown): Promise<TaskResponseEntity> {
-    return this.options.taskExecution.executeTask(input);
+    return this.taskExecution.executeTask(input);
+  }
+
+  async handle(input: unknown, response: ServerResponse): Promise<void> {
+    this.responses.sendTask(response, await this.postTask(input));
   }
 }
