@@ -71,3 +71,9 @@ test('deployment environment is passed to tracing configuration', (t) => {
   assert.equal(result.status, 0, result.stderr);
   assert.equal(JSON.parse(result.stdout).langfuse.environment, 'staging');
 });
+
+test('configuration rejects a bridge token shorter than 32 bytes before serving requests', (t) => {
+  const result = readConfig(envFile(t, `SECRET_BRIDGE_TOKEN=${Buffer.from('short').toString('base64')}\n`));
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Configure a bridge token of at least 32 bytes/);
+});

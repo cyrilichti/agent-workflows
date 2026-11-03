@@ -1,15 +1,11 @@
 import assert from 'node:assert/strict';
-import { once } from 'node:events';
 import { mkdtempSync, mkdirSync, rmSync, realpathSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { createBridgeServer } from '../server.ts';
-import { bridgeConfig } from '../fixtures/bridge-config.ts';
+import { startBridge, headers } from '../fixtures/start-bridge.ts';
 import { ScriptExecutionService } from './script-execution.service.ts';
 
-const token = 'test-only-token-'.repeat(4);
-const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
 
 test('scripts HTTP contract executes arbitrary project files and rejects invalid entrypoints', async (t) => {
   const root = mkdtempSync(join(tmpdir(), 'scripts-'));
@@ -27,15 +23,8 @@ test('scripts HTTP contract executes arbitrary project files and rejects invalid
   symlinkSync(join(directory, 'other.js'), join(directory, 'wrong.ts'));
   symlinkSync(join(directory, 'custom.ts'), join(directory, 'alias.ts'));
   symlinkSync(directory, join(root, 'project-link'));
-  const server = createBridgeServer({ ...bridgeConfig,
-    providerOptions: { ...bridgeConfig.providerOptions, directory: join(root, 'project-link') },
-  });
-  t.after(() => { server.closeAllConnections(); server.close(); });
-  server.listen(0, '127.0.0.1');
-  await once(server, 'listening');
-  const address = server.address();
-  assert.ok(address && typeof address !== 'string');
-  const url = `http://127.0.0.1:${address.port}/scripts`;
+  const bridge = await startBridge(t, 'real', false, join(root, 'project-link'));
+  const url = `${bridge.url}/scripts`;
   const post = (input: unknown) => fetch(url, { method: 'POST', headers, body: JSON.stringify(input) });
   assert.equal((await fetch(url, { method: 'POST', body: '{}' })).status, 401);
   const malformed = await fetch(url, { method: 'POST', headers, body: '{' });

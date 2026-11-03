@@ -1,47 +1,23 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { once } from 'node:events';
-import { createBridgeServer } from './server.ts';
-import { createRoutes } from './routes.ts';
-import { bridgeConfig } from './fixtures/bridge-config.ts';
-import { AiProviderService } from './services/ai-provider.service.ts';
-import { TaskService } from './services/task.service.ts';
-import { ScriptExecutionService } from './services/script-execution.service.ts';
+import { execFileSync } from 'node:child_process';
+import { routes } from './routes.ts';
+import { HealthController } from './controllers/health.controller.ts';
 import { TaskController } from './controllers/task.controller.ts';
-import { HttpError } from './core/errors/http.error.ts';
-
-const token = 'test-only-token-'.repeat(4);
-const headers = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+import { ScriptController } from './controllers/script.controller.ts';
+import { tokenGuard } from './guards/token.guard.ts';
+import { startBridge, headers } from './fixtures/start-bridge.ts';
 
 // Importing the table and starting the server must not resolve a controller.
 test('declared routes resolve only the selected controller after authorization and parsing', async (t) => {
-  const config = { ...bridgeConfig, execution: { ...bridgeConfig.execution, enabled: false } };
-  assert.deepEqual(createRoutes(config).map(({ method, path }) => [method, path]), [
-    ['GET', '/health'], ['POST', '/'], ['POST', '/scripts'],
+  assert.deepEqual(routes.map(({ method, path, controller, action, guard }) =>
+    [method, path, controller, action, guard]), [
+    ['GET', '/health', HealthController, 'handle', undefined],
+    ['POST', '/', TaskController, 'handle', tokenGuard],
+    ['POST', '/scripts', ScriptController, 'handle', tokenGuard],
   ]);
-  const calls: string[] = [];
-  const inputs: unknown[] = [];
-  const provider = t.mock.method(AiProviderService.prototype, 'create', () => {
-    calls.push('task');
-    return { generate: async () => assert.fail('Unexpected inference') };
-  });
-  t.mock.method(TaskController.prototype, 'postTask', async () => { throw new Error('private failure'); });
-  t.mock.method(ScriptExecutionService.prototype, 'execute', async (input: unknown) => {
-    calls.push('scripts');
-    inputs.push(input);
-    throw new HttpError(400, 'invalid_script_input');
-  });
-  const shutdown = new AbortController();
-  const cancel = t.mock.method(TaskService.prototype, 'cancelActiveTask');
-  const server = createBridgeServer(config, shutdown.signal);
-  t.after(() => { server.closeAllConnections(); server.close(); });
-  server.listen(0, '127.0.0.1');
-  await once(server, 'listening');
-  assert.deepEqual(calls, []);
-  const address = server.address();
-  assert.ok(address && typeof address !== 'string');
-  const url = `http://127.0.0.1:${address.port}`;
-
+  const { url, events, stop } = await startBridge(t, 'throw', false);
+  assert.deepEqual(events, []);
   for (const [method, path] of [
     ['GET', '/missing'], ['POST', '/'], ['POST', '/scripts'],
     ['POST', '/health'], ['GET', '/health?probe=1'],
@@ -58,35 +34,72 @@ test('declared routes resolve only the selected controller after authorization a
     assert.equal(response.status, 404, `${method} ${path}`);
     assert.deepEqual(await response.json(), { error: 'not_found' });
   }
-  assert.deepEqual(calls, []);
+  assert.deepEqual(events, []);
 
   const health = await fetch(`${url}/health`);
   assert.equal(health.status, 200);
   assert.deepEqual(await health.json(), { status: 'ok', provider: 'codex', inferenceEnabled: false });
-  assert.deepEqual(calls, []);
+  assert.deepEqual(events.splice(0), [{ event: 'controller', name: 'HealthController' }]);
 
   for (const path of ['/', '/scripts']) {
     const invalid = await fetch(`${url}${path}`, { method: 'POST', headers, body: '{' });
     assert.equal(invalid.status, 400);
     assert.deepEqual(await invalid.json(), { error: 'invalid_json' });
   }
-  assert.deepEqual(calls, []);
+  assert.deepEqual(events, []);
 
   const scripts = await fetch(`${url}/scripts`, {
     method: 'POST', headers, body: JSON.stringify({ path: 'custom.ts', args: ['value'] }),
   });
   assert.equal(scripts.status, 400);
   assert.deepEqual(await scripts.json(), { error: 'invalid_script_input' });
-  assert.deepEqual(inputs, [{ path: 'custom.ts', args: ['value'] }]);
-  assert.deepEqual(calls, ['scripts']);
+  assert.deepEqual(events.splice(0), [
+    { event: 'controller', name: 'ScriptController' },
+    { event: 'scripts', input: { path: 'custom.ts', args: ['value'] }, reused: false },
+  ]);
+  await fetch(`${url}/scripts`, { method: 'POST', headers, body: '{}' });
+  assert.equal(events.at(-1)?.reused, true);
+  events.length = 0;
 
   const task = await fetch(url, { method: 'POST', headers, body: '{}' });
   assert.equal(task.status, 500);
   assert.deepEqual(await task.json(), { error: 'internal_error', message: 'Local service failed.' });
-  assert.deepEqual(calls, ['scripts', 'task']);
+  assert.deepEqual(events, [
+    { event: 'provider' }, { event: 'controller', name: 'TaskController' }, { event: 'task', input: {} },
+  ]);
   const repeated = await fetch(url, { method: 'POST', headers, body: '{}' });
   assert.equal(repeated.status, 500);
-  assert.equal(provider.mock.callCount(), 1, 'Task dependencies are reused');
-  shutdown.abort();
-  assert.equal(cancel.mock.callCount(), 1, 'Shutdown cancels the initialized task service');
+  assert.equal(events.filter(({ event }) => event === 'provider').length, 1, 'Task dependencies are reused');
+  await stop();
+  assert.equal(events.filter(({ event }) => event === 'cancel').length, 1, 'Shutdown cancels the initialized task service');
+});
+
+test('imports create no controller, service, server, or configuration dependency', () => {
+  const source = `
+    import { registerHooks } from 'node:module';
+    import assert from 'node:assert/strict';
+    registerHooks({ load(url, context, next) {
+      if (url.endsWith('/app.config.ts')) throw new Error('Unexpected configuration load');
+      const result = next(url, context);
+      if (/\\/(controllers|services)\\/.*\\.ts$/.test(url) && result.source) {
+        return { ...result, source: String(result.source).replace(/constructor\\s*\\([^)]*\\)\\s*{/g,
+          'constructor(...args) { throw new Error("Unexpected construction");') };
+      }
+      return result;
+    }});
+    const before = process.getActiveResourcesInfo();
+    const { routes } = await import('./src/routes.ts');
+    await import('./src/server.ts');
+    assert.equal(routes.length, 3);
+    assert.deepEqual(process.getActiveResourcesInfo(), before);
+  `;
+  execFileSync(process.execPath, ['--input-type=module', '-e', source], {
+    cwd: new URL('..', import.meta.url), timeout: 5_000,
+  });
+});
+
+test('shutdown without a task does not create a task service', async (t) => {
+  const { events, stop } = await startBridge(t);
+  await stop();
+  assert.deepEqual(events, []);
 });

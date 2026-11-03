@@ -25,6 +25,8 @@ if (import.meta.main) {
   const requests = new TaskRequestService();
   let taskExecution: TaskService | undefined;
   let scripts: ScriptExecutionService | undefined;
+  const shutdown = new AbortController();
+  shutdown.signal.addEventListener('abort', () => taskExecution?.cancelActiveTask(), { once: true });
   const httpServer = createServer(async (request, response) => {
     try {
       const route = routes.find((route) => route.method === request.method && route.path === request.url);
@@ -75,7 +77,7 @@ if (import.meta.main) {
   });
   for (const event of ['SIGTERM', 'SIGINT']) {
     process.once(event, () => {
-      taskExecution?.cancelActiveTask();
+      shutdown.abort();
       httpServer.close();
     });
   }
