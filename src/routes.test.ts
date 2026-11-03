@@ -17,10 +17,14 @@ import { MAX_HTTP_BODY_BYTES } from './config/keys.ts';
 test('route declarations and imports have no startup effects', () => {
   assert.deepEqual(routes.map(({ method, path, controller, action, guard }) =>
     [method, path, controller, action, guard]), [
-    ['GET', '/health', HealthController, 'handle', undefined],
-    ['POST', '/', TaskController, 'handle', tokenGuard],
-    ['POST', '/scripts', ScriptController, 'handle', tokenGuard],
+    ['GET', '/health', HealthController, 'reportHealth', undefined],
+    ['POST', '/', TaskController, 'executeTask', tokenGuard],
+    ['POST', '/scripts', ScriptController, 'executeScript', tokenGuard],
   ]);
+  for (const { controller, action } of routes) {
+    assert.equal(typeof controller.prototype[action], 'function');
+    assert.equal('handle' in controller.prototype, false);
+  }
   execFileSync(process.execPath, ['--input-type=module', '-e', `
     import assert from 'node:assert/strict';
     const before = process.getActiveResourcesInfo();
@@ -81,16 +85,21 @@ test('procedural bridge preserves HTTP contracts and shutdown', { timeout: 30_00
     import { JsonHttpResponseService } from ${JSON.stringify(new URL('./core/services/json-http-response.service.ts', import.meta.url).href)};
     class DeclaredController {
       constructor(request, response) { this.request = request; this.response = response; }
-      async handle() {
+      async executeDeclared() {
         const input = await new TaskRequestService().parseTaskInput(this.request);
         new JsonHttpResponseService().send(this.response, 201, { declared: input });
       }
     }
     routes.push({ method: 'POST', path: '/declared', controller: DeclaredController,
-      action: 'handle', guard: routes[1].guard });
+      action: 'executeDeclared', guard: routes[1].guard });
     class BrokenController { constructor() { throw new Error('private failure'); } }
     routes.push({ method: 'POST', path: '/broken', controller: BrokenController,
-      action: 'handle', guard: routes[1].guard });
+      action: 'executeBroken', guard: routes[1].guard });
+    class InvalidController { executeInvalid = 'not callable'; }
+    for (const [path, action] of [['/missing-action', 'executeMissing'], ['/invalid-action', 'executeInvalid']]) {
+      routes.push({ method: 'POST', path, controller: InvalidController,
+        action, guard: routes[1].guard });
+    }
   `;
   const child = spawn(process.execPath, [
     '--import', `data:text/javascript,${encodeURIComponent(declaration)}`,
@@ -115,7 +124,7 @@ test('procedural bridge preserves HTTP contracts and shutdown', { timeout: 30_00
     const health = await fetch(`${url}/health`);
     assert.equal(health.status, 200);
     assert.deepEqual(await health.json(), { status: 'ok', provider: 'codex', inferenceEnabled: true });
-    for (const path of ['/', '/scripts', '/missing', '/declared', '/broken', '/health?probe=1']) {
+    for (const path of ['/', '/scripts', '/missing', '/declared', '/broken', '/missing-action', '/invalid-action', '/health?probe=1']) {
       const denied = await fetch(`${url}${path}`, { method: 'POST', body: '{' });
       assert.equal(denied.status, 401, path);
       assert.deepEqual(await denied.json(), { error: 'unauthorized' });
@@ -131,9 +140,11 @@ test('procedural bridge preserves HTTP contracts and shutdown', { timeout: 30_00
     const declared = await fetch(`${url}/declared`, { method: 'POST', headers, body: '{"value":"from route"}' });
     assert.equal(declared.status, 201);
     assert.deepEqual(await declared.json(), { declared: { value: 'from route' } });
-    const broken = await fetch(`${url}/broken`, { method: 'POST', headers, body: '{}' });
-    assert.equal(broken.status, 500);
-    assert.deepEqual(await broken.json(), { error: 'internal_error', message: 'Local service failed.' });
+    for (const path of ['/broken', '/missing-action', '/invalid-action']) {
+      const broken = await fetch(`${url}${path}`, { method: 'POST', headers, body: '{}' });
+      assert.equal(broken.status, 500, path);
+      assert.deepEqual(await broken.json(), { error: 'internal_error', message: 'Local service failed.' });
+    }
   });
 
   await t.test('tasks preserve text, parsing errors, body limits and trace outcomes', async () => {

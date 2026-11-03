@@ -28,7 +28,11 @@ if (import.meta.main) {
         return;
       }
       const controller = new route.controller(request, response, appConfig, shutdown.signal);
-      await controller[route.action]();
+      const action = (controller as Record<string, unknown>)[route.action];
+      if (typeof action !== 'function') {
+        throw new TypeError(`Controller action ${route.action} is not callable.`);
+      }
+      await action.call(controller);
     } catch (error) {
       responses.sendError(response, error);
     }

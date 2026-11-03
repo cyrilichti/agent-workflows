@@ -23,7 +23,7 @@ export class ScriptController {
     this.scripts = scripts;
   }
 
-  async handle(): Promise<void> {
+  async executeScript(): Promise<void> {
     const input = await this.requests.parseTaskInput(this.request);
     this.responses.send(this.response, 200, await this.scripts.execute(input));
   }

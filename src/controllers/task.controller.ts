@@ -36,7 +36,7 @@ export class TaskController {
     this.taskExecution = execution;
   }
 
-  async handle(): Promise<void> {
+  async executeTask(): Promise<void> {
     const input = await this.requests.parseTaskInput(this.request);
     this.responses.sendTask(this.response, await this.taskExecution.executeTask(input));
   }

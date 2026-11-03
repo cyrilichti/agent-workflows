@@ -8,15 +8,13 @@ import type { AppConfig } from './types/app-config.types.ts';
 export type Route = {
   method: 'GET' | 'POST';
   path: string;
-  controller: new (request: IncomingMessage, response: ServerResponse, config: AppConfig, shutdown: AbortSignal) => {
-    handle(): void | Promise<void>;
-  };
-  action: 'handle';
+  controller: new (request: IncomingMessage, response: ServerResponse, config: AppConfig, shutdown: AbortSignal) => object;
+  action: string;
   guard?: (request: IncomingMessage, config: AppConfig) => boolean | Promise<boolean>;
 };
 
 export const routes: readonly Route[] = [
-  { method: 'GET', path: '/health', controller: HealthController, action: 'handle' },
-  { method: 'POST', path: '/', controller: TaskController, action: 'handle', guard: tokenGuard },
-  { method: 'POST', path: '/scripts', controller: ScriptController, action: 'handle', guard: tokenGuard },
+  { method: 'GET', path: '/health', controller: HealthController, action: 'reportHealth' },
+  { method: 'POST', path: '/', controller: TaskController, action: 'executeTask', guard: tokenGuard },
+  { method: 'POST', path: '/scripts', controller: ScriptController, action: 'executeScript', guard: tokenGuard },
 ];

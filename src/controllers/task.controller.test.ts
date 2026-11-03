@@ -34,9 +34,9 @@ test('controllers own dependencies, reuse them per server, and cancel only initi
   assert.equal(cancel.mock.callCount(), 0);
   for (const signal of [shutdown.signal, shutdown.signal, other.signal]) {
     const taskRequest = request();
-    await assert.rejects(new TaskController(taskRequest, new ServerResponse(taskRequest), bridgeConfig, signal).handle(), failure);
+    await assert.rejects(new TaskController(taskRequest, new ServerResponse(taskRequest), bridgeConfig, signal).executeTask(), failure);
     const scriptRequest = request();
-    await assert.rejects(new ScriptController(scriptRequest, new ServerResponse(scriptRequest), bridgeConfig, signal).handle(), failure);
+    await assert.rejects(new ScriptController(scriptRequest, new ServerResponse(scriptRequest), bridgeConfig, signal).executeScript(), failure);
   }
   assert.equal(provider.mock.callCount(), 2);
   for (const mock of [tasks.mock, scripts.mock]) {
