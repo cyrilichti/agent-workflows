@@ -1,14 +1,15 @@
 import type { ServerResponse } from 'node:http';
 import type { ScriptExecutionService } from '../services/script-execution.service.ts';
 import type { JsonHttpResponseService } from '../core/services/json-http-response.service.ts';
+import type { ControllerServices } from '../services/controller-services.service.ts';
 
 export class ScriptController {
   private readonly scripts: ScriptExecutionService;
   private readonly responses: JsonHttpResponseService;
 
-  constructor(scripts: ScriptExecutionService, responses: JsonHttpResponseService) {
-    this.scripts = scripts;
-    this.responses = responses;
+  constructor(services: ControllerServices) {
+    this.scripts = services.scripts;
+    this.responses = services.json;
   }
 
   async handle(input: unknown, response: ServerResponse): Promise<void> {

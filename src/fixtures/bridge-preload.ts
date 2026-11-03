@@ -1,4 +1,6 @@
 import type { TaskResponse } from '../types/task.types.ts';
+import type { ServerResponse } from 'node:http';
+import type { Route } from '../routes.ts';
 import { registerHooks } from 'node:module';
 
 // Observe construction while running the actual entry point in a child process.
@@ -26,6 +28,20 @@ const { TaskResponseEntity } = await import('../entities/task-response.entity.ts
 const { TaskResultEntity } = await import('../entities/task-result.entity.ts');
 const { TraceService } = await import('../services/trace.service.ts');
 const { HttpError } = await import('../core/errors/http.error.ts');
+
+if (process.env.BRIDGE_TEST_MODE === 'declared-controller') {
+  const { routes } = await import('../routes.ts');
+  class DeclaredController {
+    constructor() { process.send!({ event: 'controller', name: 'DeclaredController' }); }
+    handle(input: unknown, response: ServerResponse) {
+      response.writeHead(201, { 'Content-Type': 'application/json' });
+      response.end(JSON.stringify({ declared: input }));
+    }
+  }
+  // Change only the table: the production server must execute the declared class.
+  (routes as Route[]).push({ method: 'POST', path: '/declared', controller: DeclaredController,
+    action: 'handle', guard: routes[1]!.guard });
+}
 
 AiProviderService.prototype.create = () => {
   process.send!({ event: 'provider' });

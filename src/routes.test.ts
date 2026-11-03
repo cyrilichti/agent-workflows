@@ -103,3 +103,16 @@ test('shutdown without a task does not create a task service', async (t) => {
   await stop();
   assert.deepEqual(events, []);
 });
+
+test('server executes a controller added only to the route table after its guard', async (t) => {
+  const { url, events } = await startBridge(t, 'declared-controller');
+  const denied = await fetch(`${url}/declared`, { method: 'POST', body: '{}' });
+  assert.equal(denied.status, 401);
+  assert.deepEqual(events, []);
+  const response = await fetch(`${url}/declared`, {
+    method: 'POST', headers, body: JSON.stringify({ value: 'from route' }),
+  });
+  assert.equal(response.status, 201);
+  assert.deepEqual(await response.json(), { declared: { value: 'from route' } });
+  assert.deepEqual(events, [{ event: 'controller', name: 'DeclaredController' }]);
+});
