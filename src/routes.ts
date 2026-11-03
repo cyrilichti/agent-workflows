@@ -5,19 +5,13 @@ import { TaskController } from './controllers/task.controller.ts';
 import { tokenGuard } from './guards/token.guard.ts';
 import type { AppConfig } from './types/app-config.types.ts';
 
-type ControllerAction = 'reportHealth' | 'executeTask' | 'executeScript';
-
 export type Route = {
-  [Action in ControllerAction]: {
-    method: 'GET' | 'POST';
-    path: string;
-    controller: new (request: IncomingMessage, response: ServerResponse, config: AppConfig, shutdown: AbortSignal) => {
-      [Key in Action]: () => void | Promise<void>;
-    };
-    action: Action;
-    guard?: (request: IncomingMessage, config: AppConfig) => boolean | Promise<boolean>;
-  };
-}[ControllerAction];
+  method: 'GET' | 'POST';
+  path: string;
+  controller: new (request: IncomingMessage, response: ServerResponse, config: AppConfig, shutdown: AbortSignal) => object;
+  action: string;
+  guard?: (request: IncomingMessage, config: AppConfig) => boolean | Promise<boolean>;
+};
 
 export const routes: readonly Route[] = [
   { method: 'GET', path: '/health', controller: HealthController, action: 'reportHealth' },

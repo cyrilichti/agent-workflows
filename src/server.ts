@@ -28,7 +28,7 @@ if (import.meta.main) {
         return;
       }
       const controller = new route.controller(request, response, appConfig, shutdown.signal) as Record<
-        typeof route.action, () => void | Promise<void>
+        string, () => void | Promise<void>
       >;
       await controller[route.action]();
     } catch (error) {
