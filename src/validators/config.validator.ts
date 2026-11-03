@@ -1,6 +1,7 @@
 import { MAX_TIMEOUT_MS } from '../config/keys.ts';
 import type { AppConfig } from '../types/app-config.types.ts';
 import type { Validator } from '../types/validator.types.ts';
+import { SecurityService } from '../core/services/security.service.ts';
 import { isRecord } from '../helper.ts';
 
 export class ConfigValidator implements Validator<AppConfig> {
@@ -23,6 +24,7 @@ export class ConfigValidator implements Validator<AppConfig> {
     for (const [name, setting] of Object.entries(required)) {
       if (!setting) throw new Error(`Missing configuration: ${name}. Set it in .env.`);
     }
+    new SecurityService(http.token as string);
     const { timeoutMs } = execution;
     if (typeof timeoutMs !== 'number' || !Number.isInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > MAX_TIMEOUT_MS) {
       throw new Error(`REQUEST_TIMEOUT_MS must be 1–${MAX_TIMEOUT_MS}.`);
