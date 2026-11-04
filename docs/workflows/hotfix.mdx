@@ -1,0 +1,45 @@
+---
+title: /hotfix
+description: Turn an urgent bug report into a concise item and continue to delivery.
+---
+
+Invoke `/hotfix` or `$hotfix` with an urgent bug report. The workflow drafts
+one short item, saves it after your confirmation, and passes its official
+context to [`/pick`](/agent-workflows/workflows/pick/).
+
+```text
+/hotfix Checkout returns 500 after payment confirmation. Customers cannot
+complete orders. A successful payment should create one order and show its
+confirmation. Verify by completing checkout and checking that one order exists.
+```
+
+The item includes the symptom, impact, expected result, and verification when
+known. A sufficiently precise report goes directly to a draft. Only missing
+information essential to identifying the failure or intended correction
+triggers a focused question. The workflow does not inspect code to fill gaps.
+
+## From report to delivery
+
+1. Resolve the destination through the configured Linear or ClickUp provider.
+2. Draft the item from your report and confirm its creation.
+3. Save it, then apply `agent-shaped` and the `hotfix` tracking label.
+4. Read the complete official item and check its eligibility for `/pick`.
+5. Continue to `/pick`, where you approve the plan before implementation and
+   the `/work → /ready → /inspect` delivery loop.
+
+If `agent-shaped` fails, the workflow reports the saved item and stops. It
+also stops when the independent read cannot confirm an open item with
+`agent-shaped` and without `agent-planned`.
+
+A failed `hotfix` label operation is reported and allows an otherwise eligible
+handoff. Linear can create a missing label. A missing ClickUp tag is reported
+as `label_missing`; it must be configured in ClickUp to use it for tracking.
+
+## Choosing an entry point
+
+Use [`/write`](/agent-workflows/workflows/write/) for general item creation or
+reformulation with qualification and revision loops. Use `/hotfix` to frame an
+urgent bug report with only essential questions and move directly into
+planning. Use `/pick` when an eligible item already exists.
+
+`/hotfix` is an explicit agent entry point and is not part of Kestra orchestration.
