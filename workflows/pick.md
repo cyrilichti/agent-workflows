@@ -15,7 +15,8 @@ cat ../rules/default-language.md ../rules/skill-activation.md ../rules/inclusive
 
 | Input | Description |
 | --- | --- |
-| `item` | Optional official item ID, native URL, title, or search phrase |
+| `item` | Optional complete official item context, item ID, native URL, title, or search phrase |
+| `provider` | Required with complete official item context from a caller |
 
 When no item is supplied, ask for an item ID, native URL, title, or search
 phrase before resolving it.
@@ -25,6 +26,9 @@ phrase before resolving it.
 ## Steps
 
 ### 1. Resolve the Item
+
+When a caller supplies the provider and complete official item context, use
+them as the resolved context and continue to Step 2.
 
 Run from this file's directory. For an ID or native URL:
 
