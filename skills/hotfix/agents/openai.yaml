@@ -1,0 +1,6 @@
+interface:
+  display_name: "Hotfix"
+  short_description: "Create an urgent bug item and start delivery"
+  default_prompt: "Use $hotfix to frame this urgent bug and continue to delivery."
+policy:
+  allow_implicit_invocation: false

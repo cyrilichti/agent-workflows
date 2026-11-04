@@ -15,7 +15,7 @@ cat ../rules/default-language.md ../rules/skill-activation.md ../rules/inclusive
 
 | Input | Description |
 | --- | --- |
-| `item` | Optional official item ID, native URL, title, or search phrase |
+| `item` | Optional item ID, native URL, title, or search phrase |
 
 When no item is supplied, ask for an item ID, native URL, title, or search
 phrase before resolving it.

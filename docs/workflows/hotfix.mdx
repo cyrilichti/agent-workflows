@@ -1,0 +1,81 @@
+---
+title: /hotfix
+description: Turn an urgent bug report into a concise item and start delivery.
+---
+
+`/hotfix` turns an urgent bug report into a short work item. After you confirm
+its creation, it sends the item to `/pick` for planning and delivery.
+
+## How `/hotfix` starts delivery
+
+<div class="write-flow" role="group" aria-label="The hotfix workflow resolves a destination, drafts a concise item from the report, asks the human to confirm it, saves and labels it, then sends its ID to pick for planning and delivery.">
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>01 · Assisted</small>
+    <strong>Resolve destination</strong>
+    <span>Find the configured provider and target for the new item.</span>
+  </div>
+
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
+
+  <div class="write-flow__step write-flow__step--focus">
+    <small>02 · Assisted</small>
+    <strong>Draft one item</strong>
+    <span>Use the report directly; ask only for information essential to the correction.</span>
+  </div>
+
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
+
+  <div class="write-flow__step write-flow__step--human">
+    <small>Human</small>
+    <strong>Start delivery</strong>
+    <span>Confirm the item or correct its draft.</span>
+  </div>
+
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
+
+  <div class="write-flow__step write-flow__step--assisted">
+    <small>03 · Workflow</small>
+    <strong>Save and label</strong>
+    <span>Create the item, apply <code>agent-shaped</code>, and add <code>hotfix</code> for tracking.</span>
+  </div>
+
+  <span class="write-flow__connector" aria-hidden="true">↓</span>
+
+  <a class="write-flow__step write-flow__step--workflow write-flow__step--focus" href="/agent-workflows/workflows/pick/">
+    <small>Workflow</small>
+    <strong>/pick</strong>
+    <span>Resolve the saved ID, approve the plan, and start the delivery loop.</span>
+  </a>
+</div>
+
+## What `/hotfix` does
+
+<table class="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Resolve</th>
+      <td>Find the destination in the configured Linear or ClickUp provider.</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <th scope="row">Draft</th>
+      <td>Describe the symptom, impact, expected result, and verification when known. Ask one focused question only if the failure or intended correction is unclear. Do not inspect code to fill gaps.</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <th scope="row">Confirm</th>
+      <td>Present the short item and wait for your decision to create it and start delivery.</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <th scope="row">Save</th>
+      <td>Create the item and require <code>agent-shaped</code> before continuing. Report a failed <code>hotfix</code> label without blocking delivery.</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <th scope="row">Continue</th>
+      <td>Pass the saved item ID to <code>/pick</code>, which checks eligibility and requests plan approval before <code>/work → /ready → /inspect</code>.</td>
+    </tr>
+  </tbody>
+</table>

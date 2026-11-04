@@ -113,7 +113,7 @@ Choose a work tracker and a code host. Orchestration also needs an AI provider.
 - [x] Use hybrid agent workflows that combine agent instructions with programmatic steps.
 - [x] Reduce token use by limiting the context reinjected after each command.
 - Adopt OpenTelemetry and enrich traces.
-- Add a hotfix workflow.
+- [x] Add a hotfix workflow.
 
 ## Contribute
 
