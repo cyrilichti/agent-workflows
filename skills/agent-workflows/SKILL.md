@@ -129,6 +129,7 @@ producing the current equivalent of:
 !.agents/skills/next/
 !.agents/skills/plan/
 !.agents/skills/write/
+!.agents/skills/hotfix/
 !.agents/skills/refine/
 !.agents/skills/work/
 !.agents/skills/ready/
