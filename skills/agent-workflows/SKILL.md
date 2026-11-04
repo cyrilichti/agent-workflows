@@ -28,7 +28,6 @@ cat ../../rules/default-language.md ../../rules/git-authorization.md ../../rules
   ```text
   agents
   commands
-  data
   goals
   providers
   rules
