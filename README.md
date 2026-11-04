@@ -112,7 +112,6 @@ Choose a work tracker and a code host. Orchestration also needs an AI provider.
 - [x] Trace the bridge's AI calls in Langfuse.
 - [x] Use hybrid agent workflows that combine agent instructions with programmatic steps.
 - [x] Reduce token use by limiting the context reinjected after each command.
-- Adopt OpenTelemetry and enrich traces.
 - [x] Add a hotfix workflow.
 
 ## Contribute
