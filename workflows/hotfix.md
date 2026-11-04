@@ -86,25 +86,31 @@ JSON
 On failure, report `stage` and `reason`, then stop. On `saved`, retain the
 save result and continue with the saved `item_id`.
 
-### 4. Prepare the Handoff
+### 4. Apply Labels
 
-Run from this file's directory:
+Run from this file's directory for the required label:
 
 ```sh
-node ../commands/apply-hotfix-labels.ts "<saved item ID>"
+node ../commands/apply-item-label.ts <<'JSON'
+{"item_id":"<saved item ID>","label":"agent-shaped"}
+JSON
 ```
 
-The command applies `agent-shaped` and `hotfix` through the existing label
-operation. Linear can create a missing label; ClickUp reports a missing tag as
-`label_missing`. `/pick` resolves the saved item and checks its eligibility.
+Require `applied: true`. On failure, report the saved item and returned
+`reason` and `stage` when available, then stop without invoking `/pick`.
 
-Report the saved item with its link when available and both label operation
-results. Report any failed `hotfix` operation with its reason, including when
-the command returns `prepared`; it does not block the handoff. A successful
-save remains successful when subsequent operations fail.
+Then run the same command for the tracking label:
 
-On `failed`, report `stage` and `reason`, then stop without invoking `/pick`.
-Only `prepared` continues. Pass the saved item ID to `/pick`.
+```sh
+node ../commands/apply-item-label.ts <<'JSON'
+{"item_id":"<saved item ID>","label":"hotfix"}
+JSON
+```
+
+Report the saved item with its link when available and both label results. If
+`hotfix` fails, report the returned `reason` and `stage` when available, but
+continue to `/pick`. Linear can create a missing label; ClickUp reports a
+missing tag as `label_missing`.
 
 ### 5. Continue to Pick
 
@@ -114,4 +120,5 @@ Follow `./pick.md` with:
 item: saved item ID
 ```
 
-`/pick` owns plan approval and continuation through `/work → /ready → /inspect`.
+`/pick` resolves the saved item, checks eligibility, and owns plan approval
+and continuation through `/work → /ready → /inspect`.
