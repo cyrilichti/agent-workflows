@@ -109,8 +109,7 @@ JSON
 
 Report the saved item with its link when available and both label results. If
 `hotfix` fails, report the returned `reason` and `stage` when available, but
-continue to `/pick`. Linear can create a missing label; ClickUp reports a
-missing tag as `label_missing`.
+continue to `/pick`.
 
 ### 5. Continue to Pick
 
@@ -119,6 +118,3 @@ Follow `./pick.md` with:
 ```text
 item: saved item ID
 ```
-
-`/pick` resolves the saved item, checks eligibility, and owns plan approval
-and continuation through `/work → /ready → /inspect`.
