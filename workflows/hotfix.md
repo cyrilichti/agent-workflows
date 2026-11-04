@@ -91,13 +91,12 @@ save result and continue with the saved `item_id`.
 Run from this file's directory:
 
 ```sh
-node ../commands/prepare-hotfix-item.ts "<saved item ID>"
+node ../commands/apply-hotfix-labels.ts "<saved item ID>"
 ```
 
 The command applies `agent-shaped` and `hotfix` through the existing label
-operation, then independently reads the complete official item and checks
-`/pick` eligibility. Linear can create a missing label; ClickUp reports a
-missing tag as `label_missing`.
+operation. Linear can create a missing label; ClickUp reports a missing tag as
+`label_missing`. `/pick` resolves the saved item and checks its eligibility.
 
 Report the saved item with its link when available and both label operation
 results. Report any failed `hotfix` operation with its reason, including when
@@ -105,16 +104,14 @@ the command returns `prepared`; it does not block the handoff. A successful
 save remains successful when subsequent operations fail.
 
 On `failed`, report `stage` and `reason`, then stop without invoking `/pick`.
-Only `prepared` continues. Use the returned official item as the handoff
-context; do not construct context from the proposal or save response.
+Only `prepared` continues. Pass the saved item ID to `/pick`.
 
 ### 5. Continue to Pick
 
 Follow `./pick.md` with:
 
 ```text
-provider: prepared provider
-item: complete prepared official item context
+item: saved item ID
 ```
 
 `/pick` owns plan approval and continuation through `/work → /ready → /inspect`.

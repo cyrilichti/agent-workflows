@@ -7,9 +7,9 @@ One confirmed, concise item captures the urgent bug report and continues to
 
 ## Terminal Outcomes
 
-- Continued: the saved official item is open, has `agent-shaped` and no
-  `agent-planned`, and its complete context is passed to `/pick`. The `hotfix`
-  label result is reported; its failure does not block this handoff.
-- Saved but stopped: report the saved item and the exact failed operation or
-  unmet eligibility condition; do not invoke `/pick`.
+- Continued: `agent-shaped` application is confirmed, the `hotfix` label result
+  is reported, and the saved item ID is passed to `/pick` for official resolution
+  and eligibility checking. A failed `hotfix` label does not block the handoff.
+- Saved but stopped: report the saved item and the exact failed operation; do
+  not invoke `/pick`.
 - Stopped without saving: report no successful save.

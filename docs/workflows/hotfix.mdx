@@ -4,8 +4,8 @@ description: Turn an urgent bug report into a concise item and continue to deliv
 ---
 
 Invoke `/hotfix` or `$hotfix` with an urgent bug report. The workflow drafts
-one short item, saves it after your confirmation, and passes its official
-context to [`/pick`](/agent-workflows/workflows/pick/).
+one short item, saves it after your confirmation, and passes the saved item ID
+to [`/pick`](/agent-workflows/workflows/pick/).
 
 ```text
 /hotfix Checkout returns 500 after payment confirmation. Customers cannot
@@ -23,13 +23,14 @@ triggers a focused question. The workflow does not inspect code to fill gaps.
 1. Resolve the destination through the configured Linear or ClickUp provider.
 2. Draft the item from your report and confirm its creation.
 3. Save it, then apply `agent-shaped` and the `hotfix` tracking label.
-4. Read the complete official item and check its eligibility for `/pick`.
-5. Continue to `/pick`, where you approve the plan before implementation and
+4. Pass the saved item ID to `/pick`, which reads the official item and checks
+   its eligibility.
+5. Approve the plan in `/pick` before implementation and
    the `/work → /ready → /inspect` delivery loop.
 
-If `agent-shaped` fails, the workflow reports the saved item and stops. It
-also stops when the independent read cannot confirm an open item with
-`agent-shaped` and without `agent-planned`.
+If `agent-shaped` fails, the workflow reports the saved item and stops. `/pick`
+stops if the official item is not open, lacks `agent-shaped`, or already has
+`agent-planned`.
 
 A failed `hotfix` label operation is reported and allows an otherwise eligible
 handoff. Linear can create a missing label. A missing ClickUp tag is reported
