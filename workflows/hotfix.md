@@ -64,13 +64,13 @@ Present the proposed title and body:
 Ask with `../templates/select-option.md`:
 
 ```text
-question: Create this item and continue to /pick?
+question: Create this item and start delivery
 options:
-- Create item and continue
+- Create item and start delivery
 - Stop without changes
 ```
 
-Continue only after `Create item and continue`. On `Stop without changes`,
+Continue only after `Create item and start delivery`. On `Stop without changes`,
 stop. If the user supplies a correction, incorporate it and present the
 updated proposal for confirmation.
 
