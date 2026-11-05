@@ -169,6 +169,8 @@ tasks:
                     ') | first }}
                   cases:
                     project:
+                      # Kestra v2.0.4 Sequential error handlers run on request failure or timeout.
+                      # https://github.com/kestra-io/kestra/blob/v2.0.4/core/src/main/java/io/kestra/plugin/core/flow/Sequential.java
                       - id: work-call
                         type: io.kestra.plugin.core.flow.Sequential
                         tasks:
@@ -206,6 +208,8 @@ tasks:
                               } | toJson }}
                             timeout: PT1H
                             options:
+                              # Preserve non-2xx bodies for classification and diagnostic comments.
+                              # https://kestra.io/plugins/core/http/io.kestra.plugin.core.http.request#properties
                               allowFailed: true
                               timeout:
                                 connectTimeout: PT5S
@@ -220,24 +224,44 @@ tasks:
                                   | if length > 12000 then .[:4000] + "\\n[Output truncated for transport; beginning and final diagnostics retained.]\\n" + .[-7900:] else . end
                                 ') | first }}
                         errors:
-                          - id: publish-work-transport-error
-                            type: io.kestra.plugin.core.http.Request
-                            uri: '{{ envs.bridge_url }}/scripts'
-                            method: POST
-                            contentType: application/json
-                            headers:
-                              Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                            body: >-
-                              {{ {
-                                "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
-                                "args": [fromJson(fromJson(outputs.next.body).stdout).id,
-                                  "error", "The /work HTTP request failed or timed out without a usable response. See the work task logs in this Kestra execution for transport diagnostics; work may already have changed files.", execution.id]
-                              } | toJson }}
-                            timeout: PT5M
-                            options:
-                              timeout:
-                                connectTimeout: PT5S
-                                readIdleTimeout: PT4M55S
+                          - id: report-work-transport-error
+                            type: io.kestra.plugin.core.flow.AllowFailure
+                            description: Best-effort publication; failures stay visible without replacing the work result.
+                            tasks:
+                              - id: publish-work-transport-error
+                                type: io.kestra.plugin.core.http.Request
+                                uri: '{{ envs.bridge_url }}/scripts'
+                                method: POST
+                                contentType: application/json
+                                headers:
+                                  Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                                body: >-
+                                  {{ {
+                                    "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
+                                    "args": [fromJson(fromJson(outputs.next.body).stdout).id,
+                                      "error", "The /work HTTP request failed or timed out without a usable response. See the work task logs in this Kestra execution for transport diagnostics; work may already have changed files.", execution.id]
+                                  } | toJson }}
+                                timeout: PT5M
+                                options:
+                                  timeout:
+                                    connectTimeout: PT5S
+                                    readIdleTimeout: PT4M55S
+                              - id: verify-work-transport-error-comment
+                                type: io.kestra.plugin.core.execution.Assert
+                                conditions:
+                                  - >-
+                                    {{ outputs['publish-work-transport-error'].body | toJson | jq('
+                                      try (fromjson | .stdout | fromjson
+                                        | if .status == "published" and .published == true
+                                          and ((.comment_id // .comment_url) | type == "string" and length > 0)
+                                          then 1 else 0 end) catch 0
+                                    ') | first }}
+                                errorMessage: Work result comment creation was not confirmed.
+                            errors:
+                              - id: report-work-transport-error-failed
+                                type: io.kestra.plugin.core.log.Log
+                                level: ERROR
+                                message: "Work result comment publication failed; original outcome error is retained. See publish-work-transport-error and verification task logs in this execution."
                       - id: is-success
                         type: io.kestra.plugin.core.flow.Switch
                         description: |
@@ -278,24 +302,44 @@ tasks:
                           ') | first }}
                         cases:
                           error:
-                            - id: publish-work-error
-                              type: io.kestra.plugin.core.http.Request
-                              uri: '{{ envs.bridge_url }}/scripts'
-                              method: POST
-                              contentType: application/json
-                              headers:
-                                Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                              body: >-
-                                {{ {
-                                  "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
-                                  "args": [fromJson(fromJson(outputs.next.body).stdout).id,
-                                    "error", outputs['work-output'].value, execution.id]
-                                } | toJson }}
-                              timeout: PT5M
-                              options:
-                                timeout:
-                                  connectTimeout: PT5S
-                                  readIdleTimeout: PT4M55S
+                            - id: report-work-error
+                              type: io.kestra.plugin.core.flow.AllowFailure
+                              description: Best-effort publication; failures stay visible without replacing the work result.
+                              tasks:
+                                - id: publish-work-error
+                                  type: io.kestra.plugin.core.http.Request
+                                  uri: '{{ envs.bridge_url }}/scripts'
+                                  method: POST
+                                  contentType: application/json
+                                  headers:
+                                    Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                                  body: >-
+                                    {{ {
+                                      "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
+                                      "args": [fromJson(fromJson(outputs.next.body).stdout).id,
+                                        "error", outputs['work-output'].value, execution.id]
+                                    } | toJson }}
+                                  timeout: PT5M
+                                  options:
+                                    timeout:
+                                      connectTimeout: PT5S
+                                      readIdleTimeout: PT4M55S
+                                - id: verify-work-error-comment
+                                  type: io.kestra.plugin.core.execution.Assert
+                                  conditions:
+                                    - >-
+                                      {{ outputs['publish-work-error'].body | toJson | jq('
+                                        try (fromjson | .stdout | fromjson
+                                          | if .status == "published" and .published == true
+                                            and ((.comment_id // .comment_url) | type == "string" and length > 0)
+                                            then 1 else 0 end) catch 0
+                                      ') | first }}
+                                  errorMessage: Work result comment creation was not confirmed.
+                              errors:
+                                - id: report-work-error-failed
+                                  type: io.kestra.plugin.core.log.Log
+                                  level: ERROR
+                                  message: "Work result comment publication failed; original outcome error is retained. See publish-work-error and verification task logs in this execution."
                             - id: work-error
                               type: io.kestra.plugin.core.execution.Fail
                               description: |
@@ -308,27 +352,47 @@ tasks:
                                 | 1. Fail | Reject missing, unknown, or contradictory inspection statuses. |
                                 | 2. Diagnose | Include the received text in the error, then continue to `sleep`. |
                               errorMessage: |-
-                                Invalid /work response: expected recognized, consistent inspection and label statuses. Received response:
+                                Failed or invalid /work response (HTTP {{ outputs.work.code }}): expected HTTP 200 and recognized, consistent inspection and label statuses. Received response:
                                 {{ outputs.work.body }}
                           partial:
-                            - id: publish-work-partial
-                              type: io.kestra.plugin.core.http.Request
-                              uri: '{{ envs.bridge_url }}/scripts'
-                              method: POST
-                              contentType: application/json
-                              headers:
-                                Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                              body: >-
-                                {{ {
-                                  "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
-                                  "args": [fromJson(fromJson(outputs.next.body).stdout).id,
-                                    "partial", outputs['work-output'].value, execution.id]
-                                } | toJson }}
-                              timeout: PT5M
-                              options:
-                                timeout:
-                                  connectTimeout: PT5S
-                                  readIdleTimeout: PT4M55S
+                            - id: report-work-partial
+                              type: io.kestra.plugin.core.flow.AllowFailure
+                              description: Best-effort publication; failures stay visible without replacing the work result.
+                              tasks:
+                                - id: publish-work-partial
+                                  type: io.kestra.plugin.core.http.Request
+                                  uri: '{{ envs.bridge_url }}/scripts'
+                                  method: POST
+                                  contentType: application/json
+                                  headers:
+                                    Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                                  body: >-
+                                    {{ {
+                                      "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
+                                      "args": [fromJson(fromJson(outputs.next.body).stdout).id,
+                                        "partial", outputs['work-output'].value, execution.id]
+                                    } | toJson }}
+                                  timeout: PT5M
+                                  options:
+                                    timeout:
+                                      connectTimeout: PT5S
+                                      readIdleTimeout: PT4M55S
+                                - id: verify-work-partial-comment
+                                  type: io.kestra.plugin.core.execution.Assert
+                                  conditions:
+                                    - >-
+                                      {{ outputs['publish-work-partial'].body | toJson | jq('
+                                        try (fromjson | .stdout | fromjson
+                                          | if .status == "published" and .published == true
+                                            and ((.comment_id // .comment_url) | type == "string" and length > 0)
+                                            then 1 else 0 end) catch 0
+                                      ') | first }}
+                                  errorMessage: Work result comment creation was not confirmed.
+                              errors:
+                                - id: report-work-partial-failed
+                                  type: io.kestra.plugin.core.log.Log
+                                  level: ERROR
+                                  message: "Work result comment publication failed; original outcome partial is retained. See publish-work-partial and verification task logs in this execution."
                             - id: work-partial
                               type: io.kestra.plugin.core.execution.Fail
                               description: |
@@ -346,24 +410,44 @@ tasks:
                                 Work did not complete successfully. Received response:
                                 {{ outputs.work.body }}
                           success:
-                            - id: publish-work-success
-                              type: io.kestra.plugin.core.http.Request
-                              uri: '{{ envs.bridge_url }}/scripts'
-                              method: POST
-                              contentType: application/json
-                              headers:
-                                Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                              body: >-
-                                {{ {
-                                  "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
-                                  "args": [fromJson(fromJson(outputs.next.body).stdout).id,
-                                    "success", outputs['work-output'].value, execution.id]
-                                } | toJson }}
-                              timeout: PT5M
-                              options:
-                                timeout:
-                                  connectTimeout: PT5S
-                                  readIdleTimeout: PT4M55S
+                            - id: report-work-success
+                              type: io.kestra.plugin.core.flow.AllowFailure
+                              description: Best-effort publication; failures stay visible without replacing the work result.
+                              tasks:
+                                - id: publish-work-success
+                                  type: io.kestra.plugin.core.http.Request
+                                  uri: '{{ envs.bridge_url }}/scripts'
+                                  method: POST
+                                  contentType: application/json
+                                  headers:
+                                    Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                                  body: >-
+                                    {{ {
+                                      "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
+                                      "args": [fromJson(fromJson(outputs.next.body).stdout).id,
+                                        "success", outputs['work-output'].value, execution.id]
+                                    } | toJson }}
+                                  timeout: PT5M
+                                  options:
+                                    timeout:
+                                      connectTimeout: PT5S
+                                      readIdleTimeout: PT4M55S
+                                - id: verify-work-success-comment
+                                  type: io.kestra.plugin.core.execution.Assert
+                                  conditions:
+                                    - >-
+                                      {{ outputs['publish-work-success'].body | toJson | jq('
+                                        try (fromjson | .stdout | fromjson
+                                          | if .status == "published" and .published == true
+                                            and ((.comment_id // .comment_url) | type == "string" and length > 0)
+                                            then 1 else 0 end) catch 0
+                                      ') | first }}
+                                  errorMessage: Work result comment creation was not confirmed.
+                              errors:
+                                - id: report-work-success-failed
+                                  type: io.kestra.plugin.core.log.Log
+                                  level: ERROR
+                                  message: "Work result comment publication failed; original outcome success is retained. See publish-work-success and verification task logs in this execution."
                             - id: work-sucess
                               type: io.kestra.plugin.core.log.Log
                               description: |
