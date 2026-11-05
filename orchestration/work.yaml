@@ -169,43 +169,75 @@ tasks:
                     ') | first }}
                   cases:
                     project:
-                      - id: work
-                        type: io.kestra.plugin.core.http.Request
-                        description: |
-                          `/work` requires an `agent-planned` item and executes its approved plan
-                          autonomously, one todo at a time. Standalone work automatically resumes when the
-                          item contains a delivery backlink, keeping the referenced local plan and its
-                          todo states. Otherwise, it copies the published plan locally and initializes
-                          delivery. It routes each todo to the right specialist and hands the completed
-                          plan directly to `/ready` without another approval.
-
-                          | Step | Execution |
-                          | --- | --- |
-                          | 1. Initialize | For new work, move the item to `in progress` and create a work branch with a linked draft request. |
-                          | 2. Route | Select or reuse the most suitable specialist for the active todo and load only the skills its activity triggers. |
-                          | 3. Execute | Persist the todo as in progress, implement and validate only its scope, then stage only its changes. |
-                          | 4. Commit | Commit the result, persist todo completion immediately, push the commit, and continue. A todo without a commit causes no push. |
-                          | 5. Ready | When every todo is complete, continue automatically to `/ready`; later findings return through the same loop as corrective todos. `/ready` verifies the completed branch against the approved plan, returns concrete gaps to `/work`, then promotes passing work for review. |
-                          | 6. Inspect | `/ready` continues automatically to `/inspect` after the required request updates are observed. `/inspect` reviews one frozen request snapshot and head SHA, publishes each unseen valid finding once, and returns blocking findings to `/work`. When none remain, it applies `agent-inspected` and stops without invoking `/done`. |
-                          | 7. Report | Kestra checks the bridge's inspection statuses before recording completion. Merge and `/done` remain human decisions. |
-                        uri: '{{ envs.bridge_url }}/'
-                        method: POST
-                        contentType: application/json
-                        headers:
-                          Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                        body: >-
-                          {{ {
-                            "requestId": execution.id ~ "-work-" ~ uuid(),
-                            "trace": {"name": "agent-workflows.work.work", "observationName": "work", "tags": ["work"], "sessionId": execution.id},
-                            "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).stdout).id ~ ".",
-                            "directory": fromJson(fromJson(outputs.project.body).stdout).path,
-                            "timeoutMs": 3585000
-                          } | toJson }}
-                        timeout: PT1H
-                        options:
-                          timeout:
-                            connectTimeout: PT5S
-                            readIdleTimeout: PT59M55S
+                      - id: work-call
+                        type: io.kestra.plugin.core.flow.Sequential
+                        tasks:
+                          - id: work
+                            type: io.kestra.plugin.core.http.Request
+                            description: |
+                              `/work` requires an `agent-planned` item and executes its approved plan
+                              autonomously, one todo at a time. Standalone work automatically resumes when the
+                              item contains a delivery backlink, keeping the referenced local plan and its
+                              todo states. Otherwise, it copies the published plan locally and initializes
+                              delivery. It routes each todo to the right specialist and hands the completed
+                              plan directly to `/ready` without another approval.
+    
+                              | Step | Execution |
+                              | --- | --- |
+                              | 1. Initialize | For new work, move the item to `in progress` and create a work branch with a linked draft request. |
+                              | 2. Route | Select or reuse the most suitable specialist for the active todo and load only the skills its activity triggers. |
+                              | 3. Execute | Persist the todo as in progress, implement and validate only its scope, then stage only its changes. |
+                              | 4. Commit | Commit the result, persist todo completion immediately, push the commit, and continue. A todo without a commit causes no push. |
+                              | 5. Ready | When every todo is complete, continue automatically to `/ready`; later findings return through the same loop as corrective todos. `/ready` verifies the completed branch against the approved plan, returns concrete gaps to `/work`, then promotes passing work for review. |
+                              | 6. Inspect | `/ready` continues automatically to `/inspect` after the required request updates are observed. `/inspect` reviews one frozen request snapshot and head SHA, publishes each unseen valid finding once, and returns blocking findings to `/work`. When none remain, it applies `agent-inspected` and stops without invoking `/done`. |
+                              | 7. Report | Kestra checks the bridge's inspection statuses before recording completion. Merge and `/done` remain human decisions. |
+                            uri: '{{ envs.bridge_url }}/'
+                            method: POST
+                            contentType: application/json
+                            headers:
+                              Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                            body: >-
+                              {{ {
+                                "requestId": execution.id ~ "-work-" ~ uuid(),
+                                "trace": {"name": "agent-workflows.work.work", "observationName": "work", "tags": ["work"], "sessionId": execution.id},
+                                "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).stdout).id ~ ".",
+                                "directory": fromJson(fromJson(outputs.project.body).stdout).path,
+                                "timeoutMs": 3585000
+                              } | toJson }}
+                            timeout: PT1H
+                            options:
+                              allowFailed: true
+                              timeout:
+                                connectTimeout: PT5S
+                                readIdleTimeout: PT59M55S
+                          - id: work-output
+                            type: io.kestra.plugin.core.debug.Return
+                            format: >-
+                              {{ outputs.work.body | toJson | jq('
+                                  . as $raw | (try (fromjson | .text // .error // $raw) catch $raw)
+                                  | if type != "string" then tojson else . end
+                                  | gsub("\\u0000"; "")
+                                  | if length > 12000 then .[:4000] + "\\n[Output truncated for transport; beginning and final diagnostics retained.]\\n" + .[-7900:] else . end
+                                ') | first }}
+                        errors:
+                          - id: publish-work-transport-error
+                            type: io.kestra.plugin.core.http.Request
+                            uri: '{{ envs.bridge_url }}/scripts'
+                            method: POST
+                            contentType: application/json
+                            headers:
+                              Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                            body: >-
+                              {{ {
+                                "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
+                                "args": [fromJson(fromJson(outputs.next.body).stdout).id,
+                                  "error", "The /work HTTP request failed or timed out without a usable response. See the work task logs in this Kestra execution for transport diagnostics; work may already have changed files.", execution.id]
+                              } | toJson }}
+                            timeout: PT5M
+                            options:
+                              timeout:
+                                connectTimeout: PT5S
+                                readIdleTimeout: PT4M55S
                       - id: is-success
                         type: io.kestra.plugin.core.flow.Switch
                         description: |
@@ -219,7 +251,9 @@ tasks:
                           | Partial | A valid result reports unfinished work or inspection. Route to `work-partial` and retain the result for follow-up. |
                           | Invalid | Required statuses are absent, unknown, or contradictory. Route to `work-error`. |
                         value: >-
-                          {{ fromJson(outputs['work'].body).text | toJson | jq('
+                          {{ outputs.work | toJson | jq('
+                            if .code != 200 then "error" else
+                            (try (.body | fromjson | .text) catch null) |
                             try (
                               gsub("\\\\[rnt]"; " ") | gsub("[\\\\`*_]"; "") | gsub("\\s+"; " ")
                               | . as $text
@@ -240,9 +274,28 @@ tasks:
                                 else "partial"
                                 end
                             ) catch "error"
+                            end
                           ') | first }}
                         cases:
                           error:
+                            - id: publish-work-error
+                              type: io.kestra.plugin.core.http.Request
+                              uri: '{{ envs.bridge_url }}/scripts'
+                              method: POST
+                              contentType: application/json
+                              headers:
+                                Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                              body: >-
+                                {{ {
+                                  "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
+                                  "args": [fromJson(fromJson(outputs.next.body).stdout).id,
+                                    "error", outputs['work-output'].value, execution.id]
+                                } | toJson }}
+                              timeout: PT5M
+                              options:
+                                timeout:
+                                  connectTimeout: PT5S
+                                  readIdleTimeout: PT4M55S
                             - id: work-error
                               type: io.kestra.plugin.core.execution.Fail
                               description: |
@@ -256,8 +309,26 @@ tasks:
                                 | 2. Diagnose | Include the received text in the error, then continue to `sleep`. |
                               errorMessage: |-
                                 Invalid /work response: expected recognized, consistent inspection and label statuses. Received response:
-                                {{ fromJson(outputs['work'].body).text | default('No textual response received.') }}
+                                {{ outputs.work.body }}
                           partial:
+                            - id: publish-work-partial
+                              type: io.kestra.plugin.core.http.Request
+                              uri: '{{ envs.bridge_url }}/scripts'
+                              method: POST
+                              contentType: application/json
+                              headers:
+                                Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                              body: >-
+                                {{ {
+                                  "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
+                                  "args": [fromJson(fromJson(outputs.next.body).stdout).id,
+                                    "partial", outputs['work-output'].value, execution.id]
+                                } | toJson }}
+                              timeout: PT5M
+                              options:
+                                timeout:
+                                  connectTimeout: PT5S
+                                  readIdleTimeout: PT4M55S
                             - id: work-partial
                               type: io.kestra.plugin.core.execution.Fail
                               description: |
@@ -273,8 +344,26 @@ tasks:
                               allowFailure: true
                               errorMessage: |-
                                 Work did not complete successfully. Received response:
-                                {{ fromJson(outputs['work'].body).text }}
+                                {{ outputs.work.body }}
                           success:
+                            - id: publish-work-success
+                              type: io.kestra.plugin.core.http.Request
+                              uri: '{{ envs.bridge_url }}/scripts'
+                              method: POST
+                              contentType: application/json
+                              headers:
+                                Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                              body: >-
+                                {{ {
+                                  "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
+                                  "args": [fromJson(fromJson(outputs.next.body).stdout).id,
+                                    "success", outputs['work-output'].value, execution.id]
+                                } | toJson }}
+                              timeout: PT5M
+                              options:
+                                timeout:
+                                  connectTimeout: PT5S
+                                  readIdleTimeout: PT4M55S
                             - id: work-sucess
                               type: io.kestra.plugin.core.log.Log
                               description: |
