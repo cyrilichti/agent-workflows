@@ -45,6 +45,21 @@ test('approved plan extraction preserves bytes and removes only the ClickUp wrap
   }, /approved plan/i);
 });
 
+test('ClickUp reads rendered code blocks while preserving Markdown and final newlines', async (t) => {
+  const root = createFixture(t);
+  const contents = [plan, plan.trimEnd(), '# Plan\n\n```php\necho "test";\n```\n\n'];
+  for (const content of contents) {
+    const item = createItem();
+    item.comments = [{ id: 'rendered',
+      body: `Agent-Workflows-Approved-Plan:\n${content}\n` }];
+    assert.equal(readItemPlan('clickup', item.comments), content);
+    const result = await prepareDeliveryContext(root, 'clickup', item, '2026-11-05');
+    assert.equal(readFileSync(join(root, result.delivery_context.plan), 'utf8'), content);
+  }
+  assert.throws(() => readItemPlan('clickup', [{ id: 'invalid',
+    body: 'Agent-Workflows-Approved-Plan:\nNo plan title\n' }]), /Invalid ClickUp/);
+});
+
 test('new work reuses comments and materializes unchanged plan with collision-safe filename', async (t) => {
   const root = createFixture(t);
   mkdirSync(join(root, 'plans'));

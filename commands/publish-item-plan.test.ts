@@ -39,6 +39,7 @@ test('ClickUp fences exact plan content and requires a created comment ID', () =
     assert.deepEqual(args.slice(0, 5), ['comment', 'create', '--task', 'ICY-137', '--text']);
     assert.equal(args[5], formatPlanComment('clickup', content));
     assert.match(args[5]!, /^Agent-Workflows-Approved-Plan:\n\n````markdown\n/);
+    assert.deepEqual(args.slice(6), ['--markdown', '--output', 'json']);
     return '{"id":"comment-1"}';
   }, () => content);
   assert.equal(result.comment_id, 'comment-1');
