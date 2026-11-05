@@ -85,6 +85,12 @@ unresolved decisions. Use the exact supplied item ID and URL; omit the ticket
 line for standalone plans. Add no other item, provider, Git, or request
 metadata, Skill-specific format, estimate, file list, or checkpoint.
 
+For the initial plan and every revision, including verification gaps found
+during review, include a browser-based functional check in `## Validation`
+only when the official item or standalone planning request explicitly asks
+for browser-based validation. UI-related work alone does not qualify. Keep
+other relevant validation checks.
+
 For high-risk or unfamiliar decisions, load and announce
 `doubt-driven-development` and invoke one fresh-context reviewer with the
 affected decision excerpts and `task_context` plus the plan contract. Apply
