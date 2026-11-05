@@ -16,7 +16,6 @@ function parsePaths(input: string): string[] {
 
 function configuredPaths(input?: string): string[] {
   if (input !== undefined) return parsePaths(input);
-  if (process.env.AI_PROVIDER === 'openai-api') return [];
   const config = join(process.env.CODEX_HOME || join(homedir(), '.codex'), 'config.toml');
   let content: string;
   try {
