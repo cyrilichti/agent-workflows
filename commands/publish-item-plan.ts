@@ -55,7 +55,7 @@ export function publishItemPlan(provider: Provider, input: Input,
   }
 
   const response = parseJson(run('clickup-cli', ['comment', 'create', '--task',
-    input.item_id, '--text', comment, '--output', 'json'])) as
+    input.item_id, '--text', comment, '--markdown', '--output', 'json'])) as
     { id?: string; success?: boolean } | Array<{ id?: string; success?: boolean }>;
   const record = Array.isArray(response) ? response.length === 1 ? response[0] : null : response;
   if (!record?.id || record.success === false) {

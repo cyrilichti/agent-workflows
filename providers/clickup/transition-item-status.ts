@@ -1,14 +1,25 @@
-import { execFileSync } from 'node:child_process';
+import { readJson } from './read-item.ts';
 
 type NativeStatus = { id?: string; status?: string; name?: string; type?: string };
-export type ItemStatus = { id: string; name: string; category: 'active' | 'review' | 'completed' | 'other' };
+export type ItemStatus = { id: string; name: string; category: 'active' | 'review' | 'completed' | 'closed' | 'other' };
+
+function readSingle<T>(args: string[], kind: string): T {
+  const result = readJson(args);
+  const record = Array.isArray(result) ? result.length === 1 ? result[0] : null : result;
+  if (!record || typeof record !== 'object') {
+    throw new Error(`Expected one ClickUp ${kind}.`);
+  }
+  return record as T;
+}
 
 function normalize(status: NativeStatus): ItemStatus {
   const name = status.status ?? status.name ?? '';
   const type = status.type?.toLowerCase();
   let category: ItemStatus['category'] = 'other';
-  if (type === 'done' || type === 'closed') {
+  if (type === 'done') {
     category = 'completed';
+  } else if (type === 'closed') {
+    category = 'closed';
   } else if (type === 'custom') {
     category = 'active';
   }
@@ -22,16 +33,11 @@ export function readStatuses(itemId: string, officialItem?: Record<string, unkno
   if (officialItem?.status && officialItem?.list) {
     task = officialItem;
   } else {
-    const output = execFileSync('clickup-cli', ['task', 'get', itemId, '--output', 'json'], {
-      encoding: 'utf8',
-    });
-    task = JSON.parse(output) as Record<string, unknown>;
+    task = readSingle<Record<string, unknown>>(['task', 'get', itemId, '--output', 'json'], 'task');
   }
   const listId = (task.list as { id: string }).id;
-  const listOutput = execFileSync('clickup-cli', ['list', 'get', listId, '--output', 'json'], {
-    encoding: 'utf8',
-  });
-  const list = JSON.parse(listOutput) as { statuses: NativeStatus[] };
+  const list = readSingle<{ statuses: NativeStatus[] }>(
+    ['list', 'get', listId, '--output', 'json'], 'list');
   return {
     current_status: normalize(task.status as NativeStatus),
     available_statuses: list.statuses.map(normalize),
@@ -40,10 +46,9 @@ export function readStatuses(itemId: string, officialItem?: Record<string, unkno
 }
 
 export function applyStatus(itemId: string, target: ItemStatus): ItemStatus {
-  const output = execFileSync('clickup-cli', [
+  const result = readSingle<{ status: NativeStatus }>([
     'task', 'update', itemId, '--status', target.name, '--output', 'json',
-  ], { encoding: 'utf8' });
-  const result = JSON.parse(output) as { status: NativeStatus };
+  ], 'updated task');
   if (!result.status) {
     throw new Error('ClickUp did not return the resulting status.');
   }

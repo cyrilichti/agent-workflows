@@ -43,6 +43,30 @@ if (name === 'linear') {
     state.done = true;
     save();
   } else process.exit(3);
+} else if (name === 'clickup-cli') {
+  const doneStatus = { id: 'done', status: 'réalisé', type: 'done' };
+  const closedStatus = { id: 'closed', status: 'complete', type: 'closed' };
+  const reviewStatus = { id: 'review', status: 'en validation', type: 'custom' };
+  if (args[0] === 'task' && args[1] === 'get') {
+    output([{ id: 'task-1', name: 'A task', description: '',
+      url: 'https://app.clickup.com/t/task-1',
+      status: state.done ? doneStatus : reviewStatus,
+      list: { id: 'list-1' }, tags: state.label ? [{ name: 'agent-inspected' }] : [] }]);
+  } else if (args[0] === 'comment' && args[1] === 'list') {
+    output([{ id: 'comment-1', date: '1', comment: [{ text:
+      'Draft MR: https://gitlab.example/acme/repo/-/merge_requests/7' }] }]);
+  } else if (args[0] === 'list' && args[1] === 'get') {
+    const statuses = [reviewStatus, closedStatus];
+    if (!state.noDone) statuses.push(doneStatus);
+    if (state.ambiguous) statuses.push({ id: 'also-done', status: 'livré', type: 'done' });
+    output([{ statuses }]);
+  } else if (args[0] === 'task' && args[1] === 'update') {
+    state.itemUpdates++;
+    state.itemTarget = args[args.indexOf('--status') + 1];
+    state.done = state.itemTarget === doneStatus.status;
+    save();
+    output([{ status: state.done ? doneStatus : closedStatus }]);
+  } else process.exit(3);
 } else if (name === 'gh') {
   if (args[0] !== 'api') process.exit(3);
   if (args.includes('PUT')) {
@@ -78,12 +102,12 @@ if (name === 'linear') {
 `;
 
 function fixture(overrides: Record<string, unknown> = {}, versionProvider: 'github' | 'gitlab' =
-  'github') {
+  'github', itemProvider: 'linear' | 'clickup' = 'linear') {
   const root = mkdtempSync(join(tmpdir(), 'done-command-'));
   const bin = join(root, 'bin');
   mkdirSync(bin);
   writeFileSync(join(root, 'agent-workflows.yaml'),
-    `item:\n  provider: linear\nversion:\n  provider: ${versionProvider}\n`);
+    `item:\n  provider: ${itemProvider}\nversion:\n  provider: ${versionProvider}\n`);
   execFileSync('git', ['init', '-q', root]);
   execFileSync('git', ['-C', root, 'remote', 'add', 'origin', versionProvider === 'github'
     ? 'https://github.com/acme/repo.git' : 'https://gitlab.example/acme/repo.git']);
@@ -92,7 +116,7 @@ function fixture(overrides: Record<string, unknown> = {}, versionProvider: 'gith
     versionProvider,
     ...overrides };
   writeFileSync(join(root, 'state.json'), JSON.stringify(initial));
-  for (const name of ['linear', 'gh', 'glab'])
+  for (const name of ['linear', 'clickup-cli', 'gh', 'glab'])
     writeFileSync(join(bin, name), cli, { mode: 0o755 });
   const env = { ...process.env, PATH: `${bin}:${process.env.PATH}`, TEST_DONE_ROOT: root };
   return {
@@ -137,6 +161,29 @@ test('done uses GitLab squash merge with the frozen head SHA', () => {
       'https://gitlab.example/acme/repo', '--squash', '--sha', 'head-1',
       '--auto-merge=false', '--yes']);
   } finally { f.cleanup(); }
+});
+
+test('done targets ClickUp done while closed also exists', () => {
+  const f = fixture({}, 'gitlab', 'clickup');
+  try {
+    const result = f.run({ reference: 'task-1' });
+    assert.equal(result.value.status, 'complete', JSON.stringify(result));
+    assert.equal(result.value.item.status, 'réalisé');
+    assert.equal(f.state().itemTarget, 'réalisé');
+  } finally { f.cleanup(); }
+});
+
+test('done stops before mutation when ClickUp done is missing or ambiguous', () => {
+  for (const scenario of [{ noDone: true }, { ambiguous: true }]) {
+    const f = fixture(scenario, 'gitlab', 'clickup');
+    try {
+      const result = f.run({ reference: 'task-1' });
+      assert.equal(result.value.status, 'stopped', JSON.stringify(result));
+      assert.equal(result.value.stage, 'resolve_item_status');
+      assert.equal(f.state().mergeCalls, 0);
+      assert.equal(f.state().itemUpdates, 0);
+    } finally { f.cleanup(); }
+  }
 });
 
 test('done skips merge for an already merged request', () => {

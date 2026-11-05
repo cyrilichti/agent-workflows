@@ -102,7 +102,8 @@ function fixture(itemProvider: 'clickup' | 'linear', versionProvider: 'github' |
     copyFileSync(resolve(`commands/${name}.ts`), join(root, 'commands', `${name}.ts`));
   }
   const adapterFiles: Array<[string, string]> = [
-    ['clickup', 'transition-item-status'], ['linear', 'transition-item-status'],
+    ['clickup', 'transition-item-status'], ['clickup', 'read-item'],
+    ['linear', 'transition-item-status'],
     ['clickup', 'add-request-backlink'], ['linear', 'add-request-backlink'],
     ['github', 'create-request'], ['gitlab', 'create-request'],
   ];
