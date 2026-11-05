@@ -4,13 +4,13 @@ import type { GitLabRepository } from '../../commands/resolve-version-repository
 export function replaceDescription(repository: GitLabRepository, requestId: number, body: string): void {
   execFileSync('glab', [
     'mr', 'update', String(requestId), '--repo', repository.url,
-    '--description', body, '--yes',
+    '--description', body,
   ], { encoding: 'utf8' });
 }
 
 export function markReady(repository: GitLabRepository, requestId: number,
   title: string | undefined): void {
-  const args = ['mr', 'update', String(requestId), '--repo', repository.url, '--ready', '--yes'];
+  const args = ['mr', 'update', String(requestId), '--repo', repository.url, '--ready'];
   if (title !== undefined) args.push('--title', title);
   execFileSync('glab', args, { encoding: 'utf8' });
 }
