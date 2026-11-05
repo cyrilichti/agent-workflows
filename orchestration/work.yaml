@@ -220,7 +220,7 @@ tasks:
                               {{ outputs.work.body | toJson | jq('
                                   . as $raw | (try (fromjson | .text // .error // $raw) catch $raw)
                                   | if type != "string" then tojson else . end
-                                  | gsub("\\u0000"; "")
+                                  | explode | map(select(. != 0)) | implode
                                   | if length > 12000 then .[:4000] + "\\n[Output truncated for transport; beginning and final diagnostics retained.]\\n" + .[-7900:] else . end
                                 ') | first }}
                         errors:
