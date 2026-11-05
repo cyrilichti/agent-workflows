@@ -1,7 +1,7 @@
 # Agent orchestration
 
 Kestra runs workflows. A bridge running on your computer forwards their AI tasks
-to your local Codex CLI or the OpenAI API. Langfuse records the responses and
+to your local Codex CLI. Langfuse records the responses and
 observed token usage.
 
 Kestra and Langfuse run in Docker; the bridge runs on the host so Codex can use
@@ -11,7 +11,7 @@ your local files, configuration, authentication, tools and integrations.
 
 - Node.js 24+ and npm on the host.
 - Docker with Docker Compose 2.24+.
-- For the default Codex provider: Codex CLI installed and authenticated with
+- For the Codex provider: Codex CLI installed and authenticated with
   `codex login`, with support for `codex exec --ephemeral --json`.
 
 Run the commands below from the repository root.
@@ -50,16 +50,15 @@ openssl rand -hex 32 | tr -d '\n' | openssl base64 -A
 
 Paste this output directly into `.env`, without encoding it again. This token
 allows Kestra to call the bridge. The Langfuse keys initialize your local
-Langfuse project; neither replaces Codex login or an OpenAI API key.
+Langfuse project; neither replaces Codex login.
 
-Choose a provider and enable execution:
+Configure the Codex provider and enable execution:
 
-| Setting | Codex CLI (default) | OpenAI API |
-| --- | --- | --- |
-| `AI_PROVIDER` | `codex` | `openai-api` |
-| `AI_MODEL` | Leave empty to use your CLI configuration | Required model identifier |
-| `OPENAI_API_KEY` | Leave empty | API key issued by OpenAI |
-| `INFERENCE_ENABLED` | `true` | `true` |
+| Setting | Value |
+| --- | --- |
+| `AI_PROVIDER` | `codex` |
+| `AI_MODEL` | Leave empty to use your CLI configuration |
+| `INFERENCE_ENABLED` | `true` |
 
 For Codex, optionally set `CODEX_WORKING_DIRECTORY` to an absolute project path.
 An explicit value takes priority; otherwise, tasks run from the

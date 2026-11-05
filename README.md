@@ -88,15 +88,6 @@ Choose a work tracker and a code host. Orchestration also needs an AI provider.
       <td width="10%" align="center"><img src="./public/provider-logos/codex.svg" width="28" height="28" alt="Codex logo"></td>
       <td><strong>Codex CLI</strong> — Run orchestration's AI tasks locally with your authenticated CLI.</td>
     </tr>
-    <tr>
-      <td width="10%" align="center">
-        <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="./public/provider-logos/openai-dark.svg">
-          <img src="./public/provider-logos/openai.svg" width="28" height="28" alt="OpenAI logo">
-        </picture>
-      </td>
-      <td><strong>OpenAI API</strong> — Run orchestration's AI tasks with an API key and configured model.</td>
-    </tr>
   </tbody>
 </table>
 

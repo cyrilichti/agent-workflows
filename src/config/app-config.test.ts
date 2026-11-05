@@ -48,8 +48,8 @@ test('configuration preserves host CLI environment without injecting .env secret
   assert.equal(config.langfuse.projectId, 'agent-workflows');
 });
 
-test('configuration rejects invalid execution settings and missing API model', (t) => {
-  for (const extra of ['BRIDGE_PORT=0', 'REQUEST_TIMEOUT_MS=3600001', 'AI_PROVIDER=openai-api']) {
+test('configuration rejects invalid execution settings', (t) => {
+  for (const extra of ['BRIDGE_PORT=0', 'REQUEST_TIMEOUT_MS=3600001']) {
     assert.notEqual(readConfig(envFile(t, extra)).status, 0);
   }
   const result = readConfig(envFile(t));
@@ -76,4 +76,22 @@ test('configuration rejects a bridge token shorter than 32 bytes before serving 
   const result = readConfig(envFile(t, `SECRET_BRIDGE_TOKEN=${Buffer.from('short').toString('base64')}\n`));
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Configure a bridge token of at least 32 bytes/);
+});
+
+test('AI_PROVIDER defaults to Codex and preserves explicit selection', (t) => {
+  for (const extra of ['', 'AI_PROVIDER=codex\nAI_MODEL=test-model\n']) {
+    const result = readConfig(envFile(t, extra));
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(result.stdout).providerName, 'codex');
+  }
+});
+
+test('configuration rejects unsupported providers before serving requests', (t) => {
+  for (const provider of ['openai-api', 'invalid']) {
+    for (const model of ['', 'AI_MODEL=test-model\n']) {
+      const result = readConfig(envFile(t, `AI_PROVIDER=${provider}\n${model}`));
+      assert.notEqual(result.status, 0);
+      assert.ok(result.stderr.includes(`Unknown AI_PROVIDER: ${provider}`), result.stderr);
+    }
+  }
 });

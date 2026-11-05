@@ -14,8 +14,6 @@ export const appConfig = {
     executable: env.CODEX_BIN || 'codex',
     environment: { ...process.env },
     directory: env.CODEX_WORKING_DIRECTORY || PROJECT_ROOT,
-    key: env.OPENAI_API_KEY,
-    keyFile: env.OPENAI_API_KEY_FILE,
   },
   http: {
     host: env.BRIDGE_HOST || '127.0.0.1',
