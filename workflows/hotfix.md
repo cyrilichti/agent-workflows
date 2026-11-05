@@ -51,35 +51,15 @@ expected result, and how to verify the correction when known. Retain supplied
 reproduction steps and evidence. Omit unknown optional details rather than
 asking for them or inventing facts.
 
-Present the proposed title and body:
+### 3. Save the Item
 
-```markdown
-### <item title>
-
-<concise Markdown body>
-```
-
-### 3. Confirm and Save
-
-Ask with `../templates/select-option.md`:
-
-```text
-question: Create this item and start delivery
-options:
-- Create item and start delivery
-- Stop without changes
-```
-
-Continue only after `Create item and start delivery`. On `Stop without changes`,
-stop. If the user supplies a correction, incorporate it and present the
-updated proposal for confirmation.
-
-Run from this file's directory with the confirmed title and body and the
-selected destination:
+Once the destination and required report information are available, create the
+item with the drafted title and body and the selected destination. Run once
+from this file's directory:
 
 ```sh
 node ../commands/save-item.ts <<'JSON'
-{"mode":"create","title":"<confirmed title>","body":"<confirmed Markdown body>","destination":<selected destination JSON>}
+{"mode":"create","title":"<drafted title>","body":"<drafted Markdown body>","destination":<selected destination JSON>}
 JSON
 ```
 
