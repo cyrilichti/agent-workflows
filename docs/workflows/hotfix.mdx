@@ -3,12 +3,13 @@ title: /hotfix
 description: Turn an urgent bug report into a concise item and start delivery.
 ---
 
-`/hotfix` turns an urgent bug report into a short work item. After you confirm
-its creation, it sends the item to `/pick` for planning and delivery.
+`/hotfix` creates a short work item as soon as the destination and essential
+report information are available. It sends the saved ID to `/pick`, which
+presents the item and requests plan approval before delivery.
 
 ## How `/hotfix` starts delivery
 
-<div class="write-flow" role="group" aria-label="The hotfix workflow resolves a destination, drafts a concise item from the report, asks the human to confirm it, saves and labels it, then sends its ID to pick for planning and delivery.">
+<div class="write-flow" role="group" aria-label="The hotfix workflow resolves a destination, drafts and creates a concise item from the report, applies labels, then sends its ID to pick for the item recap and plan approval before delivery.">
   <div class="write-flow__step write-flow__step--assisted">
     <small>01 · Assisted</small>
     <strong>Resolve destination</strong>
@@ -25,14 +26,6 @@ its creation, it sends the item to `/pick` for planning and delivery.
 
   <span class="write-flow__connector" aria-hidden="true">↓</span>
 
-  <div class="write-flow__step write-flow__step--human">
-    <small>Human</small>
-    <strong>Start delivery</strong>
-    <span>Confirm the item or correct its draft.</span>
-  </div>
-
-  <span class="write-flow__connector" aria-hidden="true">↓</span>
-
   <div class="write-flow__step write-flow__step--assisted">
     <small>03 · Workflow</small>
     <strong>Save and label</strong>
@@ -44,7 +37,7 @@ its creation, it sends the item to `/pick` for planning and delivery.
   <a class="write-flow__step write-flow__step--workflow write-flow__step--focus" href="/agent-workflows/workflows/pick/">
     <small>Workflow</small>
     <strong>/pick</strong>
-    <span>Resolve the saved ID, approve the plan, and start the delivery loop.</span>
+    <span>Resolve and present the saved item, request plan approval, and start the delivery loop.</span>
   </a>
 </div>
 
@@ -64,18 +57,13 @@ its creation, it sends the item to `/pick` for planning and delivery.
     </tr>
     <tr>
       <td>3</td>
-      <th scope="row">Confirm</th>
-      <td>Present the short item and wait for your decision to create it and start delivery.</td>
+      <th scope="row">Save</th>
+      <td>Create the item once the destination and essential report information are available, and require <code>agent-shaped</code> before continuing. Report a failed <code>hotfix</code> label without blocking delivery.</td>
     </tr>
     <tr>
       <td>4</td>
-      <th scope="row">Save</th>
-      <td>Create the item and require <code>agent-shaped</code> before continuing. Report a failed <code>hotfix</code> label without blocking delivery.</td>
-    </tr>
-    <tr>
-      <td>5</td>
       <th scope="row">Continue</th>
-      <td>Pass the saved item ID to <code>/pick</code>, which checks eligibility and requests plan approval before <code>/work → /ready → /inspect</code>.</td>
+      <td>Pass the saved item ID to <code>/pick</code>, which checks eligibility, presents the item once, and requests plan approval before <code>/work → /ready → /inspect</code>.</td>
     </tr>
   </tbody>
 </table>

@@ -2,8 +2,9 @@
 
 ## Outcome
 
-One confirmed, concise item captures the urgent bug report and continues to
-`/pick` through the configured item provider.
+One concise item is created directly from the urgent bug report through the
+configured item provider and continues to `/pick` for the item recap and plan
+approval.
 
 ## Terminal Outcomes
 
