@@ -5,7 +5,7 @@ import { resolveItemProvider } from './resolve-item-provider.ts';
 type Status = {
   id: string;
   name: string;
-  category: 'active' | 'review' | 'completed' | 'other';
+  category: 'active' | 'review' | 'completed' | 'closed' | 'other';
 };
 type Adapter = {
   readStatuses(itemId: string, officialItem?: Record<string, unknown>): {

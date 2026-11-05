@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 
 type NativeStatus = { id: string; name: string; type?: string };
 type Issue = { identifier: string; state: NativeStatus; team: { id: string; key?: string } };
-export type ItemStatus = { id: string; name: string; category: 'active' | 'review' | 'completed' | 'other' };
+export type ItemStatus = { id: string; name: string; category: 'active' | 'review' | 'completed' | 'closed' | 'other' };
 
 function normalize(status: NativeStatus): ItemStatus {
   const type = status.type?.toLowerCase();
