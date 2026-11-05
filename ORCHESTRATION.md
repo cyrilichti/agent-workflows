@@ -149,29 +149,6 @@ to that process; values parsed from `.env` are not exported to script children.
 See [Providers](./docs/providers.mdx) for provider setup. Restart the bridge after
 changing its configuration.
 
-### Work outcome reporting
-
-After `/work`, each `is-success` branch calls `publish-work-result.ts` through
-`POST /scripts` with the exact selected item ID, `success`, `partial`, or `error`,
-the useful response output, and the Kestra execution ID. HTTP error responses
-are classified as `error`; request failures and timeouts have a separate error
-handler that reports the missing response and points to the failing task logs.
-They may already have changed files, so check the execution before retrying.
-
-The command uses `item.provider` from the bridge's configured project and the
-same authenticated provider CLI as selection. It confirms the new comment from
-the provider response; Kestra also verifies the command's JSON acknowledgement.
-Output is bounded before script transport and comments are limited to 8,000
-Unicode characters, with an explicit truncation notice retaining the beginning
-and final diagnostic output. The complete bridge response remains in Kestra.
-
-Publication is attempted before `partial` or `error` ends the attempt. A failed
-publication or missing acknowledgement leaves a failed task and an explicit
-ERROR log in Kestra. Each report is inside `AllowFailure`, so it preserves the
-original work outcome and reaches the existing cycle delay. Publication is not
-retried automatically; consult task logs if the provider accepted a comment but
-its response was lost.
-
 ### Upgrade an existing Kestra flow
 
 The Compose installer retains existing flows, including local edits. Stop the
