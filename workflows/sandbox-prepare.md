@@ -36,18 +36,22 @@ worktree.
 
 Set `dependency_directories` to `[]` when `container_execution` is `false`.
 Otherwise, read the current project's README and identify its local repository
-dependencies. Set `repository_names_json` to a JSON array of their names, then
-resolve them together from this file's directory:
+dependencies. Resolve their names together from this file's directory. Send
+the names as one JSON array on stdin, replacing `[]` with the names found:
 
 ```sh
-node ../commands/resolve-local-repository-dependencies.ts "$repository_names_json"
+node ../commands/resolve-local-repository-dependencies.ts <<'JSON'
+[]
+JSON
 ```
 
-Read the README of each resolved repository and repeat for any dependencies it
-names. Stop when no new repositories remain. Set `dependency_directories` to
-the distinct absolute paths found, excluding the current project. If any name
-returns `not found`, `ambiguous`, or `search incomplete`, or the command fails,
-report the issue and stop.
+Track resolved names and visited repository paths. Mark the current project as
+visited. For each README, pass only names not yet resolved to the command.
+Skip the command when there are none. Read the README of each newly resolved
+path only once, then repeat until no new names remain. Set
+`dependency_directories` to the distinct absolute paths found,
+excluding the current project. If any name returns `not found`, `ambiguous`, or
+`search incomplete`, or the command fails, report the issue and stop.
 
 Invoke preparation from this file's directory with the resolved and derived values:
 

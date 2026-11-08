@@ -55,7 +55,7 @@ after returning its result; delivery callers decide when to use the environment.
     <tr>
       <td>3a</td>
       <th scope="row">Resolve dependencies</th>
-      <td>Only for container execution, the agent identifies local repositories named in the README and resolves them together with a local-only command. It repeats this for the README of each located repository and supplies their absolute paths. Preparation validates those paths before allocation.</td>
+      <td>Only for container execution, the agent identifies local repositories named in the README and resolves new names together with a local-only command. It reads each newly found repository's README once and supplies the distinct absolute paths. Preparation validates those paths before allocation.</td>
     </tr>
     <tr>
       <td>4a</td>
