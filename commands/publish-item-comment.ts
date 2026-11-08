@@ -1,4 +1,6 @@
 import { execFileSync } from 'node:child_process';
+import { basename, dirname, join } from 'node:path';
+import { resolveItemProvider } from './resolve-item-provider.ts';
 
 export type ItemProvider = 'linear' | 'clickup';
 export type Run = (program: string, args: string[], input?: string) => string;
@@ -39,4 +41,27 @@ export function publishItemComment(provider: ItemProvider, itemId: string, comme
     throw new Error('ClickUp did not identify the created comment.');
   }
   return { status: 'published' as const, published: true, comment_id: record.id };
+}
+
+if (import.meta.main) {
+  try {
+    const parent = dirname(import.meta.dirname);
+    const root = basename(parent) === '.agents' ? dirname(parent) : parent;
+    process.chdir(root);
+    const [itemId, comment] = process.argv.slice(2);
+    if (!itemId?.trim()) {
+      process.stdout.write(`${JSON.stringify({ status: 'skipped', reason: 'no_selected_item' })}\n`);
+    } else {
+      if (!comment?.trim()) throw new Error('A nonblank comment is required.');
+      const provider = resolveItemProvider(join(root, 'agent-workflows.yaml'));
+      if (provider !== 'linear' && provider !== 'clickup') {
+        throw new Error('Configure item provider as linear or clickup.');
+      }
+      process.stdout.write(`${JSON.stringify(publishItemComment(provider, itemId, comment))}\n`);
+    }
+  } catch (error) {
+    process.stdout.write(`${JSON.stringify({ status: 'failed', published: false,
+      reason: error instanceof Error ? error.message : String(error) })}\n`);
+    process.exitCode = 1;
+  }
 }

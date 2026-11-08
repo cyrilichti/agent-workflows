@@ -65,9 +65,7 @@ After each attempt, the flow makes one comment request for the selected item
 through its configured provider. The comment records the `/work` response or
 the project resolution result, plus the Kestra execution ID. Attempts without
 a selected item skip the comment. A failed comment request is visible in Kestra;
-the loop still reaches its delay. Long comments include a truncation notice and
-retain the beginning and final diagnostics. See the
-[reporting contract](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#work-outcome-reporting).
+the loop still reaches its delay.
 
 ## Start the architecture locally
 

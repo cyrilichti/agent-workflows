@@ -358,9 +358,12 @@ tasks:
           Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
         body: >-
           {{ {
-            "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
-            "args": [outputs.next.body ?? "", outputs.project.body ?? "",
-              outputs.work.body ?? "", execution.id]
+            "path": inputs.commandsDirectory ~ "/publish-item-comment.ts",
+            "args": [
+              (outputs.next.body ?? "") | toJson | jq('try (fromjson | .stdout | fromjson | .id // "") catch ""') | first,
+              "Work attempt result\nKestra execution: " ~ execution.id ~ "\n\n" ~
+                (outputs.work.body ?? outputs.project.body ?? "Project resolution did not return a response. See the Kestra execution logs.")
+            ]
           } | toJson }}
         timeout: PT5M
       - id: sleep
