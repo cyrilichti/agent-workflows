@@ -12,13 +12,12 @@ test('installed .agents workflow commands round trip a compact context from thei
     execFileSync('git', ['init', '-q', root]);
     execFileSync('git', ['-C', root, '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '--allow-empty', '-qm', 'init']);
     const installed = join(root, '.agents');
-    for (const directory of ['commands', 'workflows', 'rules', 'goals', 'templates', 'types', 'skills/sandbox']) {
+    for (const directory of ['commands', 'workflows', 'rules', 'goals', 'templates', 'skills/sandbox']) {
       cpSync(resolve(directory), join(installed, directory), { recursive: true });
     }
     const agents = readFileSync('AGENTS.md', 'utf8').replace(/`((?:workflows|templates)\/[^`]+)`/g, '`' + '.agents/$1' + '`');
     writeFileSync(join(root, 'AGENTS.md'), agents);
     assert.ok(existsSync(join(root, '.agents/workflows/sandbox.md')));
-    assert.ok(existsSync(join(root, '.agents/types/sandbox-context.ts')));
     assert.ok(existsSync(join(root, '.agents/skills/sandbox/../../workflows/sandbox.md')));
     const ignore = readFileSync('.gitignore', 'utf8').split('\n').filter(line => /^!?skills\//.test(line)).map(line => line.startsWith('!') ? `!.agents/${line.slice(1)}` : `.agents/${line}`).join('\n');
     writeFileSync(join(root, '.gitignore'), ignore);

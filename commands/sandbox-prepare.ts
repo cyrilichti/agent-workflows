@@ -5,9 +5,8 @@ import { tmpdir } from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { resolveRepositoryReference } from './resolve-local-project-directory.ts';
-import type { SandboxContext, SandboxResult } from '../types/sandbox-context.ts';
 import { run, type Run } from './sandbox-runtime.ts';
-import { ownerMarker, teardown } from './sandbox-teardown.ts';
+import { ownerMarker, teardown, type SandboxContext, type SandboxResult } from './sandbox-teardown.ts';
 
 export function recordOwnership(context: SandboxContext): void {
   writeFileSync(join(context.root, ownerMarker), JSON.stringify(context), { mode: 0o600 });
