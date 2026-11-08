@@ -361,8 +361,8 @@ tasks:
             "path": inputs.commandsDirectory ~ "/publish-item-comment.ts",
             "args": [
               (outputs.next.body ?? "") | toJson | jq('try (fromjson | .stdout | fromjson | .id // "") catch ""') | first,
-              "Work attempt result\nKestra execution: " ~ execution.id ~ "\n\n" ~
-                (outputs.work.body ?? outputs.project.body ?? "Project resolution did not return a response. See the Kestra execution logs.")
+              (outputs.work.body ?? outputs.project.body ?? "Project resolution did not return a response. See the Kestra execution logs.")
+                | toJson | jq('. as $raw | (try (fromjson | .text // .stdout // $raw) catch $raw) | if type == "string" then . else $raw end') | first
             ]
           } | toJson }}
         timeout: PT5M
