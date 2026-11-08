@@ -16,9 +16,9 @@ export function repository(path: string) {
 }
 
 test('preparation validates its single JSON input and emits a staged JSON failure', () => {
-  for (const input of [{}, { item_id: 'x', project_directory: 'relative', dependency_directories: [], browser_validation: false },
-    { item_id: 'x', project_directory: '/tmp', dependency_directories: [], browser_validation: 'false' },
-    { item_id: 'x', project_directory: '/tmp', dependency_directories: ['relative'], browser_validation: false }]) {
+  for (const input of [{}, { item_id: 'x', project_directory: 'relative', dependency_directories: [], container_execution: false },
+    { item_id: 'x', project_directory: '/tmp', dependency_directories: [], container_execution: 'false' },
+    { item_id: 'x', project_directory: '/tmp', dependency_directories: ['relative'], container_execution: false }]) {
     assert.throws(() => parsePreparationInput(input));
   }
   const result = spawnSync(process.execPath, [resolve('commands/sandbox-prepare.ts')], { input: '{}', encoding: 'utf8' });
@@ -45,7 +45,7 @@ test('preflight rejects missing tools, auth, startup support, variables and secr
           stderr: failure === 'variables' ? 'The "PASSWORD" variable is not set.' : '' };
         return { stdout: '', stderr: '' };
       };
-      const result = prepare({ item_id: 'x', project_directory: app, dependency_directories: [], browser_validation: true }, runner);
+      const result = prepare({ item_id: 'x', project_directory: app, dependency_directories: [], container_execution: true }, runner);
       assert.equal(result.status, 'failed', failure);
       assert.equal(result.sandbox_context, undefined, failure);
       assert.deepEqual(readdirSync(root), ['app']);
@@ -54,11 +54,11 @@ test('preflight rejects missing tools, auth, startup support, variables and secr
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
-test('browser preparation requires Compose and stops before allocation when it is absent', () => {
+test('container preparation requires Compose and stops before allocation when it is absent', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-no-compose-'));
   try {
     const app = repository(join(root, 'app'));
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], browser_validation: true }, sandboxRunner().runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: true }, sandboxRunner().runner);
     assert.equal(result.status, 'failed');
     assert.equal(result.sandbox_context, undefined);
     assert.equal(gitWorktrees(app).length, 1);
@@ -103,14 +103,15 @@ test('separate preparations preserve ignored nested files, modes and untracked s
   try {
     const app = repository(join(root, 'app'));
     writeFileSync(join(app, '.gitignore'), '.env\nnested/\n');
-    execFileSync('git', ['-C', app, 'add', '.gitignore']);
+    writeFileSync(join(app, 'compose.yaml'), 'services: {}');
+    execFileSync('git', ['-C', app, 'add', '.gitignore', 'compose.yaml']);
     execFileSync('git', ['-C', app, '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-qm', 'ignore']);
     mkdirSync(join(app, 'nested'));
     writeFileSync(join(app, 'nested', '.env'), 'SECRET=private', { mode: 0o600 });
     chmodSync(join(app, 'nested'), 0o500);
-    const fake = sandboxRunner();
+    const noContainerRunner: Run = () => { throw new Error('Unexpected container command.'); };
     for (let index = 0; index < 2; index++) {
-      const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], browser_validation: false }, fake.runner);
+      const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: false }, noContainerRunner);
       assert.equal(result.status, 'prepared', JSON.stringify(result));
       if (!result.sandbox_context) throw new Error('Missing context');
       contexts.push(result.sandbox_context);
@@ -122,7 +123,6 @@ test('separate preparations preserve ignored nested files, modes and untracked s
       assert.equal(result.sandbox_context.docker, null);
     }
     assert.notEqual(contexts[0].root, contexts[1].root);
-    assert.equal(fake.sandboxes.size, 0);
   } finally {
     for (const context of contexts) removeResources(context);
     chmodSync(join(root, 'app', 'nested'), 0o700);
@@ -130,21 +130,21 @@ test('separate preparations preserve ignored nested files, modes and untracked s
   }
 });
 
-test('browser preparation remaps Compose paths and returns allocated ports; later failure rolls back', () => {
+test('container preparation remaps Compose paths and returns allocated ports; later failure rolls back', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-docker-'));
   try {
     const app = repository(join(root, 'app'));
     writeFileSync(join(app, 'compose.yaml'), 'services: {}');
     const fake = sandboxRunner({ model: { services: { web: { image: 'nginx',
       volumes: [{ type: 'bind', source: app, target: '/app' }], ports: [{ target: 80, published: '80' }] } } } });
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], browser_validation: true }, fake.runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: true }, fake.runner);
     assert.equal(result.status, 'prepared', JSON.stringify(result));
     assert.ok(result.sandbox_context?.docker);
     assert.equal(result.sandbox_context?.ports[0]?.host, 49123);
     removeResources(result.sandbox_context!, fake.runner);
     assert.equal(fake.sandboxes.size, 0);
     const failing = sandboxRunner({ fail: 'exec' });
-    const failed = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], browser_validation: true }, failing.runner);
+    const failed = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: true }, failing.runner);
     assert.equal(failed.status, 'failed');
     assert.equal(failing.sandboxes.size, 0);
     assert.equal(gitWorktrees(app).length, 1);
@@ -152,7 +152,7 @@ test('browser preparation remaps Compose paths and returns allocated ports; late
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
-test('browser preparation materializes environment-backed secrets without exposing their values in the context', () => {
+test('container preparation materializes environment-backed secrets without exposing their values in the context', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-env-secret-'));
   const previous = process.env.SANDBOX_TEST_SECRET;
   process.env.SANDBOX_TEST_SECRET = 'private-secret';
@@ -161,7 +161,7 @@ test('browser preparation materializes environment-backed secrets without exposi
     writeFileSync(join(app, 'compose.yaml'), 'services: {}');
     const fake = sandboxRunner({ model: { services: { web: { image: 'nginx', ports: [{ target: 80 }] } },
       secrets: { password: { environment: 'SANDBOX_TEST_SECRET' } } } });
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], browser_validation: true }, fake.runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: true }, fake.runner);
     try {
       assert.equal(result.status, 'prepared', JSON.stringify(result));
       assert.ok(!JSON.stringify(result).includes('private-secret'));
@@ -182,7 +182,7 @@ test('preparation uses explicit dependency repositories without parsing README p
     const shared = repository(join(root, 'shared'));
     writeFileSync(join(app, 'README.md'), 'The API and shared repositories support this app.\n');
     assert.deepEqual(validateRepositories(app, [api, shared], { services: { api: { build: { context: api } } } }), [app, api, shared]);
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [api, shared], browser_validation: false }, sandboxRunner().runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [api, shared], container_execution: false }, sandboxRunner().runner);
     assert.equal(result.status, 'prepared', JSON.stringify(result));
     context = result.sandbox_context;
     assert.deepEqual(context.repositories.map((entry: any) => entry.source), [app, api, shared]);
@@ -202,14 +202,14 @@ test('undeclared Compose repositories and invalid explicit dependencies fail bef
     assert.throws(() => validateRepositories(app, [], model), /undeclared dependency/);
     assert.throws(() => validateRepositories(app, [app]), /Duplicate dependency/);
     assert.throws(() => validateRepositories(app, [join(api, '.git')]), /repository roots/);
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], browser_validation: true }, sandboxRunner({ model }).runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: true }, sandboxRunner({ model }).runner);
     assert.equal(result.status, 'failed');
     assert.equal(result.sandbox_context, undefined);
     assert.equal(gitWorktrees(app).length, 1);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
-test('provided sibling repository Dockerfiles are remapped before browser startup', () => {
+test('provided sibling repository Dockerfiles are remapped before container startup', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-dockerfile-'));
   let context: any;
   const fake = sandboxRunner({ model: {} });
@@ -232,7 +232,7 @@ test('provided sibling repository Dockerfiles are remapped before browser startu
       }
       return base.runner(program, args, cwd);
     };
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [api], browser_validation: true }, runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [api], container_execution: true }, runner);
     context = result.sandbox_context;
     assert.equal(result.status, 'prepared', JSON.stringify(result));
     assert.equal(context.repositories.length, 2);

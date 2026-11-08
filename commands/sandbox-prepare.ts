@@ -11,14 +11,14 @@ export function recordOwnership(context: SandboxContext): void {
   writeFileSync(join(context.root, ownerMarker), JSON.stringify(context), { mode: 0o600 });
 }
 
-export interface PreparationInput { item_id: string; project_directory: string; dependency_directories: string[]; browser_validation: boolean }
+export interface PreparationInput { item_id: string; project_directory: string; dependency_directories: string[]; container_execution: boolean }
 export type Compose = Record<string, any>;
 
 export function parsePreparationInput(value: any): PreparationInput {
   if (!value || typeof value.item_id !== 'string' || !value.item_id.trim() ||
       typeof value.project_directory !== 'string' || !isAbsolute(value.project_directory) ||
       !Array.isArray(value.dependency_directories) || value.dependency_directories.some((path: unknown) => typeof path !== 'string' || !isAbsolute(path)) ||
-      typeof value.browser_validation !== 'boolean') throw new Error('Require item_id, absolute project_directory, absolute dependency_directories, and boolean browser_validation.');
+      typeof value.container_execution !== 'boolean') throw new Error('Require item_id, absolute project_directory, absolute dependency_directories, and boolean container_execution.');
   return value;
 }
 
@@ -78,6 +78,13 @@ export function validateRepositories(project: string, dependencies: string[], mo
 }
 
 export function preflight(input: PreparationInput, execute: Run = run): { repositories: string[]; model: Compose | null } {
+  const directory = input.project_directory;
+  if (!input.container_execution) {
+    return { repositories: validateRepositories(directory, input.dependency_directories), model: null };
+  }
+  const hasCompose = !!process.env.COMPOSE_FILE || ['compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml']
+    .some(name => existsSync(join(directory, name)));
+  if (!hasCompose) throw new Error('Container execution requires a Compose configuration.');
   // Source: https://docs.docker.com/ai/sandboxes/troubleshooting/
   execute('sbx', ['version', '--no-input']);
   const diagnostics = JSON.parse(execute('sbx', ['diagnose', '--format', 'json', '--no-input']).stdout);
@@ -90,31 +97,24 @@ export function preflight(input: PreparationInput, execute: Run = run): { reposi
   }
   execute('docker', ['compose', 'version']);
   execute('docker', ['info', '--format', '{{json .ServerVersion}}']);
-  const directory = input.project_directory;
-  const hasCompose = !!process.env.COMPOSE_FILE || ['compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml']
-    .some(name => existsSync(join(directory, name)));
-  if (!hasCompose && input.browser_validation) throw new Error('Browser validation requires a Compose configuration.');
-  let model: Compose | null = null;
-  if (hasCompose) {
-    // Source: https://docs.docker.com/reference/cli/docker/compose/config/
-    const result = execute('docker', ['compose', '--profile', '*', 'config', '--format', 'json'], directory);
-    if (/variable.*(?:not set|unset)|required variable/i.test(result.stderr)) throw new Error('Compose has missing variables.');
-    model = JSON.parse(result.stdout);
-    if (!model || !model.services || !Object.keys(model.services).length) throw new Error('Compose configuration has no services.');
-    for (const service of Object.values<any>(model.services)) {
-      if (Object.values(service.environment ?? {}).some(value => value === null)) throw new Error('Compose service environment has unresolved variables.');
-      if (service.network_mode === 'host') throw new Error('Host networking cannot publish isolated browser ports.');
-    }
-    for (const group of [model.secrets, model.configs]) for (const entry of Object.values<any>(group ?? {})) {
-      if (entry.external) throw new Error('External secrets/configs cannot be resolved in a fresh sandbox.');
-      if (entry.file) accessSync(resolve(directory, entry.file), constants.R_OK);
-      if (entry.environment && !process.env[entry.environment]) throw new Error('Compose secret/config environment is missing.');
-    }
-    for (const group of [model.volumes, model.networks]) for (const entry of Object.values<any>(group ?? {})) {
-      if (entry?.external) throw new Error('External volumes/networks cannot be resolved in a fresh sandbox.');
-    }
+  // Source: https://docs.docker.com/reference/cli/docker/compose/config/
+  const result = execute('docker', ['compose', '--profile', '*', 'config', '--format', 'json'], directory);
+  if (/variable.*(?:not set|unset)|required variable/i.test(result.stderr)) throw new Error('Compose has missing variables.');
+  const model: Compose = JSON.parse(result.stdout);
+  if (!model || !model.services || !Object.keys(model.services).length) throw new Error('Compose configuration has no services.');
+  for (const service of Object.values<any>(model.services)) {
+    if (Object.values(service.environment ?? {}).some(value => value === null)) throw new Error('Compose service environment has unresolved variables.');
+    if (service.network_mode === 'host') throw new Error('Host networking cannot publish isolated sandbox ports.');
   }
-  return { repositories: validateRepositories(directory, input.dependency_directories, model ?? {}), model };
+  for (const group of [model.secrets, model.configs]) for (const entry of Object.values<any>(group ?? {})) {
+    if (entry.external) throw new Error('External secrets/configs cannot be resolved in a fresh sandbox.');
+    if (entry.file) accessSync(resolve(directory, entry.file), constants.R_OK);
+    if (entry.environment && !process.env[entry.environment]) throw new Error('Compose secret/config environment is missing.');
+  }
+  for (const group of [model.volumes, model.networks]) for (const entry of Object.values<any>(group ?? {})) {
+    if (entry?.external) throw new Error('External volumes/networks cannot be resolved in a fresh sandbox.');
+  }
+  return { repositories: validateRepositories(directory, input.dependency_directories, model), model };
 }
 
 function copyIgnored(source: string, worktree: string): void {
@@ -200,7 +200,7 @@ export function prepare(value: unknown, execute: Run = run): SandboxResult {
       git(source, 'worktree', 'add', '--detach', worktree, 'HEAD');
       copyIgnored(source, worktree);
     }
-    if (input.browser_validation && model) {
+    if (input.container_execution && model) {
       stage = 'docker';
       const compose = join(context.root, 'compose.json');
       writeFileSync(compose, JSON.stringify(remapModel(model, context)), { mode: 0o600 });

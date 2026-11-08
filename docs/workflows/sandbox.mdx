@@ -10,27 +10,30 @@ after returning its result; delivery callers decide when to use the environment.
 
 ## How `/sandbox` prepares and removes an environment
 
-<div className="write-flow" role="group" aria-label="The sandbox workflow selects preparation from an item reference, or teardown from a returned sandbox context. Preparation resolves the official item, uses the current project, determines validation needs, checks prerequisites, resolves repositories, creates worktrees, and optionally starts Docker services. Teardown verifies ownership and removes recorded resources. Both modes return a JSON result and end the workflow.">
+<div className="write-flow sandbox-flow" role="img" aria-label="The sandbox workflow has two branches. An item starts preparation: resolve the item and plan, locate README dependencies, then create worktrees and optionally run project services in Docker before returning the context. A returned sandbox context starts teardown: verify ownership, remove recorded resources, and return the result. Each branch ends independently.">
   <div className="write-flow__step write-flow__step--focus">
     <small>01 · Input</small>
-    <strong>Select preparation or teardown</strong>
-    <span>Supply an item reference to prepare in the current project; supply a returned <code>sandbox_context</code> to tear down.</span>
+    <strong>Choose the branch</strong>
+    <span>Supply an item to prepare, or a returned <code>sandbox_context</code> to tear down.</span>
   </div>
 
-  <span className="write-flow__connector" aria-hidden="true">↓</span>
-
-  <div className="write-flow__step write-flow__step--focus">
-    <small>02 · Selected mode</small>
-    <strong>Prepare or remove resources</strong>
-    <span>Preparation checks prerequisites and creates isolated resources. Teardown verifies ownership and removes the recorded resources.</span>
-  </div>
-
-  <span className="write-flow__connector" aria-hidden="true">↓</span>
-
-  <div className="write-flow__step write-flow__step--assisted">
-    <small>03 · Return</small>
-    <strong>Return the JSON result</strong>
-    <span>Keep the context for teardown or a cleanup retry. The workflow ends after returning its result.</span>
+  <div className="plan-flow__scope">
+    <section className="plan-flow__scope-path">
+      <small className="pick-flow__path-label">Item supplied · Prepare</small>
+      <div className="write-flow__step write-flow__step--focus">
+        <small>02 · Preparation</small>
+        <strong>Create the sandbox</strong>
+        <span>Read the plan, locate README dependencies, create worktrees, and run Docker when the plan requires container execution. Return the context.</span>
+      </div>
+    </section>
+    <section className="plan-flow__scope-path">
+      <small className="pick-flow__path-label">Context supplied · Teardown</small>
+      <div className="write-flow__step write-flow__step--focus">
+        <small>02 · Teardown</small>
+        <strong>Remove the sandbox</strong>
+        <span>Verify ownership, remove the recorded Docker sandbox and worktrees, and return the result.</span>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -41,32 +44,27 @@ after returning its result; delivery callers decide when to use the environment.
     <tr>
       <td>1</td>
       <th scope="row">Select</th>
-      <td>A supplied <code>sandbox_context</code> selects teardown. For preparation, supply <code>item</code> as an ID, native URL, title, or search phrase. Resolve the official item with the existing item-resolution command, use the current project repository, and determine browser-validation needs from the complete item context. Stop if the item cannot be resolved uniquely.</td>
+      <td>A supplied <code>sandbox_context</code> selects teardown. For preparation, supply <code>item</code> as an ID, native URL, title, or search phrase. Resolve the official item and its plan in the current project. Stop if either cannot be resolved.</td>
     </tr>
     <tr>
-      <td>2</td>
-      <th scope="row">Check</th>
-      <td>Before allocation, preparation checks <a href="https://docs.docker.com/ai/sandboxes/get-started/">sbx</a> authentication and local startup diagnostics, Docker Engine, and Docker Compose. Browser validation requires a Compose configuration; when present, its variables, environment files, and file or environment secrets must resolve. External secrets, configs, networks, and volumes fail preflight because a fresh sandbox cannot resolve them.</td>
+      <td>2a</td>
+      <th scope="row">Read the plan</th>
+      <td>Preparation reads the authoritative plan. If it requires project code or services to run in a container, require a Compose configuration and check <a href="https://docs.docker.com/ai/sandboxes/get-started/">sbx</a>, Docker Engine, and Compose before allocation. Otherwise, Docker is not required.</td>
     </tr>
     <tr>
-      <td>3</td>
-      <th scope="row">Resolve</th>
+      <td>3a</td>
+      <th scope="row">Resolve dependencies</th>
       <td>The agent identifies local repository dependencies from service and repository names in the README, then locates each with the existing project resolver command. It repeats this for the README of each located repository and supplies their absolute paths. Preparation validates those paths before allocation.</td>
     </tr>
     <tr>
-      <td>4</td>
-      <th scope="row">Prepare</th>
-      <td>Create a detached worktree at each resolved repository's current <code>HEAD</code> and copy Git-ignored resources with their paths and permissions. For browser validation, start Compose services in a uniquely named sbx shell sandbox and allocate a separate sandbox port and an available host port on loopback for each published service port.</td>
+      <td>4a</td>
+      <th scope="row">Create</th>
+      <td>Create a detached worktree at each resolved repository's current <code>HEAD</code> and copy Git-ignored resources with their paths and permissions. When container execution is required, start Compose services in a uniquely named sbx shell sandbox and allocate ports. Return the resulting <code>sandbox_context</code>; on failure, attempt rollback and report the stage and reason.</td>
     </tr>
     <tr>
-      <td>5</td>
+      <td>2b</td>
       <th scope="row">Tear down</th>
-      <td>Verify context ownership, then remove its optional Docker sandbox and recorded worktrees. Accept partial preparation records and repeated teardown; preserve the main checkouts.</td>
-    </tr>
-    <tr>
-      <td>6</td>
-      <th scope="row">Return</th>
-      <td>Return the command's JSON result unchanged. Preparation returns repository paths, ports, and the optional Docker sandbox in a reusable context. Failure reports its stage and reason; preparation attempts rollback and returns any allocated context. Keep that context for cleanup retry.</td>
+      <td>Verify context ownership, then remove its optional Docker sandbox and recorded worktrees. Accept partial preparation records and repeated teardown, preserve the main checkouts, and return the result.</td>
     </tr>
   </tbody>
 </table>

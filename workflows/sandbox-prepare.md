@@ -23,9 +23,12 @@ node ../commands/resolve-existing-item.ts --query "<item>"
 Continue only on `status: resolved`. On `failed`, report `stage` and `reason`;
 on `not_found` or `ambiguous`, report the result and stop.
 
-Set `item_id` to the resolved official item's ID. Read its complete context and
-determine whether validating the requested outcome requires browser interaction.
-Set `browser_validation` to that decision.
+Set `item_id` to the resolved official item's ID. Read its authoritative plan:
+use the local plan referenced by a linked request when present, otherwise the
+approved plan in the item's comments. Stop if no plan is available. Set
+`container_execution` to whether the plan requires running project code or
+services in a container. If it does, require a Docker Compose configuration in
+the current project; report a missing configuration and stop.
 
 Read the current project's README. Identify required local repository dependencies
 from the service and repository names it specifies.
@@ -45,7 +48,7 @@ Invoke preparation from this file's directory with the resolved and derived valu
 
 ```sh
 node ../commands/sandbox-prepare.ts <<'JSON'
-{"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","dependency_directories":<absolute dependency repository roots as JSON array>,"browser_validation":<browser_validation>}
+{"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","dependency_directories":<absolute dependency repository roots as JSON array>,"container_execution":<container_execution>}
 JSON
 ```
 
