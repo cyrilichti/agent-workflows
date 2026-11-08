@@ -85,7 +85,7 @@ test('unknown ClickUp statuses are skipped without another provider call', () =>
 });
 
 test('ClickUp selection chooses the oldest eligible item across tasks and subtasks', () => {
-  for (const [taskDate, subtaskDate, expected] of [['3', '2', 'subtask'], ['2', '3', 'top-level']]) {
+  for (const [taskDate, subtaskDate, expected] of [['3', '2', 'subtask'], ['2', '3', 'top-level']] as const) {
     const f = fixture([
       task('top-level', 'Open', taskDate),
       { ...task('subtask', 'To Do', subtaskDate), parent: 'parent-task' },
