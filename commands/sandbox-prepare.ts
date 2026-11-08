@@ -5,9 +5,13 @@ import { tmpdir } from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { resolveRepositoryReference } from './resolve-local-project-directory.ts';
-import type { SandboxContext, SandboxResult } from './sandbox-context.ts';
+import type { SandboxContext, SandboxResult } from '../types/sandbox-context.ts';
 import { run, type Run } from './sandbox-runtime.ts';
-import { recordOwnership, removeResources } from './sandbox-lifecycle.ts';
+import { ownerMarker, teardown } from './sandbox-teardown.ts';
+
+export function recordOwnership(context: SandboxContext): void {
+  writeFileSync(join(context.root, ownerMarker), JSON.stringify(context), { mode: 0o600 });
+}
 
 export interface PreparationInput { item_id: string; project_directory: string; browser_validation: boolean }
 export type Compose = Record<string, any>;
@@ -234,8 +238,8 @@ export function prepare(value: unknown, execute: Run = run): SandboxResult {
   } catch (error) {
     let reason = error instanceof Error ? error.message : String(error);
     if (context) {
-      try { removeResources(context, execute); }
-      catch (cleanup) { reason += ` Rollback incomplete: ${cleanup instanceof Error ? cleanup.message : String(cleanup)}`; }
+      const cleanup = teardown({ sandbox_context: context }, execute);
+      if (cleanup.status === 'failed') reason += ` Rollback incomplete: ${cleanup.reason}`;
     }
     return { status: 'failed', stage, reason, ...(context ? { sandbox_context: context } : {}) };
   }

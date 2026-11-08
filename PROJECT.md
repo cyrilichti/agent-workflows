@@ -4,7 +4,7 @@ Agent Workflows gives coding agents a structured path from an initial request to
 
 ## Agent context and request routing
 
-This repository is the source of an installable context bundle. Its `agents/`, `commands/`, `goals/`, `providers/`, `rules/`, `skills/`, `templates/`, and `workflows/` directories become managed content under `.agents/` in a consuming project. The consuming project's root `AGENTS.md` routes requests to the appropriate workflow.
+This repository is the source of an installable context bundle. Its `agents/`, `commands/`, `goals/`, `providers/`, `rules/`, `skills/`, `templates/`, `types/`, and `workflows/` directories become managed content under `.agents/` in a consuming project. The consuming project's root `AGENTS.md` routes requests to the appropriate workflow.
 
 The routing table maps a request to one matching workflow. For example, writing one item routes to `/write`, selecting an item for delivery routes to `/pick`, and reviewing a request routes to `/inspect`. The task table and activation format for specialist profiles from `agents/` are embedded in `workflows/specialist.md`.
 

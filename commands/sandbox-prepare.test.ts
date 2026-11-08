@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
 import { parsePreparationInput, resolveDependencies, prepare } from './sandbox-prepare.ts';
-import { removeResources } from './sandbox-lifecycle.ts';
+import { removeResources } from './sandbox-teardown.ts';
 import type { Run } from './sandbox-runtime.ts';
 
 export function repository(path: string) {

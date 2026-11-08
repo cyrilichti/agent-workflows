@@ -18,7 +18,6 @@ JSON
 
 Success: `{ "status": "completed", "sandbox_context": SandboxContext }`.
 Failure: `{ "status": "failed", "stage": "input" | "teardown", "reason": string,
-"sandbox_context"?: SandboxContext }`, with exit code 1. Keep a teardown failure's
-context for retry.
+"sandbox_context"?: SandboxContext }`, with exit code 1.
 
 Return the command's JSON result unchanged and end this workflow.

@@ -33,6 +33,7 @@ cat ../../rules/default-language.md ../../rules/git-authorization.md ../../rules
   rules
   skills
   templates
+  types
   workflows
   ```
 

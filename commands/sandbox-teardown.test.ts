@@ -5,8 +5,8 @@ import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
-import type { SandboxContext } from './sandbox-context.ts';
-import { recordOwnership } from './sandbox-lifecycle.ts';
+import type { SandboxContext } from '../types/sandbox-context.ts';
+import { recordOwnership } from './sandbox-prepare.ts';
 import { teardown } from './sandbox-teardown.ts';
 import type { Run } from './sandbox-runtime.ts';
 

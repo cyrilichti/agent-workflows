@@ -48,6 +48,6 @@ Failure: `{ "status": "failed", "stage": string, "reason": string,
 `preflight`, `worktrees`, `docker`, or `ports`.
 
 Carry any returned `sandbox_context` unchanged to teardown, including after
-failure. Its type is defined in `../commands/sandbox-context.ts`.
+failure.
 
 Return the command's JSON result unchanged and end this workflow.
