@@ -26,17 +26,17 @@ on `not_found` or `ambiguous`, report the result and stop.
 Set `item_id` to the resolved official item's ID. Read the approved plan in the
 resolved item's comments. Stop if no approved plan comment is available. Set
 `container_execution` only when the plan requires running project code or
-services in a container, the current project has a Docker Compose configuration,
-and Docker and sbx are available. Otherwise, use `false`; preparation still
-creates the project worktree.
+services in a container and the current project has a Docker Compose
+configuration. Otherwise, use `false`; preparation still creates the project
+worktree.
 
 Set `dependency_directories` to `[]` when `container_execution` is `false`.
 Otherwise, read the current project's README and identify its local repository
-dependencies. Resolve their names together by sending a JSON array to this
-command on stdin from this file's directory:
+dependencies. Set `repository_names_json` to a JSON array of their names, then
+resolve them together from this file's directory:
 
 ```sh
-node ../commands/resolve-local-repository-dependencies.ts
+node ../commands/resolve-local-repository-dependencies.ts "$repository_names_json"
 ```
 
 Read the README of each resolved repository and repeat for any dependencies it

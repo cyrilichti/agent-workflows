@@ -82,7 +82,7 @@ function match(name: string, configured: string[], neighbors: string[]): Match {
 
 function resolve(names: unknown): { results: Match[] } | { status: 'search incomplete' } {
   if (!Array.isArray(names) || !names.length || names.some(name => typeof name !== 'string' || !name.trim() || !normalize(name))) {
-    throw new Error('Expected a nonempty JSON array of repository names on stdin.');
+    throw new Error('Expected a nonempty JSON array of repository names.');
   }
   const paths = configuredPaths();
   const configured = inspectPaths(paths);
@@ -92,7 +92,8 @@ function resolve(names: unknown): { results: Match[] } | { status: 'search incom
 }
 
 try {
-  process.stdout.write(`${JSON.stringify(resolve(JSON.parse(readFileSync(0, 'utf8'))))}\n`);
+  if (process.argv.length !== 3) throw new Error('Pass one JSON array of repository names.');
+  process.stdout.write(`${JSON.stringify(resolve(JSON.parse(process.argv[2]!)))}\n`);
 } catch (error) {
   process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
   process.exitCode = 1;

@@ -26,13 +26,16 @@ test('preparation validates its single JSON input and emits a staged JSON failur
   assert.equal(JSON.parse(result.stdout).stage, 'input');
 });
 
-test('preflight rejects auth, startup support, variables and secrets without resources', () => {
+test('preflight rejects unavailable tools, auth, startup support, variables and secrets without resources', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-preflight-'));
   try {
     const app = repository(join(root, 'app'));
     writeFileSync(join(app, 'compose.yaml'), 'services: {}');
-    for (const failure of ['auth', 'virtualization', 'variables', 'secret']) {
-      const runner: Run = (_program, args) => {
+    for (const failure of ['sbx', 'compose', 'docker', 'auth', 'virtualization', 'variables', 'secret']) {
+      const runner: Run = (program, args) => {
+        if ((failure === 'sbx' && program === 'sbx' && args[0] === 'version') ||
+          (failure === 'compose' && program === 'docker' && args[0] === 'compose' && args[1] === 'version') ||
+          (failure === 'docker' && program === 'docker' && args[0] === 'info')) throw new Error('tool unavailable');
         if (args[0] === 'diagnose') return { stdout: JSON.stringify({ checks: [
           { name: 'Authentication', status: failure === 'auth' ? 'fail' : 'pass' },
           { name: 'Virtualization', status: failure === 'virtualization' ? 'fail' : 'pass' },
@@ -51,7 +54,7 @@ test('preflight rejects auth, startup support, variables and secrets without res
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
-test('missing Compose or Docker tools fall back to a project worktree', () => {
+test('missing Compose falls back to a project worktree', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-no-compose-'));
   try {
     const app = repository(join(root, 'app'));
@@ -61,14 +64,6 @@ test('missing Compose or Docker tools fall back to a project worktree', () => {
     assert.equal(noCompose.status, 'prepared');
     assert.deepEqual(noCompose.sandbox_context?.repositories.map(entry => entry.source), [app]);
     removeResources(noCompose.sandbox_context!);
-    writeFileSync(join(app, 'compose.yaml'), 'services: {}');
-    const noDocker = prepare(input, (program, args) => {
-      if (program === 'docker' && args[0] === 'compose') throw new Error('Docker unavailable');
-      return { stdout: '', stderr: '' };
-    });
-    assert.equal(noDocker.status, 'prepared');
-    assert.deepEqual(noDocker.sandbox_context?.repositories.map(entry => entry.source), [app]);
-    removeResources(noDocker.sandbox_context!);
     assert.equal(gitWorktrees(app).length, 1);
     assert.equal(gitWorktrees(dependency).length, 1);
   } finally { rmSync(root, { recursive: true, force: true }); }

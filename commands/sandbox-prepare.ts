@@ -86,13 +86,9 @@ export function preflight(input: PreparationInput, execute: Run = run): { reposi
   const hasCompose = !!process.env.COMPOSE_FILE || ['compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml']
     .some(name => existsSync(join(directory, name)));
   if (!hasCompose) return worktreeOnly();
-  try {
-    execute('sbx', ['version', '--no-input']);
-    execute('docker', ['compose', 'version']);
-    execute('docker', ['info', '--format', '{{json .ServerVersion}}']);
-  } catch {
-    return worktreeOnly();
-  }
+  execute('sbx', ['version', '--no-input']);
+  execute('docker', ['compose', 'version']);
+  execute('docker', ['info', '--format', '{{json .ServerVersion}}']);
   // Source: https://docs.docker.com/ai/sandboxes/troubleshooting/
   const diagnostics = JSON.parse(execute('sbx', ['diagnose', '--format', 'json', '--no-input']).stdout);
   if (!Array.isArray(diagnostics.checks) || diagnostics.summary?.fail > 0 ||
