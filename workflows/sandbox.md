@@ -14,7 +14,7 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/user-fac
 | Input | Description |
 | --- | --- |
 | `item` | Required item ID, native URL, title, or search phrase for preparation. |
-| `sandbox_context` | When supplied, select teardown instead of preparation. |
+| `sandbox_context` | Required context returned by preparation for teardown. |
 
 ## Branch Routing
 
