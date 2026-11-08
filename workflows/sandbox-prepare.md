@@ -40,7 +40,4 @@ Failure: `{ "status": "failed", "stage": string, "reason": string,
 "sandbox_context"?: SandboxContext }`, with exit code 1. Stages are `input`,
 `preflight`, `worktrees`, `docker`, or `ports`.
 
-Carry any returned `sandbox_context` unchanged to teardown, including after
-failure.
-
 Return the command's JSON result unchanged and end this workflow.
