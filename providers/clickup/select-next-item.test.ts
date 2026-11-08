@@ -39,5 +39,5 @@ test('ClickUp adapter requests planned tasks and normalizes statuses, labels, an
       category: null, labels: [], updatedAt: NaN },
   ]);
   assert.deepEqual(readFileSync(args, 'utf8').trim().split('\n'),
-    ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json']);
+    ['task', 'search', '--tag', 'agent-planned', '--subtasks', '--page', '0', '--output', 'json']);
 });

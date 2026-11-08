@@ -69,7 +69,7 @@ test('ClickUp selection uses one filtered call, oldest eligible date, and provid
     assert.equal(result.status, 0, result.stderr);
     assert.deepEqual(JSON.parse(result.stdout), { name: 'Task first', id: 'first', url: 'https://example.test/first', list: 'List' });
     assert.deepEqual(readFileSync(join(f.root, 'args.txt'), 'utf8').trim().split('\n'),
-      ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json']);
+      ['task', 'search', '--tag', 'agent-planned', '--subtasks', '--page', '0', '--output', 'json']);
   } finally { f.cleanup(); }
 });
 
@@ -80,7 +80,7 @@ test('unknown ClickUp statuses are skipped without another provider call', () =>
     assert.equal(result.status, 0, result.stderr);
     assert.equal(JSON.parse(result.stdout).id, 'open');
     assert.deepEqual(readFileSync(join(f.root, 'args.txt'), 'utf8').trim().split('\n'),
-      ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json']);
+      ['task', 'search', '--tag', 'agent-planned', '--subtasks', '--page', '0', '--output', 'json']);
   } finally { f.cleanup(); }
 });
 
