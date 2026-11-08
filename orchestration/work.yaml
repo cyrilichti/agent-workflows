@@ -203,6 +203,7 @@ tasks:
                           } | toJson }}
                         timeout: PT1H
                         options:
+                          allowFailed: true
                           timeout:
                             connectTimeout: PT5S
                             readIdleTimeout: PT59M55S
@@ -219,7 +220,9 @@ tasks:
                           | Partial | A valid result reports unfinished work or inspection. Route to `work-partial` and retain the result for follow-up. |
                           | Invalid | Required statuses are absent, unknown, or contradictory. Route to `work-error`. |
                         value: >-
-                          {{ fromJson(outputs['work'].body).text | toJson | jq('
+                          {{ outputs.work | toJson | jq('
+                            if .code != 200 then "error" else
+                            (try (.body | fromjson | .text) catch null) |
                             try (
                               gsub("\\\\[rnt]"; " ") | gsub("[\\\\`*_]"; "") | gsub("\\s+"; " ")
                               | . as $text
@@ -240,6 +243,7 @@ tasks:
                                 else "partial"
                                 end
                             ) catch "error"
+                            end
                           ') | first }}
                         cases:
                           error:
@@ -255,8 +259,8 @@ tasks:
                                 | 1. Fail | Reject missing, unknown, or contradictory inspection statuses. |
                                 | 2. Diagnose | Include the received text in the error, then continue to `sleep`. |
                               errorMessage: |-
-                                Invalid /work response: expected recognized, consistent inspection and label statuses. Received response:
-                                {{ fromJson(outputs['work'].body).text | default('No textual response received.') }}
+                                Failed or invalid /work response (HTTP {{ outputs.work.code }}): expected HTTP 200 and recognized, consistent inspection and label statuses. Received response:
+                                {{ outputs.work.body }}
                           partial:
                             - id: work-partial
                               type: io.kestra.plugin.core.execution.Fail
@@ -344,6 +348,24 @@ tasks:
                     | 1. Fail | Record the invalid content as a failed attempt. |
                     | 2. Continue | Run `sleep` before another selection. |
                   errorMessage: Invalid selection script output.
+      - id: notify
+        type: io.kestra.plugin.core.http.Request
+        allowFailure: true
+        uri: '{{ envs.bridge_url }}/scripts'
+        method: POST
+        contentType: application/json
+        headers:
+          Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+        body: >-
+          {{ {
+            "path": inputs.commandsDirectory ~ "/publish-item-comment.ts",
+            "args": [
+              (outputs.next.body ?? "") | toJson | jq('try (fromjson | .stdout | fromjson | .id // "") catch ""') | first,
+              "Work attempt result\nKestra execution: " ~ execution.id ~ "\n\n" ~
+                (outputs.work.body ?? outputs.project.body ?? "Project resolution did not return a response. See the Kestra execution logs.")
+            ]
+          } | toJson }}
+        timeout: PT5M
       - id: sleep
         type: io.kestra.plugin.core.flow.Sleep
         description: |
