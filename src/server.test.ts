@@ -37,9 +37,44 @@ test('Kestra routes invalid selection responses and waits after failed attempts'
   assert.match(flow, /id: start\s+type: io\.kestra\.plugin\.core\.flow\.AllowFailure/);
   assert.match(flow, /uri: '\{\{ envs\.bridge_url \}\}\/scripts'/);
   assert.match(selection, /cases:\s+item:\s+- id: project/);
-  assert.match(flow, /no-item:\s+- id: no-item\s+type: io\.kestra\.plugin\.core\.log\.Log/);
+  const noItem = flow.slice(flow.indexOf('\n              no-item:'), flow.indexOf('\n              error:'));
+  assert.match(noItem, /type: io\.kestra\.plugin\.core\.output\.OutputValues/);
+  assert.match(noItem, /values: \{\}/);
+  assert.doesNotMatch(noItem, /log\.Log|execution\.Fail|message:/);
   assert.match(flow, /error:\s+- id: next-error\s+type: io\.kestra\.plugin\.core\.execution\.Fail/);
   assert.match(flow, /\n      - id: sleep\s+type: io\.kestra\.plugin\.core\.flow\.Sleep/);
+});
+
+test('Kestra preserves result logging, publication, and delay for all work outcomes', () => {
+  const resultSwitch = flow.slice(flow.indexOf('                      - id: is-success'),
+    flow.indexOf('                    no-project:'));
+  const resultFilter = resultSwitch.match(/jq\('([\s\S]*?)'\)/)?.[1];
+  assert.ok(resultFilter);
+  for (const [text, expected] of [
+    ['inspection completed without findings; agent-inspected applied', 'success'],
+    ['inspection published; agent-inspected applied', 'success'],
+    ['inspection incomplete; agent-inspected not applied', 'partial'],
+    ['inspection failed; agent-inspected not applied', 'partial'],
+    ['unrecognized result', 'error'],
+    ['inspection published; inspection incomplete; agent-inspected applied', 'error'],
+  ]) {
+    const route = execFileSync('jq', ['-r', resultFilter], {
+      input: JSON.stringify({ code: 200, body: JSON.stringify({ text }) }), encoding: 'utf8',
+    }).trim();
+    assert.equal(route, expected, text);
+  }
+  const partial = resultSwitch.slice(resultSwitch.indexOf('                          partial:'),
+    resultSwitch.indexOf('                          success:'));
+  assert.match(partial, /type: io\.kestra\.plugin\.core\.log\.Log/);
+  assert.match(partial, /level: WARN/);
+  assert.match(partial, /message: \|-[\s\S]*fromJson\(outputs\['work'\]\.body\)\.text/);
+  assert.doesNotMatch(partial, /allowFailure|errorMessage|execution\.Fail/);
+  assert.match(resultSwitch, /id: work-error\s+type: io\.kestra\.plugin\.core\.execution\.Fail/);
+  assert.match(resultSwitch, /errorMessage: \|-[\s\S]*outputs.work.code[\s\S]*outputs.work.body/);
+  assert.match(resultSwitch, /id: work-sucess\s+type: io\.kestra\.plugin\.core\.log\.Log/);
+  assert.match(resultSwitch, /message: Work completed successfully; inspection completed and agent-inspected was applied to the selected item\./);
+  assert.match(flow, /\n      - id: notify\n[\s\S]*publish-item-comment\.ts[\s\S]*\n      - id: sleep\n/);
+  assert.match(flow, /condition: '\{\{ false \}\}'/);
 });
 
 test('Kestra parses project stdout and calls the generic endpoint', () => {

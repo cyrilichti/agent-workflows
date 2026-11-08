@@ -12,7 +12,7 @@ description: |
   | 1. Select | The bridge runs the deterministic selector and returns the oldest eligible `agent-planned` item or reports that none is available. |
   | 2. Resolve | For a selected item, `resolve-local-project-directory.ts` returns its local repository path or an explicit unresolved result. |
   | 3. Deliver | `/work` executes the approved plan and continues through `/ready` and `/inspect`. Readiness gaps and blocking findings return to `/work` before this cycle ends. |
-  | 4. Check | Accept completion only when the inspection statuses confirm inspection plus `agent-inspected`. Record incomplete or invalid results as failures. |
+  | 4. Check | Accept completion only when the inspection statuses confirm inspection plus `agent-inspected`. Log incomplete results as warnings and invalid results as failures. |
   | 5. Wait | `sleep` waits `intervalSeconds` (default `300`), then another selection starts. |
   | 6. Stop | Kill this execution in Kestra to stop the loop. Merge and `/done` remain human decisions. |
 inputs:
@@ -95,7 +95,7 @@ tasks:
               | Result | Execution |
               | --- | --- |
               | Item | Nonblank `name`, `id`, `url`, and `list` route to `project`. |
-              | No item | Exactly `{"status":"no eligible item"}` routes to `no-item`; skip `resolve-local-project-directory.ts` and `/work`. |
+              | No item | Exactly `{"status":"no eligible item"}` ends the attempt silently; skip `resolve-local-project-directory.ts` and `/work`. |
               | Invalid | Any malformed or unexpected response routes to `next-error`. |
             value: >-
               {{ outputs.next.body | toJson | jq('
@@ -263,7 +263,7 @@ tasks:
                                 {{ outputs.work.body }}
                           partial:
                             - id: work-partial
-                              type: io.kestra.plugin.core.execution.Fail
+                              type: io.kestra.plugin.core.log.Log
                               description: |
                                 This task records a valid but incomplete
                                 `/work` result. The item is not reported as
@@ -274,8 +274,8 @@ tasks:
                                 | --- | --- |
                                 | 1. Record | Include the bridge's returned result in the task log for follow-up. |
                                 | 2. Continue | Allow `sleep` and later cycles to run. |
-                              allowFailure: true
-                              errorMessage: |-
+                              level: WARN
+                              message: |-
                                 Work did not complete successfully. Received response:
                                 {{ fromJson(outputs['work'].body).text }}
                           success:
@@ -321,19 +321,9 @@ tasks:
                         errorMessage: 'Invalid project script output: expected a nonblank string path or a documented unresolved status without a path.'
               no-item:
                 - id: no-item
-                  type: io.kestra.plugin.core.log.Log
-                  description: |
-                    This task records that `select-next-item.ts` found no eligible item in
-                    the provider page it inspected. An empty selection is a
-                    normal outcome for this cycle.
-
-                    | Step | Execution |
-                    | --- | --- |
-                    | 1. Skip | Skip repository resolution and `/work`. |
-                    | 2. Log | Record the empty selection without treating it as an error. |
-                    | 3. Continue | Run `sleep`, then query the provider again. |
-                  level: INFO
-                  message: 'no-item: aucun item éligible ; ce cycle se termine sans résolution de projet.'
+                  type: io.kestra.plugin.core.output.OutputValues
+                  description: End an empty selection silently before publication and the next delay.
+                  values: {}
               error:
                 - id: next-error
                   type: io.kestra.plugin.core.execution.Fail
