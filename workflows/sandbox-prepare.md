@@ -20,8 +20,12 @@ For a title or search phrase:
 node ../commands/resolve-existing-item.ts --query "<item>"
 ```
 
-Continue only on `status: resolved`. On `failed`, report `stage` and `reason`;
-on `not_found` or `ambiguous`, report the result and stop.
+On `not_found`, ask for a better reference or search phrase and repeat. On
+`ambiguous`, ask with `../templates/select-option.md` using each candidate's
+title, status, and destination as its label and `item_id` as its value. Rerun
+the command with the selected ID as the positional `item`. On failure, report
+`stage` and `reason`, then stop. Use only the final `resolved` provider and
+item as official context.
 
 Set `item_id` to the resolved official item's ID. Read the approved plan in the
 resolved item's comments. Stop if no approved plan comment is available. Set
