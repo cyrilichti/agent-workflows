@@ -28,10 +28,19 @@ determine whether validating the requested outcome requires browser interaction.
 Set `browser_validation` to that decision.
 
 Read the current project's README and effective Compose configuration, if present.
-Follow local repository references and inspect discovered repositories as needed.
-Identify the required dependency repositories by reasoning over that evidence.
-Set `dependency_directories` to their absolute Git roots, excluding the current
-project. If a required dependency cannot be identified uniquely, report it and stop.
+Identify required local repository dependencies from the service and repository
+names in that evidence.
+For each name, locate its repository from this file's directory:
+
+```sh
+node ../commands/resolve-local-project-directory.ts "<service or repository name>" "<resolved item ID>"
+```
+
+Require a returned `path` that matches the identified dependency. On `not found`,
+`search incomplete`, an error, or an unclear match, report it and stop. Inspect
+each located repository's README and Compose configuration for further dependencies
+and repeat. Set `dependency_directories` to the distinct returned absolute paths,
+excluding the current project.
 
 Invoke preparation from this file's directory with the resolved and derived values:
 
