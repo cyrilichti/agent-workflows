@@ -71,7 +71,7 @@ function gitWorktrees(path: string): string[] {
 function sandboxRunner(options: { fail?: string; model?: any } = {}) {
   const sandboxes = new Set<string>();
   let workspace = '';
-  const runner: Run = (program, args) => {
+  const runner: Run = (_program, args) => {
     if (args[0] === options.fail) throw new Error('simulated startup failure');
     let value: any = '';
     if (args[0] === 'diagnose') value = { checks: ['Authentication', 'Daemon', 'Virtualization'].map(name => ({ name, status: 'pass' })) };
