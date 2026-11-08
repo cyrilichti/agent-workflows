@@ -33,10 +33,19 @@ function repositoryAt(path: string): string {
   return realpathSync(git(directory, 'rev-parse', '--show-toplevel'));
 }
 
+function localBuildContext(service: any): string | undefined {
+  const context = service.build?.context;
+  return typeof context === 'string' && !/^(?:[a-z][a-z0-9+.-]*:|git@)/i.test(context) ? context : undefined;
+}
+
 export function composePaths(model: Compose): string[] {
   const paths: string[] = [];
   for (const service of Object.values<any>(model.services ?? {})) {
-    if (service.build?.context && !/^(https?:|git@|service:)/.test(service.build.context)) paths.push(service.build.context);
+    const context = localBuildContext(service);
+    if (context) {
+      paths.push(context);
+      if (service.build.dockerfile) paths.push(isAbsolute(service.build.dockerfile) ? service.build.dockerfile : join(context, service.build.dockerfile));
+    }
     for (const volume of service.volumes ?? []) if (volume.type === 'bind') paths.push(volume.source);
     for (const entry of service.env_file ?? []) paths.push(typeof entry === 'string' ? entry : entry.path);
   }
@@ -140,8 +149,12 @@ function remapModel(model: Compose, context: SandboxContext): Compose {
   };
   for (const [name, service] of Object.entries<any>(result.services)) {
     delete service.profiles;
-    if (service.build?.context && isAbsolute(service.build.context)) service.build.context = mapPath(service.build.context);
-    if (service.build?.dockerfile && isAbsolute(service.build.dockerfile)) service.build.dockerfile = mapPath(service.build.dockerfile);
+    const originalContext = localBuildContext(service);
+    if (originalContext) {
+      // Source: https://docs.docker.com/reference/compose-file/build/#dockerfile
+      if (service.build.dockerfile) service.build.dockerfile = mapPath(resolve(originalContext, service.build.dockerfile));
+      service.build.context = mapPath(originalContext);
+    }
     for (const volume of service.volumes ?? []) if (volume.type === 'bind') volume.source = mapPath(volume.source);
     for (let index = 0; index < (service.env_file ?? []).length; index++) {
       const entry = service.env_file[index];

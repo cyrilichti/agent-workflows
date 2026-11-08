@@ -196,3 +196,38 @@ test('ambiguous or missing dependencies fail without creating resources', () => 
     }
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
+
+test('relative sibling Dockerfiles discover their repository and are remapped before browser startup', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sandbox-dockerfile-'));
+  let context: any;
+  const fake = sandboxRunner({ model: {} });
+  try {
+    const app = repository(join(root, 'app'));
+    const api = repository(join(root, 'api'));
+    writeFileSync(join(api, 'Dockerfile'), 'FROM nginx:alpine\n');
+    execFileSync('git', ['-C', api, 'add', 'Dockerfile']);
+    execFileSync('git', ['-C', api, '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-qm', 'Dockerfile']);
+    writeFileSync(join(app, 'compose.yaml'), 'services: {}');
+    const model = { services: { web: { build: { context: app, dockerfile: '../api/Dockerfile' }, ports: [{ target: 80 }] } } };
+    assert.deepEqual(resolveDependencies(app, model), [app, api]);
+    const base = sandboxRunner({ model });
+    const runner: Run = (program, args, cwd) => {
+      if (args[0] === 'exec') {
+        const generated = JSON.parse(readFileSync(args[args.indexOf('-f') + 1]!, 'utf8'));
+        const build = generated.services.web.build;
+        assert.equal(readFileSync(build.dockerfile, 'utf8'), 'FROM nginx:alpine\n');
+        assert.equal(build.dockerfile, join(build.context, '..', '1-api', 'Dockerfile'));
+      }
+      return base.runner(program, args, cwd);
+    };
+    const result = prepare({ item_id: 'item', project_directory: app, browser_validation: true }, runner);
+    context = result.sandbox_context;
+    assert.equal(result.status, 'prepared', JSON.stringify(result));
+    assert.equal(context.repositories.length, 2);
+    removeResources(context, base.runner);
+    context = undefined;
+  } finally {
+    if (context) removeResources(context, fake.runner);
+    rmSync(root, { recursive: true, force: true });
+  }
+});
