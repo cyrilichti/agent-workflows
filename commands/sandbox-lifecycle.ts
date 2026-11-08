@@ -40,7 +40,9 @@ export function removeResources(context: SandboxContext, execute: Run = run): vo
   if (context.docker) {
     const sandboxes = JSON.parse(execute('sbx', ['ls', '--format', 'json', '--no-input']).stdout);
     if (!Array.isArray(sandboxes)) throw new Error('Invalid sbx inventory.');
-    if (sandboxes.some(sandbox => sandbox.name === context.docker!.name)) {
+    const sandbox = sandboxes.find(sandbox => sandbox.name === context.docker!.name);
+    if (sandbox) {
+      if (!Array.isArray(sandbox.workspaces) || !sandbox.workspaces.includes(context.root)) throw new Error('Docker sandbox workspace ownership mismatch.');
       execute('sbx', ['rm', '--force', '--no-input', context.docker.name]);
       const remaining = JSON.parse(execute('sbx', ['ls', '--format', 'json', '--no-input']).stdout);
       if (!Array.isArray(remaining) || remaining.some(sandbox => sandbox.name === context.docker!.name)) throw new Error('Docker sandbox removal incomplete.');

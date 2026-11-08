@@ -57,13 +57,14 @@ function gitWorktrees(path: string): string[] {
 
 function sandboxRunner(options: { fail?: string; model?: any } = {}) {
   const sandboxes = new Set<string>();
+  let workspace = '';
   const runner: Run = (program, args) => {
     if (args[0] === options.fail) throw new Error('simulated startup failure');
     let value: any = '';
     if (args[0] === 'diagnose') value = { checks: ['Authentication', 'Daemon', 'Virtualization'].map(name => ({ name, status: 'pass' })) };
     if (args.includes('config')) value = options.model ?? { services: { web: { image: 'nginx', ports: [{ target: 80, published: '80' }] } } };
-    if (args[0] === 'create') sandboxes.add(args[args.indexOf('--name') + 1]!);
-    if (args[0] === 'ls') value = [...sandboxes].map(name => ({ name }));
+    if (args[0] === 'create') { sandboxes.add(args[args.indexOf('--name') + 1]!); workspace = args.at(-1)!; }
+    if (args[0] === 'ls') value = [...sandboxes].map(name => ({ name, workspaces: [workspace] }));
     if (args[0] === 'rm') sandboxes.delete(args.at(-1)!);
     if (args[0] === 'ports') value = [{ host_ip: '127.0.0.1', host_port: 49123, sandbox_port: 20000, protocol: 'tcp4' }];
     if (args[0] === 'exec') {
