@@ -8,10 +8,6 @@
 
 ## Steps
 
-`SandboxContext` is the serializable ownership record defined in
-`../commands/sandbox-context.ts`. Carry the returned object unchanged from
-preparation to teardown, including after failure, so cleanup can be retried.
-
 Run from this file's directory:
 
 ```sh
@@ -20,10 +16,8 @@ node ../commands/sandbox-teardown.ts <<'JSON'
 JSON
 ```
 
-Replace the placeholder with the JSON object returned by preparation. Input is
-exactly one JSON object on stdin. The command verifies ownership and removes the
-recorded Docker sandbox and worktrees. It accepts partial preparation records
-and succeeds when their resources were already removed.
+Replace the placeholder with the unchanged context returned by preparation,
+including after failure, as one JSON object on stdin.
 
 Success: `{ "status": "completed", "sandbox_context": SandboxContext }`.
 Failure: `{ "status": "failed", "stage": "input" | "teardown", "reason": string,

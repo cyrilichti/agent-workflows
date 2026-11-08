@@ -39,21 +39,15 @@ node ../commands/sandbox-prepare.ts <<'JSON'
 JSON
 ```
 
-Replace the example with the resolved and derived values. Input is exactly one JSON object
-on stdin. The command checks prerequisites before creating worktrees, resolves
-README and Compose dependencies through the shared `/project` resolver without
-tie breaking, copies ignored resources, and starts Docker services when browser
-validation is planned.
+Replace the example with the resolved and derived values as one JSON object
+on stdin.
 
 Success: `{ "status": "prepared", "sandbox_context": SandboxContext }`.
 Failure: `{ "status": "failed", "stage": string, "reason": string,
 "sandbox_context"?: SandboxContext }`, with exit code 1. Stages are `input`,
-`preflight`, `worktrees`, `docker`, or `ports`. A failure after allocation attempts
-rollback and includes the context for cleanup retry when rollback is incomplete.
+`preflight`, `worktrees`, `docker`, or `ports`.
 
-
-`SandboxContext` is the serializable ownership record defined in
-`../commands/sandbox-context.ts`. Carry the returned object unchanged from
-preparation to teardown, including after failure, so cleanup can be retried.
+Carry any returned `sandbox_context` unchanged to teardown, including after
+failure. Its type is defined in `../commands/sandbox-context.ts`.
 
 Return the command's JSON result unchanged and end this workflow.
