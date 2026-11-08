@@ -27,11 +27,17 @@ Set `item_id` to the resolved official item's ID. Read its complete context and
 determine whether validating the requested outcome requires browser interaction.
 Set `browser_validation` to that decision.
 
+Read the current project's README and effective Compose configuration, if present.
+Follow local repository references and inspect discovered repositories as needed.
+Identify the required dependency repositories by reasoning over that evidence.
+Set `dependency_directories` to their absolute Git roots, excluding the current
+project. If a required dependency cannot be identified uniquely, report it and stop.
+
 Invoke preparation from this file's directory with the resolved and derived values:
 
 ```sh
 node ../commands/sandbox-prepare.ts <<'JSON'
-{"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","browser_validation":<browser_validation>}
+{"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","dependency_directories":<absolute dependency repository roots as JSON array>,"browser_validation":<browser_validation>}
 JSON
 ```
 

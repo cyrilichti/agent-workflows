@@ -51,7 +51,7 @@ after returning its result; delivery callers decide when to use the environment.
     <tr>
       <td>3</td>
       <th scope="row">Resolve</th>
-      <td>Resolve README dependencies transitively through the shared project resolver, searching configured Codex projects and their neighbors. Recognize <code>Dependency:</code>, <code>Repository:</code>, and <code>Repo:</code> lines and relative Markdown links outside the repository. Compose build contexts, Dockerfiles, bind sources, environment files, secrets, and configs identify repositories by path. Missing or ambiguous dependencies stop preparation.</td>
+      <td>The agent reads the README and effective Compose configuration, reasons about local repository dependencies, and supplies their absolute roots. Preparation validates those roots and checks that Compose paths do not reference an undeclared repository. An unresolved dependency stops preparation before allocation.</td>
     </tr>
     <tr>
       <td>4</td>

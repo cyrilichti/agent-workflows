@@ -4,7 +4,6 @@ import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:pat
 import { tmpdir } from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
-import { resolveRepositoryReference } from './resolve-local-project-directory.ts';
 import { run, type Run } from './sandbox-runtime.ts';
 import { ownerMarker, teardown, type SandboxContext, type SandboxResult } from './sandbox-teardown.ts';
 
@@ -12,13 +11,14 @@ export function recordOwnership(context: SandboxContext): void {
   writeFileSync(join(context.root, ownerMarker), JSON.stringify(context), { mode: 0o600 });
 }
 
-export interface PreparationInput { item_id: string; project_directory: string; browser_validation: boolean }
+export interface PreparationInput { item_id: string; project_directory: string; dependency_directories: string[]; browser_validation: boolean }
 export type Compose = Record<string, any>;
 
 export function parsePreparationInput(value: any): PreparationInput {
   if (!value || typeof value.item_id !== 'string' || !value.item_id.trim() ||
       typeof value.project_directory !== 'string' || !isAbsolute(value.project_directory) ||
-      typeof value.browser_validation !== 'boolean') throw new Error('Require item_id, absolute project_directory, and boolean browser_validation.');
+      !Array.isArray(value.dependency_directories) || value.dependency_directories.some((path: unknown) => typeof path !== 'string' || !isAbsolute(path)) ||
+      typeof value.browser_validation !== 'boolean') throw new Error('Require item_id, absolute project_directory, absolute dependency_directories, and boolean browser_validation.');
   return value;
 }
 
@@ -58,26 +58,21 @@ export function composePaths(model: Compose): string[] {
   return paths;
 }
 
-export function resolveDependencies(project: string, model: Compose = {}): string[] {
+export function validateRepositories(project: string, dependencies: string[], model: Compose = {}): string[] {
   const main = repositoryAt(project);
   if (main !== realpathSync(project)) throw new Error('project_directory must be a repository root.');
   const repositories = [main];
-  const add = (path: string) => { if (!repositories.includes(path)) repositories.push(path); };
-  for (const path of composePaths(model)) add(repositoryAt(resolve(main, path)));
-  for (let index = 0; index < repositories.length; index++) {
-    const source = repositories[index]!;
-    const readme = ['README.md', 'README', 'readme.md'].map(name => join(source, name)).find(existsSync);
-    if (!readme) continue;
-    const content = readFileSync(readme, 'utf8');
-    const references = [...content.matchAll(/^\s*(?:[-*]\s*)?(?:Dependency|Repository|Repo):\s*`?([^`\s]+)`?/gim)].map(match => match[1]!);
-    for (const match of content.matchAll(/\]\((\.\.?\/[^)#\s]+)(?:#[^)]*)?\)/g)) {
-      const path = resolve(source, match[1]!);
-      if (!inside(source, path)) references.push(path);
-    }
-    for (const reference of references) {
-      const local = isAbsolute(reference) || reference.startsWith('.');
-      add(local ? repositoryAt(resolve(source, reference)) : resolveRepositoryReference(reference, source));
-    }
+  for (const dependency of dependencies) {
+    let root: string;
+    try { root = repositoryAt(dependency); }
+    catch { throw new Error('dependency_directories must contain repository roots.'); }
+    if (root !== realpathSync(dependency)) throw new Error('dependency_directories must contain repository roots.');
+    if (repositories.includes(root)) throw new Error('Duplicate dependency repository.');
+    repositories.push(root);
+  }
+  for (const path of composePaths(model)) {
+    const root = repositoryAt(resolve(main, path));
+    if (!repositories.includes(root)) throw new Error(`Compose path has an undeclared dependency repository: ${path}`);
   }
   return repositories;
 }
@@ -119,7 +114,7 @@ export function preflight(input: PreparationInput, execute: Run = run): { reposi
       if (entry?.external) throw new Error('External volumes/networks cannot be resolved in a fresh sandbox.');
     }
   }
-  return { repositories: resolveDependencies(directory, model ?? {}), model };
+  return { repositories: validateRepositories(directory, input.dependency_directories, model ?? {}), model };
 }
 
 function copyIgnored(source: string, worktree: string): void {
