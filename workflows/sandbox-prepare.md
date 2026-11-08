@@ -27,9 +27,8 @@ Set `item_id` to the resolved official item's ID. Read its complete context and
 determine whether validating the requested outcome requires browser interaction.
 Set `browser_validation` to that decision.
 
-Read the current project's README and effective Compose configuration, if present.
-Identify required local repository dependencies from the service and repository
-names in that evidence.
+Read the current project's README. Identify required local repository dependencies
+from the service and repository names it specifies.
 For each name, locate its repository from this file's directory:
 
 ```sh
@@ -37,10 +36,10 @@ node ../commands/resolve-local-project-directory.ts "<service or repository name
 ```
 
 Require a returned `path` that matches the identified dependency. On `not found`,
-`search incomplete`, an error, or an unclear match, report it and stop. Inspect
-each located repository's README and Compose configuration for further dependencies
-and repeat. Set `dependency_directories` to the distinct returned absolute paths,
-excluding the current project.
+`search incomplete`, an error, or an unclear match, report it and stop. Read
+each located repository's README for further dependencies and repeat. Set
+`dependency_directories` to the distinct returned absolute paths, excluding the
+current project.
 
 Invoke preparation from this file's directory with the resolved and derived values:
 
