@@ -10,22 +10,11 @@ export type SpawnProcess = (
 export type ProviderOptions = {
   model?: string | undefined; workspace?: string | undefined; executable?: string | undefined;
   environment?: NodeJS.ProcessEnv | undefined; directory?: string | undefined;
-  key?: string | undefined; keyFile?: string | undefined;
-};
-
-export type OpenAiResponse = {
-  status: 'completed'; model?: string; id?: string;
-  output: { type: string; content?: { type: string; text?: string }[] }[];
-  usage?: { input_tokens: number; output_tokens: number; input_tokens_details?: { cached_tokens?: number } };
 };
 
 export type CodexProviderOptions = {
   model?: string | undefined; workspace?: string | undefined; executable?: string | undefined;
   environment?: NodeJS.ProcessEnv | undefined; directory?: string | undefined; spawnImpl?: SpawnProcess;
-};
-
-export type OpenAiProviderOptions = {
-  model: string; key?: string | undefined; keyFile?: string | undefined; fetchImpl?: typeof fetch;
 };
 
 export type CodexRunContext = {

@@ -2,6 +2,7 @@ import { MAX_TIMEOUT_MS } from '../config/keys.ts';
 import type { AppConfig } from '../types/app-config.types.ts';
 import type { Validator } from '../types/validator.types.ts';
 import { SecurityService } from '../core/services/security.service.ts';
+import { AiProviderService } from '../services/ai-provider.service.ts';
 import { isRecord } from '../helper.ts';
 
 export class ConfigValidator implements Validator<AppConfig> {
@@ -9,13 +10,11 @@ export class ConfigValidator implements Validator<AppConfig> {
     if (!isRecord(value)) {
       throw new Error('Invalid bridge configuration.');
     }
-    const { langfuse, http, execution, providerName, model } = value;
+    const { langfuse, http, execution, providerName, providerOptions } = value;
     if (!isRecord(langfuse) || !isRecord(http) || !isRecord(execution)) {
       throw new Error('Invalid bridge configuration.');
     }
-    if (providerName === 'openai-api' && !model) {
-      throw new Error('Set AI_MODEL for openai-api.');
-    }
+    new AiProviderService().create(providerName as string, providerOptions as AppConfig['providerOptions']);
     const required = {
       LANGFUSE_PUBLIC_KEY: langfuse.publicKey,
       LANGFUSE_SECRET_KEY: langfuse.secretKey,

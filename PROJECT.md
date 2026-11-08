@@ -37,10 +37,10 @@ The `/agent-workflows` bootstrap skill installs or updates the bundle in a consu
 
 ## Local orchestration architecture
 
-Kestra and Langfuse run in Docker Compose. Kestra runs with its own PostgreSQL database and persistent storage. A flow can send an authenticated HTTP request to the bridge running on the host. The bridge remains outside Docker so a local Codex CLI process can use the host's files, configuration, authentication, and tools. It can instead call the OpenAI API when that AI provider is configured.
+Kestra and Langfuse run in Docker Compose. Kestra runs with its own PostgreSQL database and persistent storage. A flow can send an authenticated HTTP request to the bridge running on the host. The bridge remains outside Docker so a local Codex CLI process can use the host's files, configuration, authentication, and tools.
 
 ```text
-Kestra (Docker) ──authenticated HTTP──> bridge (host) ──> Codex CLI or OpenAI API
+Kestra (Docker) ──authenticated HTTP──> bridge (host) ──> Codex CLI
                                               │
                                               └──> Langfuse traces (Docker)
 ```
