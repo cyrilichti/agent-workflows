@@ -154,7 +154,16 @@ function remapModel(model: Compose, context: SandboxContext): Compose {
       context.ports.push({ service: name, target, sandbox, host: 0, protocol });
     }
   }
-  for (const group of [result.secrets, result.configs]) for (const entry of Object.values<any>(group ?? {})) if (entry.file) entry.file = mapPath(entry.file);
+  let secretIndex = 0;
+  for (const group of [result.secrets, result.configs]) for (const entry of Object.values<any>(group ?? {})) {
+    if (entry.file) entry.file = mapPath(entry.file);
+    if (entry.environment) {
+      const file = join(context.root, `secret-${secretIndex++}`);
+      writeFileSync(file, process.env[entry.environment]!, { mode: 0o600 });
+      delete entry.environment;
+      entry.file = file;
+    }
+  }
   return result;
 }
 

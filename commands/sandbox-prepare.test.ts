@@ -4,7 +4,7 @@ import { mkdtempSync, mkdirSync, rmSync, writeFileSync, realpathSync, readdirSyn
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
-import { parsePreparationInput, resolveDependencies, preflight, prepare } from './sandbox-prepare.ts';
+import { parsePreparationInput, resolveDependencies, prepare } from './sandbox-prepare.ts';
 import { removeResources } from './sandbox-lifecycle.ts';
 import type { Run } from './sandbox-runtime.ts';
 
@@ -44,10 +44,23 @@ test('preflight rejects missing tools, auth, startup support, variables and secr
           stderr: failure === 'variables' ? 'The "PASSWORD" variable is not set.' : '' };
         return { stdout: '', stderr: '' };
       };
-      assert.throws(() => preflight({ item_id: 'x', project_directory: app, browser_validation: true }, runner), undefined, failure);
+      const result = prepare({ item_id: 'x', project_directory: app, browser_validation: true }, runner);
+      assert.equal(result.status, 'failed', failure);
+      assert.equal(result.sandbox_context, undefined, failure);
       assert.deepEqual(readdirSync(root), ['app']);
       assert.equal(gitWorktrees(app).length, 1);
     }
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('browser preparation requires Compose and stops before allocation when it is absent', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sandbox-no-compose-'));
+  try {
+    const app = repository(join(root, 'app'));
+    const result = prepare({ item_id: 'item', project_directory: app, browser_validation: true }, sandboxRunner().runner);
+    assert.equal(result.status, 'failed');
+    assert.equal(result.sandbox_context, undefined);
+    assert.equal(gitWorktrees(app).length, 1);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
@@ -72,6 +85,11 @@ function sandboxRunner(options: { fail?: string; model?: any } = {}) {
       const model = JSON.parse(readFileSync(file, 'utf8'));
       assert.equal(model.services.web.ports[0].published, '20000');
       assert.ok(model.services.web.volumes?.every((volume: any) => !volume.source.includes('/app/')) ?? true);
+      for (const secret of Object.values<any>(model.secrets ?? {})) {
+        assert.equal(secret.environment, undefined);
+        assert.equal(readFileSync(secret.file, 'utf8'), 'private-secret');
+        assert.equal(statSync(secret.file).mode & 0o777, 0o600);
+      }
     }
     return { stdout: typeof value === 'string' ? value : JSON.stringify(value), stderr: '' };
   };
@@ -129,6 +147,27 @@ test('browser preparation remaps Compose paths and returns allocated ports; late
     assert.equal(gitWorktrees(app).length, 1);
     assert.ok(failed.sandbox_context && !existsSync(failed.sandbox_context.root));
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('browser preparation materializes environment-backed secrets without exposing their values in the context', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sandbox-env-secret-'));
+  const previous = process.env.SANDBOX_TEST_SECRET;
+  process.env.SANDBOX_TEST_SECRET = 'private-secret';
+  try {
+    const app = repository(join(root, 'app'));
+    writeFileSync(join(app, 'compose.yaml'), 'services: {}');
+    const fake = sandboxRunner({ model: { services: { web: { image: 'nginx', ports: [{ target: 80 }] } },
+      secrets: { password: { environment: 'SANDBOX_TEST_SECRET' } } } });
+    const result = prepare({ item_id: 'item', project_directory: app, browser_validation: true }, fake.runner);
+    try {
+      assert.equal(result.status, 'prepared', JSON.stringify(result));
+      assert.ok(!JSON.stringify(result).includes('private-secret'));
+    } finally { if (result.sandbox_context) removeResources(result.sandbox_context, fake.runner); }
+  } finally {
+    if (previous === undefined) delete process.env.SANDBOX_TEST_SECRET;
+    else process.env.SANDBOX_TEST_SECRET = previous;
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test('README and Compose dependencies resolve transitively through the project resolver', () => {

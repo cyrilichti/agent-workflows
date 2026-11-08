@@ -1,0 +1,50 @@
+---
+title: /sandbox
+description: Prepare isolated worktrees and optional Docker services, then remove them by context.
+---
+
+`/sandbox` prepares an isolated environment and returns a reusable JSON context.
+Pass that context back to `/sandbox` to remove its resources. The workflow ends
+after returning its result; delivery callers decide when to use the environment.
+
+## Prepare
+
+Supply `item_id`, an absolute repository root in `project_directory`, and a
+boolean `browser_validation`. Preparation checks Git repositories,
+[`sbx`](https://docs.docker.com/ai/sandboxes/get-started/) authentication and
+local startup diagnostics, Docker Engine, and Docker Compose before allocation.
+Compose is optional for a preparation without browser validation. When present,
+its variables, environment files, and file/environment secrets must resolve.
+External Docker secrets, configs, networks, and volumes fail preflight because
+they are unavailable in a fresh sandbox.
+
+README dependency references use `Dependency:`, `Repository:`, or `Repo:` lines
+with a repository name, URL, or local path. Relative Markdown links outside the
+repository also identify dependencies. Compose build contexts, bind sources,
+environment files, secrets, and configs identify repositories by path. Resolution
+follows README references transitively, searches configured Codex projects and
+their neighbors using the shared project resolver, and fails on ambiguous or
+missing dependencies.
+
+Each resolved repository receives a detached worktree at its current `HEAD`.
+Git-ignored resources are copied with their paths and permissions. Browser
+validation starts the Compose services inside a uniquely named local `sbx`
+shell sandbox. Each published service port receives a separate sandbox port
+and an atomically allocated host port on loopback.
+
+## Context and cleanup
+
+The context contains `version`, `id`, `item_id`, `root`, source/worktree pairs
+in `repositories`, optional `docker`, and `ports` with service, target, sandbox,
+host, and protocol. It contains resource identities rather than secret values.
+Treat the resource root as private: its generated Compose file can contain
+resolved environment values and is written with mode `0600`.
+
+Preparation failure reports a stage and reason, attempts rollback, and returns
+any allocated context. Keep that context if rollback is incomplete. Teardown
+verifies its ownership record before removing the optional sandbox and recorded
+worktrees. It can be retried after partial removal and succeeds when the resources
+are already absent. Main repository checkouts stay intact.
+
+The command input, output, and failure contracts live at the call sites in
+[`workflows/sandbox.md`](https://github.com/cyrilichti/agent-workflows/blob/main/workflows/sandbox.md).

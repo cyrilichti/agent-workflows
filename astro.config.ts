@@ -70,6 +70,7 @@ export default defineConfig({
             { label: '/done', slug: 'workflows/done' },
             { label: '/next', slug: 'workflows/next' },
             { label: '/project', slug: 'workflows/project' },
+            { label: '/sandbox', slug: 'workflows/sandbox' },
           ],
         },
       ],
