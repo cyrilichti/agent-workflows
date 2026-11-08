@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, realpathSync, readdirSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, realpathSync, readdirSync, statSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
-import { parsePreparationInput, resolveDependencies, preflight } from './sandbox-prepare.ts';
+import { parsePreparationInput, resolveDependencies, preflight, prepare } from './sandbox-prepare.ts';
+import { removeResources } from './sandbox-lifecycle.ts';
 import type { Run } from './sandbox-runtime.ts';
 
 export function repository(path: string) {
@@ -53,6 +54,81 @@ test('preflight rejects missing tools, auth, startup support, variables and secr
 function gitWorktrees(path: string): string[] {
   return execFileSync('git', ['-C', path, 'worktree', 'list', '--porcelain'], { encoding: 'utf8' }).split('\n').filter(line => line.startsWith('worktree '));
 }
+
+function sandboxRunner(options: { fail?: string; model?: any } = {}) {
+  const sandboxes = new Set<string>();
+  const runner: Run = (program, args) => {
+    if (args[0] === options.fail) throw new Error('simulated startup failure');
+    let value: any = '';
+    if (args[0] === 'diagnose') value = { checks: ['Authentication', 'Daemon', 'Virtualization'].map(name => ({ name, status: 'pass' })) };
+    if (args.includes('config')) value = options.model ?? { services: { web: { image: 'nginx', ports: [{ target: 80, published: '80' }] } } };
+    if (args[0] === 'create') sandboxes.add(args[args.indexOf('--name') + 1]!);
+    if (args[0] === 'ls') value = [...sandboxes].map(name => ({ name }));
+    if (args[0] === 'rm') sandboxes.delete(args.at(-1)!);
+    if (args[0] === 'ports') value = [{ host_ip: '127.0.0.1', host_port: 49123, sandbox_port: 20000, protocol: 'tcp4' }];
+    if (args[0] === 'exec') {
+      const file = args[args.indexOf('-f') + 1]!;
+      const model = JSON.parse(readFileSync(file, 'utf8'));
+      assert.equal(model.services.web.ports[0].published, '20000');
+      assert.ok(model.services.web.volumes?.every((volume: any) => !volume.source.includes('/app/')) ?? true);
+    }
+    return { stdout: typeof value === 'string' ? value : JSON.stringify(value), stderr: '' };
+  };
+  return { runner, sandboxes };
+}
+
+test('separate preparations preserve ignored nested files, modes and untracked state without Docker', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sandbox-worktree-'));
+  const contexts: any[] = [];
+  try {
+    const app = repository(join(root, 'app'));
+    writeFileSync(join(app, '.gitignore'), '.env\nnested/\n');
+    execFileSync('git', ['-C', app, 'add', '.gitignore']);
+    execFileSync('git', ['-C', app, '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-qm', 'ignore']);
+    mkdirSync(join(app, 'nested'), { mode: 0o700 });
+    writeFileSync(join(app, 'nested', '.env'), 'SECRET=private', { mode: 0o600 });
+    const fake = sandboxRunner();
+    for (let index = 0; index < 2; index++) {
+      const result = prepare({ item_id: 'item', project_directory: app, browser_validation: false }, fake.runner);
+      assert.equal(result.status, 'prepared', JSON.stringify(result));
+      if (!result.sandbox_context) throw new Error('Missing context');
+      contexts.push(result.sandbox_context);
+      const worktree = result.sandbox_context.repositories[0]!.worktree;
+      assert.equal(readFileSync(join(worktree, 'nested', '.env'), 'utf8'), 'SECRET=private');
+      assert.equal(statSync(join(worktree, 'nested', '.env')).mode & 0o777, 0o600);
+      assert.equal(statSync(join(worktree, 'nested')).mode & 0o777, 0o700);
+      assert.equal(execFileSync('git', ['-C', worktree, 'status', '--porcelain'], { encoding: 'utf8' }), '');
+      assert.equal(result.sandbox_context.docker, null);
+    }
+    assert.notEqual(contexts[0].root, contexts[1].root);
+    assert.equal(fake.sandboxes.size, 0);
+  } finally {
+    for (const context of contexts) removeResources(context);
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('browser preparation remaps Compose paths and returns allocated ports; later failure rolls back', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sandbox-docker-'));
+  try {
+    const app = repository(join(root, 'app'));
+    writeFileSync(join(app, 'compose.yaml'), 'services: {}');
+    const fake = sandboxRunner({ model: { services: { web: { image: 'nginx',
+      volumes: [{ type: 'bind', source: app, target: '/app' }], ports: [{ target: 80, published: '80' }] } } } });
+    const result = prepare({ item_id: 'item', project_directory: app, browser_validation: true }, fake.runner);
+    assert.equal(result.status, 'prepared', JSON.stringify(result));
+    assert.ok(result.sandbox_context?.docker);
+    assert.equal(result.sandbox_context?.ports[0]?.host, 49123);
+    removeResources(result.sandbox_context!, fake.runner);
+    assert.equal(fake.sandboxes.size, 0);
+    const failing = sandboxRunner({ fail: 'exec' });
+    const failed = prepare({ item_id: 'item', project_directory: app, browser_validation: true }, failing.runner);
+    assert.equal(failed.status, 'failed');
+    assert.equal(failing.sandboxes.size, 0);
+    assert.equal(gitWorktrees(app).length, 1);
+    assert.ok(failed.sandbox_context && !existsSync(failed.sandbox_context.root));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
 
 test('README and Compose dependencies resolve transitively through the project resolver', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-resolve-'));

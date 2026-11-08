@@ -1,10 +1,13 @@
 import { execFileSync } from 'node:child_process';
-import { accessSync, constants, existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
-import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
+import { accessSync, chmodSync, constants, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { randomUUID } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { resolveRepositoryReference } from './resolve-local-project-directory.ts';
-import type { SandboxResult } from './sandbox-context.ts';
+import type { SandboxContext, SandboxResult } from './sandbox-context.ts';
 import { run, type Run } from './sandbox-runtime.ts';
+import { recordOwnership, removeResources } from './sandbox-lifecycle.ts';
 
 export interface PreparationInput { item_id: string; project_directory: string; browser_validation: boolean }
 export type Compose = Record<string, any>;
@@ -107,15 +110,108 @@ export function preflight(input: PreparationInput, execute: Run = run): { reposi
   return { repositories: resolveDependencies(directory, model ?? {}), model };
 }
 
-export function prepare(value: unknown): SandboxResult {
+function copyIgnored(source: string, worktree: string): void {
+  const files = execFileSync('git', ['-C', source, 'ls-files', '--others', '--ignored', '--exclude-standard', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean);
+  for (const file of files) {
+    if (!inside(source, resolve(source, file)) || !inside(worktree, resolve(worktree, file))) throw new Error('Invalid ignored path.');
+    const parents: string[] = [];
+    for (let parent = dirname(file); parent !== '.'; parent = dirname(parent)) parents.unshift(parent);
+    for (const parent of parents) {
+      const target = join(worktree, parent);
+      if (existsSync(target) && lstatSync(target).isSymbolicLink()) throw new Error('Ignored path traverses a symlink.');
+      mkdirSync(target, { recursive: true });
+      chmodSync(target, statSync(join(source, parent)).mode & 0o777);
+    }
+    cpSync(join(source, file), join(worktree, file), { recursive: true, dereference: false, verbatimSymlinks: true, preserveTimestamps: true });
+    if (!lstatSync(join(source, file)).isSymbolicLink()) chmodSync(join(worktree, file), statSync(join(source, file)).mode & 0o777);
+  }
+}
+
+function remapModel(model: Compose, context: SandboxContext): Compose {
+  const result = structuredClone(model);
+  const mapPath = (path: string): string => {
+    const repository = [...context.repositories].sort((a, b) => b.source.length - a.source.length).find(entry => inside(entry.source, path));
+    if (!repository) throw new Error('Compose path has no resolved repository.');
+    return join(repository.worktree, relative(repository.source, path));
+  };
+  for (const [name, service] of Object.entries<any>(result.services)) {
+    delete service.profiles;
+    if (service.build?.context && isAbsolute(service.build.context)) service.build.context = mapPath(service.build.context);
+    if (service.build?.dockerfile && isAbsolute(service.build.dockerfile)) service.build.dockerfile = mapPath(service.build.dockerfile);
+    for (const volume of service.volumes ?? []) if (volume.type === 'bind') volume.source = mapPath(volume.source);
+    for (let index = 0; index < (service.env_file ?? []).length; index++) {
+      const entry = service.env_file[index];
+      if (typeof entry === 'string') service.env_file[index] = mapPath(entry);
+      else entry.path = mapPath(entry.path);
+    }
+    for (const port of service.ports ?? []) {
+      const target = Number(port.target);
+      const protocol = port.protocol ?? 'tcp';
+      if (!Number.isInteger(target) || target < 1 || target > 65535 || !['tcp', 'udp'].includes(protocol)) throw new Error('Unsupported Compose port.');
+      const sandbox = 20000 + context.ports.length;
+      port.published = String(sandbox);
+      port.host_ip = '0.0.0.0';
+      context.ports.push({ service: name, target, sandbox, host: 0, protocol });
+    }
+  }
+  for (const group of [result.secrets, result.configs]) for (const entry of Object.values<any>(group ?? {})) if (entry.file) entry.file = mapPath(entry.file);
+  return result;
+}
+
+export function prepare(value: unknown, execute: Run = run): SandboxResult {
   let stage = 'input';
+  let context: SandboxContext | undefined;
   try {
     const input = parsePreparationInput(value);
     stage = 'preflight';
-    preflight(input);
-    throw new Error('Sandbox provisioning is not yet implemented.');
+    const { repositories, model } = preflight(input, execute);
+    stage = 'worktrees';
+    const id = `aw-${randomUUID()}`;
+    context = { version: 1, id, item_id: input.item_id, root: realpathSync(mkdtempSync(join(tmpdir(), 'aw-sandbox-'))), repositories: [], docker: null, ports: [] };
+    recordOwnership(context);
+    for (const [index, source] of repositories.entries()) {
+      const worktree = join(context.root, `${index}-${basename(source)}`);
+      context.repositories.push({ source, worktree });
+      recordOwnership(context);
+      git(source, 'worktree', 'add', '--detach', worktree, 'HEAD');
+      copyIgnored(source, worktree);
+    }
+    if (input.browser_validation && model) {
+      stage = 'docker';
+      const compose = join(context.root, 'compose.json');
+      writeFileSync(compose, JSON.stringify(remapModel(model, context)), { mode: 0o600 });
+      context.docker = { name: id };
+      recordOwnership(context);
+      // Source: https://docs.docker.com/reference/cli/sbx/create/
+      execute('sbx', ['create', '--name', id, '--no-input', '--no-progress', 'shell', context.root]);
+      execute('sbx', ['exec', '--workdir', context.repositories[0]!.worktree, id,
+        'docker', 'compose', '-f', compose, '-p', id, 'up', '--detach', '--wait', '--wait-timeout', '120']);
+      stage = 'ports';
+      for (const port of context.ports) {
+        // sbx allocates and holds the host binding atomically; no probe/release race.
+        // Sources: https://docs.docker.com/reference/cli/sbx/ports/
+        // https://docs.docker.com/ai/sandboxes/workflows/automation/#parse-command-output
+        execute('sbx', ['ports', id, '--publish', `${port.sandbox}/${port.protocol}4`, '--no-input']);
+      }
+      if (context.ports.length) {
+        const bindings = JSON.parse(execute('sbx', ['ports', id, '--format', 'json', '--no-input']).stdout);
+        if (!Array.isArray(bindings)) throw new Error('Invalid port inventory.');
+        for (const port of context.ports) {
+          const binding = bindings.find(entry => Number(entry.sandbox_port) === port.sandbox && entry.protocol.replace(/4$/, '') === port.protocol);
+          if (!binding || !Number.isInteger(Number(binding.host_port)) || Number(binding.host_port) < 1) throw new Error('Published host port unavailable.');
+          port.host = Number(binding.host_port);
+        }
+      }
+    }
+    recordOwnership(context);
+    return { status: 'prepared', sandbox_context: context };
   } catch (error) {
-    return { status: 'failed', stage, reason: error instanceof Error ? error.message : String(error) };
+    let reason = error instanceof Error ? error.message : String(error);
+    if (context) {
+      try { removeResources(context, execute); }
+      catch (cleanup) { reason += ` Rollback incomplete: ${cleanup instanceof Error ? cleanup.message : String(cleanup)}`; }
+    }
+    return { status: 'failed', stage, reason, ...(context ? { sandbox_context: context } : {}) };
   }
 }
 
