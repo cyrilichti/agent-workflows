@@ -29,16 +29,13 @@ Set `item_id` to the resolved official item's ID. Read its complete context and
 determine whether validating the requested outcome requires browser interaction.
 Set `browser_validation` to that decision.
 
-Invoke preparation from this file's directory:
+Invoke preparation from this file's directory with the resolved and derived values:
 
 ```sh
 node ../commands/sandbox-prepare.ts <<'JSON'
-{"item_id":"<item ID>","project_directory":"<absolute project path>","browser_validation":false}
+{"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","browser_validation":<browser_validation>}
 JSON
 ```
-
-Replace the example with the resolved and derived values as one JSON object
-on stdin.
 
 Success: `{ "status": "prepared", "sandbox_context": SandboxContext }`.
 Failure: `{ "status": "failed", "stage": string, "reason": string,
