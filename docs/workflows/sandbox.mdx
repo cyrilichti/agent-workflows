@@ -23,7 +23,7 @@ after returning its result; delivery callers decide when to use the environment.
       <div className="write-flow__step write-flow__step--focus">
         <small>02 · Preparation</small>
         <strong>Create the sandbox</strong>
-        <span>Read the plan, locate README dependencies, create worktrees, and run Docker when the plan requires container execution. Return the context.</span>
+        <span>Read the plan, check Docker availability, locate README dependencies only for container execution, and create the sandbox. Return the context.</span>
       </div>
     </section>
     <section className="plan-flow__scope-path">
@@ -49,17 +49,17 @@ after returning its result; delivery callers decide when to use the environment.
     <tr>
       <td>2a</td>
       <th scope="row">Read the plan</th>
-      <td>Preparation reads the authoritative plan. If it requires project code or services to run in a container, require a Compose configuration and check <a href="https://docs.docker.com/ai/sandboxes/get-started/">sbx</a>, Docker Engine, and Compose before allocation. Otherwise, Docker is not required.</td>
+      <td>Preparation reads the authoritative plan. If it requires project code or services to run in a container, check for a Compose configuration, <a href="https://docs.docker.com/ai/sandboxes/get-started/">sbx</a>, Docker Engine, and Compose. If they are unavailable, create a worktree without container execution.</td>
     </tr>
     <tr>
       <td>3a</td>
       <th scope="row">Resolve dependencies</th>
-      <td>The agent identifies local repository dependencies from service and repository names in the README, then locates each with the existing project resolver command. It repeats this for the README of each located repository and supplies their absolute paths. Preparation validates those paths before allocation.</td>
+      <td>Only for container execution, the agent identifies local repository dependencies from service and repository names in the README, then locates each with the existing project resolver command. It repeats this for the README of each located repository and supplies their absolute paths. Preparation validates those paths before allocation.</td>
     </tr>
     <tr>
       <td>4a</td>
       <th scope="row">Create</th>
-      <td>Create a detached worktree at each resolved repository's current <code>HEAD</code> and copy Git-ignored resources with their paths and permissions. When container execution is required, start Compose services in a uniquely named sbx shell sandbox and allocate ports. Return the resulting <code>sandbox_context</code>; on failure, attempt rollback and report the stage and reason.</td>
+      <td>Create a detached worktree at each selected repository's current <code>HEAD</code> and copy Git-ignored resources with their paths and permissions. When container execution is available, start Compose services in a uniquely named sbx shell sandbox and allocate ports. Return the resulting <code>sandbox_context</code>; on failure, attempt rollback and report the stage and reason.</td>
     </tr>
     <tr>
       <td>2b</td>

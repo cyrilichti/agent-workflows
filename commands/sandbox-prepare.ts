@@ -79,14 +79,21 @@ export function validateRepositories(project: string, dependencies: string[], mo
 
 export function preflight(input: PreparationInput, execute: Run = run): { repositories: string[]; model: Compose | null } {
   const directory = input.project_directory;
+  const worktreeOnly = () => ({ repositories: validateRepositories(directory, []), model: null });
   if (!input.container_execution) {
-    return { repositories: validateRepositories(directory, input.dependency_directories), model: null };
+    return worktreeOnly();
   }
   const hasCompose = !!process.env.COMPOSE_FILE || ['compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml']
     .some(name => existsSync(join(directory, name)));
-  if (!hasCompose) throw new Error('Container execution requires a Compose configuration.');
+  if (!hasCompose) return worktreeOnly();
+  try {
+    execute('sbx', ['version', '--no-input']);
+    execute('docker', ['compose', 'version']);
+    execute('docker', ['info', '--format', '{{json .ServerVersion}}']);
+  } catch {
+    return worktreeOnly();
+  }
   // Source: https://docs.docker.com/ai/sandboxes/troubleshooting/
-  execute('sbx', ['version', '--no-input']);
   const diagnostics = JSON.parse(execute('sbx', ['diagnose', '--format', 'json', '--no-input']).stdout);
   if (!Array.isArray(diagnostics.checks) || diagnostics.summary?.fail > 0 ||
       diagnostics.checks.some((check: any) => check.status === 'fail') ||
@@ -95,8 +102,6 @@ export function preflight(input: PreparationInput, execute: Run = run): { reposi
       !diagnostics.checks.some((check: any) => check.name === 'Virtualization' && check.status === 'pass')) {
     throw new Error('sbx authentication or local startup diagnostics failed. Run sbx diagnose.');
   }
-  execute('docker', ['compose', 'version']);
-  execute('docker', ['info', '--format', '{{json .ServerVersion}}']);
   // Source: https://docs.docker.com/reference/cli/docker/compose/config/
   const result = execute('docker', ['compose', '--profile', '*', 'config', '--format', 'json'], directory);
   if (/variable.*(?:not set|unset)|required variable/i.test(result.stderr)) throw new Error('Compose has missing variables.');

@@ -26,13 +26,14 @@ on `not_found` or `ambiguous`, report the result and stop.
 Set `item_id` to the resolved official item's ID. Read its authoritative plan:
 use the local plan referenced by a linked request when present, otherwise the
 approved plan in the item's comments. Stop if no plan is available. Set
-`container_execution` to whether the plan requires running project code or
-services in a container. If it does, require a Docker Compose configuration in
-the current project; report a missing configuration and stop.
+`container_execution` only when the plan requires running project code or
+services in a container, the current project has a Docker Compose configuration,
+and Docker and sbx are available. Otherwise, use `false` and an empty
+`dependency_directories` array; preparation still creates the project worktree.
 
-Read the current project's README. Identify required local repository dependencies
-from the service and repository names it specifies.
-For each name, locate its repository from this file's directory:
+Only when `container_execution` is `true`, read the current project's README.
+Identify required local repository dependencies from its service and repository
+names. For each name, locate its repository from this file's directory:
 
 ```sh
 node ../commands/resolve-local-project-directory.ts "<service or repository name>" "<resolved item ID>"
@@ -42,7 +43,7 @@ Require a returned `path` that matches the identified dependency. On `not found`
 `search incomplete`, an error, or an unclear match, report it and stop. Read
 each located repository's README for further dependencies and repeat. Set
 `dependency_directories` to the distinct returned absolute paths, excluding the
-current project.
+current project. Otherwise, set it to `[]`.
 
 Invoke preparation from this file's directory with the resolved and derived values:
 

@@ -26,16 +26,13 @@ test('preparation validates its single JSON input and emits a staged JSON failur
   assert.equal(JSON.parse(result.stdout).stage, 'input');
 });
 
-test('preflight rejects missing tools, auth, startup support, variables and secrets without resources', () => {
+test('preflight rejects auth, startup support, variables and secrets without resources', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-preflight-'));
   try {
     const app = repository(join(root, 'app'));
     writeFileSync(join(app, 'compose.yaml'), 'services: {}');
-    for (const failure of ['sbx', 'compose', 'auth', 'virtualization', 'variables', 'secret', 'docker']) {
-      const runner: Run = (program, args) => {
-        if ((failure === 'sbx' && program === 'sbx') ||
-          (failure === 'compose' && args[0] === 'compose') ||
-          (failure === 'docker' && args[0] === 'info')) throw new Error('tool unavailable');
+    for (const failure of ['auth', 'virtualization', 'variables', 'secret']) {
+      const runner: Run = (_program, args) => {
         if (args[0] === 'diagnose') return { stdout: JSON.stringify({ checks: [
           { name: 'Authentication', status: failure === 'auth' ? 'fail' : 'pass' },
           { name: 'Virtualization', status: failure === 'virtualization' ? 'fail' : 'pass' },
@@ -54,14 +51,26 @@ test('preflight rejects missing tools, auth, startup support, variables and secr
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
-test('container preparation requires Compose and stops before allocation when it is absent', () => {
+test('missing Compose or Docker tools fall back to a project worktree', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-no-compose-'));
   try {
     const app = repository(join(root, 'app'));
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: true }, sandboxRunner().runner);
-    assert.equal(result.status, 'failed');
-    assert.equal(result.sandbox_context, undefined);
+    const dependency = repository(join(root, 'dependency'));
+    const input = { item_id: 'item', project_directory: app, dependency_directories: [dependency], container_execution: true };
+    const noCompose = prepare(input, () => { throw new Error('Unexpected container command.'); });
+    assert.equal(noCompose.status, 'prepared');
+    assert.deepEqual(noCompose.sandbox_context?.repositories.map(entry => entry.source), [app]);
+    removeResources(noCompose.sandbox_context!);
+    writeFileSync(join(app, 'compose.yaml'), 'services: {}');
+    const noDocker = prepare(input, (program, args) => {
+      if (program === 'docker' && args[0] === 'compose') throw new Error('Docker unavailable');
+      return { stdout: '', stderr: '' };
+    });
+    assert.equal(noDocker.status, 'prepared');
+    assert.deepEqual(noDocker.sandbox_context?.repositories.map(entry => entry.source), [app]);
+    removeResources(noDocker.sandbox_context!);
     assert.equal(gitWorktrees(app).length, 1);
+    assert.equal(gitWorktrees(dependency).length, 1);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
@@ -173,21 +182,23 @@ test('container preparation materializes environment-backed secrets without expo
   }
 });
 
-test('preparation uses explicit dependency repositories without parsing README prose', () => {
+test('container preparation uses explicit dependency repositories without parsing README prose', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-resolve-'));
   let context: any;
+  const fake = sandboxRunner();
   try {
     const app = repository(join(root, 'app'));
     const api = repository(join(root, 'api'));
     const shared = repository(join(root, 'shared'));
     writeFileSync(join(app, 'README.md'), 'The API and shared repositories support this app.\n');
+    writeFileSync(join(app, 'compose.yaml'), 'services: {}');
     assert.deepEqual(validateRepositories(app, [api, shared], { services: { api: { build: { context: api } } } }), [app, api, shared]);
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [api, shared], container_execution: false }, sandboxRunner().runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [api, shared], container_execution: true }, fake.runner);
     assert.equal(result.status, 'prepared', JSON.stringify(result));
     context = result.sandbox_context;
     assert.deepEqual(context.repositories.map((entry: any) => entry.source), [app, api, shared]);
   } finally {
-    if (context) removeResources(context);
+    if (context) removeResources(context, fake.runner);
     rmSync(root, { recursive: true, force: true });
   }
 });
