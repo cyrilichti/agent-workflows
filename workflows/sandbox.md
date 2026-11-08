@@ -13,9 +13,7 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/user-fac
 
 | Input | Description |
 | --- | --- |
-| `item_id` | Required for preparation. |
-| `project_directory` | Absolute main repository path, required for preparation. |
-| `browser_validation` | Boolean, required for preparation. |
+| `item` | Required item ID, native URL, title, or search phrase for preparation. |
 | `sandbox_context` | When supplied, select teardown instead of preparation. |
 
 ## Steps
@@ -36,13 +34,38 @@ preparation to teardown, including after failure, so cleanup can be retried.
 
 #### Preparation
 
+Use the current project's absolute repository root as `project_directory`.
+Capture it before running commands from this file's directory.
+
+Resolve the official item from this file's directory. For an ID or native URL:
+
+```sh
+node ../commands/resolve-existing-item.ts "<item>"
+```
+
+For a title or search phrase:
+
+```sh
+node ../commands/resolve-existing-item.ts --query "<item>"
+```
+
+Continue only on `status: resolved`. On `failed`, report `stage` and `reason`;
+on `not_found` or `ambiguous`, report the result and stop.
+
+Set `item_id` to the resolved official item's ID. Read its complete context and
+determine whether validating the requested outcome requires browser interaction.
+Set `browser_validation` to that decision. Derive the project path and validation
+flag here rather than requesting them from the caller.
+
+Invoke preparation from this file's directory:
+
 ```sh
 node ../commands/sandbox-prepare.ts <<'JSON'
 {"item_id":"<item ID>","project_directory":"<absolute project path>","browser_validation":false}
 JSON
 ```
 
-Replace the example with the supplied values. Input is exactly one JSON object
+Replace the example with the resolved and derived values. Input is exactly one JSON object
 on stdin. The command checks prerequisites before creating worktrees, resolves
 README and Compose dependencies through the shared `/project` resolver without
 tie breaking, copies ignored resources, and starts Docker services when browser

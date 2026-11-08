@@ -3,17 +3,18 @@ title: /sandbox
 description: Prepare isolated worktrees and optional Docker services, then remove them by context.
 ---
 
-`/sandbox` prepares an isolated environment and returns a reusable JSON context.
+`/sandbox` accepts a work item's ID, native URL, title, or search phrase and
+prepares an isolated environment in the current project, returning a reusable JSON context.
 Pass that context back to `/sandbox` to remove its resources. The workflow ends
 after returning its result; delivery callers decide when to use the environment.
 
 ## How `/sandbox` prepares and removes an environment
 
-<div className="write-flow" role="group" aria-label="The sandbox workflow selects preparation from item and project inputs, or teardown from a returned sandbox context. Preparation checks prerequisites, resolves repositories, creates worktrees, and optionally starts Docker services. Teardown verifies ownership and removes recorded resources. Both modes return a JSON result and end the workflow.">
+<div className="write-flow" role="group" aria-label="The sandbox workflow selects preparation from an item reference, or teardown from a returned sandbox context. Preparation resolves the official item, uses the current project, determines validation needs, checks prerequisites, resolves repositories, creates worktrees, and optionally starts Docker services. Teardown verifies ownership and removes recorded resources. Both modes return a JSON result and end the workflow.">
   <div className="write-flow__step write-flow__step--focus">
     <small>01 · Input</small>
     <strong>Select preparation or teardown</strong>
-    <span>Supply an item, project path, and validation flag to prepare; supply a returned <code>sandbox_context</code> to tear down.</span>
+    <span>Supply an item reference to prepare in the current project; supply a returned <code>sandbox_context</code> to tear down.</span>
   </div>
 
   <span className="write-flow__connector" aria-hidden="true">↓</span>
@@ -40,7 +41,7 @@ after returning its result; delivery callers decide when to use the environment.
     <tr>
       <td>1</td>
       <th scope="row">Select</th>
-      <td>A supplied <code>sandbox_context</code> selects teardown. Otherwise, preparation requires <code>item_id</code>, an absolute repository root in <code>project_directory</code>, and a boolean <code>browser_validation</code>.</td>
+      <td>A supplied <code>sandbox_context</code> selects teardown. For preparation, supply <code>item</code> as an ID, native URL, title, or search phrase. Resolve the official item with the existing item-resolution command, use the current project repository, and determine browser-validation needs from the complete item context. Stop if the item cannot be resolved uniquely.</td>
     </tr>
     <tr>
       <td>2</td>
