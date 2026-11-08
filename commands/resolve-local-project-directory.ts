@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { basename, dirname, isAbsolute, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 type SearchResult =
   | { path: string }
@@ -14,7 +15,7 @@ function parsePaths(input: string): string[] {
   return paths;
 }
 
-function configuredPaths(input?: string): string[] {
+export function configuredPaths(input?: string): string[] {
   if (input !== undefined) return parsePaths(input);
   const config = join(process.env.CODEX_HOME || join(homedir(), '.codex'), 'config.toml');
   let content: string;
@@ -121,6 +122,17 @@ function referenceName(reference: string): string {
   return normalize(basename(value.replace(/\/$/, '').replace(/\.git$/, '')));
 }
 
+/** Sandbox dependencies must resolve uniquely; never use interactive/item tie breakers. */
+export function resolveRepositoryReference(reference: string, project: string): string {
+  const paths = [...configuredPaths(), project];
+  const configured = inspectConfigured(paths);
+  const neighbors = inspectParents(paths);
+  if (configured.incomplete || neighbors.incomplete) throw new Error('Repository search incomplete.');
+  const matches = matchingRepositories([...configured.repositories, ...neighbors.repositories], referenceName(reference));
+  if (matches.length !== 1) throw new Error(`Dependency ${reference}: ${matches.length ? 'ambiguous' : 'not found'}.`);
+  return matches[0]!;
+}
+
 async function chooseRepository(paths: string[], itemId: string): Promise<string> {
   if (paths.length === 1) return paths[0]!;
   const root = basename(dirname(import.meta.dirname)) === '.agents'
@@ -162,6 +174,7 @@ async function result(paths: string[], list: string, itemId: string): Promise<Se
   return { path: await chooseRepository(second, itemId) };
 }
 
+if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) {
 const list = process.argv[2];
 const itemId = process.argv[3];
 const paths = process.argv[4];
@@ -172,4 +185,5 @@ try {
 } catch (error) {
   process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
   process.exitCode = 1;
+}
 }
