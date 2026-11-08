@@ -61,12 +61,12 @@ of the bridge process; path checks restrict their entrypoint to the configured
 project. See the [script contract](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#project-script-execution)
 for request, output, and execution limits.
 
-Every `/work` result is published as a comment on the selected item through its
+After `/work`, the flow classifies its response as `success`, `partial`, or
+`error`. Each branch attempts one comment on the selected item through its
 configured provider, with the outcome, diagnostic output, and Kestra execution
-ID. HTTP failures and timeouts also attempt an `error` comment. Publication
-failures remain visible in Kestra while preserving the original work result and
-cycle delay. Long comments include a truncation notice and retain the beginning
-and final diagnostics. See the
+ID. A failed comment request is visible in Kestra; the loop still reaches its
+delay. Long comments include a truncation notice and retain the beginning and
+final diagnostics. See the
 [reporting contract](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#work-outcome-reporting).
 
 ## Start the architecture locally
