@@ -23,9 +23,8 @@ node ../commands/resolve-existing-item.ts --query "<item>"
 Continue only on `status: resolved`. On `failed`, report `stage` and `reason`;
 on `not_found` or `ambiguous`, report the result and stop.
 
-Set `item_id` to the resolved official item's ID. Read its authoritative plan:
-use the local plan referenced by a linked request when present, otherwise the
-approved plan in the item's comments. Stop if no plan is available. Set
+Set `item_id` to the resolved official item's ID. Read the approved plan in the
+resolved item's comments. Stop if no approved plan comment is available. Set
 `container_execution` only when the plan requires running project code or
 services in a container, the current project has a Docker Compose configuration,
 and Docker and sbx are available. Otherwise, use `false` and an empty
