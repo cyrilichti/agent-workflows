@@ -8,8 +8,6 @@
 
 ## Steps
 
-Use the current project's absolute repository root as `project_directory`.
-
 Resolve the official item from this file's directory. For an ID or native URL:
 
 ```sh
