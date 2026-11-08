@@ -9,7 +9,6 @@
 ## Steps
 
 Use the current project's absolute repository root as `project_directory`.
-Capture it before running commands from this file's directory.
 
 Resolve the official item from this file's directory. For an ID or native URL:
 
@@ -28,8 +27,7 @@ on `not_found` or `ambiguous`, report the result and stop.
 
 Set `item_id` to the resolved official item's ID. Read its complete context and
 determine whether validating the requested outcome requires browser interaction.
-Set `browser_validation` to that decision. Derive the project path and validation
-flag here rather than requesting them from the caller.
+Set `browser_validation` to that decision.
 
 Invoke preparation from this file's directory:
 
