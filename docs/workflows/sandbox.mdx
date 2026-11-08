@@ -1,6 +1,7 @@
 ---
 title: /sandbox
 description: Prepare isolated worktrees and optional Docker services, then remove them by context.
+editUrl: false
 ---
 
 `/sandbox` accepts a work item's ID, native URL, title, or search phrase and
@@ -72,7 +73,3 @@ after returning its result; delivery callers decide when to use the environment.
 Treat the resource root as private: its generated Compose file can contain
 resolved environment values and is written with mode `0600`. The returned context
 contains resource identities rather than secret values.
-
-The command input, output, and failure contracts live at the call sites in
-[`sandbox-prepare.md`](https://github.com/cyrilichti/agent-workflows/blob/main/workflows/sandbox-prepare.md)
-and [`sandbox-teardown.md`](https://github.com/cyrilichti/agent-workflows/blob/main/workflows/sandbox-teardown.md).
