@@ -32,16 +32,19 @@ and Docker and sbx are available. Otherwise, use `false` and an empty
 `dependency_directories` array; preparation still creates the project worktree.
 
 Only when `container_execution` is `true`, read the current project's README.
-Identify required local repository dependencies from its service and repository
-names. For each name, locate its repository from this file's directory:
+Identify the required local repositories named in it. Resolve their names
+together from this file's directory by sending a JSON array on stdin:
 
 ```sh
-node ../commands/resolve-local-project-directory.ts "<service or repository name>" "<resolved item ID>"
+node ../commands/resolve-local-repository-dependencies.ts <<'JSON'
+["api-repository", "shared-repository"]
+JSON
 ```
 
-Require a returned `path` that matches the identified dependency. On `not found`,
-`search incomplete`, an error, or an unclear match, report it and stop. Read
-each located repository's README for further dependencies and repeat. Set
+The array contains the repository names from the README. Require a returned
+`path` for each name. On `not found`, `ambiguous`, `search incomplete`,
+or a command error, report it and stop. Read each located repository's README
+for further repository names and resolve any new names together. Set
 `dependency_directories` to the distinct returned absolute paths, excluding the
 current project. Otherwise, set it to `[]`.
 
