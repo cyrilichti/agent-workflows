@@ -2,8 +2,8 @@
 
 ## Outcome
 
-Preparation returns a serializable sandbox context for isolated worktrees and
-optional browser services. Teardown removes the resources owned by that context.
+Preparation creates an isolated environment and returns a serializable sandbox
+context. Teardown removes the resources owned by that context.
 
 ## Terminal Outcomes
 
