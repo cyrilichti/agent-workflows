@@ -24,7 +24,13 @@ function fixture(tasks: unknown[], provider = 'clickup', remainingLabels?: unkno
   writeFileSync(join(root, 'tasks.json'), JSON.stringify(tasks));
   writeFileSync(join(root, 'linear-1.json'), JSON.stringify({ data: { issues: { nodes: tasks } } }));
   if (remainingLabels) writeFileSync(join(root, 'linear-2.json'), JSON.stringify(remainingLabels));
-  writeFileSync(join(bin, 'clickup-cli'), '#!/bin/sh\nprintf "%s\\n" "$@" > "$NEXT_ARGS"\ncat "$NEXT_FIXTURE"\n', { mode: 0o755 });
+  writeFileSync(join(bin, 'clickup-cli'), `#!/usr/bin/env node
+const { readFileSync, writeFileSync } = require('node:fs');
+const args = process.argv.slice(2);
+writeFileSync(process.env.NEXT_ARGS, args.join('\\n') + '\\n');
+const tasks = JSON.parse(readFileSync(process.env.NEXT_FIXTURE, 'utf8'));
+process.stdout.write(JSON.stringify(tasks.filter(task => !task.parent || args.includes('--subtasks'))));
+`, { mode: 0o755 });
   writeFileSync(join(bin, 'linear'),
     '#!/bin/sh\ncount=0\n[ -f "$NEXT_LINEAR_COUNT" ] && count=$(cat "$NEXT_LINEAR_COUNT")\ncount=$((count + 1))\nprintf "%s" "$count" > "$NEXT_LINEAR_COUNT"\nprintf "%s\\n" "$@" > "$NEXT_LINEAR_ROOT/linear-args-$count.txt"\ncat > "$NEXT_LINEAR_ROOT/linear-query-$count.txt"\ncat "$NEXT_LINEAR_ROOT/linear-$count.json"\n',
     { mode: 0o755 });
@@ -63,7 +69,7 @@ test('ClickUp selection uses one filtered call, oldest eligible date, and provid
     assert.equal(result.status, 0, result.stderr);
     assert.deepEqual(JSON.parse(result.stdout), { name: 'Task first', id: 'first', url: 'https://example.test/first', list: 'List' });
     assert.deepEqual(readFileSync(join(f.root, 'args.txt'), 'utf8').trim().split('\n'),
-      ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json']);
+      ['task', 'search', '--tag', 'agent-planned', '--subtasks', '--page', '0', '--output', 'json']);
   } finally { f.cleanup(); }
 });
 
@@ -74,8 +80,24 @@ test('unknown ClickUp statuses are skipped without another provider call', () =>
     assert.equal(result.status, 0, result.stderr);
     assert.equal(JSON.parse(result.stdout).id, 'open');
     assert.deepEqual(readFileSync(join(f.root, 'args.txt'), 'utf8').trim().split('\n'),
-      ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json']);
+      ['task', 'search', '--tag', 'agent-planned', '--subtasks', '--page', '0', '--output', 'json']);
   } finally { f.cleanup(); }
+});
+
+test('ClickUp selection chooses the oldest eligible item across tasks and subtasks', () => {
+  for (const [taskDate, subtaskDate, expected] of [['3', '2', 'subtask'], ['2', '3', 'top-level']] as const) {
+    const f = fixture([
+      task('top-level', 'Open', taskDate),
+      { ...task('subtask', 'To Do', subtaskDate), parent: 'parent-task' },
+      { ...task('active-subtask', 'In Progress', '1'), parent: 'parent-task' },
+      { ...task('unplanned-subtask', 'Open', '1', []), parent: 'parent-task' },
+    ]);
+    try {
+      const result = f.run();
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(JSON.parse(result.stdout).id, expected);
+    } finally { f.cleanup(); }
+  }
 });
 
 test('incomplete labels, invalid dates, and missing selected destinations fail', () => {

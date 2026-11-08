@@ -20,7 +20,7 @@ const categories: Record<string, 'waiting' | 'review'> = {
 };
 
 export function fetchCandidates() {
-  const output = execFileSync('clickup-cli', ['task', 'search', '--tag', 'agent-planned', '--page', '0', '--output', 'json'], {
+  const output = execFileSync('clickup-cli', ['task', 'search', '--tag', 'agent-planned', '--subtasks', '--page', '0', '--output', 'json'], {
     encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'],
   });
   const tasks = JSON.parse(output) as Task[];
