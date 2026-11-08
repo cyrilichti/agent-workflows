@@ -112,6 +112,7 @@ export function preflight(input: PreparationInput, execute: Run = run): { reposi
 
 function copyIgnored(source: string, worktree: string): void {
   const files = execFileSync('git', ['-C', source, 'ls-files', '--others', '--ignored', '--exclude-standard', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean);
+  const directoryModes = new Map<string, number>();
   for (const file of files) {
     if (!inside(source, resolve(source, file)) || !inside(worktree, resolve(worktree, file))) throw new Error('Invalid ignored path.');
     const parents: string[] = [];
@@ -120,11 +121,14 @@ function copyIgnored(source: string, worktree: string): void {
       const target = join(worktree, parent);
       if (existsSync(target) && lstatSync(target).isSymbolicLink()) throw new Error('Ignored path traverses a symlink.');
       mkdirSync(target, { recursive: true });
-      chmodSync(target, statSync(join(source, parent)).mode & 0o777);
+      directoryModes.set(target, statSync(join(source, parent)).mode & 0o777);
     }
     cpSync(join(source, file), join(worktree, file), { recursive: true, dereference: false, verbatimSymlinks: true, preserveTimestamps: true });
     if (!lstatSync(join(source, file)).isSymbolicLink()) chmodSync(join(worktree, file), statSync(join(source, file)).mode & 0o777);
   }
+  // Apply descendants first, so restrictive parent modes cannot block copying
+  // or mode restoration deeper in the tree.
+  for (const [path, mode] of [...directoryModes].sort(([a], [b]) => b.length - a.length)) chmodSync(path, mode);
 }
 
 function remapModel(model: Compose, context: SandboxContext): Compose {

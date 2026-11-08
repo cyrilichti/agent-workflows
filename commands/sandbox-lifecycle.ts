@@ -1,10 +1,17 @@
-import { existsSync, lstatSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, lstatSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { basename, dirname, isAbsolute, join } from 'node:path';
 import type { SandboxContext } from './sandbox-context.ts';
 import { run, type Run } from './sandbox-runtime.ts';
 
 const marker = '.sandbox-owner.json';
+
+function makeRemovable(path: string): void {
+  const stat = lstatSync(path);
+  if (stat.isSymbolicLink()) return;
+  chmodSync(path, stat.mode | (stat.isDirectory() ? 0o700 : 0o600));
+  if (stat.isDirectory()) for (const name of readdirSync(path)) makeRemovable(join(path, name));
+}
 
 export function recordOwnership(context: SandboxContext): void {
   writeFileSync(join(context.root, marker), JSON.stringify(context), { mode: 0o600 });
@@ -51,9 +58,13 @@ export function removeResources(context: SandboxContext, execute: Run = run): vo
   for (const repository of [...context.repositories].reverse()) {
     const list = execFileSync('git', ['-C', repository.source, 'worktree', 'list', '--porcelain', '-z'], { encoding: 'utf8' });
     if (list.split('\0').includes(`worktree ${repository.worktree}`)) {
+      if (existsSync(repository.worktree)) makeRemovable(repository.worktree);
       execFileSync('git', ['-C', repository.source, 'worktree', 'remove', '--force', repository.worktree], { stdio: 'pipe' });
     } else if (existsSync(repository.worktree)) {
-      throw new Error('Unregistered worktree path remains; refusing recursive removal.');
+      // The root ownership record also covers a failed or interrupted Git add
+      // that populated the recorded path without retaining its registration.
+      makeRemovable(repository.worktree);
+      rmSync(repository.worktree, { recursive: true });
     }
   }
   if (existsSync(context.root)) rmSync(context.root, { recursive: true });

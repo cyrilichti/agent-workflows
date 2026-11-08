@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { existsSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
@@ -80,5 +80,19 @@ test('teardown rejects malformed or tampered ownership before mutation', () => {
     const cli = spawnSync(process.execPath, [resolve('commands/sandbox-teardown.ts')], { input: 'not json', encoding: 'utf8' });
     assert.equal(cli.status, 1);
     assert.equal(JSON.parse(cli.stdout).stage, 'input');
+  } finally { f.cleanup(); }
+});
+
+test('teardown removes recorded partial worktree files even without Git registration', () => {
+  const f = fixture();
+  try {
+    const path = join(f.context.root, '0-app');
+    f.context.repositories.push({ source: f.source, worktree: path });
+    recordOwnership(f.context);
+    mkdirSync(path);
+    writeFileSync(join(path, 'partial.env'), 'fixture');
+    assert.equal(teardown({ sandbox_context: f.context }).status, 'completed');
+    assert.equal(teardown({ sandbox_context: f.context }).status, 'completed');
+    assert.ok(existsSync(join(f.source, '.git')));
   } finally { f.cleanup(); }
 });

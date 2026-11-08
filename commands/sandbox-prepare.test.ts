@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync, realpathSync, readdirSync, statSync, readFileSync, existsSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync, realpathSync, readdirSync, chmodSync, statSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
@@ -104,8 +104,9 @@ test('separate preparations preserve ignored nested files, modes and untracked s
     writeFileSync(join(app, '.gitignore'), '.env\nnested/\n');
     execFileSync('git', ['-C', app, 'add', '.gitignore']);
     execFileSync('git', ['-C', app, '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-qm', 'ignore']);
-    mkdirSync(join(app, 'nested'), { mode: 0o700 });
+    mkdirSync(join(app, 'nested'));
     writeFileSync(join(app, 'nested', '.env'), 'SECRET=private', { mode: 0o600 });
+    chmodSync(join(app, 'nested'), 0o500);
     const fake = sandboxRunner();
     for (let index = 0; index < 2; index++) {
       const result = prepare({ item_id: 'item', project_directory: app, browser_validation: false }, fake.runner);
@@ -115,7 +116,7 @@ test('separate preparations preserve ignored nested files, modes and untracked s
       const worktree = result.sandbox_context.repositories[0]!.worktree;
       assert.equal(readFileSync(join(worktree, 'nested', '.env'), 'utf8'), 'SECRET=private');
       assert.equal(statSync(join(worktree, 'nested', '.env')).mode & 0o777, 0o600);
-      assert.equal(statSync(join(worktree, 'nested')).mode & 0o777, 0o700);
+      assert.equal(statSync(join(worktree, 'nested')).mode & 0o777, 0o500);
       assert.equal(execFileSync('git', ['-C', worktree, 'status', '--porcelain'], { encoding: 'utf8' }), '');
       assert.equal(result.sandbox_context.docker, null);
     }
@@ -123,6 +124,7 @@ test('separate preparations preserve ignored nested files, modes and untracked s
     assert.equal(fake.sandboxes.size, 0);
   } finally {
     for (const context of contexts) removeResources(context);
+    chmodSync(join(root, 'app', 'nested'), 0o700);
     rmSync(root, { recursive: true, force: true });
   }
 });
