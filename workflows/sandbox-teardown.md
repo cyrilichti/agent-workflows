@@ -4,21 +4,17 @@
 
 | Input | Description |
 | --- | --- |
-| `sandbox_context` | Complete returned sandbox context. |
+| `sandbox_context` | Context returned by preparation. |
 
 ## Steps
 
-Run from this file's directory:
+Run from this file's directory with the supplied `sandbox_context`:
 
 ```sh
 node ../commands/sandbox-teardown.ts <<'JSON'
 {"sandbox_context": <sandbox_context>}
 JSON
 ```
-
-Replace `<sandbox_context>` with the supplied `sandbox_context` JSON object,
-unchanged from preparation, including after failure. Send the enclosing JSON
-object on stdin.
 
 Success: `{ "status": "completed", "sandbox_context": SandboxContext }`.
 Failure: `{ "status": "failed", "stage": "input" | "teardown", "reason": string,
