@@ -319,6 +319,11 @@ tasks:
                           | 1. Fail | Reject any other response instead of passing an unverified directory to `/work`. |
                           | 2. Continue | Record the error and let the loop reach `sleep`. |
                         errorMessage: 'Invalid project script output: expected a nonblank string path or a documented unresolved status without a path.'
+              no-item:
+                - id: no-item
+                  type: io.kestra.plugin.core.output.OutputValues
+                  description: End an empty selection silently before publication and the next delay.
+                  values: {}
               error:
                 - id: next-error
                   type: io.kestra.plugin.core.execution.Fail
