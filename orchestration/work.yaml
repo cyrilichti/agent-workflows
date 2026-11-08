@@ -207,6 +207,22 @@ tasks:
                           timeout:
                             connectTimeout: PT5S
                             readIdleTimeout: PT59M55S
+                      - id: notify-work
+                        type: io.kestra.plugin.core.http.Request
+                        uri: '{{ envs.bridge_url }}/scripts'
+                        method: POST
+                        contentType: application/json
+                        headers:
+                          Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                        body: >-
+                          {{ {
+                            "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
+                            "args": [fromJson(fromJson(outputs.next.body).stdout).id,
+                              outputs.work.body, execution.id]
+                          } | toJson }}
+                        timeout: PT5M
+                        options:
+                          allowFailed: true
                       - id: is-success
                         type: io.kestra.plugin.core.flow.Switch
                         description: |
@@ -247,20 +263,6 @@ tasks:
                           ') | first }}
                         cases:
                           error:
-                            - id: notify-work-error
-                              type: io.kestra.plugin.core.http.Request
-                              uri: '{{ envs.bridge_url }}/scripts'
-                              method: POST
-                              contentType: application/json
-                              headers:
-                                Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                              body: >-
-                                {{ {
-                                  "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
-                                  "args": [fromJson(fromJson(outputs.next.body).stdout).id,
-                                    "error", outputs.work.body, execution.id]
-                                } | toJson }}
-                              timeout: PT5M
                             - id: work-error
                               type: io.kestra.plugin.core.execution.Fail
                               description: |
@@ -276,20 +278,6 @@ tasks:
                                 Failed or invalid /work response (HTTP {{ outputs.work.code }}): expected HTTP 200 and recognized, consistent inspection and label statuses. Received response:
                                 {{ outputs.work.body }}
                           partial:
-                            - id: notify-work-partial
-                              type: io.kestra.plugin.core.http.Request
-                              uri: '{{ envs.bridge_url }}/scripts'
-                              method: POST
-                              contentType: application/json
-                              headers:
-                                Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                              body: >-
-                                {{ {
-                                  "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
-                                  "args": [fromJson(fromJson(outputs.next.body).stdout).id,
-                                    "partial", fromJson(outputs.work.body).text, execution.id]
-                                } | toJson }}
-                              timeout: PT5M
                             - id: work-partial
                               type: io.kestra.plugin.core.execution.Fail
                               description: |
@@ -307,20 +295,6 @@ tasks:
                                 Work did not complete successfully. Received response:
                                 {{ fromJson(outputs['work'].body).text }}
                           success:
-                            - id: notify-work-success
-                              type: io.kestra.plugin.core.http.Request
-                              uri: '{{ envs.bridge_url }}/scripts'
-                              method: POST
-                              contentType: application/json
-                              headers:
-                                Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                              body: >-
-                                {{ {
-                                  "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
-                                  "args": [fromJson(fromJson(outputs.next.body).stdout).id,
-                                    "success", fromJson(outputs.work.body).text, execution.id]
-                                } | toJson }}
-                              timeout: PT5M
                             - id: work-sucess
                               type: io.kestra.plugin.core.log.Log
                               description: |

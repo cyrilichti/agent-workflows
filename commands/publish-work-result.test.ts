@@ -6,13 +6,12 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { COMMENT_LIMIT, formatWorkResult, publishWorkResult, type WorkResult } from './publish-work-result.ts';
 
-const input: WorkResult = { item_id: 'exact-item-uuid', outcome: 'success',
+const input: WorkResult = { item_id: 'exact-item-uuid',
   output: 'inspection published; agent-inspected applied', execution_id: 'kestra-execution-123' };
 for (const provider of ['linear', 'clickup'] as const) {
-  for (const outcome of ['success', 'partial', 'error'] as const) {
-    test(`${provider} verifies ${outcome} comment creation with exact item and execution`, () => {
+    test(`${provider} publishes work response with exact item and execution`, () => {
       let mutations = 0;
-      const result = publishWorkResult(provider, { ...input, outcome }, (program, args, body) => {
+      const result = publishWorkResult(provider, input, (program, args, body) => {
         if (args.includes('api')) {
           assert.equal(program, 'linear');
           assert.ok(args.includes(JSON.stringify({ itemId: input.item_id })));
@@ -20,7 +19,7 @@ for (const provider of ['linear', 'clickup'] as const) {
         }
         mutations++;
         const comment = provider === 'linear' ? body! : args[5]!;
-        assert.match(comment, new RegExp(`Work result: ${outcome}`));
+        assert.match(comment, /^Work result\n/);
         assert.ok(comment.includes(input.item_id));
         assert.ok(comment.includes(input.execution_id));
         assert.ok(comment.includes(input.output));
@@ -33,15 +32,13 @@ for (const provider of ['linear', 'clickup'] as const) {
         return '[{"id":"created"}]';
       });
       assert.equal(result.published, true);
-      assert.equal(result.outcome, outcome);
       assert.equal(mutations, 1);
     });
-  }
 }
 
 test('comments bound Unicode output and retain final diagnostics plus execution identity', () => {
   const output = 'Start diagnosis\n' + '🙂'.repeat(20000) + '\nFinal root cause: timeout';
-  const comment = formatWorkResult({ ...input, outcome: 'error', output });
+  const comment = formatWorkResult({ ...input, output });
   assert.equal(Array.from(comment).length, COMMENT_LIMIT);
   assert.match(comment, /Output truncated/);
   assert.match(comment, /Start diagnosis/);
@@ -49,6 +46,8 @@ test('comments bound Unicode output and retain final diagnostics plus execution 
   assert.ok(comment.includes(input.execution_id));
   assert.doesNotMatch(comment, /\uFFFD/);
   assert.ok(formatWorkResult({ ...input, output: '' }).endsWith('No textual response received.'));
+  assert.ok(formatWorkResult({ ...input, output: JSON.stringify({ text: 'Readable result' }) }).endsWith('Readable result'));
+  assert.ok(formatWorkResult({ ...input, output: JSON.stringify({ error: 'Bridge failed' }) }).endsWith('Bridge failed'));
 });
 
 test('unconfirmed comments, failed provider responses, and CLI failures are rejected', () => {
@@ -64,7 +63,7 @@ test('unconfirmed comments, failed provider responses, and CLI failures are reje
 });
 
 test('invalid input fails before mutating the item', () => {
-  for (const value of [{ item_id: '' }, { execution_id: ' ' }, { outcome: 'unknown' }, { output: null }]) {
+  for (const value of [{ item_id: '' }, { execution_id: ' ' }, { output: null }]) {
     assert.throws(() => publishWorkResult('clickup', { ...input, ...value } as WorkResult,
       () => assert.fail('No mutation expected')));
   }
@@ -83,7 +82,7 @@ for (const directory of ['commands', '.agents/commands']) {
     const receipt = join(root, 'comment.txt');
     writeFileSync(join(bin, 'clickup-cli'), '#!/bin/sh\nprintf "%s" "$6" > "$COMMENT_RECEIPT"\nprintf \'{"id":"new-comment"}\'\n', { mode: 0o755 });
     writeFileSync(join(root, 'agent-workflows.yaml'), 'item:\n  provider: clickup\n');
-    const args = [join(commands, 'publish-work-result.ts'), input.item_id, input.outcome, input.output, input.execution_id];
+    const args = [join(commands, 'publish-work-result.ts'), input.item_id, input.output, input.execution_id];
     const env = { ...process.env, PATH: `${bin}:${process.env.PATH}`, COMMENT_RECEIPT: receipt };
     const result = JSON.parse(execFileSync(process.execPath, args, { cwd: tmpdir(), env, encoding: 'utf8' }));
     assert.equal(result.comment_id, 'new-comment');

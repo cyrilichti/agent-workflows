@@ -27,17 +27,13 @@ test('flow classifies success, partial, invalid responses and HTTP failures', ()
   }
 });
 
-test('work flows directly to classification, one comment per outcome, then sleep', () => {
-  assert.match(flow, /- id: work\s+type: io\.kestra\.plugin\.core\.http\.Request[\s\S]*?allowFailed: true[\s\S]*?- id: is-success/);
+test('work publishes one comment before classifying its result, then sleeps', () => {
+  assert.match(flow, /- id: work\s+type: io\.kestra\.plugin\.core\.http\.Request[\s\S]*?allowFailed: true[\s\S]*?- id: notify-work\s+type: io\.kestra\.plugin\.core\.http\.Request[\s\S]*?- id: is-success/);
   assert.doesNotMatch(flow, /- id: work-call|- id: work-output|- id: report-work-/);
-  for (const [outcome, terminal] of [['error', 'work-error'], ['partial', 'work-partial'], ['success', 'work-sucess']]) {
-    const branch = classify.slice(classify.indexOf(`          ${outcome}:\n`), classify.indexOf(`- id: ${terminal}\n`));
-    assert.match(branch, new RegExp(`- id: notify-work-${outcome}\\n`));
-    assert.match(branch, /"path": inputs.commandsDirectory ~ "\/publish-work-result.ts"/);
-    assert.match(branch, /fromJson\(fromJson\(outputs.next.body\).stdout\).id/);
-    assert.ok(branch.includes(`"${outcome}",`));
-    assert.match(branch, /execution\.id\]/);
-    assert.equal((branch.match(/- id: notify-work-/g) ?? []).length, 1);
-  }
+  const notification = flow.slice(flow.indexOf('- id: notify-work'), flow.indexOf('- id: is-success'));
+  assert.match(notification, /"path": inputs.commandsDirectory ~ "\/publish-work-result.ts"/);
+  assert.match(notification, /fromJson\(fromJson\(outputs.next.body\).stdout\).id/);
+  assert.match(notification, /outputs\.work\.body, execution\.id\]/);
+  assert.equal((flow.match(/- id: notify-work/g) ?? []).length, 1);
   assert.match(flow, /\n      - id: sleep\s+type: io\.kestra\.plugin\.core\.flow\.Sleep/);
 });
