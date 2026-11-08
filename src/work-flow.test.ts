@@ -27,13 +27,18 @@ test('flow classifies success, partial, invalid responses and HTTP failures', ()
   }
 });
 
-test('work publishes one comment before classifying its result, then sleeps', () => {
-  assert.match(flow, /- id: work\s+type: io\.kestra\.plugin\.core\.http\.Request[\s\S]*?allowFailed: true[\s\S]*?- id: notify-work\s+type: io\.kestra\.plugin\.core\.http\.Request[\s\S]*?- id: is-success/);
+test('one notification follows the allowed attempt and precedes sleep', () => {
+  assert.match(flow, /- id: start\s+type: io\.kestra\.plugin\.core\.flow\.AllowFailure/);
+  assert.match(flow, /- id: work\s+type: io\.kestra\.plugin\.core\.http\.Request[\s\S]*?allowFailed: true[\s\S]*?- id: is-success/);
   assert.doesNotMatch(flow, /- id: work-call|- id: work-output|- id: report-work-/);
-  const notification = flow.slice(flow.indexOf('- id: notify-work'), flow.indexOf('- id: is-success'));
+  const notification = flow.slice(flow.indexOf('- id: notify-work'), flow.indexOf('- id: sleep'));
+  assert.ok(flow.indexOf('- id: notify-work') > flow.indexOf('- id: next-error'));
+  assert.ok(flow.indexOf('- id: notify-work') < flow.indexOf('- id: sleep'));
   assert.match(notification, /"path": inputs.commandsDirectory ~ "\/publish-work-result.ts"/);
-  assert.match(notification, /fromJson\(fromJson\(outputs.next.body\).stdout\).id/);
-  assert.match(notification, /outputs\.work\.body, execution\.id\]/);
+  assert.match(notification, /allowFailure: true/);
+  assert.match(notification, /outputs\.next\.body \?\? ""/);
+  assert.match(notification, /outputs\.project\.body \?\? ""/);
+  assert.match(notification, /outputs\.work\.body \?\? "", execution\.id\]/);
   assert.equal((flow.match(/- id: notify-work/g) ?? []).length, 1);
   assert.match(flow, /\n      - id: sleep\s+type: io\.kestra\.plugin\.core\.flow\.Sleep/);
 });

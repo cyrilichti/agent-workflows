@@ -4,7 +4,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, copyFileSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { COMMENT_LIMIT, formatWorkResult, publishWorkResult, type WorkResult } from './publish-work-result.ts';
+import { COMMENT_LIMIT, formatWorkResult, publishAttemptResult, publishWorkResult, type WorkResult } from './publish-work-result.ts';
 
 const input: WorkResult = { item_id: 'exact-item-uuid',
   output: 'inspection published; agent-inspected applied', execution_id: 'kestra-execution-123' };
@@ -19,7 +19,7 @@ for (const provider of ['linear', 'clickup'] as const) {
         }
         mutations++;
         const comment = provider === 'linear' ? body! : args[5]!;
-        assert.match(comment, /^Work result\n/);
+        assert.match(comment, /^Work attempt result\n/);
         assert.ok(comment.includes(input.item_id));
         assert.ok(comment.includes(input.execution_id));
         assert.ok(comment.includes(input.output));
@@ -48,6 +48,8 @@ test('comments bound Unicode output and retain final diagnostics plus execution 
   assert.ok(formatWorkResult({ ...input, output: '' }).endsWith('No textual response received.'));
   assert.ok(formatWorkResult({ ...input, output: JSON.stringify({ text: 'Readable result' }) }).endsWith('Readable result'));
   assert.ok(formatWorkResult({ ...input, output: JSON.stringify({ error: 'Bridge failed' }) }).endsWith('Bridge failed'));
+  assert.ok(formatWorkResult({ ...input, output: JSON.stringify({ stdout: '{"status":"not found"}' }) })
+    .endsWith('{"status":"not found"}'));
 });
 
 test('unconfirmed comments, failed provider responses, and CLI failures are rejected', () => {
@@ -69,6 +71,34 @@ test('invalid input fails before mutating the item', () => {
   }
 });
 
+test('one post-attempt publication covers work and project outcomes', () => {
+  const next = JSON.stringify({ stdout: JSON.stringify({ id: input.item_id, name: 'Selected' }) });
+  const resolved = JSON.stringify({ stdout: JSON.stringify({ path: '/tmp/project' }) });
+  const unresolved = JSON.stringify({ stdout: JSON.stringify({ status: 'not found' }) });
+  const published: string[] = [];
+  const run = (_program: string, args: string[], body?: string) => {
+    if (args.includes('api')) return '{"data":{"issue":{"identifier":"ICY-163"}}}';
+    published.push(body ?? '');
+    return '✓ Added comment to issue ICY-163\nhttps://linear.app/test/issue/ICY-163/x#comment-created';
+  };
+  for (const output of ['inspection published; agent-inspected applied',
+    'inspection incomplete; agent-inspected not applied', 'invalid response']) {
+    publishAttemptResult('linear', next, resolved, JSON.stringify({ text: output }), input.execution_id, run);
+  }
+  publishAttemptResult('linear', next, unresolved, '', input.execution_id, run);
+  publishAttemptResult('linear', next, 'invalid project response', '', input.execution_id, run);
+  publishAttemptResult('linear', next, '', JSON.stringify({ text: 'stale work result' }), input.execution_id, run);
+  assert.equal(published.length, 6);
+  assert.match(published[0], /inspection published/);
+  assert.match(published[1], /inspection incomplete/);
+  assert.match(published[2], /invalid response/);
+  assert.match(published[3], /not found/);
+  assert.match(published[4], /invalid project response/);
+  assert.match(published[5], /Project resolution did not return a response/);
+  assert.equal(publishAttemptResult('linear', JSON.stringify({ stdout: '{"status":"no eligible item"}' }),
+    '', '', input.execution_id, () => assert.fail('No comment expected')).status, 'skipped');
+});
+
 for (const directory of ['commands', '.agents/commands']) {
   test(`CLI uses configured provider from ${directory} and returns failure exit codes`, t => {
     const root = mkdtempSync(join(tmpdir(), 'work-report-'));
@@ -82,7 +112,10 @@ for (const directory of ['commands', '.agents/commands']) {
     const receipt = join(root, 'comment.txt');
     writeFileSync(join(bin, 'clickup-cli'), '#!/bin/sh\nprintf "%s" "$6" > "$COMMENT_RECEIPT"\nprintf \'{"id":"new-comment"}\'\n', { mode: 0o755 });
     writeFileSync(join(root, 'agent-workflows.yaml'), 'item:\n  provider: clickup\n');
-    const args = [join(commands, 'publish-work-result.ts'), input.item_id, input.output, input.execution_id];
+    const next = JSON.stringify({ stdout: JSON.stringify({ id: input.item_id }) });
+    const project = JSON.stringify({ stdout: JSON.stringify({ path: root }) });
+    const args = [join(commands, 'publish-work-result.ts'), next, project,
+      JSON.stringify({ text: input.output }), input.execution_id];
     const env = { ...process.env, PATH: `${bin}:${process.env.PATH}`, COMMENT_RECEIPT: receipt };
     const result = JSON.parse(execFileSync(process.execPath, args, { cwd: tmpdir(), env, encoding: 'utf8' }));
     assert.equal(result.comment_id, 'new-comment');

@@ -11,9 +11,10 @@ export const COMMENT_LIMIT = 8000;
 
 function responseText(output: string): string {
   try {
-    const response = JSON.parse(output) as { text?: unknown; error?: unknown };
+    const response = JSON.parse(output) as { text?: unknown; error?: unknown; stdout?: unknown };
     if (typeof response?.text === 'string') return response.text;
     if (typeof response?.error === 'string') return response.error;
+    if (typeof response?.stdout === 'string') return response.stdout;
   } catch {
     // Keep non-JSON diagnostics as received.
   }
@@ -29,7 +30,7 @@ export function formatWorkResult(input: WorkResult): string {
   if (typeof input.output !== 'string') {
     throw new Error('A string output is required.');
   }
-  const header = `Work result\nItem: ${input.item_id}\nKestra execution: ${input.execution_id}\n\n`;
+  const header = `Work attempt result\nItem: ${input.item_id}\nKestra execution: ${input.execution_id}\n\n`;
   const text = Array.from(responseText(input.output).trim() || 'No textual response received.');
   const budget = COMMENT_LIMIT - Array.from(header).length;
   const notice = '\n\n[Output truncated; beginning and final diagnostic output retained.]\n\n';
@@ -44,6 +45,30 @@ export function publishWorkResult(provider: ItemProvider, input: WorkResult, run
   return publishItemComment(provider, input.item_id, comment, run);
 }
 
+function scriptOutput(body: string): Record<string, unknown> | null {
+  try {
+    const response = JSON.parse(body) as { stdout?: unknown };
+    const result = JSON.parse(response.stdout as string) as unknown;
+    return result && typeof result === 'object' && !Array.isArray(result)
+      ? result as Record<string, unknown> : null;
+  } catch {
+    return null;
+  }
+}
+
+export function publishAttemptResult(provider: ItemProvider, nextBody: string,
+  projectBody: string, workBody: string, executionId: string, run?: Run) {
+  const itemId = scriptOutput(nextBody)?.id;
+  if (typeof itemId !== 'string' || !itemId.trim()) {
+    return { status: 'skipped' as const, reason: 'no_selected_item' };
+  }
+  const project = scriptOutput(projectBody);
+  const output = typeof project?.path === 'string' && project.path.trim()
+    ? workBody || 'Work did not return a response. See the Kestra execution logs.'
+    : projectBody || 'Project resolution did not return a response. See the Kestra execution logs.';
+  return publishWorkResult(provider, { item_id: itemId, output, execution_id: executionId }, run);
+}
+
 if (import.meta.main) {
   let stage = 'resolve_item_provider';
   try {
@@ -55,8 +80,8 @@ if (import.meta.main) {
       throw new Error('Configure item provider as linear or clickup.');
     }
     stage = 'publish_work_result';
-    const [item_id, output, execution_id] = process.argv.slice(2);
-    const result = publishWorkResult(provider, { item_id, output, execution_id } as WorkResult);
+    const [next_body, project_body, work_body, execution_id] = process.argv.slice(2);
+    const result = publishAttemptResult(provider, next_body, project_body, work_body, execution_id);
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
     process.stdout.write(`${JSON.stringify({ status: 'failed', stage, published: false,

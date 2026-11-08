@@ -207,22 +207,6 @@ tasks:
                           timeout:
                             connectTimeout: PT5S
                             readIdleTimeout: PT59M55S
-                      - id: notify-work
-                        type: io.kestra.plugin.core.http.Request
-                        uri: '{{ envs.bridge_url }}/scripts'
-                        method: POST
-                        contentType: application/json
-                        headers:
-                          Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                        body: >-
-                          {{ {
-                            "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
-                            "args": [fromJson(fromJson(outputs.next.body).stdout).id,
-                              outputs.work.body, execution.id]
-                          } | toJson }}
-                        timeout: PT5M
-                        options:
-                          allowFailed: true
                       - id: is-success
                         type: io.kestra.plugin.core.flow.Switch
                         description: |
@@ -364,6 +348,21 @@ tasks:
                     | 1. Fail | Record the invalid content as a failed attempt. |
                     | 2. Continue | Run `sleep` before another selection. |
                   errorMessage: Invalid selection script output.
+      - id: notify-work
+        type: io.kestra.plugin.core.http.Request
+        allowFailure: true
+        uri: '{{ envs.bridge_url }}/scripts'
+        method: POST
+        contentType: application/json
+        headers:
+          Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+        body: >-
+          {{ {
+            "path": inputs.commandsDirectory ~ "/publish-work-result.ts",
+            "args": [outputs.next.body ?? "", outputs.project.body ?? "",
+              outputs.work.body ?? "", execution.id]
+          } | toJson }}
+        timeout: PT5M
       - id: sleep
         type: io.kestra.plugin.core.flow.Sleep
         description: |
