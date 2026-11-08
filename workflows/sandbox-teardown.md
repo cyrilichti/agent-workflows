@@ -12,12 +12,13 @@ Run from this file's directory:
 
 ```sh
 node ../commands/sandbox-teardown.ts <<'JSON'
-{"sandbox_context": <complete returned context>}
+{"sandbox_context": <sandbox_context>}
 JSON
 ```
 
-Replace the placeholder with the unchanged context returned by preparation,
-including after failure, as one JSON object on stdin.
+Replace `<sandbox_context>` with the supplied `sandbox_context` JSON object,
+unchanged from preparation, including after failure. Send the enclosing JSON
+object on stdin.
 
 Success: `{ "status": "completed", "sandbox_context": SandboxContext }`.
 Failure: `{ "status": "failed", "stage": "input" | "teardown", "reason": string,
