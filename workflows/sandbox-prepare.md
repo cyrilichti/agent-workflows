@@ -32,20 +32,18 @@ and Docker and sbx are available. Otherwise, use `false` and an empty
 
 Only when `container_execution` is `true`, read the current project's README.
 Identify the required local repositories named in it. Resolve their names
-together from this file's directory by sending a JSON array on stdin:
+together from this file's directory. Send one JSON array containing the exact
+repository names found in the README on stdin:
 
 ```sh
-node ../commands/resolve-local-repository-dependencies.ts <<'JSON'
-["api-repository", "shared-repository"]
-JSON
+node ../commands/resolve-local-repository-dependencies.ts
 ```
 
-The array contains the repository names from the README. Require a returned
-`path` for each name. On `not found`, `ambiguous`, `search incomplete`,
-or a command error, report it and stop. Read each located repository's README
-for further repository names and resolve any new names together. Set
-`dependency_directories` to the distinct returned absolute paths, excluding the
-current project. Otherwise, set it to `[]`.
+Require a returned `path` for each name. On `not found`, `ambiguous`,
+`search incomplete`, or a command error, report it and stop. Read each located
+repository's README for further repository names and resolve any new names
+together. Set `dependency_directories` to the distinct returned absolute paths,
+excluding the current project. Otherwise, set it to `[]`.
 
 Invoke preparation from this file's directory with the resolved and derived values:
 
