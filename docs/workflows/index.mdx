@@ -5,8 +5,9 @@ description: Skills that agents and orchestrators can combine into a governed de
 
 import { CardGrid, LinkCard } from '@astrojs/starlight/components'
 
-Use these workflows on their own or combine them in an
-[orchestrated flow](/agent-workflows/orchestration/).
+Each workflow is available as a Skill. Invoke one directly or combine them in
+an automated flow to shape, plan, deliver, and review work. The final merge
+remains a human decision.
 
 <CardGrid>
   <LinkCard
@@ -42,17 +43,17 @@ Use these workflows on their own or combine them in an
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/work</span><span class="workflow-card-mode">Implement the plan</span></span>'}
     href="/agent-workflows/workflows/work/"
-    description="Implement an approved plan or address findings, then continue to review preparation."
+    description="Implement an approved plan or address findings autonomously, then continue to review preparation."
   />
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/ready</span><span class="workflow-card-mode">Prepare for review</span></span>'}
     href="/agent-workflows/workflows/ready/"
-    description="Check completed work and its request, then hand it to inspection."
+    description="Autonomously check completed work and its request, then hand it to inspection."
   />
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/inspect</span><span class="workflow-card-mode">Review the request</span></span>'}
     href="/agent-workflows/workflows/inspect/"
-    description="Review the request and return blocking findings for correction."
+    description="Autonomously review the request and return blocking findings for correction."
   />
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--human"><span class="workflow-card-command">/done</span><span class="workflow-card-mode">Merge and close the item</span></span>'}
