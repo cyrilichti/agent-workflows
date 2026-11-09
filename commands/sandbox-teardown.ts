@@ -113,6 +113,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.ar
   let result: SandboxResult;
   try { result = teardown(JSON.parse(readFileSync(0, 'utf8'))); }
   catch { result = { status: 'failed', stage: 'input', reason: 'Expected one JSON object on stdin.' }; }
-  process.stdout.write(`${JSON.stringify(result)}\n`);
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (result.status === 'failed') process.exitCode = 1;
 }
