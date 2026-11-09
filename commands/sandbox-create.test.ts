@@ -112,7 +112,7 @@ function sandboxRunner(options: { fail?: string; model?: any; models?: Record<st
   return { runner, sandboxes, executions, bindings };
 }
 
-test('separate preparations preserve ignored nested files, modes and untracked state without Docker', () => {
+test('separate preparations copy current tracked, untracked, and ignored files without Docker', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-worktree-'));
   const contexts: any[] = [];
   try {
@@ -121,6 +121,8 @@ test('separate preparations preserve ignored nested files, modes and untracked s
     writeFileSync(join(app, 'compose.yaml'), 'services: {}');
     execFileSync('git', ['-C', app, 'add', '.gitignore', 'compose.yaml']);
     execFileSync('git', ['-C', app, '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-qm', 'ignore']);
+    writeFileSync(join(app, 'compose.yaml'), 'services:\n  changed: {}\n');
+    writeFileSync(join(app, 'notes.txt'), 'local test');
     mkdirSync(join(app, 'nested'));
     writeFileSync(join(app, 'nested', '.env'), 'SECRET=private', { mode: 0o600 });
     chmodSync(join(app, 'nested'), 0o500);
@@ -131,10 +133,14 @@ test('separate preparations preserve ignored nested files, modes and untracked s
       if (!result.sandbox_context) throw new Error('Missing context');
       contexts.push(result.sandbox_context);
       const worktree = result.sandbox_context.repositories[0]!.worktree;
+      assert.equal(readFileSync(join(worktree, 'compose.yaml'), 'utf8'), 'services:\n  changed: {}\n');
+      assert.equal(readFileSync(join(worktree, 'notes.txt'), 'utf8'), 'local test');
       assert.equal(readFileSync(join(worktree, 'nested', '.env'), 'utf8'), 'SECRET=private');
       assert.equal(statSync(join(worktree, 'nested', '.env')).mode & 0o777, 0o600);
       assert.equal(statSync(join(worktree, 'nested')).mode & 0o777, 0o500);
-      assert.equal(execFileSync('git', ['-C', worktree, 'status', '--porcelain'], { encoding: 'utf8' }), '');
+      const status = execFileSync('git', ['-C', worktree, 'status', '--porcelain'], { encoding: 'utf8' });
+      assert.match(status, / M compose\.yaml/);
+      assert.match(status, /\?\? notes\.txt/);
       assert.equal(result.sandbox_context.docker, null);
     }
     assert.equal(new Set(contexts.map(context => context.root)).size, 5);
@@ -149,8 +155,9 @@ test('container preparation runs the unchanged worktree Compose and publishes it
   const root = mkdtempSync(join(tmpdir(), 'sandbox-docker-'));
   try {
     const app = repository(join(root, 'app'));
+    commitCompose(app, 'services:\n  web:\n    image: nginx\n    ports: ["3001:80"]\n');
     const compose = 'services:\n  web:\n    image: nginx\n    ports: ["3003:80"]\n';
-    commitCompose(app, compose);
+    writeFileSync(join(app, 'compose.yaml'), compose);
     const fake = sandboxRunner({ model: { services: { web: { image: 'nginx', ports: [{ target: 80, published: '3003' }] } } } });
     const result = createSandbox({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: true }, fake.runner);
     assert.equal(result.status, 'prepared', JSON.stringify(result));

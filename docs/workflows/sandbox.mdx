@@ -60,7 +60,7 @@ after returning its result; delivery callers decide when to use the environment.
     <tr>
       <td>4a</td>
       <th scope="row">Create</th>
-      <td>Create a detached worktree at each selected repository's current <code>HEAD</code> and copy Git-ignored resources with their paths and permissions. When container execution is available, start the Compose services of the project and its dependencies in one sbx shell sandbox, then allocate ports. Return the resulting <code>sandbox_context</code>; on failure, attempt rollback and report the stage and reason.</td>
+      <td>Create a detached worktree at each selected repository's current <code>HEAD</code> and copy its local changes and Git-ignored resources. When container execution is available, start the Compose services of the project and its dependencies in one sbx shell sandbox, then allocate ports. Return the resulting <code>sandbox_context</code>; on failure, attempt rollback and report the stage and reason.</td>
     </tr>
     <tr>
       <td>2b</td>
