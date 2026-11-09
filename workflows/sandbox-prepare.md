@@ -36,9 +36,9 @@ worktree.
 
 Set `dependency_directories` to `[]` when `container_execution` is `false`.
 Otherwise, read the current project's README and identify its local repository
-dependencies. Resolve their names together from this file's directory. Send
-all names found in that README as one JSON array on stdin, with one element per
-dependency:
+dependencies. The resolver only locates those repositories on disk; it does
+not decide which repositories the project needs. Send all identified names in
+one JSON array from this file's directory:
 
 ```sh
 node ../commands/resolve-local-repository-dependencies.ts <<'JSON'
@@ -46,14 +46,13 @@ node ../commands/resolve-local-repository-dependencies.ts <<'JSON'
 JSON
 ```
 
-Track resolved names and visited repository paths. Mark the current project as
-visited. For each README, pass only names not yet resolved to the command.
-Skip the command when there are none. Read the README of each newly resolved
-path only once, then repeat until no new names remain. Set
-`dependency_directories` to the distinct `path` values returned by the resolver,
-excluding the current project. Pass this array to `sandbox-prepare.ts` below.
-If any name returns `not found`, `ambiguous`, or `search incomplete`, or the
-command fails, report the issue and stop.
+Add each returned `path` to `dependency_directories`, except the current
+project or a path already added. Read the README at each newly added path and
+resolve any dependency names that have not been sent to the resolver before.
+Repeat until no new names remain. Skip the command when there are none. If any
+name returns `not found`, `ambiguous`, or `search incomplete`, or the command
+fails, report the issue and stop. Pass `dependency_directories` to
+`sandbox-prepare.ts` below.
 
 Invoke preparation from this file's directory with the resolved and derived values:
 
