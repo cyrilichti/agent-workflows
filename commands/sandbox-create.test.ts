@@ -36,6 +36,27 @@ test('preparation validates its single JSON input and emits a staged JSON failur
   assert.equal(JSON.parse(result.stdout).stage, 'input');
 });
 
+test('preparation CLI returns readable, parseable sandbox context', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sandbox-cli-output-'));
+  let context: ReturnType<typeof createSandbox>['sandbox_context'];
+  try {
+    const app = repository(join(root, 'app'));
+    const result = spawnSync(process.execPath, [resolve('commands/sandbox-create.ts')], {
+      input: JSON.stringify({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: false }),
+      encoding: 'utf8',
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /\n  "sandbox_context": \{\n    "version": 1,/);
+    const output = JSON.parse(result.stdout);
+    assert.equal(output.status, 'prepared');
+    assert.equal(output.sandbox_context.repositories[0].source, app);
+    context = output.sandbox_context;
+  } finally {
+    if (context) removeResources(context);
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('preflight rejects unresolved Compose variables and secrets without resources', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-preflight-'));
   try {
