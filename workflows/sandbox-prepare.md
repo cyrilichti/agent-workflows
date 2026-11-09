@@ -37,11 +37,12 @@ worktree.
 Set `dependency_directories` to `[]` when `container_execution` is `false`.
 Otherwise, read the current project's README and identify its local repository
 dependencies. Resolve their names together from this file's directory. Send
-the names as one JSON array on stdin:
+all names found in that README as one JSON array on stdin, with one element per
+dependency:
 
 ```sh
 node ../commands/resolve-local-repository-dependencies.ts <<'JSON'
-["<repository name from README>"]
+["<first dependency repository>", "<second dependency repository>"]
 JSON
 ```
 
