@@ -52,13 +52,10 @@ Repeat until no new names remain. Skip the command when there are none. If any
 name returns `not found`, `ambiguous`, or `search incomplete`, or the command
 fails, report the issue and stop.
 
-Set `disk_size` to the supplied positive integer, or `10` if absent. Invoke
-preparation from this file's directory with the resolved and derived values,
-using that number in the inline `DOCKER_SANDBOXES_DOCKER_SIZE` assignment:
+Set `disk_size` to the supplied positive integer, or `10` if absent:
 
 ```sh
-disk_size=10
-DOCKER_SANDBOXES_DOCKER_SIZE="${disk_size}g" node ../commands/sandbox-create.ts <<'JSON'
+DOCKER_SANDBOXES_DOCKER_SIZE="<disk_size>g" node ../commands/sandbox-create.ts <<'JSON'
 {"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","dependency_directories":<dependency_directories>,"is_docker_enabled":<is_docker_enabled>}
 JSON
 ```
