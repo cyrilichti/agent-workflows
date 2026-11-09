@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path';
 import test from 'node:test';
 import { parseCreationInput, validateRepositories, createSandbox } from './sandbox-create.ts';
 import { removeResources } from './sandbox-teardown.ts';
-import type { Run } from './sandbox-runtime.ts';
+import type { Run } from './sandbox-teardown.ts';
 
 export function repository(path: string) {
   mkdirSync(path, { recursive: true });

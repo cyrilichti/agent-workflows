@@ -7,8 +7,14 @@ import { join, resolve } from 'node:path';
 import test from 'node:test';
 import type { SandboxContext } from './sandbox-teardown.ts';
 import { recordOwnership } from './sandbox-create.ts';
-import { teardown } from './sandbox-teardown.ts';
-import type { Run } from './sandbox-runtime.ts';
+import { run, teardown, type Run } from './sandbox-teardown.ts';
+
+test('command runner returns output and omits it from failures', () => {
+  const success = run(process.execPath, ['-e', 'process.stdout.write("ok"); process.stderr.write("warning")']);
+  assert.deepEqual(success, { stdout: 'ok', stderr: 'warning' });
+  assert.throws(() => run(process.execPath, ['-e', 'process.stderr.write("secret"); process.exit(2)']),
+    error => error instanceof Error && error.message.includes('exit 2') && !error.message.includes('secret'));
+});
 
 function fixture() {
   const source = realpathSync(mkdtempSync(join(tmpdir(), 'sandbox-source-')));
