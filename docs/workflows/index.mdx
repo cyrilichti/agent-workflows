@@ -11,9 +11,8 @@ Use each Skill directly or combine them into a delivery flow. `/hotfix` and
 For parallel tickets in one project, `/sandbox` prepares isolated environments
 and removes them afterward. `/work`, `/ready`, and `/inspect` can continue
 through implementation and review, while a person decides when `/done` merges
-the request and closes the item.
-
-## Start delivery
+the request and closes the item. `/next` and `/project` support orchestration;
+see [Orchestration](/agent-workflows/orchestration/) for the automated flow.
 
 <CardGrid>
   <LinkCard
@@ -26,11 +25,6 @@ the request and closes the item.
     href="/agent-workflows/workflows/pick/"
     description="Select an unplanned item, seek plan approval, and start delivery."
   />
-</CardGrid>
-
-## Prepare work
-
-<CardGrid>
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--preparation"><span class="workflow-card-command">/write</span><span class="workflow-card-mode">Create or clarify an item</span></span>'}
     href="/agent-workflows/workflows/write/"
@@ -46,21 +40,11 @@ the request and closes the item.
     href="/agent-workflows/workflows/plan/"
     description="Draft and approve an implementation plan; standalone use stops before delivery."
   />
-</CardGrid>
-
-## Scale delivery
-
-<CardGrid>
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--scale"><span class="workflow-card-command">/sandbox</span><span class="workflow-card-mode">Set up or remove a sandbox</span></span>'}
     href="/agent-workflows/workflows/sandbox/"
     description="Create or remove isolated worktrees and optional services so tickets in one project can run in parallel."
   />
-</CardGrid>
-
-## Autonomous delivery
-
-<CardGrid>
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/work</span><span class="workflow-card-mode">Implement the plan</span></span>'}
     href="/agent-workflows/workflows/work/"
@@ -76,25 +60,11 @@ the request and closes the item.
     href="/agent-workflows/workflows/inspect/"
     description="Review the request and return blocking findings for correction."
   />
-</CardGrid>
-
-## Merge and close
-
-<CardGrid>
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--human"><span class="workflow-card-command">/done</span><span class="workflow-card-mode">Merge and close the item</span></span>'}
     href="/agent-workflows/workflows/done/"
     description="On your merge decision, merge the reviewed request and complete its work item."
   />
-</CardGrid>
-
-## Support the flow
-
-These Skills help an orchestrator find eligible work and its local repository.
-The [Orchestration](/agent-workflows/orchestration/) page shows how Kestra
-connects to an agent running on your machine.
-
-<CardGrid>
   <LinkCard
     title={'<span class="workflow-card-title workflow-card-title--support"><span class="workflow-card-command">/next</span><span class="workflow-card-mode">Find eligible work</span></span>'}
     href="/agent-workflows/workflows/next/"
