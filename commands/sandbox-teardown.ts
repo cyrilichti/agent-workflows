@@ -11,7 +11,7 @@ export function commandFailure(program: string, args: string[], status: number |
   return new Error(diagnostic ? `${summary}: ${diagnostic}` : `${summary}.`);
 }
 export const run: Run = (program, args, cwd) => {
-  const result = spawnSync(program, args, { cwd, encoding: 'utf8', timeout: 300_000, maxBuffer: 32 * 1024 * 1024 });
+  const result = spawnSync(program, args, { cwd, encoding: 'utf8', timeout: 600_000, maxBuffer: 32 * 1024 * 1024 });
   if (result.error || result.status !== 0) {
     throw commandFailure(program, args, result.status, result.error, result.stderr);
   }
