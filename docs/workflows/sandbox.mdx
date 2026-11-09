@@ -21,6 +21,14 @@ sbx policy allow network '**'
 This rule applies to all local sandboxes. See the [Docker network policy
 reference](https://docs.docker.com/reference/cli/sbx/policy/allow/network/).
 
+## List sandboxes
+
+To see the Docker sandboxes and their status:
+
+```sh
+sbx ls
+```
+
 ## How `/sandbox` prepares and removes an environment
 
 <div className="write-flow sandbox-flow" role="img" aria-label="The sandbox workflow has two branches. An item starts preparation: resolve the item and plan, locate README dependencies, then create worktrees and optionally run project services in Docker before returning the context. A returned sandbox context starts teardown: verify ownership, remove recorded resources, and return the result. Each branch ends independently.">
