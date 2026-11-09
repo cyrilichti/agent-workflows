@@ -37,11 +37,11 @@ worktree.
 Set `dependency_directories` to `[]` when `container_execution` is `false`.
 Otherwise, read the current project's README and identify its local repository
 dependencies. Resolve their names together from this file's directory. Send
-the names as one JSON array on stdin, replacing `[]` with the names found:
+the names as one JSON array on stdin:
 
 ```sh
 node ../commands/resolve-local-repository-dependencies.ts <<'JSON'
-[]
+["<repository name from README>"]
 JSON
 ```
 
@@ -49,15 +49,16 @@ Track resolved names and visited repository paths. Mark the current project as
 visited. For each README, pass only names not yet resolved to the command.
 Skip the command when there are none. Read the README of each newly resolved
 path only once, then repeat until no new names remain. Set
-`dependency_directories` to the distinct absolute paths found,
-excluding the current project. If any name returns `not found`, `ambiguous`, or
-`search incomplete`, or the command fails, report the issue and stop.
+`dependency_directories` to the distinct `path` values returned by the resolver,
+excluding the current project. Pass this array to `sandbox-prepare.ts` below.
+If any name returns `not found`, `ambiguous`, or `search incomplete`, or the
+command fails, report the issue and stop.
 
 Invoke preparation from this file's directory with the resolved and derived values:
 
 ```sh
 node ../commands/sandbox-prepare.ts <<'JSON'
-{"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","dependency_directories":<absolute dependency repository roots as JSON array>,"container_execution":<container_execution>}
+{"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","dependency_directories":<dependency_directories>,"container_execution":<container_execution>}
 JSON
 ```
 
