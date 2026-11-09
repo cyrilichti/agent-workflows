@@ -50,6 +50,20 @@ test('teardown handles empty partial preparation and repeated no-Docker worktree
   } finally { f.cleanup(); }
 });
 
+test('teardown CLI returns readable, parseable sandbox context', () => {
+  const f = fixture();
+  try {
+    const result = spawnSync(process.execPath, [resolve('commands/sandbox-teardown.ts')], {
+      input: JSON.stringify({ sandbox_context: f.context }), encoding: 'utf8',
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, /\n  "sandbox_context": \{\n    "version": 1,/);
+    const output = JSON.parse(result.stdout);
+    assert.equal(output.status, 'completed');
+    assert.deepEqual(output.sandbox_context, f.context);
+  } finally { f.cleanup(); }
+});
+
 test('Docker failure keeps the context retryable and removes only the recorded sandbox', () => {
   const f = fixture();
   try {
