@@ -38,6 +38,9 @@ cat ../../rules/default-language.md ../../rules/git-authorization.md ../../rules
 
 - Replace every fully managed source on installation and update. Do not merge
   local customizations into them.
+- Exclude test files from every deployed managed directory: files whose names
+  match `*.test.*` or `*.spec.*`, and files inside directories named `test`,
+  `tests`, or `__tests__`. Keep these files in the downloaded source only.
 - Treat `.agents/plans` as project-owned content. Never copy source-repository
   plans into a consuming project or remove consuming-project plans.
 - Do not create commits.
@@ -94,7 +97,8 @@ this guard.
 For every fully managed directory listed in Rules:
 
 1. remove the matching directory under `.agents` completely;
-2. recreate it from the matching downloaded source directory.
+2. recreate it from the matching downloaded source directory, excluding the
+   test files defined in Rules.
 
 Create the consuming project's root `AGENTS.md` from the downloaded file.
 Prefix `.agents/` to each backtick-quoted path under a managed directory:
@@ -245,8 +249,8 @@ Before reporting success, verify:
 
 - the root `AGENTS.md` differs from the downloaded source only by those
   `.agents/` prefixes, and all referenced installed paths exist;
-- every fully managed directory equals its downloaded source and contains no
-  obsolete path;
+- every fully managed directory equals its downloaded source after excluding
+  the test files defined in Rules, and contains no test file or obsolete path;
 - `.agents/plans` still contains every pre-existing consuming-project plan;
 - the effective Git ignore behavior matches Compose Git Ignore Rules;
 - the project lock contains every downloaded Skill entry;
