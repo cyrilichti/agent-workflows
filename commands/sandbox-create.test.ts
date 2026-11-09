@@ -79,13 +79,15 @@ function gitWorktrees(path: string): string[] {
 function sandboxRunner(options: { fail?: string; model?: any; models?: Record<string, any> } = {}) {
   const sandboxes = new Set<string>();
   const executions: { worktree: string; project: string; compose: string }[] = [];
+  const launches: string[][] = [];
   const bindings: { host_ip: string; host_port: number; sandbox_port: number; protocol: string }[] = [];
   let workspace = '';
   const runner: Run = (_program, args, cwd) => {
     if (args[0] === options.fail) throw new Error('simulated startup failure');
     let value: any = '';
     if (args.includes('config')) value = options.models?.[cwd!] ?? options.model ?? { services: { web: { image: 'nginx', ports: [{ target: 80, published: '80' }] } } };
-    if (args[0] === 'create') {
+    if (args[0] === 'run') {
+      launches.push(args);
       sandboxes.add(args[args.indexOf('--name') + 1]!);
       workspace = args.at(-1)!;
     }
@@ -113,7 +115,7 @@ function sandboxRunner(options: { fail?: string; model?: any; models?: Record<st
     }
     return { stdout: typeof value === 'string' ? value : JSON.stringify(value), stderr: '' };
   };
-  return { runner, sandboxes, executions, bindings };
+  return { runner, sandboxes, executions, bindings, launches };
 }
 
 test('separate preparations copy current tracked, untracked, and ignored files without Docker', () => {
@@ -166,6 +168,8 @@ test('container preparation runs the unchanged worktree Compose and publishes it
     const result = createSandbox({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: true }, fake.runner);
     assert.equal(result.status, 'prepared', JSON.stringify(result));
     assert.ok(result.sandbox_context?.docker);
+    assert.equal(fake.launches.length, 1);
+    assert.ok(fake.launches[0]?.includes('--detach'));
     assert.equal(dirname(result.sandbox_context!.root), sandboxDirectory);
     assert.equal(fake.executions[0]?.compose, compose);
     assert.equal(result.sandbox_context?.ports[0]?.sandbox, 3003);

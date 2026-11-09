@@ -169,8 +169,8 @@ export function createSandbox(value: unknown, execute: Run = run, sandboxDirecto
       });
       context.docker = { name: id };
       recordOwnership(context);
-      // Source: https://docs.docker.com/reference/cli/sbx/create/
-      execute('sbx', ['create', '--name', id, '--no-input', '--no-progress', 'shell', context.root]);
+      // Source: https://docs.docker.com/reference/cli/sbx/run/
+      execute('sbx', ['run', '--detach', '--name', id, '--no-input', '--no-progress', 'shell', context.root]);
       for (const entry of startup) {
         const compose = ['docker', 'compose', ...(entry.file ? ['-f', entry.file] : []), '-p', entry.project];
         execute('sbx', ['exec', '--workdir', entry.worktree, id, ...compose, 'up', '--detach', '--wait', '--wait-timeout', '120']);

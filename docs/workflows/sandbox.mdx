@@ -8,6 +8,7 @@ editUrl: false
 prepares an isolated environment under `~/sandboxes`, returning a reusable JSON context.
 Pass that context back to `/sandbox` to remove its resources. The workflow ends
 after returning its result; delivery callers decide when to use the environment.
+When Docker services are started, their sandbox stays active until teardown.
 
 ## Docker setup
 
