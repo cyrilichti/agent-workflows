@@ -9,62 +9,82 @@ Each workflow is available as a Skill. Invoke one directly or combine them in
 an automated flow to shape, plan, deliver, and review work. The final merge
 remains a human decision.
 
-## Delivery Skills
+## Start delivery
 
 <CardGrid>
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/hotfix</span><span class="workflow-card-mode">Assisted · Shape</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--entry"><span class="workflow-card-command">/hotfix</span><span class="workflow-card-mode">Urgent report → delivery</span></span>'}
     href="/agent-workflows/workflows/hotfix/"
     description="You have an urgent bug report to turn into a short item and continue to planning and delivery."
   />
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/write</span><span class="workflow-card-mode">Assisted · Shape</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--entry"><span class="workflow-card-command">/pick</span><span class="workflow-card-mode">Select → plan → delivery</span></span>'}
+    href="/agent-workflows/workflows/pick/"
+    description="You have a work item ready to plan and want to start its delivery."
+  />
+</CardGrid>
+
+## Prepare work
+
+<CardGrid>
+  <LinkCard
+    title={'<span class="workflow-card-title workflow-card-title--preparation"><span class="workflow-card-command">/write</span><span class="workflow-card-mode">Create or clarify an item</span></span>'}
     href="/agent-workflows/workflows/write/"
     description="You have an idea to turn into a work item, or an existing item to clarify."
   />
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/refine</span><span class="workflow-card-mode">Assisted · Shape</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--preparation"><span class="workflow-card-command">/refine</span><span class="workflow-card-mode">Split a large item</span></span>'}
     href="/agent-workflows/workflows/refine/"
     description="Your work item is too broad and needs to be split into smaller delivery units."
   />
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/pick</span><span class="workflow-card-mode">Assisted · Plan</span></span>'}
-    href="/agent-workflows/workflows/pick/"
-    description="You have a work item ready to plan and want to start its delivery."
-  />
-  <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--assisted"><span class="workflow-card-command">/plan</span><span class="workflow-card-mode">Assisted · Plan</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--preparation"><span class="workflow-card-command">/plan</span><span class="workflow-card-mode">Approve an implementation plan</span></span>'}
     href="/agent-workflows/workflows/plan/"
     description="You need an implementation plan before starting work."
   />
+</CardGrid>
+
+## Scale delivery
+
+<CardGrid>
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/sandbox</span><span class="workflow-card-mode">Autonomous · Deliver</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--scale"><span class="workflow-card-command">/sandbox</span><span class="workflow-card-mode">Set up or remove a sandbox</span></span>'}
     href="/agent-workflows/workflows/sandbox/"
     description="You need an isolated environment for delivery, or want to remove its resources."
   />
+</CardGrid>
+
+## Autonomous delivery
+
+<CardGrid>
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/work</span><span class="workflow-card-mode">Autonomous · Deliver</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/work</span><span class="workflow-card-mode">Implement the plan</span></span>'}
     href="/agent-workflows/workflows/work/"
     description="You have an approved plan to implement, or delivery findings to address."
   />
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/ready</span><span class="workflow-card-mode">Autonomous · Deliver</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/ready</span><span class="workflow-card-mode">Prepare for review</span></span>'}
     href="/agent-workflows/workflows/ready/"
     description="Your implementation is complete and needs to be checked and prepared for review."
   />
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/inspect</span><span class="workflow-card-mode">Autonomous · Review</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--autonomous"><span class="workflow-card-command">/inspect</span><span class="workflow-card-mode">Review the request</span></span>'}
     href="/agent-workflows/workflows/inspect/"
     description="You have a pull or merge request that needs a review with the reviewer profile."
   />
+</CardGrid>
+
+## Merge and close
+
+<CardGrid>
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--human"><span class="workflow-card-command">/done</span><span class="workflow-card-mode">Human · Merge</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--human"><span class="workflow-card-command">/done</span><span class="workflow-card-mode">Merge and close the item</span></span>'}
     href="/agent-workflows/workflows/done/"
     description="You are ready to merge a reviewed pull or merge request and complete its work item."
   />
 </CardGrid>
 
-## Automation and orchestration
+## Support the flow
 
 These Skills are reusable entry points for an orchestrator to call and combine.
 The [Orchestration](/agent-workflows/orchestration/) page shows how Kestra
@@ -72,12 +92,12 @@ connects to an agent running on your machine.
 
 <CardGrid>
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--selection"><span class="workflow-card-command">/next</span><span class="workflow-card-mode">Selection</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--support"><span class="workflow-card-command">/next</span><span class="workflow-card-mode">Find eligible work</span></span>'}
     href="/agent-workflows/workflows/next/"
     description="You want to find the next eligible work item with an approved plan."
   />
   <LinkCard
-    title={'<span class="workflow-card-title workflow-card-title--selection"><span class="workflow-card-command">/project</span><span class="workflow-card-mode">Selection</span></span>'}
+    title={'<span class="workflow-card-title workflow-card-title--support"><span class="workflow-card-command">/project</span><span class="workflow-card-mode">Locate the project</span></span>'}
     href="/agent-workflows/workflows/project/"
     description="You have a work item and need to locate its local project repository."
   />
