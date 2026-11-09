@@ -11,11 +11,11 @@ export function recordOwnership(context: SandboxContext): void {
   writeFileSync(join(context.root, ownerMarker), JSON.stringify(context), { mode: 0o600 });
 }
 
-export interface PreparationInput { item_id: string; project_directory: string; dependency_directories: string[]; is_docker_enabled: boolean }
+export interface CreationInput { item_id: string; project_directory: string; dependency_directories: string[]; is_docker_enabled: boolean }
 export type Compose = Record<string, any>;
 export interface RepositoryCompose { source: string; model: Compose }
 
-export function parsePreparationInput(value: any): PreparationInput {
+export function parseCreationInput(value: any): CreationInput {
   if (!value || typeof value.item_id !== 'string' || !value.item_id.trim() ||
       typeof value.project_directory !== 'string' || !isAbsolute(value.project_directory) ||
       !Array.isArray(value.dependency_directories) || value.dependency_directories.some((path: unknown) => typeof path !== 'string' || !isAbsolute(path)) ||
@@ -78,7 +78,7 @@ export function validateRepositories(project: string, dependencies: string[], mo
   return repositories;
 }
 
-export function preflight(input: PreparationInput, execute: Run = run): { repositories: string[]; models: RepositoryCompose[] } {
+export function preflight(input: CreationInput, execute: Run = run): { repositories: string[]; models: RepositoryCompose[] } {
   const directory = input.project_directory;
   const worktreeOnly = () => ({ repositories: validateRepositories(directory, []), models: [] });
   if (!input.is_docker_enabled) {
@@ -182,11 +182,11 @@ function remapModel(model: Compose, context: SandboxContext, index: number, sour
   return result;
 }
 
-export function prepare(value: unknown, execute: Run = run): SandboxResult {
+export function createSandbox(value: unknown, execute: Run = run): SandboxResult {
   let stage = 'input';
   let context: SandboxContext | undefined;
   try {
-    const input = parsePreparationInput(value);
+    const input = parseCreationInput(value);
     stage = 'preflight';
     const { repositories, models } = preflight(input, execute);
     stage = 'worktrees';
@@ -248,7 +248,7 @@ export function prepare(value: unknown, execute: Run = run): SandboxResult {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) {
   let result: SandboxResult;
-  try { result = prepare(JSON.parse(readFileSync(0, 'utf8'))); }
+  try { result = createSandbox(JSON.parse(readFileSync(0, 'utf8'))); }
   catch { result = { status: 'failed', stage: 'input', reason: 'Expected one JSON object on stdin.' }; }
   process.stdout.write(`${JSON.stringify(result)}\n`);
   if (result.status === 'failed') process.exitCode = 1;

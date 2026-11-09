@@ -53,7 +53,7 @@ fails, report the issue and stop.
 Invoke preparation from this file's directory with the resolved and derived values:
 
 ```sh
-node ../commands/sandbox-prepare.ts <<'JSON'
+node ../commands/sandbox-create.ts <<'JSON'
 {"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","dependency_directories":<dependency_directories>,"is_docker_enabled":<is_docker_enabled>}
 JSON
 ```

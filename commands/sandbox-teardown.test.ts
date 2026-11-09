@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
 import type { SandboxContext } from './sandbox-teardown.ts';
-import { recordOwnership } from './sandbox-prepare.ts';
+import { recordOwnership } from './sandbox-create.ts';
 import { teardown } from './sandbox-teardown.ts';
 import type { Run } from './sandbox-runtime.ts';
 
