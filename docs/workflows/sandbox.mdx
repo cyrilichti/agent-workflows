@@ -24,7 +24,7 @@ after returning its result; delivery callers decide when to use the environment.
       <div className="write-flow__step write-flow__step--focus">
         <small>02 · Preparation</small>
         <strong>Create the sandbox</strong>
-        <span>Read the plan, check for a Compose configuration, locate README dependencies only for container execution, and create the sandbox. Return the context.</span>
+        <span>Read the plan's validation checks, check for a Compose configuration, locate README dependencies when services need to run, and create the sandbox. Return the context.</span>
       </div>
     </section>
     <section className="plan-flow__scope-path">
@@ -50,7 +50,7 @@ after returning its result; delivery callers decide when to use the environment.
     <tr>
       <td>2a</td>
       <th scope="row">Read the plan</th>
-      <td>Preparation reads the approved plan in the item's comments. If it requires project code or services to run in a container and the project has a Compose configuration, include container execution. Otherwise, create a worktree without it.</td>
+      <td>Preparation infers from the approved plan's validation checks whether the project or its services must run. If execution is needed and the project has a Compose configuration, include Docker. Otherwise, create a worktree without it.</td>
     </tr>
     <tr>
       <td>3a</td>

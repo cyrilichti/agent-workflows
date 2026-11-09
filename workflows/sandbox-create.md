@@ -28,11 +28,12 @@ the command with the selected ID as the positional `item`. On failure, report
 item as official context.
 
 Set `item_id` to the resolved official item's ID. Read the approved plan in the
-resolved item's comments. Stop if no approved plan comment is available. Set
-`is_docker_enabled` only when the plan requires running project code or
-services in a container and the current project has a Docker Compose
-configuration. Otherwise, use `false`; preparation still creates the project
-worktree.
+resolved item's comments. Stop if no approved plan comment is available. Read
+its `## Validation` checks and determine whether completing them requires the
+project or its services to be running. Set `is_docker_enabled` to `true` when
+execution is needed and the current project has a Docker Compose
+configuration. Otherwise, set it to `false`; preparation still creates the
+project worktree.
 
 Set `dependency_directories` to `[]` when `is_docker_enabled` is `false`.
 Otherwise, read the current project's README and collect the exact repository
