@@ -59,6 +59,5 @@ node ../commands/sandbox-create.ts <<'JSON'
 JSON
 ```
 
-Read the JSON on stdout even when the command exits with code 1. Report its
-`stage` and `reason` on failure. Return the command's JSON result unchanged and
-end this workflow.
+Read the command's JSON result. On failure, report its `stage` and `reason`.
+Return the result unchanged and end this workflow.
