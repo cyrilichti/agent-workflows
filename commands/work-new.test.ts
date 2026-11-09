@@ -15,7 +15,7 @@ function output(text) {
   process.stdout.write(text + '\\n');
 }
 if (args[0] === 'branch' && args[1] === '--show-current') {
-  output('topic');
+  output(process.env.TEST_DETACHED === '1' ? '' : 'topic');
 } else if (args[0] === 'config' && args[1] === '--get') {
   if (args[2] === 'branch.topic.remote') {
     output('origin');
@@ -24,11 +24,13 @@ if (args[0] === 'branch' && args[1] === '--show-current') {
   }
 } else if (args[0] === 'remote' && args[1] === 'get-url') {
   output('https://github.com/acme/repo.git');
+} else if (args[0] === 'remote') {
+  output('origin');
 } else if (args[0] === 'ls-remote') {
   output('ref: refs/heads/main\\tHEAD');
 } else if (args[0] === 'status' && process.env.TEST_DIRTY === '1') {
   output(' M file.txt');
-} else if (args[0] === 'switch' || args[0] === 'pull' ||
+} else if (args[0] === 'switch' || args[0] === 'pull' || args[0] === 'fetch' ||
            args[0] === 'status' || args[0] === 'commit' || args[0] === 'push') {
   // Successful Git mutation or clean status.
 } else {
@@ -132,16 +134,28 @@ test('work-new performs one transition, branch setup, request creation, and back
       request_url: 'https://github.com/acme/repo/pull/7',
       plan_reference: 'plans/plan.md',
     });
-    assert.deepEqual(f.gitCalls().filter(args => ['switch', 'pull', 'commit', 'push'].includes(args[0]!)), [
-      ['switch', 'main'],
-      ['pull', '--ff-only'],
-      ['switch', '-c', 'fix/reparer-le-plan'],
+    assert.deepEqual(f.gitCalls().filter(args => ['fetch', 'switch', 'pull', 'commit', 'push'].includes(args[0]!)), [
+      ['fetch', 'origin', 'main'],
+      ['switch', '-c', 'fix/reparer-le-plan', 'FETCH_HEAD'],
       ['commit', '--allow-empty', '-m', 'Initialize Réparer le plan'],
       ['push', '--set-upstream', 'origin', 'fix/reparer-le-plan'],
     ]);
   } finally {
     f.cleanup();
   }
+});
+
+test('new work creates the same delivery branch from a detached worktree', () => {
+  const f = fixture();
+  try {
+    const result = f.run({ TEST_DETACHED: '1' });
+    assert.equal(result.status, 0, result.stdout || result.stderr);
+    const calls = f.gitCalls();
+    assert.ok(calls.some(args => args[0] === 'fetch' && args[1] === 'origin' && args[2] === 'main'));
+    assert.ok(calls.some(args => args[0] === 'switch' && args.at(-1) === 'FETCH_HEAD'));
+    assert.equal(calls.some(args => args[0] === 'pull' ||
+      (args[0] === 'switch' && args[1] === 'main')), false);
+  } finally { f.cleanup(); }
 });
 
 test('work-new uses the resolved Linear identifier for the request and backlink', () => {

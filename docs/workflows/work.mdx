@@ -58,6 +58,9 @@ export const skillUrl = (skill) =>
 to complete. It executes and validates the todos, then continues automatically
 to `/ready` and inspection.
 
+When a sandbox context is available, `/work` uses its service ports for
+validation and returns it to `/sandbox` for cleanup when delivery ends.
+
 ## How `/work` executes a plan
 
 <div className="write-flow work-flow" role="group" aria-label="New work initializes delivery. New or resumed work executes plan todos, then continues to ready. Blocking findings from inspect return as corrective todos. A ready failure stops delivery with its stage and reason.">

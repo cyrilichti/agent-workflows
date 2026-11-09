@@ -180,8 +180,7 @@ try {
   const pushRemoteUrl = git('remote', 'get-url', '--push', remote);
   completed.push_remote_url = pushRemoteUrl;
   const base = defaultBranch(remote);
-  git('switch', base);
-  git('pull', '--ff-only');
+  git('fetch', remote, base);
   if (git('status', '--porcelain')) {
     throw new Error('Worktree or index is not clean after updating the base branch.');
   }
@@ -189,7 +188,7 @@ try {
 
   stage = 'create_branch';
   const branch = branchName(input);
-  git('switch', '-c', branch);
+  git('switch', '-c', branch, 'FETCH_HEAD');
   completed.branch = branch;
   git('commit', '--allow-empty', '-m', `Initialize ${input.plan_name}`);
 

@@ -5,6 +5,7 @@
 | Input | Description |
 | --- | --- |
 | `item` | Required item ID, native URL, title, or search phrase. |
+| `sandbox_context` | Optional exact context returned by `/sandbox` preparation in this conversation. |
 
 ## Steps
 
@@ -23,6 +24,8 @@ node ../commands/prepare-delivery-context.ts --query "<item>"
 ```
 
 On failure, report `stage` and `reason`, then stop.
+On success, attach the exact `sandbox_context` to `delivery_context` when it
+was supplied.
 
 ### 2. Execute the Plan
 
