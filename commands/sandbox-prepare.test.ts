@@ -26,20 +26,13 @@ test('preparation validates its single JSON input and emits a staged JSON failur
   assert.equal(JSON.parse(result.stdout).stage, 'input');
 });
 
-test('preflight rejects unavailable tools, auth, startup support, variables and secrets without resources', () => {
+test('preflight rejects unresolved Compose variables and secrets without resources', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-preflight-'));
   try {
     const app = repository(join(root, 'app'));
     writeFileSync(join(app, 'compose.yaml'), 'services: {}');
-    for (const failure of ['sbx', 'compose', 'docker', 'auth', 'virtualization', 'variables', 'secret']) {
-      const runner: Run = (program, args) => {
-        if ((failure === 'sbx' && program === 'sbx' && args[0] === 'version') ||
-          (failure === 'compose' && program === 'docker' && args[0] === 'compose' && args[1] === 'version') ||
-          (failure === 'docker' && program === 'docker' && args[0] === 'info')) throw new Error('tool unavailable');
-        if (args[0] === 'diagnose') return { stdout: JSON.stringify({ checks: [
-          { name: 'Authentication', status: failure === 'auth' ? 'fail' : 'pass' },
-          { name: 'Virtualization', status: failure === 'virtualization' ? 'fail' : 'pass' },
-          { name: 'Daemon', status: 'pass' }], summary: { fail: 0 } }), stderr: '' };
+    for (const failure of ['variables', 'secret']) {
+      const runner: Run = (_program, args) => {
         if (args.includes('config')) return { stdout: JSON.stringify({ services: { web: { image: 'nginx' } }, secrets:
           failure === 'secret' ? { key: { file: join(root, 'missing') } } : {} }),
           stderr: failure === 'variables' ? 'The "PASSWORD" variable is not set.' : '' };
@@ -73,23 +66,37 @@ function gitWorktrees(path: string): string[] {
   return execFileSync('git', ['-C', path, 'worktree', 'list', '--porcelain'], { encoding: 'utf8' }).split('\n').filter(line => line.startsWith('worktree '));
 }
 
-function sandboxRunner(options: { fail?: string; model?: any } = {}) {
+function sandboxRunner(options: { fail?: string; model?: any; models?: Record<string, any> } = {}) {
   const sandboxes = new Set<string>();
+  const executions: { worktree: string; project: string; services: string[]; networks: any; buildContexts: string[] }[] = [];
+  const bindings: { host_ip: string; host_port: number; sandbox_port: number; protocol: string }[] = [];
+  const createdComposeFiles: string[] = [];
   let workspace = '';
-  const runner: Run = (_program, args) => {
+  const runner: Run = (_program, args, cwd) => {
     if (args[0] === options.fail) throw new Error('simulated startup failure');
     let value: any = '';
-    if (args[0] === 'diagnose') value = { checks: ['Authentication', 'Daemon', 'Virtualization'].map(name => ({ name, status: 'pass' })) };
-    if (args.includes('config')) value = options.model ?? { services: { web: { image: 'nginx', ports: [{ target: 80, published: '80' }] } } };
-    if (args[0] === 'create') { sandboxes.add(args[args.indexOf('--name') + 1]!); workspace = args.at(-1)!; }
+    if (args.includes('config')) value = options.models?.[cwd!] ?? options.model ?? { services: { web: { image: 'nginx', ports: [{ target: 80, published: '80' }] } } };
+    if (args[0] === 'create') {
+      sandboxes.add(args[args.indexOf('--name') + 1]!);
+      workspace = args.at(-1)!;
+      createdComposeFiles.push(...readdirSync(workspace).filter(name => /^compose-\d+\.json$/.test(name)));
+    }
     if (args[0] === 'ls') value = [...sandboxes].map(name => ({ name, workspaces: [workspace] }));
     if (args[0] === 'rm') sandboxes.delete(args.at(-1)!);
-    if (args[0] === 'ports') value = [{ host_ip: '127.0.0.1', host_port: 49123, sandbox_port: 20000, protocol: 'tcp4' }];
+    if (args[0] === 'ports') {
+      if (args.includes('--publish')) {
+        bindings.push({ host_ip: '127.0.0.1', host_port: 49123 + bindings.length,
+          sandbox_port: Number(args[args.indexOf('--publish') + 1]!.split('/')[0]), protocol: 'tcp4' });
+      }
+      value = bindings;
+    }
     if (args[0] === 'exec') {
       const file = args[args.indexOf('-f') + 1]!;
       const model = JSON.parse(readFileSync(file, 'utf8'));
-      assert.equal(model.services.web.ports[0].published, '20000');
-      assert.ok(model.services.web.volumes?.every((volume: any) => !volume.source.includes('/app/')) ?? true);
+      executions.push({ worktree: args[args.indexOf('--workdir') + 1]!, project: args[args.indexOf('-p') + 1]!,
+        services: Object.keys(model.services), networks: model.networks,
+        buildContexts: Object.values<any>(model.services).map(service => service.build?.context).filter(Boolean) });
+      assert.ok(model.services.web?.volumes?.every((volume: any) => !volume.source.includes('/app/')) ?? true);
       for (const secret of Object.values<any>(model.secrets ?? {})) {
         assert.equal(secret.environment, undefined);
         assert.equal(readFileSync(secret.file, 'utf8'), 'private-secret');
@@ -98,7 +105,7 @@ function sandboxRunner(options: { fail?: string; model?: any } = {}) {
     }
     return { stdout: typeof value === 'string' ? value : JSON.stringify(value), stderr: '' };
   };
-  return { runner, sandboxes };
+  return { runner, sandboxes, executions, bindings, createdComposeFiles };
 }
 
 test('separate preparations preserve ignored nested files, modes and untracked state without Docker', () => {
@@ -114,7 +121,7 @@ test('separate preparations preserve ignored nested files, modes and untracked s
     writeFileSync(join(app, 'nested', '.env'), 'SECRET=private', { mode: 0o600 });
     chmodSync(join(app, 'nested'), 0o500);
     const noContainerRunner: Run = () => { throw new Error('Unexpected container command.'); };
-    for (let index = 0; index < 2; index++) {
+    for (let index = 0; index < 5; index++) {
       const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: false }, noContainerRunner);
       assert.equal(result.status, 'prepared', JSON.stringify(result));
       if (!result.sandbox_context) throw new Error('Missing context');
@@ -126,7 +133,7 @@ test('separate preparations preserve ignored nested files, modes and untracked s
       assert.equal(execFileSync('git', ['-C', worktree, 'status', '--porcelain'], { encoding: 'utf8' }), '');
       assert.equal(result.sandbox_context.docker, null);
     }
-    assert.notEqual(contexts[0].root, contexts[1].root);
+    assert.equal(new Set(contexts.map(context => context.root)).size, 5);
   } finally {
     for (const context of contexts) removeResources(context);
     chmodSync(join(root, 'app', 'nested'), 0o700);
@@ -153,6 +160,52 @@ test('container preparation remaps Compose paths and returns allocated ports; la
     assert.equal(failing.sandboxes.size, 0);
     assert.equal(gitWorktrees(app).length, 1);
     assert.ok(failed.sandbox_context && !existsSync(failed.sandbox_context.root));
+  } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('starts dependency Compose services before the main project in one sandbox', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sandbox-multi-compose-'));
+  try {
+    const app = repository(join(root, 'acme-project'));
+    const api = repository(join(root, 'acme-api-project'));
+    for (const path of [app, api]) writeFileSync(join(path, 'compose.yaml'), 'services: {}');
+    const networks = { shared: { name: 'acme-shared', external: true } };
+    const fake = sandboxRunner({ models: {
+      [app]: { services: { web: { build: { context: app }, ports: [{ target: 3001 }] } }, networks },
+      [api]: { services: { api: { build: { context: '.' }, ports: [{ target: 8080 }] } }, networks },
+    } });
+    const result = prepare({ item_id: 'item', project_directory: app,
+      dependency_directories: [api], is_docker_enabled: true }, fake.runner);
+    assert.equal(result.status, 'prepared', JSON.stringify(result));
+    assert.deepEqual(fake.executions.map(entry => entry.services), [['api'], ['web']]);
+    assert.deepEqual(fake.createdComposeFiles.sort(), ['compose-0.json', 'compose-1.json']);
+    assert.deepEqual(fake.executions.map(entry => entry.buildContexts), [
+      [result.sandbox_context?.repositories[1]?.worktree], [result.sandbox_context?.repositories[0]?.worktree],
+    ]);
+    assert.equal(new Set(fake.executions.map(entry => entry.project)).size, 2);
+    assert.deepEqual(fake.executions.map(entry => entry.networks), [networks, networks]);
+    assert.deepEqual(result.sandbox_context?.ports.map(port => port.service), [
+      'acme-api-project/api', 'acme-project/web',
+    ]);
+    assert.deepEqual(result.sandbox_context?.ports.map(port => port.sandbox), [20000, 20001]);
+    assert.deepEqual(result.sandbox_context?.ports.map(port => port.host), [49123, 49124]);
+    removeResources(result.sandbox_context!, fake.runner);
+    assert.equal(fake.sandboxes.size, 0);
+    const failing = sandboxRunner({ models: {
+      [app]: { services: { web: { image: 'nginx' } } },
+      [api]: { services: { api: { image: 'nginx' } } },
+    } });
+    let executions = 0;
+    const runner: Run = (program, args, cwd) => {
+      if (args[0] === 'exec' && ++executions === 2) throw new Error('main Compose failed');
+      return failing.runner(program, args, cwd);
+    };
+    const failed = prepare({ item_id: 'item', project_directory: app,
+      dependency_directories: [api], is_docker_enabled: true }, runner);
+    assert.equal(failed.status, 'failed');
+    assert.equal(failing.sandboxes.size, 0);
+    assert.equal(gitWorktrees(app).length, 1);
+    assert.equal(gitWorktrees(api).length, 1);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
