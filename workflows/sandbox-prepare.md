@@ -51,8 +51,7 @@ project or a path already added. Read the README at each newly added path and
 resolve any dependency names that have not been sent to the resolver before.
 Repeat until no new names remain. Skip the command when there are none. If any
 name returns `not found`, `ambiguous`, or `search incomplete`, or the command
-fails, report the issue and stop. Pass `dependency_directories` to
-`sandbox-prepare.ts` below.
+fails, report the issue and stop.
 
 Invoke preparation from this file's directory with the resolved and derived values:
 
