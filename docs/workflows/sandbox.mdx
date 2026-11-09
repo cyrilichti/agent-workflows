@@ -5,7 +5,7 @@ editUrl: false
 ---
 
 `/sandbox` accepts a work item's ID, native URL, title, or search phrase and
-prepares an isolated environment in the current project, returning a reusable JSON context.
+prepares an isolated environment under `~/sandboxes`, returning a reusable JSON context.
 Pass that context back to `/sandbox` to remove its resources. The workflow ends
 after returning its result; delivery callers decide when to use the environment.
 

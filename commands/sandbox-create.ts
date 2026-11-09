@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { accessSync, chmodSync, constants, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
-import { tmpdir } from 'node:os';
+import { homedir } from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { ownerMarker, run, teardown, type Run, type SandboxContext, type SandboxResult } from './sandbox-teardown.ts';
@@ -141,7 +141,7 @@ function copyLocalChanges(source: string, worktree: string): void {
   for (const [path, mode] of [...directoryModes].sort(([a], [b]) => b.length - a.length)) chmodSync(path, mode);
 }
 
-export function createSandbox(value: unknown, execute: Run = run): SandboxResult {
+export function createSandbox(value: unknown, execute: Run = run, sandboxDirectory = join(homedir(), 'sandboxes')): SandboxResult {
   let stage = 'input';
   let context: SandboxContext | undefined;
   try {
@@ -150,7 +150,9 @@ export function createSandbox(value: unknown, execute: Run = run): SandboxResult
     const { repositories, models } = preflight(input, execute);
     stage = 'worktrees';
     const id = `aw-${randomUUID()}`;
-    context = { version: 1, id, item_id: input.item_id, root: realpathSync(mkdtempSync(join(tmpdir(), 'aw-sandbox-'))), repositories: [], docker: null, ports: [] };
+    mkdirSync(sandboxDirectory, { recursive: true, mode: 0o700 });
+    if (lstatSync(sandboxDirectory).isSymbolicLink() || !lstatSync(sandboxDirectory).isDirectory()) throw new Error('Invalid sandbox directory.');
+    context = { version: 1, id, item_id: input.item_id, root: realpathSync(mkdtempSync(join(sandboxDirectory, 'aw-sandbox-'))), repositories: [], docker: null, ports: [] };
     recordOwnership(context);
     for (const source of repositories) {
       const worktree = join(context.root, basename(source));

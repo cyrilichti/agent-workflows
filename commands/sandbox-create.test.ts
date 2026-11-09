@@ -2,11 +2,15 @@ import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync, realpathSync, readdirSync, chmodSync, statSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { basename, join, resolve } from 'node:path';
-import test from 'node:test';
-import { parseCreationInput, validateRepositories, createSandbox } from './sandbox-create.ts';
+import { basename, dirname, join, resolve } from 'node:path';
+import test, { after } from 'node:test';
+import { parseCreationInput, validateRepositories, createSandbox as create } from './sandbox-create.ts';
 import { removeResources } from './sandbox-teardown.ts';
 import type { Run } from './sandbox-teardown.ts';
+
+const sandboxDirectory = realpathSync(mkdtempSync(join(tmpdir(), 'sandbox-test-roots-')));
+const createSandbox: typeof create = (value, execute) => create(value, execute, sandboxDirectory);
+after(() => rmSync(sandboxDirectory, { recursive: true, force: true }));
 
 export function repository(path: string) {
   mkdirSync(path, { recursive: true });
@@ -162,6 +166,7 @@ test('container preparation runs the unchanged worktree Compose and publishes it
     const result = createSandbox({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: true }, fake.runner);
     assert.equal(result.status, 'prepared', JSON.stringify(result));
     assert.ok(result.sandbox_context?.docker);
+    assert.equal(dirname(result.sandbox_context!.root), sandboxDirectory);
     assert.equal(fake.executions[0]?.compose, compose);
     assert.equal(result.sandbox_context?.ports[0]?.sandbox, 3003);
     assert.equal(result.sandbox_context?.ports[0]?.host, 49123);
