@@ -13,7 +13,7 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/user-fac
 
 | Input | Description |
 | --- | --- |
-| `item` | Optional item ID, native URL, title, or search phrase for preparation. |
+| `item` | Optional item ID, native URL, title, or search phrase for creation. |
 | `sandbox_context` | Required context returned by preparation for teardown. |
 
 When neither input is supplied, ask for an item ID, native URL, title, or search
@@ -26,6 +26,6 @@ Select exactly one branch:
 | Situation | Workflow |
 | --- | --- |
 | Caller supplies `sandbox_context` | `./sandbox-teardown.md` |
-| Otherwise, caller supplies `item` | `./sandbox-prepare.md` |
+| Otherwise, caller supplies `item` | `./sandbox-create.md` |
 
 Read the selected workflow file completely and follow it.
