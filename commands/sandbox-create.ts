@@ -12,7 +12,7 @@ export function recordOwnership(context: SandboxContext): void {
 
 export interface CreationInput { item_id: string; project_directory: string; dependency_directories: string[]; is_docker_enabled: boolean }
 export type Compose = Record<string, any>;
-export interface RepositoryCompose { source: string; model: Compose }
+export interface RepositoryCompose { source: string; file?: string }
 
 export function parseCreationInput(value: any): CreationInput {
   if (!value || typeof value.item_id !== 'string' || !value.item_id.trim() ||
@@ -70,6 +70,7 @@ export function validateRepositories(project: string, dependencies: string[], mo
     if (repositories.includes(root)) throw new Error('Duplicate dependency repository.');
     repositories.push(root);
   }
+  if (new Set(repositories.map(path => basename(path))).size !== repositories.length) throw new Error('Dependency repository names must be distinct for relative Compose paths.');
   for (const path of composePaths(model)) {
     const root = repositoryAt(resolve(composeDirectory, path));
     if (!repositories.includes(root)) throw new Error(`Compose path has an undeclared dependency repository: ${path}`);
@@ -92,7 +93,7 @@ export function preflight(input: CreationInput, execute: Run = run): { repositor
     const file = composeNames.find(name => existsSync(join(source, name)));
     if (!file && index > 0) continue;
     // Source: https://docs.docker.com/reference/cli/docker/compose/config/
-    const args = ['compose', ...(index > 0 ? ['-f', join(source, file!)] : []), '--profile', '*', 'config', '--format', 'json'];
+    const args = ['compose', ...(file ? ['-f', file] : []), 'config', '--format', 'json'];
     const result = execute('docker', args, source);
     if (/variable.*(?:not set|unset)|required variable/i.test(result.stderr)) throw new Error(`Compose has missing variables in ${source}.`);
     const model: Compose = JSON.parse(result.stdout);
@@ -104,13 +105,13 @@ export function preflight(input: CreationInput, execute: Run = run): { repositor
     for (const group of [model.secrets, model.configs]) for (const entry of Object.values<any>(group ?? {})) {
       if (entry.external) throw new Error('External secrets/configs cannot be resolved in a fresh sandbox.');
       if (entry.file) accessSync(resolve(source, entry.file), constants.R_OK);
-      if (entry.environment && !process.env[entry.environment]) throw new Error('Compose secret/config environment is missing.');
+      if (entry.environment) throw new Error('Compose secret/config from host environment is unavailable in the sandbox.');
     }
     for (const entry of Object.values<any>(model.volumes ?? {})) {
       if (entry?.external) throw new Error('External volumes cannot be resolved in a fresh sandbox.');
     }
     validateRepositories(directory, input.dependency_directories, model, source);
-    models.push({ source, model });
+    models.push({ source, ...(file ? { file } : {}) });
   }
   return { repositories, models };
 }
@@ -136,51 +137,6 @@ function copyIgnored(source: string, worktree: string): void {
   for (const [path, mode] of [...directoryModes].sort(([a], [b]) => b.length - a.length)) chmodSync(path, mode);
 }
 
-function remapModel(model: Compose, context: SandboxContext, index: number, source: string): Compose {
-  const result = structuredClone(model);
-  const mapPath = (path: string): string => {
-    const absolute = resolve(source, path);
-    const repository = [...context.repositories].sort((a, b) => b.source.length - a.source.length).find(entry => inside(entry.source, absolute));
-    if (!repository) throw new Error('Compose path has no resolved repository.');
-    return join(repository.worktree, relative(repository.source, absolute));
-  };
-  for (const [name, service] of Object.entries<any>(result.services)) {
-    delete service.profiles;
-    const originalContext = localBuildContext(service);
-    if (originalContext) {
-      // Source: https://docs.docker.com/reference/compose-file/build/#dockerfile
-      if (service.build.dockerfile) service.build.dockerfile = mapPath(resolve(source, originalContext, service.build.dockerfile));
-      service.build.context = mapPath(originalContext);
-    }
-    for (const volume of service.volumes ?? []) if (volume.type === 'bind') volume.source = mapPath(volume.source);
-    for (let index = 0; index < (service.env_file ?? []).length; index++) {
-      const entry = service.env_file[index];
-      if (typeof entry === 'string') service.env_file[index] = mapPath(entry);
-      else entry.path = mapPath(entry.path);
-    }
-    for (const port of service.ports ?? []) {
-      const target = Number(port.target);
-      const protocol = port.protocol ?? 'tcp';
-      if (!Number.isInteger(target) || target < 1 || target > 65535 || !['tcp', 'udp'].includes(protocol)) throw new Error('Unsupported Compose port.');
-      const sandbox = 20000 + context.ports.length;
-      port.published = String(sandbox);
-      port.host_ip = '0.0.0.0';
-      context.ports.push({ service: `${basename(source)}/${name}`, target, sandbox, host: 0, protocol });
-    }
-  }
-  let secretIndex = 0;
-  for (const group of [result.secrets, result.configs]) for (const entry of Object.values<any>(group ?? {})) {
-    if (entry.file) entry.file = mapPath(entry.file);
-    if (entry.environment) {
-      const file = join(context.root, `secret-${index}-${secretIndex++}`);
-      writeFileSync(file, process.env[entry.environment]!, { mode: 0o600 });
-      delete entry.environment;
-      entry.file = file;
-    }
-  }
-  return result;
-}
-
 export function createSandbox(value: unknown, execute: Run = run): SandboxResult {
   let stage = 'input';
   let context: SandboxContext | undefined;
@@ -192,8 +148,8 @@ export function createSandbox(value: unknown, execute: Run = run): SandboxResult
     const id = `aw-${randomUUID()}`;
     context = { version: 1, id, item_id: input.item_id, root: realpathSync(mkdtempSync(join(tmpdir(), 'aw-sandbox-'))), repositories: [], docker: null, ports: [] };
     recordOwnership(context);
-    for (const [index, source] of repositories.entries()) {
-      const worktree = join(context.root, `${index}-${basename(source)}`);
+    for (const source of repositories) {
+      const worktree = join(context.root, basename(source));
       context.repositories.push({ source, worktree });
       recordOwnership(context);
       git(source, 'worktree', 'add', '--detach', worktree, 'HEAD');
@@ -201,20 +157,32 @@ export function createSandbox(value: unknown, execute: Run = run): SandboxResult
     }
     if (models.length) {
       stage = 'docker';
-      const sandboxContext = context;
       const startup = [...models].reverse().map((entry, index) => {
-        const compose = join(sandboxContext.root, `compose-${index}.json`);
-        writeFileSync(compose, JSON.stringify(remapModel(entry.model, sandboxContext, index, entry.source)), { mode: 0o600 });
-        const worktree = sandboxContext.repositories.find(repository => repository.source === entry.source)!.worktree;
-        return { compose, worktree, project: `${id}-${index}` };
+        const worktree = context!.repositories.find(repository => repository.source === entry.source)!.worktree;
+        return { file: entry.file, worktree, project: `${id}-${index}`, source: entry.source };
       });
       context.docker = { name: id };
       recordOwnership(context);
       // Source: https://docs.docker.com/reference/cli/sbx/create/
       execute('sbx', ['create', '--name', id, '--no-input', '--no-progress', 'shell', context.root]);
       for (const entry of startup) {
-        execute('sbx', ['exec', '--workdir', entry.worktree, id,
-          'docker', 'compose', '-f', entry.compose, '-p', entry.project, 'up', '--detach', '--wait', '--wait-timeout', '120']);
+        const compose = ['docker', 'compose', ...(entry.file ? ['-f', entry.file] : []), '-p', entry.project];
+        execute('sbx', ['exec', '--workdir', entry.worktree, id, ...compose, 'up', '--detach', '--wait', '--wait-timeout', '120']);
+        // Source: https://docs.docker.com/reference/cli/docker/compose/ps/
+        const output = execute('sbx', ['exec', '--workdir', entry.worktree, id, ...compose, 'ps', '--format', 'json']).stdout.trim();
+        for (const line of output ? output.split('\n') : []) {
+          const service = JSON.parse(line);
+          for (const port of service.Publishers ?? []) {
+            if (port.URL !== '0.0.0.0') continue;
+            const target = Number(port.TargetPort);
+            const sandbox = Number(port.PublishedPort);
+            const protocol = port.Protocol;
+            if (!Number.isInteger(target) || target < 1 || !Number.isInteger(sandbox) || sandbox < 1 || !['tcp', 'udp'].includes(protocol)) throw new Error('Invalid Compose port inventory.');
+            if (!context.ports.some(existing => existing.sandbox === sandbox && existing.protocol === protocol)) {
+              context.ports.push({ service: `${basename(entry.source)}/${service.Service}`, target, sandbox, host: 0, protocol });
+            }
+          }
+        }
       }
       stage = 'ports';
       for (const port of context.ports) {
