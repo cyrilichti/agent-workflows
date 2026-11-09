@@ -1,0 +1,99 @@
+---
+title: /sandbox
+description: Prepare isolated worktrees and optional Docker services, then remove them by context.
+editUrl: false
+---
+
+`/sandbox` accepts a work item's ID, native URL, title, or search phrase and
+prepares an isolated environment under `~/sandboxes`, returning a reusable JSON context.
+Pass that context back to `/sandbox` to remove its resources. The workflow ends
+after returning its result; delivery callers decide when to use the environment.
+When Docker services are started, their sandbox stays active until teardown.
+For creation, optional `disk_size` sets the Docker data disk used by images,
+containers, and volumes. It defaults to 10 GB.
+
+## Docker setup
+
+After [installing `sbx`](https://docs.docker.com/ai/sandboxes/install/), allow
+network access so the sandbox can pull the images required by Compose:
+
+```sh
+sbx policy allow network '**'
+```
+
+This rule applies to all local sandboxes. See the [Docker network policy
+reference](https://docs.docker.com/reference/cli/sbx/policy/allow/network/).
+
+During preparation and teardown, the workflow's Node commands allow up to
+10 minutes for each Docker or `sbx` call. Commands run later inside the sandbox
+have no timeout from this workflow. Compose separately waits up to 120 seconds
+for services to become ready.
+
+## View sandboxes
+
+To see and manage your sandboxes, run:
+
+```sh
+sbx
+```
+
+## How `/sandbox` prepares and removes an environment
+
+<div className="write-flow sandbox-flow" role="img" aria-label="The sandbox workflow has two branches. An item starts preparation: resolve the item and plan, locate README dependencies, then create worktrees and optionally run project services in Docker before returning the context. A returned sandbox context starts teardown: verify ownership, remove recorded resources, and return the result. Each branch ends independently.">
+  <div className="write-flow__step write-flow__step--focus">
+    <small>01 · Input</small>
+    <strong>Choose the branch</strong>
+    <span>Supply an item to prepare, or a returned <code>sandbox_context</code> to tear down.</span>
+  </div>
+
+  <div className="plan-flow__scope">
+    <section className="plan-flow__scope-path">
+      <small className="pick-flow__path-label">Item supplied · Prepare</small>
+      <div className="write-flow__step write-flow__step--focus">
+        <small>02 · Preparation</small>
+        <strong>Create the sandbox</strong>
+        <span>Read the plan's validation checks, check for a Compose configuration, locate README dependencies when services need to run, and create the sandbox. Return the context.</span>
+      </div>
+    </section>
+    <section className="plan-flow__scope-path">
+      <small className="pick-flow__path-label">Context supplied · Teardown</small>
+      <div className="write-flow__step write-flow__step--focus">
+        <small>02 · Teardown</small>
+        <strong>Remove the sandbox</strong>
+        <span>Verify ownership, remove the recorded Docker sandbox and worktrees, and return the result.</span>
+      </div>
+    </section>
+  </div>
+</div>
+
+## What `/sandbox` does
+
+<table className="workflow-steps">
+  <tbody>
+    <tr>
+      <td>1</td>
+      <th scope="row">Select</th>
+      <td>A supplied <code>sandbox_context</code> selects teardown. For preparation, supply <code>item</code> as an ID, native URL, title, or search phrase. Resolve the official item, asking for clarification when needed, then read its approved plan from the item comments.</td>
+    </tr>
+    <tr>
+      <td>2a</td>
+      <th scope="row">Read the plan</th>
+      <td>Preparation infers from the approved plan's validation checks whether the project or its services must run. If execution is needed and the project has a Compose configuration, include Docker. Otherwise, create a worktree without it.</td>
+    </tr>
+    <tr>
+      <td>3a</td>
+      <th scope="row">Resolve dependencies</th>
+      <td>Only for container execution, the agent identifies local repositories named in the README and resolves new names together with a local-only command. It reads each newly found repository's README once and supplies the distinct absolute paths. Preparation validates those paths before allocation.</td>
+    </tr>
+    <tr>
+      <td>4a</td>
+      <th scope="row">Create</th>
+      <td>Create a detached worktree at each selected repository's current <code>HEAD</code> and copy its local changes and Git-ignored resources. When container execution is available, start the Compose services of the project and its dependencies in one sbx shell sandbox, then allocate ports. Return the resulting <code>sandbox_context</code>; on failure, attempt rollback and report the stage and reason.</td>
+    </tr>
+    <tr>
+      <td>2b</td>
+      <th scope="row">Tear down</th>
+      <td>Verify context ownership, then remove its optional Docker sandbox and recorded worktrees. Accept partial preparation records and repeated teardown, preserve the main checkouts, and return the result.</td>
+    </tr>
+  </tbody>
+</table>
