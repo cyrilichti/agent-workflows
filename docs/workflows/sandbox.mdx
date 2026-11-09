@@ -9,6 +9,18 @@ prepares an isolated environment in the current project, returning a reusable JS
 Pass that context back to `/sandbox` to remove its resources. The workflow ends
 after returning its result; delivery callers decide when to use the environment.
 
+## Docker setup
+
+After [installing `sbx`](https://docs.docker.com/ai/sandboxes/install/), allow
+network access so the sandbox can pull the images required by Compose:
+
+```sh
+sbx policy allow network '**'
+```
+
+This rule applies to all local sandboxes. See the [Docker network policy
+reference](https://docs.docker.com/reference/cli/sbx/policy/allow/network/).
+
 ## How `/sandbox` prepares and removes an environment
 
 <div className="write-flow sandbox-flow" role="img" aria-label="The sandbox workflow has two branches. An item starts preparation: resolve the item and plan, locate README dependencies, then create worktrees and optionally run project services in Docker before returning the context. A returned sandbox context starts teardown: verify ownership, remove recorded resources, and return the result. Each branch ends independently.">
