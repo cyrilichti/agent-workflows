@@ -4,10 +4,17 @@ import { basename, dirname, isAbsolute, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 export type Run = (program: string, args: string[], cwd?: string) => { stdout: string; stderr: string };
+export function commandFailure(program: string, args: string[], status: number | null, error: Error | undefined, stderr: string): Error {
+  const summary = `${program} ${args[0] ?? ''} failed (${error ? error.message : `exit ${status}`})`;
+  // Docker Compose config can contain resolved credentials. Only include sbx diagnostics.
+  const diagnostic = program === 'sbx' ? stderr.trim().slice(-4096) : '';
+  return new Error(diagnostic ? `${summary}: ${diagnostic}` : `${summary}.`);
+}
 export const run: Run = (program, args, cwd) => {
   const result = spawnSync(program, args, { cwd, encoding: 'utf8', timeout: 300_000, maxBuffer: 32 * 1024 * 1024 });
-  // Compose output can contain resolved credentials. Never include it in a failure.
-  if (result.error || result.status !== 0) throw new Error(`${program} ${args[0] ?? ''} failed (${result.error ? 'unavailable or timed out' : `exit ${result.status}`}).`);
+  if (result.error || result.status !== 0) {
+    throw commandFailure(program, args, result.status, result.error, result.stderr);
+  }
   return { stdout: result.stdout, stderr: result.stderr };
 };
 

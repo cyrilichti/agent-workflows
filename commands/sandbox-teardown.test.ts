@@ -7,13 +7,16 @@ import { join, resolve } from 'node:path';
 import test from 'node:test';
 import type { SandboxContext } from './sandbox-teardown.ts';
 import { recordOwnership } from './sandbox-create.ts';
-import { run, teardown, type Run } from './sandbox-teardown.ts';
+import { commandFailure, run, teardown, type Run } from './sandbox-teardown.ts';
 
-test('command runner returns output and omits it from failures', () => {
+test('command runner returns output and includes sbx failure diagnostics', () => {
   const success = run(process.execPath, ['-e', 'process.stdout.write("ok"); process.stderr.write("warning")']);
   assert.deepEqual(success, { stdout: 'ok', stderr: 'warning' });
   assert.throws(() => run(process.execPath, ['-e', 'process.stderr.write("secret"); process.exit(2)']),
     error => error instanceof Error && error.message.includes('exit 2') && !error.message.includes('secret'));
+  assert.match(commandFailure('sbx', ['exec'], 1, undefined, 'image pull failed: 403 Forbidden').message,
+    /sbx exec failed \(exit 1\): image pull failed: 403 Forbidden/);
+  assert.doesNotMatch(commandFailure('docker', ['compose'], 1, undefined, 'PASSWORD=secret').message, /secret/);
 });
 
 function fixture() {
