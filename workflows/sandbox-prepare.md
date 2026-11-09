@@ -50,10 +50,6 @@ Repeat until no new names remain. Skip the command when there are none. If any
 name returns `not found`, `ambiguous`, or `search incomplete`, or the command
 fails, report the issue and stop.
 
-Preparation starts the current project's Compose and each dependency repository's
-Compose when present, inside one sandbox. Dependency Compose projects start
-before the current project's Compose; their declared networks are preserved.
-
 Invoke preparation from this file's directory with the resolved and derived values:
 
 ```sh
