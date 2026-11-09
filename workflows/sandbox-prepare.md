@@ -61,9 +61,11 @@ node ../commands/sandbox-prepare.ts <<'JSON'
 JSON
 ```
 
-Success: `{ "status": "prepared", "sandbox_context": SandboxContext }`.
-Failure: `{ "status": "failed", "stage": string, "reason": string,
-"sandbox_context"?: SandboxContext }`, with exit code 1. Stages are `input`,
-`preflight`, `worktrees`, `docker`, or `ports`.
+Read the command's JSON output as `sandbox_result`. Set `sandbox_context` to
+`sandbox_result.sandbox_context` when present, including after failure. A
+prepared result has `status: prepared`; failure has `status: failed`, `stage`,
+and `reason`, with exit code 1. Failure stages are `input`, `preflight`,
+`worktrees`, `docker`, and `ports`.
 
-Return the command's JSON result unchanged and end this workflow.
+Return `sandbox_result` unchanged. To remove its resources later, invoke
+`/sandbox` with the retained `sandbox_context`; that call routes to teardown.

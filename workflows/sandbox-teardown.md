@@ -16,8 +16,8 @@ node ../commands/sandbox-teardown.ts <<'JSON'
 JSON
 ```
 
-Success: `{ "status": "completed", "sandbox_context": SandboxContext }`.
-Failure: `{ "status": "failed", "stage": "input" | "teardown", "reason": string,
-"sandbox_context"?: SandboxContext }`, with exit code 1.
+Read the command's JSON result. A completed result has `status: completed`.
+Failure has `status: failed`, `stage` (`input` or `teardown`), and `reason`, with
+exit code 1.
 
 Return the command's JSON result unchanged and end this workflow.
