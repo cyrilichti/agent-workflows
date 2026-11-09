@@ -6,7 +6,7 @@ From this file's directory, read only the files below that are not already
 active. Omit active paths from the `cat` command; skip it when none remain:
 
 ```sh
-cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../goals/ready-complete.md ../templates/delivery-context.md
+cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-activation.md ../rules/inclusive-wording.md ../rules/user-facing-output.md ../rules/mutation-response.md ../rules/sandbox-context.md ../goals/ready-complete.md ../templates/delivery-context.md
 ```
 
 ---
@@ -17,7 +17,7 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/skill-ac
 | --- | --- |
 | `/work` | `delivery-context` |
 
-Stop before routing when a required caller handoff is missing or incomplete.
+When a required caller handoff is missing or incomplete, stop before routing.
 
 ---
 

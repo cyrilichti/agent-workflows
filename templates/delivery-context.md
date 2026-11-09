@@ -8,6 +8,7 @@ plan: project-relative authoritative plan path
 item: complete official item context
 branch: exact work branch
 request: exact request record, when available
+sandbox_context: exact SandboxContext returned by /sandbox, when supplied
 source_findings:
   - workflow: ready or inspect
     id: stable finding ID

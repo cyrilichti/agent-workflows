@@ -9,6 +9,7 @@
 | `plan`             | Required for `new`     |
 | `item`             | Required for `new`     |
 | `delivery-context` | Required for `resumed` |
+| `sandbox_context` | Optional, carried unchanged in `delivery-context` |
 
 
 ---
