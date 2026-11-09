@@ -9,6 +9,8 @@ prepares an isolated environment under `~/sandboxes`, returning a reusable JSON 
 Pass that context back to `/sandbox` to remove its resources. The workflow ends
 after returning its result; delivery callers decide when to use the environment.
 When Docker services are started, their sandbox stays active until teardown.
+For creation, optional `disk_size` sets the Docker data disk used by images,
+containers, and volumes. It defaults to 10 GB.
 
 ## Docker setup
 

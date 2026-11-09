@@ -15,6 +15,7 @@ cat ../rules/default-language.md ../rules/git-authorization.md ../rules/user-fac
 | --- | --- |
 | `item` | Optional item ID, native URL, title, or search phrase for creation. |
 | `sandbox_context` | Required context returned by preparation for teardown. |
+| `disk_size` | Optional positive integer in GB for the Docker data disk when creating a sandbox; defaults to 10. |
 
 When neither input is supplied, ask for an item ID, native URL, title, or search
 phrase before routing.
