@@ -35,16 +35,10 @@ configuration. Otherwise, use `false`; preparation still creates the project
 worktree.
 
 Set `dependency_directories` to `[]` when `container_execution` is `false`.
-Otherwise, read the current project's README and identify its local repository
-dependencies. The resolver only locates those repositories on disk; it does
-not decide which repositories the project needs. Send all identified names in
-one JSON array from this file's directory:
-
-```sh
-node ../commands/resolve-local-repository-dependencies.ts <<'JSON'
-["<first dependency repository>", "<second dependency repository>"]
-JSON
-```
+Otherwise, read the current project's README and collect the exact repository
+names it lists as dependencies. From this file's directory, send those names
+as one JSON array on stdin to
+`node ../commands/resolve-local-repository-dependencies.ts`.
 
 Add each returned `path` to `dependency_directories`, except the current
 project or a path already added. Read the README at each newly added path and
