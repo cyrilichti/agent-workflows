@@ -24,8 +24,10 @@ sbx policy allow network '**'
 This rule applies to all local sandboxes. See the [Docker network policy
 reference](https://docs.docker.com/reference/cli/sbx/policy/allow/network/).
 
-Each Docker or `sbx` command has a 10-minute timeout, including image pulls
-and builds. Compose separately waits up to 120 seconds for services to become ready.
+During preparation and teardown, the workflow's Node commands allow up to
+10 minutes for each Docker or `sbx` call. Commands run later inside the sandbox
+have no timeout from this workflow. Compose separately waits up to 120 seconds
+for services to become ready.
 
 ## List sandboxes
 
