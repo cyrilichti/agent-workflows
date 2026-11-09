@@ -36,9 +36,12 @@ worktree.
 
 Set `dependency_directories` to `[]` when `container_execution` is `false`.
 Otherwise, read the current project's README and collect the exact repository
-names it lists as dependencies. From this file's directory, send those names
-as one JSON array on stdin to
-`node ../commands/resolve-local-repository-dependencies.ts`.
+names it lists as dependencies. From this file's directory, pass all of those
+names as one JSON array in the named argument:
+
+```sh
+node ../commands/resolve-local-repository-dependencies.ts --repository-names '<JSON array of repository names from README>'
+```
 
 Add each returned `path` to `dependency_directories`, except the current
 project or a path already added. Read the README at each newly added path and

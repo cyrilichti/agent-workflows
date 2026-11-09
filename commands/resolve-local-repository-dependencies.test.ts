@@ -17,8 +17,8 @@ test('resolves several README repository names in one local-only invocation', ()
     mkdirSync(codexHome);
     for (const path of [app, api, shared]) mkdirSync(join(path, '.git'), { recursive: true });
     writeFileSync(join(codexHome, 'config.toml'), `[projects.${JSON.stringify(app)}]\n[projects.${JSON.stringify(api)}]\n`);
-    const run = (names: unknown) => spawnSync(process.execPath, [program], {
-      input: JSON.stringify(names), encoding: 'utf8',
+    const run = (names: unknown) => spawnSync(process.execPath, [program, '--repository-names', JSON.stringify(names)], {
+      encoding: 'utf8',
       env: { ...process.env, CODEX_HOME: codexHome, PATH: '/nonexistent' },
     });
     const result = run(['service-api', 'shared-lib', 'missing']);
@@ -30,7 +30,8 @@ test('resolves several README repository names in one local-only invocation', ()
     ] });
     assert.equal(run([]).status, 1);
     assert.equal(run([' ']).status, 1);
-    assert.equal(spawnSync(process.execPath, [program], { input: '', encoding: 'utf8' }).status, 1);
+    assert.equal(spawnSync(process.execPath, [program], { encoding: 'utf8' }).status, 1);
+    assert.equal(spawnSync(process.execPath, [program, '--unknown', '["api"]'], { encoding: 'utf8' }).status, 1);
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
@@ -43,8 +44,8 @@ test('reports ambiguous repository names without item or board tie breaking', ()
     mkdirSync(codexHome);
     for (const path of [first, second]) mkdirSync(join(path, '.git'), { recursive: true });
     writeFileSync(join(codexHome, 'config.toml'), `[projects.${JSON.stringify(first)}]\n[projects.${JSON.stringify(second)}]\n`);
-    const result = spawnSync(process.execPath, [program], {
-      input: '["api"]', encoding: 'utf8', env: { ...process.env, CODEX_HOME: codexHome, PATH: '/nonexistent' },
+    const result = spawnSync(process.execPath, [program, '--repository-names', '["api"]'], {
+      encoding: 'utf8', env: { ...process.env, CODEX_HOME: codexHome, PATH: '/nonexistent' },
     });
     assert.equal(result.status, 0, result.stderr);
     assert.deepEqual(JSON.parse(result.stdout), { results: [{ name: 'api', status: 'ambiguous' }] });
