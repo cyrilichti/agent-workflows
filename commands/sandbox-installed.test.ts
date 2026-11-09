@@ -28,7 +28,7 @@ test('installed .agents workflow commands round trip a compact context from thei
     writeFileSync(join(bin, 'docker'), `#!${process.execPath}\nconsole.log('');\n`, { mode: 0o755 });
     const cwd = join(installed, 'workflows');
     const result = spawnSync(process.execPath, ['../commands/sandbox-prepare.ts'], {
-      cwd, input: JSON.stringify({ item_id: 'item', project_directory: root, dependency_directories: [], container_execution: false }), encoding: 'utf8',
+      cwd, input: JSON.stringify({ item_id: 'item', project_directory: root, dependency_directories: [], is_docker_enabled: false }), encoding: 'utf8',
       env: { ...process.env, PATH: `${bin}:${process.env.PATH}`, COMPOSE_FILE: '' },
     });
     assert.equal(result.status, 0, result.stdout + result.stderr);

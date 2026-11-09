@@ -11,14 +11,14 @@ export function recordOwnership(context: SandboxContext): void {
   writeFileSync(join(context.root, ownerMarker), JSON.stringify(context), { mode: 0o600 });
 }
 
-export interface PreparationInput { item_id: string; project_directory: string; dependency_directories: string[]; container_execution: boolean }
+export interface PreparationInput { item_id: string; project_directory: string; dependency_directories: string[]; is_docker_enabled: boolean }
 export type Compose = Record<string, any>;
 
 export function parsePreparationInput(value: any): PreparationInput {
   if (!value || typeof value.item_id !== 'string' || !value.item_id.trim() ||
       typeof value.project_directory !== 'string' || !isAbsolute(value.project_directory) ||
       !Array.isArray(value.dependency_directories) || value.dependency_directories.some((path: unknown) => typeof path !== 'string' || !isAbsolute(path)) ||
-      typeof value.container_execution !== 'boolean') throw new Error('Require item_id, absolute project_directory, absolute dependency_directories, and boolean container_execution.');
+      typeof value.is_docker_enabled !== 'boolean') throw new Error('Require item_id, absolute project_directory, absolute dependency_directories, and boolean is_docker_enabled.');
   return value;
 }
 
@@ -80,7 +80,7 @@ export function validateRepositories(project: string, dependencies: string[], mo
 export function preflight(input: PreparationInput, execute: Run = run): { repositories: string[]; model: Compose | null } {
   const directory = input.project_directory;
   const worktreeOnly = () => ({ repositories: validateRepositories(directory, []), model: null });
-  if (!input.container_execution) {
+  if (!input.is_docker_enabled) {
     return worktreeOnly();
   }
   const hasCompose = !!process.env.COMPOSE_FILE || ['compose.yaml', 'compose.yml', 'docker-compose.yaml', 'docker-compose.yml']
@@ -201,7 +201,7 @@ export function prepare(value: unknown, execute: Run = run): SandboxResult {
       git(source, 'worktree', 'add', '--detach', worktree, 'HEAD');
       copyIgnored(source, worktree);
     }
-    if (input.container_execution && model) {
+    if (input.is_docker_enabled && model) {
       stage = 'docker';
       const compose = join(context.root, 'compose.json');
       writeFileSync(compose, JSON.stringify(remapModel(model, context)), { mode: 0o600 });

@@ -16,9 +16,9 @@ export function repository(path: string) {
 }
 
 test('preparation validates its single JSON input and emits a staged JSON failure', () => {
-  for (const input of [{}, { item_id: 'x', project_directory: 'relative', dependency_directories: [], container_execution: false },
-    { item_id: 'x', project_directory: '/tmp', dependency_directories: [], container_execution: 'false' },
-    { item_id: 'x', project_directory: '/tmp', dependency_directories: ['relative'], container_execution: false }]) {
+  for (const input of [{}, { item_id: 'x', project_directory: 'relative', dependency_directories: [], is_docker_enabled: false },
+    { item_id: 'x', project_directory: '/tmp', dependency_directories: [], is_docker_enabled: 'false' },
+    { item_id: 'x', project_directory: '/tmp', dependency_directories: ['relative'], is_docker_enabled: false }]) {
     assert.throws(() => parsePreparationInput(input));
   }
   const result = spawnSync(process.execPath, [resolve('commands/sandbox-prepare.ts')], { input: '{}', encoding: 'utf8' });
@@ -45,7 +45,7 @@ test('preflight rejects unavailable tools, auth, startup support, variables and 
           stderr: failure === 'variables' ? 'The "PASSWORD" variable is not set.' : '' };
         return { stdout: '', stderr: '' };
       };
-      const result = prepare({ item_id: 'x', project_directory: app, dependency_directories: [], container_execution: true }, runner);
+      const result = prepare({ item_id: 'x', project_directory: app, dependency_directories: [], is_docker_enabled: true }, runner);
       assert.equal(result.status, 'failed', failure);
       assert.equal(result.sandbox_context, undefined, failure);
       assert.deepEqual(readdirSync(root), ['app']);
@@ -59,7 +59,7 @@ test('missing Compose falls back to a project worktree', () => {
   try {
     const app = repository(join(root, 'app'));
     const dependency = repository(join(root, 'dependency'));
-    const input = { item_id: 'item', project_directory: app, dependency_directories: [dependency], container_execution: true };
+    const input = { item_id: 'item', project_directory: app, dependency_directories: [dependency], is_docker_enabled: true };
     const noCompose = prepare(input, () => { throw new Error('Unexpected container command.'); });
     assert.equal(noCompose.status, 'prepared');
     assert.deepEqual(noCompose.sandbox_context?.repositories.map(entry => entry.source), [app]);
@@ -115,7 +115,7 @@ test('separate preparations preserve ignored nested files, modes and untracked s
     chmodSync(join(app, 'nested'), 0o500);
     const noContainerRunner: Run = () => { throw new Error('Unexpected container command.'); };
     for (let index = 0; index < 2; index++) {
-      const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: false }, noContainerRunner);
+      const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: false }, noContainerRunner);
       assert.equal(result.status, 'prepared', JSON.stringify(result));
       if (!result.sandbox_context) throw new Error('Missing context');
       contexts.push(result.sandbox_context);
@@ -141,14 +141,14 @@ test('container preparation remaps Compose paths and returns allocated ports; la
     writeFileSync(join(app, 'compose.yaml'), 'services: {}');
     const fake = sandboxRunner({ model: { services: { web: { image: 'nginx',
       volumes: [{ type: 'bind', source: app, target: '/app' }], ports: [{ target: 80, published: '80' }] } } } });
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: true }, fake.runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: true }, fake.runner);
     assert.equal(result.status, 'prepared', JSON.stringify(result));
     assert.ok(result.sandbox_context?.docker);
     assert.equal(result.sandbox_context?.ports[0]?.host, 49123);
     removeResources(result.sandbox_context!, fake.runner);
     assert.equal(fake.sandboxes.size, 0);
     const failing = sandboxRunner({ fail: 'exec' });
-    const failed = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: true }, failing.runner);
+    const failed = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: true }, failing.runner);
     assert.equal(failed.status, 'failed');
     assert.equal(failing.sandboxes.size, 0);
     assert.equal(gitWorktrees(app).length, 1);
@@ -165,7 +165,7 @@ test('container preparation materializes environment-backed secrets without expo
     writeFileSync(join(app, 'compose.yaml'), 'services: {}');
     const fake = sandboxRunner({ model: { services: { web: { image: 'nginx', ports: [{ target: 80 }] } },
       secrets: { password: { environment: 'SANDBOX_TEST_SECRET' } } } });
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: true }, fake.runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: true }, fake.runner);
     try {
       assert.equal(result.status, 'prepared', JSON.stringify(result));
       assert.ok(!JSON.stringify(result).includes('private-secret'));
@@ -188,7 +188,7 @@ test('container preparation uses explicit dependency repositories without parsin
     writeFileSync(join(app, 'README.md'), 'The API and shared repositories support this app.\n');
     writeFileSync(join(app, 'compose.yaml'), 'services: {}');
     assert.deepEqual(validateRepositories(app, [api, shared], { services: { api: { build: { context: api } } } }), [app, api, shared]);
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [api, shared], container_execution: true }, fake.runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [api, shared], is_docker_enabled: true }, fake.runner);
     assert.equal(result.status, 'prepared', JSON.stringify(result));
     context = result.sandbox_context;
     assert.deepEqual(context.repositories.map((entry: any) => entry.source), [app, api, shared]);
@@ -208,7 +208,7 @@ test('undeclared Compose repositories and invalid explicit dependencies fail bef
     assert.throws(() => validateRepositories(app, [], model), /undeclared dependency/);
     assert.throws(() => validateRepositories(app, [app]), /Duplicate dependency/);
     assert.throws(() => validateRepositories(app, [join(api, '.git')]), /repository roots/);
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], container_execution: true }, sandboxRunner({ model }).runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: true }, sandboxRunner({ model }).runner);
     assert.equal(result.status, 'failed');
     assert.equal(result.sandbox_context, undefined);
     assert.equal(gitWorktrees(app).length, 1);
@@ -238,7 +238,7 @@ test('provided sibling repository Dockerfiles are remapped before container star
       }
       return base.runner(program, args, cwd);
     };
-    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [api], container_execution: true }, runner);
+    const result = prepare({ item_id: 'item', project_directory: app, dependency_directories: [api], is_docker_enabled: true }, runner);
     context = result.sandbox_context;
     assert.equal(result.status, 'prepared', JSON.stringify(result));
     assert.equal(context.repositories.length, 2);

@@ -29,12 +29,12 @@ item as official context.
 
 Set `item_id` to the resolved official item's ID. Read the approved plan in the
 resolved item's comments. Stop if no approved plan comment is available. Set
-`container_execution` only when the plan requires running project code or
+`is_docker_enabled` only when the plan requires running project code or
 services in a container and the current project has a Docker Compose
 configuration. Otherwise, use `false`; preparation still creates the project
 worktree.
 
-Set `dependency_directories` to `[]` when `container_execution` is `false`.
+Set `dependency_directories` to `[]` when `is_docker_enabled` is `false`.
 Otherwise, read the current project's README and collect the exact repository
 names it lists as dependencies. From this file's directory, pass all of those
 names as one JSON array in the named argument:
@@ -54,7 +54,7 @@ Invoke preparation from this file's directory with the resolved and derived valu
 
 ```sh
 node ../commands/sandbox-prepare.ts <<'JSON'
-{"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","dependency_directories":<dependency_directories>,"container_execution":<container_execution>}
+{"item_id":"<resolved item ID>","project_directory":"<current project's absolute repository root>","dependency_directories":<dependency_directories>,"is_docker_enabled":<is_docker_enabled>}
 JSON
 ```
 
