@@ -8,7 +8,7 @@ Configure one provider for each responsibility; workflows route every operation
 to the integration selected by the project. Set the root-level `item` and
 `version` blocks in `agent-workflows.yaml`.
 
-## Work items: ClickUp or Linear
+## Work items: Linear or ClickUp
 
 The item provider owns ticket lookup, creation, comments, labels, and status
 changes. Approved plans are published and read through the same provider
@@ -18,19 +18,6 @@ boundary.
 item:
   provider: linear # or clickup
 ```
-
-### ClickUp
-
-ClickUp operations use the community
-[`clickup-cli`](https://github.com/nicholasbester/clickup-cli) directly. Install
-it and configure the API token and Workspace before selecting ClickUp:
-
-```bash
-clickup-cli setup
-```
-
-Run the setup command in the agent's execution environment. The provider
-contracts call `clickup-cli` directly.
 
 ### Linear
 
@@ -44,6 +31,19 @@ linear auth login
 
 The provider contracts use native `linear` commands and `linear api` for
 focused GraphQL queries.
+
+### ClickUp
+
+ClickUp operations use the community
+[`clickup-cli`](https://github.com/nicholasbester/clickup-cli) directly. Install
+it and configure the API token and Workspace before selecting ClickUp:
+
+```bash
+clickup-cli setup
+```
+
+Run the setup command in the agent's execution environment. The provider
+contracts call `clickup-cli` directly.
 
 ## Code delivery: GitHub or GitLab
 
