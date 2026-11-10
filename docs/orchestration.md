@@ -1,14 +1,12 @@
 ---
 title: Orchestration
-description: How Kestra, the host bridge, an AI provider, and Langfuse connect.
+description: Run ready, planned tickets through delivery without writing prompts.
 ---
 
-The local stack contains **Kestra** to run workflows, **Langfuse** to record
-traces, and a **bridge** supplied by this repository to connect Kestra to an
-AI provider. Docker Compose runs Kestra and Langfuse with their supporting
-PostgreSQL, ClickHouse, Redis, and MinIO services. The bridge runs separately
-on your machine, where it can use your local Codex CLI, project files, and
-authentication.
+Orchestration executes ready tickets with approved plans without asking you to
+write a prompt for each one. It selects the next eligible ticket, runs the
+delivery workflow through implementation and review, and leaves the final
+merge decision to you.
 
 ## How the pieces connect
 
@@ -47,38 +45,19 @@ authentication.
   </div>
 </div>
 
-Kestra makes an authenticated HTTP `POST` to the host bridge at
-`/`. The request carries a text task, an `X-Request-Id`, and the
-shared bearer token. The bridge starts a fresh Codex CLI execution on the
-host, returns a JSON result to Kestra,
-and sends a trace to Langfuse. The bridge must be running for Kestra to
-run AI tasks.
-
-The `work` flow uses authenticated `POST /scripts` to run the selector and
-project resolver on the host. Kestra parses their `stdout` and proceeds to
-`/work` only with a resolved repository path. Scripts retain the permissions
-of the bridge process; path checks restrict their entrypoint to the configured
-project. See the [script contract](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#project-script-execution)
-for request, output, and execution limits.
-
-After each attempt, the flow makes one comment request for the selected item
-through its configured provider. The comment records the `/work` response or
-the project resolution result, plus the Kestra execution ID. Attempts without
-a selected item skip the comment. A failed comment request is visible in Kestra;
-the loop still reaches its delay.
-
 ## Start the architecture locally
 
-You need Node.js 24+, npm, and Docker with Compose 2.24+. To use the local
-Codex CLI, install it and authenticate with `codex login`. From the repository
-root, create `.env` and fill its required secrets. Set `INFERENCE_ENABLED=true`
-and set `AI_PROVIDER=codex`. Leave `AI_MODEL` empty to use your CLI configuration. See the
-[configuration guide](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#configure)
-for the secret-generation commands and other settings. If `.env` already
-exists, edit it instead of copying the example over it.
+Prerequisites:
+
+- [Node.js 24+](https://nodejs.org/en/download) and npm
+- [Docker with Compose 2.24+](https://docs.docker.com/compose/install/)
+- [Codex CLI](https://github.com/openai/codex), authenticated with `codex login`
+
+From the repository root, create `.env` from `.env.example` if needed. Follow
+the [configuration guide](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#configure)
+to add the required secrets and enable Codex before starting the services.
 
 ```bash
-cp .env.example .env
 docker compose up -d --build
 ```
 
@@ -88,14 +67,6 @@ Then start the bridge **on the host machine**, under your usual user account
 ```bash
 npm start
 ```
-
-The work flow selects items through authenticated `POST /scripts`, which runs the
-TypeScript selector on the host without an AI call. Configure the selector's
-project, provider CLI, and credentials using
-[Item selection and project resolution](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#item-selection-and-project-resolution).
-Use flow input `commandsDirectory=commands` for a source checkout or
-`.agents/commands` for an installed project. Existing Kestra flows are retained at startup; follow that guide's upgrade
-procedure to install the changed flow.
 
 Keep this process running. Kestra reaches the host bridge through
 `BRIDGE_URL`. The local service addresses are:
