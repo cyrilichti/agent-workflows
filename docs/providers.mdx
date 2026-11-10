@@ -8,7 +8,7 @@ Configure one provider for each responsibility; workflows route every operation
 to the integration selected by the project. Set the root-level `item` and
 `version` blocks in `agent-workflows.yaml`.
 
-## Work items: ClickUp or Linear
+## Work items: Linear or ClickUp
 
 The item provider owns ticket lookup, creation, comments, labels, and status
 changes. Approved plans are published and read through the same provider
@@ -19,27 +19,7 @@ item:
   provider: linear # or clickup
 ```
 
-## Code delivery: GitHub or GitLab
-
-The version provider owns branches, commits, pull or merge requests, and reviews.
-
-```yaml
-version:
-  provider: github # or gitlab
-```
-
-## Configure provider access
-
-ClickUp operations use the community
-[`clickup-cli`](https://github.com/nicholasbester/clickup-cli) directly. Install
-it and configure the API token and Workspace before selecting ClickUp:
-
-```bash
-clickup-cli setup
-```
-
-Run the setup command in the agent's execution environment. The provider
-contracts call `clickup-cli` directly.
+### Linear
 
 Linear operations use the community
 [`schpet/linear-cli`](https://github.com/schpet/linear-cli) directly. Install it
@@ -52,6 +32,30 @@ linear auth login
 The provider contracts use native `linear` commands and `linear api` for
 focused GraphQL queries.
 
+### ClickUp
+
+ClickUp operations use the community
+[`clickup-cli`](https://github.com/nicholasbester/clickup-cli) directly. Install
+it and configure the API token and Workspace before selecting ClickUp:
+
+```bash
+clickup-cli setup
+```
+
+Run the setup command in the agent's execution environment. The provider
+contracts call `clickup-cli` directly.
+
+## Code delivery: GitHub or GitLab
+
+The version provider owns branches, commits, pull or merge requests, and reviews.
+
+```yaml
+version:
+  provider: github # or gitlab
+```
+
+### GitHub
+
 GitHub operations use the official [`gh` CLI](https://cli.github.com/). Install
 it and authenticate it for the repository's host before selecting GitHub:
 
@@ -60,6 +64,8 @@ gh auth login --hostname github.example.com
 ```
 
 For GitHub.com, use `gh auth login`.
+
+### GitLab
 
 GitLab operations use the official
 [`glab` CLI](https://docs.gitlab.com/cli/installation/). Install it, then
