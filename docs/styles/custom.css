@@ -17,24 +17,17 @@
 }
 
 :root[data-theme="dark"] {
-  --sl-color-bg: #08090a;
-  --sl-color-bg-nav: rgba(8, 9, 10, 0.88);
+  --sl-color-bg: #07111f;
+  --sl-color-bg-nav: rgba(7, 17, 31, 0.9);
   --sl-color-bg-sidebar: #08090a;
-  --sl-color-hairline-light: #202226;
-  --sl-color-hairline: #181a1d;
+  --sl-color-hairline-light: #1b304b;
+  --sl-color-hairline: #12243b;
   --sl-color-accent-low: #17251e;
   --sl-color-accent: #a7f3c4;
   --sl-color-accent-high: #ddffe9;
 }
 
-:root[data-has-hero][data-theme="dark"] {
-  --sl-color-bg: #07111f;
-  --sl-color-bg-nav: rgba(7, 17, 31, 0.9);
-  --sl-color-hairline-light: #1b304b;
-  --sl-color-hairline: #12243b;
-}
-
-:root[data-has-hero][data-theme="dark"] body {
+:root[data-theme="dark"] body {
   background:
     radial-gradient(circle at 50% 8%, rgba(37, 99, 235, 0.18), transparent 34rem),
     linear-gradient(
