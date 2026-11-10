@@ -2,7 +2,11 @@
 
 **Turn a ticket into reviewed code. Keep the final say.**
 
-[Documentation](https://cyrilichti.github.io/agent-workflows/) · [Installation](https://cyrilichti.github.io/agent-workflows/installation/) · [Workflows](https://cyrilichti.github.io/agent-workflows/workflows/) · [Orchestration](https://cyrilichti.github.io/agent-workflows/orchestration/)
+[Documentation](https://cyrilichti.github.io/agent-workflows/) ·
+[Installation](https://cyrilichti.github.io/agent-workflows/installation/) ·
+[Workflows](https://cyrilichti.github.io/agent-workflows/workflows/) ·
+[Sandbox][sandbox] ·
+[Orchestration](https://cyrilichti.github.io/agent-workflows/orchestration/)
 
 Use the same delivery workflows with your agent or through orchestration. This no-code approach takes approved plans to reviewed code, while you keep the final merge decision.
 
@@ -41,6 +45,18 @@ Use the same delivery workflows with your agent or through orchestration. This n
     </td>
   </tr>
 </table>
+
+## Run work in parallel
+
+`/sandbox` lets items in one project run side by side in separate Git
+worktrees. It copies local files, resolves README dependencies recursively,
+and starts Compose services when the plan's checks need them. The Docker disk
+size is configurable, and the environment is removed after delivery or on
+request.
+
+[Prepare or remove a sandbox →][sandbox]
+
+[sandbox]: https://cyrilichti.github.io/agent-workflows/workflows/sandbox/
 
 ## Install in your project
 
@@ -105,6 +121,7 @@ Choose a work tracker and a code host. Orchestration also needs an AI provider.
 - [x] Reduce token use by limiting the context reinjected after each command.
 - [x] Add a hotfix workflow.
 - [x] Use sandboxes when running agent workflows.
+- [ ] Define RAG for installed projects.
 
 ## Contribute
 
