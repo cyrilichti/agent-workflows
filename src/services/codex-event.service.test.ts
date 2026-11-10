@@ -20,7 +20,7 @@ test('in-memory summary keeps exact turn tokens separate from tool character cou
   const jsonl = events.map((event) => JSON.stringify(event)).join('\n');
   const summary = new CodexEventService().summarize(jsonl, {
     traceId: 'a'.repeat(32), phase: 'next', requestId: 'run-next-1',
-    model: 'test-model', prompt: 'Execute /next',
+    model: 'test-model', prompt: 'Execute /work',
   });
   const summaryText = JSON.stringify(summary);
   assert.equal(summary.schemaVersion, 2);

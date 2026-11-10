@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
 import test from 'node:test';
 
 const program = resolve('commands/select-next-item.ts');
@@ -166,13 +166,10 @@ test('unknown Linear statuses are skipped in one CLI query', () => {
   } finally { f.cleanup(); }
 });
 
-test('the workflow command resolves its installed .agents path even when the project has a commands directory', () => {
+test('the orchestration script resolves its installed .agents path even when the project has a commands directory', () => {
   for (const configuredProvider of ['clickup', 'linear']) {
     const f = fixture([], configuredProvider);
     try {
-      const workflow = join(f.root, '.agents', 'workflows', 'next.md');
-      mkdirSync(dirname(workflow), { recursive: true });
-      copyFileSync(resolve('workflows/next.md'), workflow);
       const installed = join(f.root, '.agents', 'commands');
       mkdirSync(installed, { recursive: true });
       copyFileSync(program, join(installed, 'select-next-item.ts'));
@@ -183,8 +180,8 @@ test('the workflow command resolves its installed .agents path even when the pro
         mkdirSync(destination, { recursive: true });
         copyFileSync(resolve(`providers/${provider}/select-next-item.ts`), join(destination, 'select-next-item.ts'));
       }
-      const result = spawnSync(process.execPath, ['../commands/select-next-item.ts'],
-        { cwd: dirname(workflow), env: f.env, encoding: 'utf8' });
+      const result = spawnSync(process.execPath, ['.agents/commands/select-next-item.ts'],
+        { cwd: f.root, env: f.env, encoding: 'utf8' });
       assert.equal(result.status, 0, result.stderr);
       assert.deepEqual(JSON.parse(result.stdout), { status: 'no eligible item' });
     } finally { f.cleanup(); }

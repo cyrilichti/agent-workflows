@@ -8,8 +8,6 @@ agent-workflows.yaml
 skills/*
 !skills/agent-workflows/
 !skills/pick/
-!skills/next/
-!skills/project/
 !skills/sandbox/
 !skills/plan/
 !skills/write/

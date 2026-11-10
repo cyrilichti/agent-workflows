@@ -155,7 +155,7 @@ test('Codex provider returns a content-free summary without writing a report', a
       });
     `], options),
   });
-  const result = await provider.generate('Execute /next', {
+  const result = await provider.generate('Execute /work', {
     signal: new AbortController().signal,
     traceId: 'b'.repeat(32),
   });
@@ -188,7 +188,7 @@ test('Codex provider records item completion arrival times in stream order', asy
       });
     `], options),
   });
-  const result = await provider.generate('Execute /next', {
+  const result = await provider.generate('Execute /work', {
     signal: new AbortController().signal,
     traceId: 'd'.repeat(32),
   });
@@ -212,7 +212,7 @@ test('failed Codex turns still return observable events with unknown usage', asy
   });
   let error: unknown;
   try {
-    await provider.generate('Execute /next', {
+    await provider.generate('Execute /work', {
       signal: new AbortController().signal,
       traceId: 'c'.repeat(32),
     });

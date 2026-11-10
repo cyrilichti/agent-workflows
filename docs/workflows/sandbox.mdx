@@ -1,16 +1,11 @@
 ---
 title: /sandbox
-description: Prepare isolated worktrees and optional Docker services, then remove them by context.
+description: Create or remove an isolated environment for a work item.
 editUrl: false
 ---
 
-`/sandbox` accepts a work item's ID, native URL, title, or search phrase and
-prepares an isolated environment under `~/sandboxes`, returning a reusable JSON context.
-Pass that context back to `/sandbox` to remove its resources. The workflow ends
-after returning its result; delivery callers decide when to use the environment.
-When Docker services are started, their sandbox stays active until teardown.
-For creation, optional `disk_size` sets the Docker data disk used by images,
-containers, and volumes. It defaults to 10 GB.
+`/sandbox` creates an isolated environment for a work item and returns a context
+you can use to remove it later.
 
 ## Docker setup
 
@@ -27,7 +22,8 @@ reference](https://docs.docker.com/reference/cli/sbx/policy/allow/network/).
 During preparation and teardown, the workflow's Node commands allow up to
 10 minutes for each Docker or `sbx` call. Commands run later inside the sandbox
 have no timeout from this workflow. Compose separately waits up to 120 seconds
-for services to become ready.
+for services to become ready. The Docker data disk defaults to 10 GB when
+creating a sandbox; set `disk_size` to choose another size.
 
 ## View sandboxes
 
@@ -73,27 +69,27 @@ sbx
     <tr>
       <td>1</td>
       <th scope="row">Select</th>
-      <td>A supplied <code>sandbox_context</code> selects teardown. For preparation, supply <code>item</code> as an ID, native URL, title, or search phrase. Resolve the official item, asking for clarification when needed, then read its approved plan from the item comments.</td>
+      <td>Pass <code>item</code> (ID, URL, title, or search) to prepare, or <code>sandbox_context</code> to tear down. Preparation reads the approved plan.</td>
     </tr>
     <tr>
       <td>2a</td>
       <th scope="row">Read the plan</th>
-      <td>Preparation infers from the approved plan's validation checks whether the project or its services must run. If execution is needed and the project has a Compose configuration, include Docker. Otherwise, create a worktree without it.</td>
+      <td>Use the plan's checks to decide whether to run Compose. Otherwise, use worktrees only.</td>
     </tr>
     <tr>
       <td>3a</td>
       <th scope="row">Resolve dependencies</th>
-      <td>Only for container execution, the agent identifies local repositories named in the README and resolves new names together with a local-only command. It reads each newly found repository's README once and supplies the distinct absolute paths. Preparation validates those paths before allocation.</td>
+      <td>When running containers, resolve and validate local repositories named in the README.</td>
     </tr>
     <tr>
       <td>4a</td>
       <th scope="row">Create</th>
-      <td>Create a detached worktree at each selected repository's current <code>HEAD</code> and copy its local changes and Git-ignored resources. When container execution is available, start the Compose services of the project and its dependencies in one sbx shell sandbox, then allocate ports. Return the resulting <code>sandbox_context</code>; on failure, attempt rollback and report the stage and reason.</td>
+      <td>Create worktrees with local changes, start services when needed, and return <code>sandbox_context</code>. Roll back on failure.</td>
     </tr>
     <tr>
       <td>2b</td>
       <th scope="row">Tear down</th>
-      <td>Verify context ownership, then remove its optional Docker sandbox and recorded worktrees. Accept partial preparation records and repeated teardown, preserve the main checkouts, and return the result.</td>
+      <td>Verify ownership, remove the recorded sandbox and worktrees, and return the result.</td>
     </tr>
   </tbody>
 </table>

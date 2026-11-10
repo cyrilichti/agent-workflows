@@ -36,7 +36,7 @@ test('caller labels determine observation name, trace name and tags', () => {
     traceId: '0123456789abcdef0123456789abcdef',
     provider: 'codex',
     model: 'test',
-    prompt: 'Execute /next',
+    prompt: 'Execute /work',
     text: 'OK',
     status: 'completed',
     directory: '/projects/example-repo/',
@@ -64,7 +64,7 @@ test('failed operation is an error even when its configured level is debug', () 
     traceId: '0123456789abcdef0123456789abcdef',
     provider: 'codex',
     model: 'test',
-    prompt: 'Execute /next',
+    prompt: 'Execute /work',
     status: 'failed',
     error: { code: 'provider_error', message: 'Provider failed' },
     trace: { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'], level: 'DEBUG' },
@@ -109,7 +109,7 @@ test('in-memory JSONL summary becomes Langfuse metadata and child events without
   });
   await traceService.send({
     requestId: 'request-1', traceId, provider: 'codex', model: 'test',
-    prompt: 'Execute /next', text: 'done', status: 'completed',
+    prompt: 'Execute /work', text: 'done', status: 'completed',
     directory: '/projects/example-repo',
     trace: { name: 'agent-workflows.work.next', observationName: 'next', tags: ['next'], sessionId: 'kestra-execution-1' },
     startedAt: '2026-01-01T00:00:00Z', endedAt: '2026-01-01T00:00:01Z',

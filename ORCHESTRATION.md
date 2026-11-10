@@ -155,8 +155,8 @@ running `agent-workflows/work` execution in Kestra and back up its flow YAML.
 Update this repository, restart the bridge, and replace the flow's source in
 the Kestra editor with [orchestration/work.yaml](./orchestration/work.yaml).
 Save it, reapply needed local customizations, and start a new execution with
-`commandsDirectory` set for your installation. Confirm that `next` and `project`
-both call `/scripts` and that their switches parse the response's `stdout`.
+`commandsDirectory` set for your installation. Confirm that selection and
+project resolution call `/scripts` and that their switches parse the response's `stdout`.
 New installations import this flow automatically.
 
 ## Execution behavior
