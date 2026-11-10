@@ -58,7 +58,7 @@ the [configuration guide](https://github.com/cyrilichti/agent-workflows/blob/mai
 to add the required secrets and enable Codex before starting the services.
 
 ```bash
-docker compose up -d --build
+docker compose up -d
 ```
 
 Then start the bridge **on the host machine**, under your usual user account
