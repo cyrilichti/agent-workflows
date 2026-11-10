@@ -6,8 +6,6 @@
 
    | Situation | Workflow |
    | --- | --- |
-   | Select the next eligible item (`/next` or `$next`) | `workflows/next.md` |
-   | Resolve a local project directory (`/project` or `$project`) | `workflows/project.md` |
    | Prepare or tear down an isolated environment (`/sandbox` or `$sandbox`) | `workflows/sandbox.md` |
    | Create or reformulate one item (`/write` or `$write`) | `workflows/write.md` |
    | Frame an urgent bug report and start delivery (`/hotfix` or `$hotfix`) | `workflows/hotfix.md` |

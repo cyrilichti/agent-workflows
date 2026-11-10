@@ -3,7 +3,7 @@
     "Segoe UI", sans-serif;
   --sl-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --sl-content-width: 48rem;
-  --sl-color-bg-sidebar: var(--sl-color-bg-nav);
+  --sl-color-bg-sidebar: transparent;
 }
 
 /* Keep the product mark visible when the theme collapses the site title. */
@@ -25,6 +25,11 @@
   --sl-color-accent-low: #17251e;
   --sl-color-accent: #a7f3c4;
   --sl-color-accent-high: #ddffe9;
+  --code-background: #0a1726;
+  --aw-surface-border: #1b3049;
+  --aw-search-trigger: #0b192a;
+  --aw-search-dialog: #081422;
+  --aw-terminal-bar: #08111e;
 }
 
 .sidebar-pane {
@@ -50,6 +55,74 @@
   --sl-color-bg-nav: rgba(244, 247, 252, 0.9);
   --sl-color-hairline-light: #cfdaea;
   --sl-color-hairline: #dce5f1;
+}
+
+:root[data-theme="light"] {
+  --code-background: #edf3fb;
+  --aw-surface-border: #c4d4e8;
+  --aw-search-trigger: #eaf1fb;
+  --aw-search-dialog: #f7faff;
+  --aw-terminal-bar: #dce7f4;
+}
+
+/* Keep documentation tools in the same blue surface family as the page. */
+site-search > button[data-open-modal] {
+  background-color: var(--aw-search-trigger);
+  box-shadow: inset 0 0 0 1px var(--aw-surface-border);
+}
+
+site-search > button[data-open-modal]:hover {
+  background-color: var(--code-background);
+}
+
+site-search > button[data-open-modal]:focus-visible {
+  outline: 2px solid var(--sl-color-accent);
+  outline-offset: 2px;
+}
+
+site-search dialog {
+  background-color: var(--aw-search-dialog);
+  border-color: var(--aw-surface-border);
+}
+
+site-search dialog::backdrop {
+  background-color: rgba(4, 13, 27, 0.72);
+}
+
+#starlight__search {
+  --pagefind-ui-background: var(--code-background);
+  --pagefind-ui-border: var(--aw-surface-border);
+}
+
+.expressive-code {
+  --ec-brdCol: var(--aw-surface-border);
+  --ec-frm-trmTtbBg: var(--aw-terminal-bar);
+  --ec-frm-trmTtbBrdBtmCol: var(--aw-surface-border);
+  --ec-frm-edTabBarBg: var(--aw-terminal-bar);
+  --ec-frm-edTabBarBrdBtmCol: var(--aw-surface-border);
+}
+
+:root main .markdown-actions {
+  background: var(--aw-search-trigger);
+  box-shadow: inset 0 0 0 1px var(--aw-surface-border);
+}
+
+:root main .markdown-actions-separator {
+  background: var(--aw-surface-border);
+}
+
+:root main .markdown-actions-menu {
+  border-color: var(--aw-surface-border);
+  background: var(--aw-search-dialog);
+}
+
+:root main .markdown-actions-item:hover {
+  background: var(--aw-search-trigger);
+}
+
+:root main .markdown-actions :is(button, a):focus-visible {
+  outline: 2px solid var(--sl-color-accent);
+  outline-offset: 2px;
 }
 
 :root[data-has-hero][data-theme="light"] body {
@@ -1410,40 +1483,22 @@
 
 .sl-link-card:has(.workflow-card-title) {
   min-height: 9rem;
-  border-color: #2b3a4f;
-  background: rgba(10, 17, 28, 0.94);
+  border-color: var(--aw-surface-border);
+  background: var(--code-background);
   transition: border-color 120ms ease, background-color 120ms ease,
     transform 120ms ease;
 }
 
 .sl-link-card:has(.workflow-card-title):hover {
-  border-color: #52647b;
+  border-color: #4c719c;
   transform: translateY(-1px);
 }
 
-.sl-link-card:has(.workflow-card-title--entry) {
-  border-color: rgba(251, 191, 36, 0.48);
-  background: rgba(33, 24, 13, 0.94);
-}
-
-.sl-link-card:has(.workflow-card-title--scale) {
-  border-color: rgba(196, 181, 253, 0.52);
-  background: rgba(22, 16, 35, 0.94);
-}
-
-.sl-link-card:has(.workflow-card-title--autonomous) {
-  border-color: rgba(96, 165, 250, 0.45);
-  background: rgba(10, 17, 28, 0.96);
-}
-
-.sl-link-card:has(.workflow-card-title--human) {
-  border-color: rgba(134, 239, 172, 0.42);
-  background: rgba(13, 26, 26, 0.94);
-}
-
-.sl-link-card:has(.workflow-card-title--support) {
-  border-color: rgba(148, 163, 184, 0.48);
-  background: rgba(18, 23, 32, 0.94);
+@media (min-width: 50rem) {
+  .card-grid:has(.workflow-card-title)
+    > .sl-link-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
 }
 
 .sl-markdown-content > h2 {
@@ -1484,7 +1539,7 @@
 }
 
 .workflow-card-mode {
-  color: #cbd5e1;
+  color: #a9c4e4;
   font-size: 0.74rem;
   font-weight: 500;
   line-height: 1.4;
@@ -1492,82 +1547,17 @@
   text-align: start;
 }
 
-.workflow-card-title--entry .workflow-card-mode {
-  color: #fbbf24;
-}
-
-.workflow-card-title--scale .workflow-card-mode {
-  color: #c4b5fd;
-}
-
-.workflow-card-title--autonomous .workflow-card-mode {
-  color: #93c5fd;
-}
-
-.workflow-card-title--human .workflow-card-mode {
-  color: #86efac;
-}
-
-.workflow-card-title--support .workflow-card-mode {
-  color: #e2e8f0;
-}
-
 :root[data-theme="light"] .sl-link-card:has(.workflow-card-title) {
-  border-color: #b8c7da;
-  background: #f8fafd;
+  border-color: var(--aw-surface-border);
+  background: var(--code-background);
 }
 
 :root[data-theme="light"] .sl-link-card:has(.workflow-card-title):hover {
   border-color: #8297b0;
 }
 
-:root[data-theme="light"] .sl-link-card:has(.workflow-card-title--entry) {
-  border-color: rgba(180, 83, 9, 0.45);
-  background: #fffbeb;
-}
-
-:root[data-theme="light"] .sl-link-card:has(.workflow-card-title--scale) {
-  border-color: rgba(109, 40, 217, 0.4);
-  background: #faf8ff;
-}
-
-:root[data-theme="light"] .sl-link-card:has(.workflow-card-title--autonomous) {
-  border-color: rgba(37, 99, 235, 0.48);
-  background: #f7faff;
-}
-
-:root[data-theme="light"] .sl-link-card:has(.workflow-card-title--human) {
-  border-color: rgba(21, 128, 61, 0.35);
-  background: #f0fdf4;
-}
-
-:root[data-theme="light"] .sl-link-card:has(.workflow-card-title--support) {
-  border-color: rgba(71, 85, 105, 0.38);
-  background: #f8fafc;
-}
-
 :root[data-theme="light"] .workflow-card-mode {
-  color: #475569;
-}
-
-:root[data-theme="light"] .workflow-card-title--entry .workflow-card-mode {
-  color: #92400e;
-}
-
-:root[data-theme="light"] .workflow-card-title--scale .workflow-card-mode {
-  color: #6d28d9;
-}
-
-:root[data-theme="light"] .workflow-card-title--autonomous .workflow-card-mode {
-  color: #1d4ed8;
-}
-
-:root[data-theme="light"] .workflow-card-title--human .workflow-card-mode {
-  color: #166534;
-}
-
-:root[data-theme="light"] .workflow-card-title--support .workflow-card-mode {
-  color: #334155;
+  color: #315e8c;
 }
 
 @media (max-width: 34rem) {

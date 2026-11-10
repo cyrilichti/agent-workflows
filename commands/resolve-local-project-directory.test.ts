@@ -159,20 +159,18 @@ test('default invocation reads configured Codex projects without a paths argumen
   }
 });
 
-test('installed workflow can invoke its adjacent resolver', () => {
+test('orchestration can invoke the installed resolver directly', () => {
   const root = mkdtempSync(join(tmpdir(), 'project-installed-'));
   const commands = join(root, '.agents', 'commands');
-  const workflows = join(root, '.agents', 'workflows');
   mkdirSync(commands, { recursive: true });
-  mkdirSync(workflows);
   copyFileSync(program, join(commands, 'resolve-local-project-directory.ts'));
   const repo = join(root, 'example');
   repository(repo);
   const f = fixture([repo]);
   try {
     const result = spawnSync(process.execPath,
-      ['../commands/resolve-local-project-directory.ts', 'example', 'item-id', JSON.stringify([repo])], {
-      cwd: workflows,
+      ['.agents/commands/resolve-local-project-directory.ts', 'example', 'item-id', JSON.stringify([repo])], {
+      cwd: root,
       encoding: 'utf8',
     });
     assert.equal(result.status, 0, result.stderr);

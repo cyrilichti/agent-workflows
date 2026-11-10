@@ -102,7 +102,7 @@ For every fully managed directory listed in Rules:
 
 Create the consuming project's root `AGENTS.md` from the downloaded file.
 Prefix `.agents/` to each backtick-quoted path under a managed directory:
-`workflows/next.md` becomes `.agents/workflows/next.md`, and
+`workflows/work.md` becomes `.agents/workflows/work.md`, and
 `templates/select-option.md` becomes `.agents/templates/select-option.md`.
 Keep all other text unchanged. Require at least one replacement, verify each
 source and installed path exists, then replace the target file atomically.
@@ -130,7 +130,6 @@ producing the current equivalent of:
 .agents/skills/*
 !.agents/skills/agent-workflows/
 !.agents/skills/pick/
-!.agents/skills/next/
 !.agents/skills/sandbox/
 !.agents/skills/plan/
 !.agents/skills/write/
