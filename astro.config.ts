@@ -47,15 +47,6 @@ export default defineConfig({
       ],
       sidebar: [
         {
-          label: 'Start here',
-          items: [
-            { label: 'Overview', slug: 'index' },
-            { label: 'Installation', slug: 'installation' },
-            { label: 'Providers', slug: 'providers' },
-            { label: 'Orchestration', slug: 'orchestration' },
-          ],
-        },
-        {
           label: 'Workflows',
           items: [
             { label: 'Overview', slug: 'workflows' },
