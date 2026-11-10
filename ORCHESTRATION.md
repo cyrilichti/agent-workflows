@@ -68,12 +68,12 @@ path if it is not available on your `PATH`.
 ## Start
 
 ```bash
-docker compose up -d --build
+docker compose up -d
 npm start
 ```
 
-The Kestra image is built from [.docker/kestra/Dockerfile](./.docker/kestra/Dockerfile), which
-prepares the storage directory for its user.
+Compose uses the pinned Kestra image directly. Kestra stores its local task files
+inside its container; recreating the container removes those files.
 
 Keep `npm start` running in your terminal, under your usual Codex user account.
 Restart it after changing `.env`.
