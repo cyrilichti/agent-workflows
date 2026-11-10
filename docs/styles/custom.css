@@ -3,6 +3,7 @@
     "Segoe UI", sans-serif;
   --sl-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --sl-content-width: 48rem;
+  --sl-color-bg-sidebar: var(--sl-color-bg-nav);
 }
 
 /* Keep the product mark visible when the theme collapses the site title. */
@@ -19,12 +20,16 @@
 :root[data-theme="dark"] {
   --sl-color-bg: #07111f;
   --sl-color-bg-nav: rgba(7, 17, 31, 0.9);
-  --sl-color-bg-sidebar: #08090a;
   --sl-color-hairline-light: #1b304b;
   --sl-color-hairline: #12243b;
   --sl-color-accent-low: #17251e;
   --sl-color-accent: #a7f3c4;
   --sl-color-accent-high: #ddffe9;
+}
+
+.sidebar-pane {
+  top: var(--sl-nav-height);
+  height: calc(100dvh - var(--sl-nav-height));
 }
 
 :root[data-theme="dark"] body {
