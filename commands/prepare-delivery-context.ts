@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { resolveItemProvider } from './resolve-item-provider.ts';
@@ -37,6 +38,7 @@ export async function prepareDeliveryContext(
     return resolveRequestForProject(root, undefined, backlinks, undefined);
   },
   requireLinkedRequest = false,
+  startItem?: (item: WorkItem) => unknown,
 ) {
   if (item.closed !== false || !item.labels.includes('agent-planned')) {
     throw new Error(`Item ${item.identifier ?? item.id} must be open and labeled agent-planned.`);
@@ -44,6 +46,9 @@ export async function prepareDeliveryContext(
   const work_mode = item.request_backlinks.length ? 'resumed' : 'new';
   if (requireLinkedRequest && work_mode === 'new') {
     throw new Error('Item has no linked pull or merge request.');
+  }
+  if (startItem && !requireLinkedRequest) {
+    item = { ...item, status: startItem(item) };
   }
   let reference: string;
   let content: string;
@@ -112,7 +117,25 @@ if (import.meta.main) {
     const item = readItem(provider, reference);
     stage = 'prepare_context';
     const result = await prepareDeliveryContext(root, provider, item,
-      undefined, undefined, requireLinkedRequest);
+      undefined, undefined, requireLinkedRequest, (currentItem) => {
+        stage = 'start_item';
+        const transition = spawnSync(process.execPath,
+          [join(import.meta.dirname, 'transition-item-status.ts')], {
+            cwd: root,
+            encoding: 'utf8',
+            input: JSON.stringify({ item_id: currentItem.id }),
+          });
+        if (transition.error) throw transition.error;
+        const output = JSON.parse(transition.stdout) as {
+          status: string; reason?: string; resulting_status?: unknown;
+        };
+        if (transition.status !== 0 || output.status !== 'transitioned' ||
+          !output.resulting_status) {
+          throw new Error(output.reason || 'Item did not enter in progress.');
+        }
+        stage = 'prepare_context';
+        return output.resulting_status;
+      });
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
     process.stdout.write(

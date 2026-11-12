@@ -175,6 +175,19 @@ test('Linear transition selects In Progress and passes its name to the CLI', () 
   }
 });
 
+test('Linear does not update an item already in progress', () => {
+  const f = fixture('linear', 'gitlab');
+  try {
+    writeFileSync(join(f.root, 'linear-updated'), '');
+    const result = f.run('transition-item-status.ts', { item_id: 'ITEM-1' });
+    assert.equal(result.status, 0, result.stdout);
+    assert.equal(JSON.parse(result.stdout).resulting_status.id, 'active');
+    assert.equal(f.calls().some(call => call.args[1] === 'update'), false);
+  } finally {
+    f.cleanup();
+  }
+});
+
 test('Linear transition selects the review status when requested', () => {
   const f = fixture('linear', 'gitlab');
   try {

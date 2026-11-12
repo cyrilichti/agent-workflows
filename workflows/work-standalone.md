@@ -9,7 +9,7 @@
 
 ## Steps
 
-### 1. Prepare the Context
+### 1. Start the Item and Prepare the Context
 
 Run from this file's directory. For an ID or native URL:
 
@@ -23,6 +23,7 @@ For a title or search phrase:
 node ../commands/prepare-delivery-context.ts --query "<item>"
 ```
 
+The command moves an eligible item to `in progress` before reading its plan.
 On failure, report `stage` and `reason`, then stop.
 On success, attach the exact `sandbox_context` to `delivery_context` when it
 was supplied.

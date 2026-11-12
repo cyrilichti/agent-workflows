@@ -51,7 +51,8 @@ try {
   if (!itemReference) {
     throw new Error('Item CLI reference is unavailable.');
   }
-  const resulting = adapter.applyStatus(itemReference, target);
+  const resulting = resolution.current_status.id === target.id
+    ? resolution.current_status : adapter.applyStatus(itemReference, target);
   process.stdout.write(`${JSON.stringify({
     status: 'transitioned',
     item_reference: itemReference,
