@@ -64,63 +64,31 @@ test('new work reuses comments and materializes unchanged plan with collision-sa
   const root = createFixture(t);
   mkdirSync(join(root, 'plans'));
   writeFileSync(join(root, 'plans/2026-10-27-fix-cta.plan.md'), 'existing');
-  const result = await prepareDeliveryContext(root, 'linear', createItem(), '2026-10-27',
-    undefined, false, () => ({ name: 'In Progress' }));
+  const result = await prepareDeliveryContext(root, 'linear', createItem(), '2026-10-27');
   assert.equal(result.work_mode, 'new');
   assert.equal(result.delivery_context.plan, 'plans/2026-10-27-fix-cta-2.plan.md');
   assert.equal(readFileSync(join(root, result.delivery_context.plan), 'utf8'), plan);
   assert.equal(result.delivery_context.item.id, 'uuid');
-  assert.deepEqual(result.delivery_context.item.status, { name: 'In Progress' });
   assert.equal(readFileSync(join(root, 'plans/2026-10-27-fix-cta.plan.md'), 'utf8'), 'existing');
-});
-
-test('new work starts an eligible item before reading a damaged plan comment', async (t) => {
-  const root = createFixture(t);
-  const item = createItem();
-  item.comments[0]!.body = 'Agent-Workflows-Approved-Plan:\n\nNo title';
-  let started = false;
-
-  await assert.rejects(
-    prepareDeliveryContext(root, 'linear', item, '2026-10-27', undefined, false,
-      () => {
-        started = true;
-        return { name: 'In Progress' };
-      }),
-    /no title/i,
-  );
-  assert.equal(started, true);
-  assert.equal(existsSync(join(root, 'plans')), false);
 });
 
 test('ready mode stops without a linked request before creating a plan', async (t) => {
   const root = createFixture(t);
-  let started = false;
   await assert.rejects(
-    prepareDeliveryContext(root, 'linear', createItem(), '2026-10-27', undefined, true,
-      () => {
-        started = true;
-        return { name: 'In Progress' };
-      }),
+    prepareDeliveryContext(root, 'linear', createItem(), '2026-10-27', undefined, true),
     /no linked pull or merge request/i,
   );
-  assert.equal(started, false);
   assert.equal(existsSync(join(root, 'plans')), false);
 });
 
 test('ineligible items stop before writing the plan', async (t) => {
   const root = createFixture(t);
-  let started = false;
   for (const official of [
     { ...createItem(), closed: true },
     { ...createItem(), labels: [] },
   ]) {
-    await assert.rejects(prepareDeliveryContext(root, 'linear', official, '2026-10-27',
-      undefined, false, () => {
-        started = true;
-        return { name: 'In Progress' };
-      }));
+    await assert.rejects(prepareDeliveryContext(root, 'linear', official, '2026-10-27'));
   }
-  assert.equal(started, false);
   assert.equal(existsSync(join(root, 'plans')), false);
 });
 

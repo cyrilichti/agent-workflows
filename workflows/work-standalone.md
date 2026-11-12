@@ -14,13 +14,13 @@
 Run from this file's directory. For an ID or native URL:
 
 ```sh
-node ../commands/prepare-delivery-context.ts --start-work "<item>"
+node ../commands/work-prepare.ts "<item>"
 ```
 
 For a title or search phrase:
 
 ```sh
-node ../commands/prepare-delivery-context.ts --start-work --query "<item>"
+node ../commands/work-prepare.ts --query "<item>"
 ```
 
 The command moves an eligible item to `in progress` before reading its plan.
