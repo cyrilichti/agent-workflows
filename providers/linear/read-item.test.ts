@@ -21,10 +21,12 @@ const root = ${JSON.stringify(root)};
 const args = process.argv.slice(2);
 fs.appendFileSync(root + '/calls.jsonl', JSON.stringify(args) + '\\n');
 let file = '/view.json';
-if (args[0] === 'api') {
+if (args.includes('api')) {
   const query = fs.readFileSync(0, 'utf8');
   file = query.includes('SearchItems') ? '/search.json' : '/context.json';
 }
+if (args[0] === 'team' && args[1] === 'states') file = '/states.json';
+if (args[0] === 'issue' && args[1] === 'update') file = '/updated.txt';
 if (args[0] === 'issue' && args[1] === 'relation') file = '/relations.txt';
 process.stdout.write(fs.readFileSync(root + file));
 `,
@@ -39,7 +41,7 @@ process.stdout.write(fs.readFileSync(root + file));
           id: 'uuid',
           identifier: 'ICY-133',
           state: { id: 'state', name: 'Todo', type: 'unstarted' },
-          team: { name: 'Acme' },
+          team: { id: 'team-1', key: 'ACME', name: 'Acme' },
           project: { name: 'Project' },
         },
       },
@@ -62,6 +64,10 @@ process.stdout.write(fs.readFileSync(root + file));
   writeFileSync(join(root, 'view.json'), JSON.stringify(view));
   writeFileSync(join(root, 'relations.txt'),
     'Relations for ICY-133: Fix CTA\n\n  Blocked by ICY-42: Restore API\n');
+  writeFileSync(join(root, 'states.json'), JSON.stringify([
+    { id: 'active', name: 'In Progress', type: 'started' },
+  ]));
+  writeFileSync(join(root, 'updated.txt'), 'Updated issue');
   writeFileSync(
     join(root, 'search.json'),
     JSON.stringify({
@@ -166,7 +172,8 @@ test('installed standalone command prepares one context and writes the exact app
     cpSync(resolve(directory), join(project, '.agents', directory), { recursive: true });
   }
   writeFileSync(join(project, 'agent-workflows.yaml'), 'item:\n  provider: linear\n');
-  const result = spawnSync(process.execPath, ['../commands/prepare-delivery-context.ts', 'uuid'], {
+  const result = spawnSync(process.execPath,
+    ['../commands/prepare-delivery-context.ts', '--start-work', 'uuid'], {
     cwd: join(project, '.agents/workflows'),
     encoding: 'utf8',
   });
@@ -180,12 +187,19 @@ test('installed standalone command prepares one context and writes the exact app
   );
   assert.equal(readFileSync(join(project, output.delivery_context.plan), 'utf8'), content);
   assert.equal(output.delivery_context.item.id, 'uuid');
+  assert.deepEqual(output.delivery_context.item.status,
+    { id: 'active', name: 'In Progress', category: 'active' });
   assert.equal(output.delivery_context.item.comments.length, 1);
-  const calls = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n');
-  assert.equal(calls.length, 2);
+  const calls = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n')
+    .map(line => JSON.parse(line) as string[]);
+  assert.deepEqual(calls.slice(2), [
+    ['--no-input', 'api', '--variables-json', JSON.stringify({ id: 'uuid' })],
+    ['team', 'states', 'ACME', '--limit', 'all', '--json', '--no-input'],
+    ['issue', 'update', 'ICY-133', '--state', 'In Progress', '--no-input'],
+  ]);
   const searched = spawnSync(
     process.execPath,
-    ['../commands/prepare-delivery-context.ts', '--query', 'Fix CTA'],
+    ['../commands/prepare-delivery-context.ts', '--start-work', '--query', 'Fix CTA'],
     {
       cwd: join(project, '.agents/workflows'),
       encoding: 'utf8',
@@ -197,6 +211,17 @@ test('installed standalone command prepares one context and writes the exact app
   assert.match(searchedContext.plan, /-fix-cta-2\.plan\.md$/);
   assert.equal(readFileSync(join(project, searchedContext.plan), 'utf8'), content);
 
+  const beforeReadOnly = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n').length;
+  const readOnly = spawnSync(process.execPath,
+    ['../commands/prepare-delivery-context.ts', 'uuid'], {
+      cwd: join(project, '.agents/workflows'), encoding: 'utf8',
+    });
+  assert.equal(readOnly.status, 0, readOnly.stdout + readOnly.stderr);
+  assert.equal(JSON.parse(readOnly.stdout).delivery_context.item.status.name, 'Todo');
+  const readOnlyCalls = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n')
+    .slice(beforeReadOnly).map(line => JSON.parse(line) as string[]);
+  assert.equal(readOnlyCalls.some(args => args[1] === 'update'), false);
+
   const missing = spawnSync(process.execPath, ['../commands/prepare-delivery-context.ts'], {
     cwd: join(project, '.agents/workflows'),
     encoding: 'utf8',
@@ -207,7 +232,7 @@ test('installed standalone command prepares one context and writes the exact app
     stage: 'resolve_item',
     reason: 'Supply an item reference or title query.',
   });
-  assert.equal(readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n').length, 5);
+  assert.equal(readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n').length, 13);
 
   const ready = spawnSync(
     process.execPath,
