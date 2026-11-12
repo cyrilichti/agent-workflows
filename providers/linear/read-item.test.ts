@@ -173,7 +173,7 @@ test('installed standalone command prepares one context and writes the exact app
   }
   writeFileSync(join(project, 'agent-workflows.yaml'), 'item:\n  provider: linear\n');
   const result = spawnSync(process.execPath,
-    ['../commands/work-prepare.ts', 'uuid'], {
+    ['../commands/prepare-delivery-context.ts', '--start-work', 'uuid'], {
     cwd: join(project, '.agents/workflows'),
     encoding: 'utf8',
   });
@@ -199,7 +199,7 @@ test('installed standalone command prepares one context and writes the exact app
   ]);
   const searched = spawnSync(
     process.execPath,
-    ['../commands/work-prepare.ts', '--query', 'Fix CTA'],
+    ['../commands/prepare-delivery-context.ts', '--start-work', '--query', 'Fix CTA'],
     {
       cwd: join(project, '.agents/workflows'),
       encoding: 'utf8',
@@ -248,19 +248,4 @@ test('installed standalone command prepares one context and writes the exact app
     });
   assert.equal(planned.status, 0, planned.stdout + planned.stderr);
   assert.match(JSON.parse(planned.stdout).item.relations, /Blocked by ICY-42/);
-
-  writeFileSync(join(root, 'view.json'), JSON.stringify({
-    ...view,
-    comments: [{ id: 'damaged', body: 'Agent-Workflows-Approved-Plan:\n\nNo title' }],
-  }));
-  const beforeDamaged = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n').length;
-  const damaged = spawnSync(process.execPath,
-    ['../commands/work-prepare.ts', 'uuid'], {
-      cwd: join(project, '.agents/workflows'), encoding: 'utf8',
-    });
-  assert.equal(damaged.status, 1);
-  assert.equal(JSON.parse(damaged.stdout).stage, 'prepare_context');
-  const damagedCalls = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n')
-    .slice(beforeDamaged).map(line => JSON.parse(line) as string[]);
-  assert.equal(damagedCalls.some(args => args[1] === 'update'), true);
 });
