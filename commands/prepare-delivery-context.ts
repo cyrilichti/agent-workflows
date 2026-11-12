@@ -108,7 +108,8 @@ if (import.meta.main) {
     stage = 'resolve_item';
     const args = process.argv.slice(2);
     const requireLinkedRequest = args[0] === '--require-linked-request';
-    const [input, query] = requireLinkedRequest ? args.slice(1) : args;
+    const startWork = args[0] === '--start-work';
+    const [input, query] = requireLinkedRequest || startWork ? args.slice(1) : args;
     const reference =
       input === '--query'
         ? resolveExistingItem(provider, undefined, query)
@@ -116,26 +117,27 @@ if (import.meta.main) {
     stage = 'read_item';
     const item = readItem(provider, reference);
     stage = 'prepare_context';
+    const startItem = (currentItem: WorkItem) => {
+      stage = 'start_item';
+      const transition = spawnSync(process.execPath,
+        [join(import.meta.dirname, 'transition-item-status.ts')], {
+          cwd: root,
+          encoding: 'utf8',
+          input: JSON.stringify({ item_id: currentItem.id }),
+        });
+      if (transition.error) throw transition.error;
+      const output = JSON.parse(transition.stdout) as {
+        status: string; reason?: string; resulting_status?: unknown;
+      };
+      if (transition.status !== 0 || output.status !== 'transitioned' ||
+        !output.resulting_status) {
+        throw new Error(output.reason || 'Item did not enter in progress.');
+      }
+      stage = 'prepare_context';
+      return output.resulting_status;
+    };
     const result = await prepareDeliveryContext(root, provider, item,
-      undefined, undefined, requireLinkedRequest, (currentItem) => {
-        stage = 'start_item';
-        const transition = spawnSync(process.execPath,
-          [join(import.meta.dirname, 'transition-item-status.ts')], {
-            cwd: root,
-            encoding: 'utf8',
-            input: JSON.stringify({ item_id: currentItem.id }),
-          });
-        if (transition.error) throw transition.error;
-        const output = JSON.parse(transition.stdout) as {
-          status: string; reason?: string; resulting_status?: unknown;
-        };
-        if (transition.status !== 0 || output.status !== 'transitioned' ||
-          !output.resulting_status) {
-          throw new Error(output.reason || 'Item did not enter in progress.');
-        }
-        stage = 'prepare_context';
-        return output.resulting_status;
-      });
+      undefined, undefined, requireLinkedRequest, startWork ? startItem : undefined);
     process.stdout.write(`${JSON.stringify(result)}\n`);
   } catch (error) {
     process.stdout.write(

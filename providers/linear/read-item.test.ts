@@ -172,7 +172,8 @@ test('installed standalone command prepares one context and writes the exact app
     cpSync(resolve(directory), join(project, '.agents', directory), { recursive: true });
   }
   writeFileSync(join(project, 'agent-workflows.yaml'), 'item:\n  provider: linear\n');
-  const result = spawnSync(process.execPath, ['../commands/prepare-delivery-context.ts', 'uuid'], {
+  const result = spawnSync(process.execPath,
+    ['../commands/prepare-delivery-context.ts', '--start-work', 'uuid'], {
     cwd: join(project, '.agents/workflows'),
     encoding: 'utf8',
   });
@@ -198,7 +199,7 @@ test('installed standalone command prepares one context and writes the exact app
   ]);
   const searched = spawnSync(
     process.execPath,
-    ['../commands/prepare-delivery-context.ts', '--query', 'Fix CTA'],
+    ['../commands/prepare-delivery-context.ts', '--start-work', '--query', 'Fix CTA'],
     {
       cwd: join(project, '.agents/workflows'),
       encoding: 'utf8',
@@ -210,6 +211,17 @@ test('installed standalone command prepares one context and writes the exact app
   assert.match(searchedContext.plan, /-fix-cta-2\.plan\.md$/);
   assert.equal(readFileSync(join(project, searchedContext.plan), 'utf8'), content);
 
+  const beforeReadOnly = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n').length;
+  const readOnly = spawnSync(process.execPath,
+    ['../commands/prepare-delivery-context.ts', 'uuid'], {
+      cwd: join(project, '.agents/workflows'), encoding: 'utf8',
+    });
+  assert.equal(readOnly.status, 0, readOnly.stdout + readOnly.stderr);
+  assert.equal(JSON.parse(readOnly.stdout).delivery_context.item.status.name, 'Todo');
+  const readOnlyCalls = readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n')
+    .slice(beforeReadOnly).map(line => JSON.parse(line) as string[]);
+  assert.equal(readOnlyCalls.some(args => args[1] === 'update'), false);
+
   const missing = spawnSync(process.execPath, ['../commands/prepare-delivery-context.ts'], {
     cwd: join(project, '.agents/workflows'),
     encoding: 'utf8',
@@ -220,7 +232,7 @@ test('installed standalone command prepares one context and writes the exact app
     stage: 'resolve_item',
     reason: 'Supply an item reference or title query.',
   });
-  assert.equal(readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n').length, 11);
+  assert.equal(readFileSync(join(root, 'calls.jsonl'), 'utf8').trim().split('\n').length, 13);
 
   const ready = spawnSync(
     process.execPath,
