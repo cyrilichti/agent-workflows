@@ -119,8 +119,8 @@ export function preflight(input: CreationInput, execute: Run = run): { repositor
 function copyLocalChanges(source: string, worktree: string): void {
   const patch = execFileSync('git', ['-C', source, 'diff', '--binary', '--no-ext-diff', '--no-textconv', 'HEAD', '--'], { maxBuffer: 32 * 1024 * 1024 });
   if (patch.length) execFileSync('git', ['-C', worktree, 'apply', '--binary', '-'], { input: patch, stdio: ['pipe', 'pipe', 'pipe'] });
-  const untracked = execFileSync('git', ['-C', source, 'ls-files', '--others', '--exclude-standard', '-z'], { encoding: 'utf8' });
-  const ignored = execFileSync('git', ['-C', source, 'ls-files', '--others', '--ignored', '--exclude-standard', '-z'], { encoding: 'utf8' });
+  const untracked = execFileSync('git', ['-C', source, 'ls-files', '--others', '--exclude-standard', '--directory', '-z'], { encoding: 'utf8' });
+  const ignored = execFileSync('git', ['-C', source, 'ls-files', '--others', '--ignored', '--exclude-standard', '--directory', '-z'], { encoding: 'utf8' });
   const files = [...new Set(`${untracked}${ignored}`.split('\0').filter(Boolean))];
   const directoryModes = new Map<string, number>();
   for (const file of files) {
