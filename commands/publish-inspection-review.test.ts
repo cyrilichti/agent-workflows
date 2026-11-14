@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { publishInspectionReview } from './publish-inspection-review.ts';
 
@@ -68,4 +71,40 @@ test('publishes GitLab discussion with the version SHAs', () => {
     position_type: 'text', base_sha: base, start_sha: 'c'.repeat(40), head_sha: head,
     old_path: 'src/a.ts', new_path: 'src/a.ts', new_line: 12,
   });
+});
+
+test('GitLab publication sends JSON with an explicit content type', (t) => {
+  const bin = mkdtempSync(join(tmpdir(), 'gitlab-inspection-'));
+  const oldPath = process.env.PATH;
+  const oldLog = process.env.TEST_LOG;
+  t.after(() => {
+    process.env.PATH = oldPath;
+    if (oldLog === undefined) delete process.env.TEST_LOG;
+    else process.env.TEST_LOG = oldLog;
+    rmSync(bin, { recursive: true, force: true });
+  });
+  writeFileSync(join(bin, 'glab'), `#!/usr/bin/env node
+import { readFileSync, writeFileSync } from 'node:fs';
+writeFileSync(process.env.TEST_LOG, JSON.stringify({
+  args: process.argv.slice(2), input: readFileSync(0, 'utf8'),
+}));
+const payload = JSON.parse(readFileSync(process.env.TEST_LOG, 'utf8'));
+process.stdout.write(JSON.stringify({ id: 'discussion', notes: [{ body: JSON.parse(payload.input).body }] }));
+`, { mode: 0o755 });
+  process.env.PATH = `${bin}:${oldPath}`;
+  process.env.TEST_LOG = join(bin, 'call');
+
+  const url = 'https://gitlab.example/acme/repo/-/merge_requests/8';
+  const result = publishInspectionReview('/repo', {
+    request_id: 8, branch: 'fix/inspect', head_sha: head,
+    comparison: { base_sha: base, start_sha: 'c'.repeat(40), head_sha: head },
+    anchors: {}, review_activity: [], findings: [finding],
+    request_url: url,
+  }, undefined, () => ({ ...current, kind: 'merge_request', request_id: 8, url }));
+  const call = JSON.parse(readFileSync(join(bin, 'call'), 'utf8')) as {
+    args: string[]; input: string;
+  };
+  assert.equal(result.status, 'succeeded');
+  assert.deepEqual(JSON.parse(call.input), { body: finding.body });
+  assert.ok(call.args.includes('Content-Type: application/json'));
 });
