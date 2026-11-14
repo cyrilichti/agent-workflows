@@ -178,6 +178,35 @@ test('separate preparations copy current tracked, untracked, and ignored files w
   }
 });
 
+test('preparation copies a large ignored dependency directory and other local files', () => {
+  const root = mkdtempSync(join(tmpdir(), 'sandbox-large-ignored-'));
+  let context: ReturnType<typeof createSandbox>['sandbox_context'];
+  try {
+    const app = repository(join(root, 'app'));
+    writeFileSync(join(app, '.gitignore'), 'node_modules/\n.env\n');
+    execFileSync('git', ['-C', app, 'add', '.gitignore']);
+    execFileSync('git', ['-C', app, '-c', 'user.name=Test', '-c', 'user.email=test@example.com', 'commit', '-qm', 'ignore dependencies']);
+    const dependencies = join(app, 'node_modules');
+    mkdirSync(dependencies);
+    for (let index = 0; index < 5000; index++) {
+      const name = `${String(index).padStart(4, '0')}-${'dependency-file-'.repeat(13)}.js`;
+      writeFileSync(join(dependencies, name), String(index));
+    }
+    writeFileSync(join(app, '.env'), 'LOCAL=1\n');
+    writeFileSync(join(app, 'notes.txt'), 'untracked\n');
+    const result = createSandbox({ item_id: 'item', project_directory: app, dependency_directories: [], is_docker_enabled: false });
+    assert.equal(result.status, 'prepared', JSON.stringify(result));
+    context = result.sandbox_context;
+    const worktree = context!.repositories[0]!.worktree;
+    assert.equal(readdirSync(join(worktree, 'node_modules')).length, 5000);
+    assert.equal(readFileSync(join(worktree, '.env'), 'utf8'), 'LOCAL=1\n');
+    assert.equal(readFileSync(join(worktree, 'notes.txt'), 'utf8'), 'untracked\n');
+  } finally {
+    if (context) removeResources(context);
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('container preparation runs the unchanged worktree Compose and publishes its ports; later failure rolls back', () => {
   const root = mkdtempSync(join(tmpdir(), 'sandbox-docker-'));
   try {
