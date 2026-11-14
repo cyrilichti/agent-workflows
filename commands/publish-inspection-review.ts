@@ -19,7 +19,9 @@ type Input = {
 function api(program: 'gh' | 'glab', host: string, path: string,
   payload: Record<string, unknown>): Record<string, unknown> {
   const output = execFileSync(program, [
-    'api', '--hostname', host, '--method', 'POST', '--input', '-', path,
+    'api', '--hostname', host, '--method', 'POST',
+    ...(program === 'glab' ? ['--header', 'Content-Type: application/json'] : []),
+    '--input', '-', path,
   ], { encoding: 'utf8', input: JSON.stringify(payload), maxBuffer: 50 * 1024 * 1024 });
   const result = JSON.parse(output) as Record<string, unknown>;
   if (!result || typeof result !== 'object') throw new Error('Review API returned no object.');
