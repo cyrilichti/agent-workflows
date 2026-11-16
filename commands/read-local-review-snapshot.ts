@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { basename, dirname } from 'node:path';
-import { resolveRequestForProject } from './resolve-request.ts';
+import { requestRemoteForProject, resolveRequestForProject } from './resolve-request.ts';
 
 type Comparison = { base_sha: string; head_sha: string; start_sha?: string };
 type Request = {
@@ -29,6 +29,22 @@ function git(root: string, ...args: string[]): string {
     throw new Error(result.stderr.trim() || `git ${args[0]} failed.`);
   }
   return result.stdout;
+}
+
+function ensureCommit(root: string, sha: string, runGit: Git): void {
+  try {
+    runGit('cat-file', '-e', `${sha}^{commit}`);
+    return;
+  } catch {
+    // A request can reference history that has not been fetched locally.
+  }
+  try {
+    runGit('fetch', '--no-tags', requestRemoteForProject(root), sha);
+    runGit('cat-file', '-e', `${sha}^{commit}`);
+  } catch (error) {
+    throw new Error(`Cannot recover review comparison commit ${sha}: ${
+      error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
 function linesInPatch(patch: string): { old_lines: number[]; new_lines: number[] } {
@@ -74,8 +90,8 @@ export function readLocalReviewSnapshot(root: string, request: Request,
       runGit('rev-parse', 'HEAD').trim() !== request.head_sha) {
     throw new Error('Local branch or HEAD differs from the request snapshot.');
   }
-  runGit('cat-file', '-e', `${comparison.base_sha}^{commit}`);
-  runGit('cat-file', '-e', `${comparison.head_sha}^{commit}`);
+  ensureCommit(root, comparison.base_sha, runGit);
+  ensureCommit(root, comparison.head_sha, runGit);
   let base = comparison.base_sha;
   if (request.kind === 'pull_request') {
     const bases = runGit('merge-base', '--all', base, comparison.head_sha).trim().split('\n');
@@ -87,7 +103,7 @@ export function readLocalReviewSnapshot(root: string, request: Request,
     if (!comparison.start_sha || !/^[0-9a-f]{40,64}$/i.test(comparison.start_sha)) {
       throw new Error('GitLab diff start SHA is unavailable.');
     }
-    runGit('cat-file', '-e', `${comparison.start_sha}^{commit}`);
+    ensureCommit(root, comparison.start_sha, runGit);
     if (runGit('merge-base', comparison.start_sha, comparison.head_sha).trim() !== base) {
       throw new Error('GitLab diff base does not match local history.');
     }
