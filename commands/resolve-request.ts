@@ -107,6 +107,10 @@ function pushRemote(root: string): string {
   return remotes[0]!;
 }
 
+export function requestRemoteForProject(root: string): string {
+  return git(root, 'remote', 'get-url', '--push', pushRemote(root));
+}
+
 export function requestRepositoryForProject(root: string):
   { provider: 'github'; repository: GitHubRepository } |
   { provider: 'gitlab'; repository: GitLabRepository } {
@@ -114,7 +118,7 @@ export function requestRepositoryForProject(root: string):
   if (provider !== 'github' && provider !== 'gitlab') {
     throw new Error('Unsupported version provider.');
   }
-  const remoteUrl = git(root, 'remote', 'get-url', '--push', pushRemote(root));
+  const remoteUrl = requestRemoteForProject(root);
   return provider === 'github'
     ? { provider, repository: resolveVersionRepository(remoteUrl, 'github') }
     : { provider, repository: resolveVersionRepository(remoteUrl, 'gitlab') };
