@@ -1,20 +1,27 @@
 id: cleanup
 namespace: agent-workflows
-description: Clean up delivered branches for tickets completed during each scheduled interval.
+description: |
+  This flow cleans up **delivered branches one ticket at a time** through the
+  bridge's `/scripts` endpoint. It runs every hour in UTC. On manual runs,
+  `intervalSeconds` looks back from the execution start and defaults to one hour.
+
+  | Step | Execution |
+  | --- | --- |
+  | 1. Set the interval | Use the scheduled hour or the manual lookback. The first import sets the earliest eligible completion time. |
+  | 2. Select | Read tickets completed during the interval from the configured item provider. |
+  | 3. Resolve | Verify the ticket's merged PR or MR and match its source repository to a single clone on the bridge host. |
+  | 4. Clean up | If the delivered branch is checked out in a clean worktree, switch to the default branch and pull with `--ff-only`. Confirm the local branch is absent before deleting the remote branch. |
+  | 5. Report | Log the clone and both branch outcomes for each ticket. A blocked cleanup fails the execution after the remaining tickets have been processed. |
 variables:
   activatedAt: "__CLEANUP_ACTIVATED_AT__"
+  commandsDirectory: commands
 inputs:
-  - id: commandsDirectory
-    type: STRING
-    defaults: commands
-  - id: from
-    type: STRING
-    required: false
-    description: Original inclusive start for a manual replay, in ISO 8601 format.
-  - id: until
-    type: STRING
-    required: false
-    description: Original exclusive end for a manual replay, in ISO 8601 format.
+  - id: intervalSeconds
+    type: INT
+    min: 1
+    max: 3600
+    defaults: 3600
+    description: How many seconds before the execution start to consider when running manually.
 concurrency:
   limit: 1
   behavior: QUEUE
@@ -28,8 +35,8 @@ tasks:
   - id: interval
     type: io.kestra.plugin.core.output.OutputValues
     values:
-      from: "{{ trigger.previous ?? inputs.from ?? '' }}"
-      until: "{{ trigger.date ?? inputs.until ?? '' }}"
+      from: "{{ trigger.previous ?? (execution.startDate | dateAdd(-1 * inputs.intervalSeconds, 'SECONDS')) }}"
+      until: "{{ trigger.date ?? execution.startDate }}"
   - id: select_tickets
     type: io.kestra.plugin.core.http.Request
     uri: '{{ envs.bridge_url }}/scripts'
@@ -39,7 +46,7 @@ tasks:
       Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
     body: >-
       {{ {
-        "path": inputs.commandsDirectory ~ "/cleanup.ts",
+        "path": vars.commandsDirectory ~ "/cleanup.ts",
         "args": ["select", outputs.interval.values.from, outputs.interval.values.until, vars.activatedAt]
       } | toJson }}
     timeout: PT5M
@@ -69,7 +76,7 @@ tasks:
           Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
         body: >-
           {{ {
-            "path": inputs.commandsDirectory ~ "/cleanup.ts",
+            "path": vars.commandsDirectory ~ "/cleanup.ts",
             "args": ["remove", outputs.interval.values.from, outputs.interval.values.until, vars.activatedAt,
               fromJson(fromJson(outputs.select_tickets.body).stdout).provider, item.value]
           } | toJson }}

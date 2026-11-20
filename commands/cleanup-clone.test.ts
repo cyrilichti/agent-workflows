@@ -60,7 +60,7 @@ function fixture(t: TestContext) {
   const clone = { path, remote: 'origin', pushUrl: remote };
   const delivery: CleanupDelivery = { provider: 'github', host: 'github.com', repository: 'example/repo',
     defaultBranch: 'main', target: 'main', branch: 'ticket', sha, request: '' };
-  return { root, git, local, clone, delivery, run: () => cleanupBranches(clone, delivery, () => {}) };
+  return { root, git, local, clone, delivery, run: () => cleanupBranches(clone, delivery) };
 }
 
 test('switches the clean clone to the default branch, pulls and removes the local ref first', t => {
@@ -69,13 +69,9 @@ test('switches the clean clone to the default branch, pulls and removes the loca
   f.local('branch', '-f', 'main', 'main~1');
   f.git('clone', f.clone.pushUrl, join(f.root, 'workstation'));
   f.git('-C', 'workstation', 'switch', '--track', 'origin/ticket');
-  const run = cleanupBranches(f.clone, f.delivery, (_delivery, exists) => {
-    assert.ok(exists);
-    if (f.local('branch', '--show-current') === 'main') {
-      assert.equal(f.local('branch', '--list', 'ticket'), '');
-    }
-  });
-  assert.deepEqual(run, { local: 'removed', remote: 'removed' });
+  writeFileSync(join(f.clone.path, '.git/hooks/pre-push'),
+    '#!/bin/sh\n! git show-ref --verify --quiet refs/heads/ticket\n', { mode: 0o755 });
+  assert.deepEqual(f.run(), { local: 'removed', remote: 'removed' });
   assert.equal(f.local('branch', '--show-current'), 'main');
   assert.equal(f.local('rev-parse', 'HEAD'), latest);
   assert.equal(f.git('-C', 'workstation', 'rev-parse', 'HEAD'), f.delivery.sha);
@@ -96,13 +92,20 @@ test('preserves both refs when the clone is dirty or the branch is used by anoth
 
 test('a last-minute new remote commit is rejected by the lease', t => {
   const f = fixture(t);
-  let calls = 0;
-  const run = cleanupBranches(f.clone, f.delivery, () => {
-    if (++calls === 2) f.git('--git-dir', f.clone.pushUrl, 'update-ref', 'refs/heads/ticket', f.local('rev-parse', 'main'));
-  });
+  writeFileSync(join(f.clone.path, '.git/hooks/pre-push'),
+    `#!/bin/sh\ngit --git-dir="$2" update-ref refs/heads/ticket ${f.local('rev-parse', 'main')}\n`,
+    { mode: 0o755 });
+  const run = f.run();
   assert.equal(run.local, 'removed');
   assert.equal(run.remote, 'blocked');
   assert.match(f.local('ls-remote', 'origin', 'refs/heads/ticket'), new RegExp(f.local('rev-parse', 'main')));
+});
+
+test('removes the remote branch when the local branch is already absent', t => {
+  const f = fixture(t);
+  f.local('switch', 'main');
+  f.local('branch', '-D', 'ticket');
+  assert.deepEqual(f.run(), { local: 'absent', remote: 'removed' });
 });
 
 test('preserves the delivery branch during a paused rebase with detached HEAD', t => {

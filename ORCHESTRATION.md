@@ -165,15 +165,19 @@ New installations import this flow automatically.
 ### Delivered branch cleanup
 
 The Compose installer imports `agent-workflows/cleanup` as a separate flow and
-sets its starting timestamp on first import.
+sets its starting timestamp on first import. For an existing flow, apply updates
+in the Kestra editor and retain its `variables.activatedAt` value. Set
+`variables.commandsDirectory` to `.agents/commands` if the bridge uses an
+installed project.
 
 Cleanup runs hourly in UTC. It selects completed tickets from the active item
 provider and matches their delivery repositories against the Codex project
 paths and neighboring clones on the bridge host. A clean checkout on the
 delivered branch moves to the default branch and pulls with `--ff-only`.
 Cleanup confirms the local branch is absent before deleting the remote branch.
-Each ticket logs its clone and both outcomes. To replay a failed window, run
-the cleanup flow with the original `from` and `until` values shown in Kestra.
+Each ticket logs its clone and both outcomes. A manual execution uses the last
+`intervalSeconds` seconds (default `3600`). For an earlier scheduled interval,
+use the schedule trigger's backfill in Kestra.
 
 ## Execution behavior
 

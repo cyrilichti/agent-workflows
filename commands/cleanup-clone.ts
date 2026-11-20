@@ -1,7 +1,6 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, realpathSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { confirmBranchEligible } from './cleanup-remote.ts';
 import type { CleanupDelivery, CleanupRepository } from './cleanup-remote.ts';
 
 export type CleanupClone = { path: string; remote: string; pushUrl: string };
@@ -122,17 +121,7 @@ function checkoutDefault(clone: CleanupClone, branch: string, previous: string):
   }
 }
 
-function remoteHead(clone: CleanupClone, ref: string): string | undefined {
-  const output = runGit(clone.path, ['ls-remote', '--exit-code', '--refs', '--', clone.pushUrl, ref], 2);
-  if (output === undefined) return undefined;
-  const [sha, name] = output.split('\t');
-  if (!sha || name !== ref) throw new Error('Cannot verify the remote ref.');
-  return sha;
-}
-
-export function cleanupBranches(
-  clone: CleanupClone, delivery: CleanupDelivery, verify = confirmBranchEligible,
-): CleanupOutcome {
+export function cleanupBranches(clone: CleanupClone, delivery: CleanupDelivery): CleanupOutcome {
   const outcome: CleanupOutcome = { local: 'not attempted', remote: 'not attempted' };
   const { path } = clone;
   const ref = `refs/heads/${delivery.branch}`;
@@ -143,10 +132,7 @@ export function cleanupBranches(
     if (endpoint !== clone.pushUrl) throw new Error('The matching push destination changed.');
     outcome.local = 'blocked';
     const local = localHead(path, ref);
-    const remote = remoteHead(clone, ref);
     if (local !== undefined && local !== delivery.sha) throw new Error('The local ref differs from the delivered commit.');
-    if (remote !== undefined && remote !== delivery.sha) throw new Error('The remote ref differs from the delivered commit.');
-    verify(delivery, remote !== undefined);
     if (local === undefined) {
       outcome.local = 'absent';
     } else {
@@ -157,18 +143,14 @@ export function cleanupBranches(
       if (worktrees.length) checkoutDefault(clone, delivery.defaultBranch, delivery.branch);
       if (checkedOut(path, ref).length) throw new Error('The branch is still checked out.');
       runGit(path, ['update-ref', '--no-deref', '-d', ref, delivery.sha]);
-      if (localHead(path, ref) !== undefined) {
-        throw new Error('The local ref is still present.');
-      }
       outcome.local = 'removed';
     }
     outcome.remote = 'blocked';
+    const remote = runGit(path, ['ls-remote', '--exit-code', '--refs', '--', clone.pushUrl, ref], 2);
     if (remote === undefined) {
       outcome.remote = 'absent';
     } else {
-      verify(delivery, true);
       runGit(path, ['push', `--force-with-lease=${ref}:${delivery.sha}`, '--', clone.remote, `:${ref}`]);
-      if (remoteHead(clone, ref) !== undefined) throw new Error('The remote ref is still present.');
       outcome.remote = 'removed';
     }
     return outcome;
