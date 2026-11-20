@@ -126,6 +126,18 @@ function branchName(input: Input): string {
   return `${type}/${slug}`;
 }
 
+function availableBranchName(base: string, remote: string): string {
+  const occupied = new Set([
+    ...git('for-each-ref', '--format=%(refname)', 'refs/heads/').split('\n'),
+    ...git('ls-remote', '--heads', remote).split('\n').map(line => line.split(/\s+/)[1]),
+  ]);
+  let branch = base;
+  for (let suffix = 2; occupied.has(`refs/heads/${branch}`); suffix++) {
+    branch = `${base}-${suffix}`;
+  }
+  return branch;
+}
+
 function parseInput(): Input {
   const args = process.argv.slice(2);
   if (args.length !== 4 || args.some(value => !value.trim())) {
@@ -187,7 +199,7 @@ try {
   completed.target_branch = base;
 
   stage = 'create_branch';
-  const branch = branchName(input);
+  const branch = availableBranchName(branchName(input), pushRemoteUrl);
   git('switch', '-c', branch, 'FETCH_HEAD');
   completed.branch = branch;
   git('commit', '--allow-empty', '-m', `Initialize ${input.plan_name}`);

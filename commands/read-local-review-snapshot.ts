@@ -76,7 +76,7 @@ function linesInPatch(patch: string): { old_lines: number[]; new_lines: number[]
 }
 
 export function readLocalReviewSnapshot(root: string, request: Request,
-  runGit: Git = (...args) => git(root, ...args)) {
+  runGit: Git = (...args) => git(root, ...args), expectedHead?: string) {
   if (!request.comparison || !request.review_activity) {
     throw new Error('Complete provider review metadata is required.');
   }
@@ -86,8 +86,11 @@ export function readLocalReviewSnapshot(root: string, request: Request,
       comparison.head_sha !== request.head_sha) {
     throw new Error('Invalid review comparison SHAs.');
   }
+  if (expectedHead !== undefined && request.head_sha !== expectedHead) {
+    throw new Error(`Request head changed: expected ${expectedHead}, observed ${request.head_sha}.`);
+  }
   if (runGit('branch', '--show-current').trim() !== request.source_branch ||
-      runGit('rev-parse', 'HEAD').trim() !== request.head_sha) {
+      (expectedHead === undefined && runGit('rev-parse', 'HEAD').trim() !== request.head_sha)) {
     throw new Error('Local branch or HEAD differs from the request snapshot.');
   }
   ensureCommit(root, comparison.base_sha, runGit);
@@ -121,7 +124,7 @@ export function readLocalReviewSnapshot(root: string, request: Request,
     }
   }
   if (!diff && changed_files.length) throw new Error('Local diff is incomplete.');
-  if (runGit('rev-parse', 'HEAD').trim() !== request.head_sha) {
+  if (expectedHead === undefined && runGit('rev-parse', 'HEAD').trim() !== request.head_sha) {
     throw new Error('Local HEAD changed during snapshot collection.');
   }
   return { ...request, comparison: { ...comparison, diff_base_sha: base },
@@ -133,7 +136,7 @@ if (import.meta.main) {
     const parent = dirname(import.meta.dirname);
     const root = basename(parent) === '.agents' ? dirname(parent) : parent;
     const input = JSON.parse(readFileSync(0, 'utf8')) as {
-      request_id: number; branch: string;
+      request_id: number; branch: string; head_sha?: string;
     };
     if (!Number.isInteger(input.request_id) || !input.branch) {
       throw new Error('Exact request ID and source branch are required.');
@@ -141,7 +144,7 @@ if (import.meta.main) {
     const request = resolveRequestForProject(root, input.request_id, [], input.branch,
       'review_snapshot');
     if (request.draft) throw new Error('Request is a draft.');
-    const review_snapshot = readLocalReviewSnapshot(root, request);
+    const review_snapshot = readLocalReviewSnapshot(root, request, undefined, input.head_sha);
     process.stdout.write(`${JSON.stringify({ status: 'resolved', review_snapshot })}\n`);
   } catch (error) {
     process.stdout.write(`${JSON.stringify({ status: 'failed', stage: 'read_review_snapshot',

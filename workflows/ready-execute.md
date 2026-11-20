@@ -20,7 +20,17 @@ node ../commands/update-request.ts <<'JSON'
 JSON
 ```
 
-On failure, report `stage`, `reason`, and observed identities; stop.
+The command skips a push when the request already has the local head and
+skips request updates that have already taken effect.
+
+If Git rejects the push, inspect the local branch and the published request.
+When delivery evidence confirms that the intended work is already on the
+request, retry with `published_head_sha` set to its observed SHA as an
+additional top-level command input. For example, use the request activity
+showing the successful delivery push and a subsequent merge from the target
+branch. A rejected push alone does not establish that the work was published.
+If delivery commits are still pending, resolve the cause and retry the normal
+push path.
 
 ### 2. Continue to Inspect
 

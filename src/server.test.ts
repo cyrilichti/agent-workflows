@@ -95,6 +95,16 @@ test('Kestra parses project stdout and calls the generic endpoint', () => {
   assert.doesNotMatch(flow, /fromJson\(fromJson\(outputs\.project\.body\)\.text\)/);
 });
 
+test('Kestra blocks repository mismatches before work and reports a specific failure', () => {
+  assert.equal(projectRoute(envelope('{"status":"repository mismatch"}')), 'repository-mismatch');
+  assert.equal(projectRoute(envelope('{"status":"repository mismatch","path":"/projects/wrong"}')), 'error');
+  const start = flow.indexOf('\n                    repository-mismatch:');
+  assert.ok(start >= 0, 'A mismatch needs its own failure branch');
+  const mismatch = flow.slice(start, flow.indexOf('\n                    error:', start));
+  assert.match(mismatch, /type: io\.kestra\.plugin\.core\.execution\.Fail/);
+  assert.match(mismatch, /errorMessage:.*linked request.*repository.*list/i);
+  assert.doesNotMatch(mismatch, /id: work\s|uri:/);
+});
 
 test('Kestra rejects malformed script envelopes', () => {
   for (const body of ['invalid', 'null', '{}', '{"stdout":null}', '{"stdout":{}}',
@@ -125,6 +135,12 @@ for (const commandsDirectory of ['commands', '.agents/commands']) {
     copyFileSync(fileURLToPath(new URL('../commands/resolve-local-project-directory.ts', import.meta.url)),
       join(commands, 'resolve-local-project-directory.ts'));
     copyFileSync(fileURLToPath(new URL('../commands/resolve-item-provider.ts', import.meta.url)), join(commands, 'resolve-item-provider.ts'));
+    copyFileSync(fileURLToPath(new URL('../commands/read-item.ts', import.meta.url)), join(commands, 'read-item.ts'));
+    for (const provider of ['linear', 'clickup']) {
+      const path = join(directory, commandsDirectory === 'commands' ? '' : '.agents', 'providers', provider);
+      mkdirSync(path, { recursive: true });
+      copyFileSync(fileURLToPath(new URL(`../providers/${provider}/read-item.ts`, import.meta.url)), join(path, 'read-item.ts'));
+    }
     copyFileSync(fileURLToPath(new URL('../providers/linear/select-next-item.ts', import.meta.url)), join(linearProvider, 'select-next-item.ts'));
     writeFileSync(join(directory, 'agent-workflows.yaml'), 'item:\n  provider: linear\n');
     const repository = join(directory, 'example-repo');
@@ -135,7 +151,20 @@ for (const commandsDirectory of ['commands', '.agents/commands']) {
     const bin = join(directory, 'bin');
     mkdirSync(bin);
     const fixture = join(directory, 'linear.json');
-    writeFileSync(join(bin, 'linear'), '#!/bin/sh\ncat "$NEXT_CLI_FIXTURE"\n', { mode: 0o755 });
+    const itemComments = join(directory, 'item-comments.json');
+    writeFileSync(itemComments, '[]');
+    writeFileSync(join(bin, 'linear'), `#!/usr/bin/env node
+import { readFileSync } from 'node:fs';
+const args = process.argv.slice(2);
+if (args[0] === 'api' && args.includes('--variable')) {
+  process.stdout.write(JSON.stringify({ data: { issue: { id: 'issue-1',
+    identifier: 'EX-1', state: { type: 'unstarted' }, team: {}, project: null } } }));
+} else if (args[0] === 'issue') {
+  process.stdout.write(JSON.stringify({ title: 'Ready item', description: '',
+    url: 'https://linear.test/issue-1', labels: [],
+    comments: JSON.parse(readFileSync(process.env.NEXT_CLI_ITEM_COMMENTS, 'utf8')) }));
+} else process.stdout.write(readFileSync(process.env.NEXT_CLI_FIXTURE, 'utf8'));
+`, { mode: 0o755 });
     writeFileSync(fixture, JSON.stringify({ data: { issues: { nodes: [{
       id: 'issue-1', title: 'Ready item', url: 'https://linear.test/issue-1',
       updatedAt: '2026-01-01T00:00:00Z', state: { name: 'Backlog' }, project: { name: 'Project' },
@@ -154,7 +183,8 @@ for (const commandsDirectory of ['commands', '.agents/commands']) {
     const child = spawn(process.execPath, [entry], {
       cwd: directory,
       env: { PATH: `${bin}:${process.env.PATH ?? ''}`, HOME: process.env.HOME,
-        NEXT_CLI_FIXTURE: fixture, CODEX_WORKING_DIRECTORY: directory, CODEX_HOME: codexHome },
+        NEXT_CLI_FIXTURE: fixture, NEXT_CLI_ITEM_COMMENTS: itemComments,
+        CODEX_WORKING_DIRECTORY: directory, CODEX_HOME: codexHome },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     const closed = new Promise<void>((resolve) => child.once('close', () => resolve()));
@@ -202,6 +232,14 @@ for (const commandsDirectory of ['commands', '.agents/commands']) {
     const resolved = await projectRequest('example repo');
     assert.equal(resolved.status, 200);
     assert.deepEqual(JSON.parse((await resolved.json()).stdout), { path: realpathSync(repository) });
+    writeFileSync(itemComments, JSON.stringify([{ id: 'wrong-repository',
+      body: 'Draft MR: https://git.example/acme/wrong-repo/-/merge_requests/68' }]));
+    const mismatch = await projectRequest('example repo');
+    assert.equal(mismatch.status, 200);
+    const mismatchBody = await mismatch.text();
+    assert.deepEqual(JSON.parse(JSON.parse(mismatchBody).stdout), { status: 'repository mismatch' });
+    assert.equal(projectRoute(mismatchBody), 'repository-mismatch');
+    writeFileSync(itemComments, '[]');
     const missing = await projectRequest('unmatched');
     assert.equal(missing.status, 200);
     assert.deepEqual(JSON.parse((await missing.json()).stdout), { status: 'not found' });
