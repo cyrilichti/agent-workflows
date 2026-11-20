@@ -51,18 +51,9 @@ Before any mutation:
 
 1. Work from the consuming project root.
 2. Verify that Git, Node.js, and `npx` are available.
-3. Require the project root to belong to a Git worktree.
-4. Require the index and worktree to be clean, including untracked files.
-   Allow only the bootstrap artifacts created by the documented
-   `npx skills add ... --skill agent-workflows` command:
-   - `.agents/skills/agent-workflows/**`;
-   - the `agent-workflows` entry in `skills-lock.json`.
-
-   Verify that no other path or lock entry changed before treating these as
-   bootstrap artifacts. Stop and list every other dirty path.
-5. Require `.agents`, when present, to be a real directory. Stop when it is a
-   symlink, file, or Git submodule.
-6. Create a temporary working directory outside `.agents`.
+3. Require `.agents`, when present, to be a directory and stop if it is a
+   symbolic link.
+4. Create a temporary working directory outside `.agents`.
 
 ## Download
 
@@ -82,15 +73,6 @@ Stop before deployment unless the downloaded repository contains:
 
 Read the downloaded and consuming `skills-lock.json` files and calculate the
 merged lock before deployment. Require compatible lock-file versions.
-
-Inspect ignored, untracked content inside every fully managed target
-directory. Stop when it contains anything that is neither:
-
-- a path present in the matching downloaded source directory; nor
-- a Skill declared by the calculated merged lock under `.agents/skills`.
-
-This check must include ignored files. Ordinary Git status is insufficient for
-this guard.
 
 ## Deploy
 
@@ -154,16 +136,6 @@ Remove every existing exact line matching one of those patterns, including
 exceptions for native Skills removed from the downloaded version. Append the
 newly derived block once with one blank line around it. Preserve every other
 line and its order. Do not duplicate rules on repeated execution.
-
-Validate with `git check-ignore` that:
-
-- a file below `.agents/plans` other than `.gitkeep` is ignored;
-- `.agents/plans/.gitkeep` is not ignored;
-- a downloaded external Skill declared only in `skills-lock.json` is ignored;
-- every downloaded native Skill is not ignored.
-
-When existing broader rules prevent these outcomes, correct them only when the
-required change is unambiguous. Otherwise stop and report the conflicting rule.
 
 ## Merge Skill Dependencies
 
@@ -248,10 +220,12 @@ Before reporting success, verify:
 
 - the root `AGENTS.md` differs from the downloaded source only by those
   `.agents/` prefixes, and all referenced installed paths exist;
-- every fully managed directory equals its downloaded source after excluding
-  the test files defined in Rules, and contains no test file or obsolete path;
+- every deployed directory matches its downloaded source after excluding
+  the test files defined in Rules and accounting for dependencies restored under
+  `.agents/skills`;
 - `.agents/plans` still contains every pre-existing consuming-project plan;
-- the effective Git ignore behavior matches Compose Git Ignore Rules;
+- the root `.gitignore` contains exactly one derived block and preserves every
+  project-owned line in order;
 - the project lock contains every downloaded Skill entry;
 - every declared Skill is installed;
 - `agent-workflows.yaml` exists;

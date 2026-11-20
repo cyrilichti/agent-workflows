@@ -62,7 +62,7 @@ request.
 
 Node.js 24 or later must be available in the environment where your coding agent runs workflows.
 
-From the root of a Git project, install the bootstrap skill:
+From the project root, install the bootstrap skill:
 
 ```bash
 npx skills add cyrilichti/agent-workflows --skill agent-workflows
