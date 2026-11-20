@@ -4,7 +4,7 @@ import { basename, dirname, isAbsolute, join } from 'node:path';
 
 type SearchResult =
   | { path: string }
-  | { status: 'not found' | 'search incomplete' | 'repository mismatch' };
+  | { status: 'not found' | 'search incomplete' };
 
 function parsePaths(input: string): string[] {
   const paths: unknown = JSON.parse(input);
@@ -148,16 +148,6 @@ function chooseRepository(paths: string[], ...contents: string[]): string {
   return (frontend.length ? frontend : paths)[0]!;
 }
 
-function linkedRepository(reference: string): string | undefined {
-  try {
-    const path = new URL(reference).pathname;
-    const match = /^(.*)\/(?:pull|-\/merge_requests)\/\d+\/?$/.exec(path);
-    return match ? referenceName(match[1]!) : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 async function result(paths: string[], list: string, itemId: string): Promise<SearchResult> {
   const configured = inspectConfigured(paths);
   if (configured.incomplete) return { status: 'search incomplete' };
@@ -181,12 +171,7 @@ async function result(paths: string[], list: string, itemId: string): Promise<Se
   const plan = item.comments.find(comment =>
     comment.body.startsWith('Agent-Workflows-Approved-Plan:'))?.body ?? '';
   const content = [item.title, item.description].join('\n');
-  const selected = chooseRepository(candidates, plan, content);
-  const selectedName = normalize(basename(selected));
-  if (item.request_backlinks.some(backlink => linkedRepository(backlink) !== selectedName)) {
-    return { status: 'repository mismatch' };
-  }
-  return { path: selected };
+  return { path: chooseRepository(candidates, plan, content) };
 }
 
 const [list, itemId, paths] = process.argv.slice(2);

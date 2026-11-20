@@ -95,17 +95,6 @@ test('Kestra parses project stdout and calls the generic endpoint', () => {
   assert.doesNotMatch(flow, /fromJson\(fromJson\(outputs\.project\.body\)\.text\)/);
 });
 
-test('Kestra blocks repository mismatches before work and reports a specific failure', () => {
-  assert.equal(projectRoute(envelope('{"status":"repository mismatch"}')), 'repository-mismatch');
-  assert.equal(projectRoute(envelope('{"status":"repository mismatch","path":"/projects/wrong"}')), 'error');
-  const start = flow.indexOf('\n                    repository-mismatch:');
-  assert.ok(start >= 0, 'A mismatch needs its own failure branch');
-  const mismatch = flow.slice(start, flow.indexOf('\n                    error:', start));
-  assert.match(mismatch, /type: io\.kestra\.plugin\.core\.execution\.Fail/);
-  assert.match(mismatch, /errorMessage:.*linked request.*repository.*list/i);
-  assert.doesNotMatch(mismatch, /id: work\s|uri:/);
-});
-
 test('Kestra rejects malformed script envelopes', () => {
   for (const body of ['invalid', 'null', '{}', '{"stdout":null}', '{"stdout":{}}',
     '{"status":"no eligible item"}', '{"path":"/projects/example"}']) {
@@ -143,11 +132,14 @@ for (const commandsDirectory of ['commands', '.agents/commands']) {
     }
     copyFileSync(fileURLToPath(new URL('../providers/linear/select-next-item.ts', import.meta.url)), join(linearProvider, 'select-next-item.ts'));
     writeFileSync(join(directory, 'agent-workflows.yaml'), 'item:\n  provider: linear\n');
-    const repository = join(directory, 'example-repo');
+    const repository = join(directory, 'boutique');
+    const api = join(directory, 'boutique-api');
     mkdirSync(join(repository, '.git'), { recursive: true });
+    mkdirSync(join(api, '.git'), { recursive: true });
     const codexHome = join(directory, 'codex-home');
     mkdirSync(codexHome);
-    writeFileSync(join(codexHome, 'config.toml'), `[projects.${JSON.stringify(repository)}]\ntrust_level = "trusted"\n`);
+    writeFileSync(join(codexHome, 'config.toml'), [repository, api]
+      .map(path => `[projects.${JSON.stringify(path)}]\ntrust_level = "trusted"\n`).join('\n'));
     const bin = join(directory, 'bin');
     mkdirSync(bin);
     const fixture = join(directory, 'linear.json');
@@ -229,16 +221,18 @@ if (args[0] === 'api' && args.includes('--variable')) {
     });
     const projectRequest = (list: string) => scriptRequest('resolve-local-project-directory.ts', [list, 'issue-1']);
     const nextRequest = () => scriptRequest('select-next-item.ts');
-    const resolved = await projectRequest('example repo');
+    const resolved = await projectRequest('Boutique');
     assert.equal(resolved.status, 200);
     assert.deepEqual(JSON.parse((await resolved.json()).stdout), { path: realpathSync(repository) });
-    writeFileSync(itemComments, JSON.stringify([{ id: 'wrong-repository',
-      body: 'Draft MR: https://git.example/acme/wrong-repo/-/merge_requests/68' }]));
-    const mismatch = await projectRequest('example repo');
-    assert.equal(mismatch.status, 200);
-    const mismatchBody = await mismatch.text();
-    assert.deepEqual(JSON.parse(JSON.parse(mismatchBody).stdout), { status: 'repository mismatch' });
-    assert.equal(projectRoute(mismatchBody), 'repository-mismatch');
+    writeFileSync(itemComments, JSON.stringify([
+      { id: 'boutique-mr', body: 'Draft MR: https://git.example/acme/boutique/-/merge_requests/42' },
+      { id: 'api-mr', body: 'Draft MR: https://git.example/acme/boutique-api/-/merge_requests/68' },
+    ]));
+    const withLinks = await projectRequest('Boutique');
+    assert.equal(withLinks.status, 200);
+    const linkedBody = await withLinks.text();
+    assert.deepEqual(JSON.parse(JSON.parse(linkedBody).stdout), { path: realpathSync(repository) });
+    assert.equal(projectRoute(linkedBody), 'project');
     writeFileSync(itemComments, '[]');
     const missing = await projectRequest('unmatched');
     assert.equal(missing.status, 200);
@@ -267,7 +261,7 @@ if (args[0] === 'api' && args.includes('--variable')) {
     assert.equal(failed.status, 502);
     assert.deepEqual(await failed.json(), { error: 'script_failed' });
     writeFileSync(join(commands, 'resolve-local-project-directory.ts'), 'process.exit(2);\n');
-    const failedProject = await projectRequest('example repo');
+    const failedProject = await projectRequest('Boutique');
     assert.equal(failedProject.status, 502);
     assert.deepEqual(await failedProject.json(), { error: 'script_failed' });
   });

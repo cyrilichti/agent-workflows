@@ -193,25 +193,25 @@ test('matching GitLab and GitHub requests preserve the repository selected by th
   } finally { f.cleanup(); rmSync(root, { recursive: true, force: true }); }
 });
 
-test('conflicting, missing, and mixed linked repositories block delivery without a path', () => {
-  const root = mkdtempSync(join(tmpdir(), 'project-request-mismatch-'));
+test('linked requests do not override the repository selected for the product', () => {
+  const root = mkdtempSync(join(tmpdir(), 'project-request-related-'));
   const inventory = join(root, 'inventory');
-  const otherApp = join(root, 'other-app');
+  const api = join(root, 'inventory-api');
   repository(inventory);
-  repository(otherApp);
-  const f = fixture([inventory, otherApp]);
+  repository(api);
+  const f = fixture([inventory, api]);
   try {
     for (const links of [
-      ['https://git.example/acme/other-app/-/merge_requests/7'],
-      ['https://github.com/acme/other-app/pull/7'],
+      ['https://git.example/acme/inventory-api/-/merge_requests/7'],
+      ['https://github.com/acme/inventory-api/pull/7'],
       ['https://github.com/acme/missing/pull/7'],
-      ['https://github.com/acme/inventory/pull/7', 'https://github.com/acme/other-app/pull/8'],
+      ['https://github.com/acme/inventory/pull/7', 'https://github.com/acme/inventory-api/pull/8'],
       ['https://github.com/acme/inventory/pull/7', 'https://git.example/unrecognized'],
     ]) {
-      const result = f.run('Backlog Inventory', [inventory, otherApp], '', links.map((url, index) =>
+      const result = f.run('Backlog Inventory', [inventory, api], '', links.map((url, index) =>
         ({ id: `link-${index}`, body: `Draft MR: ${url}` })));
       assert.equal(result.status, 0, result.stderr);
-      assert.deepEqual(JSON.parse(result.stdout), { status: 'repository mismatch' });
+      assert.deepEqual(JSON.parse(result.stdout), { path: realpathSync(inventory) });
     }
   } finally { f.cleanup(); rmSync(root, { recursive: true, force: true }); }
 });
