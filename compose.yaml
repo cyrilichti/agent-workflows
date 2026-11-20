@@ -165,7 +165,6 @@ services:
       KESTRA_URL: http://kestra:8080
       KESTRA_ADMIN_EMAIL: ${KESTRA_ADMIN_EMAIL:-local@example.test}
       KESTRA_ADMIN_PASSWORD: ${KESTRA_ADMIN_PASSWORD:?Set KESTRA_ADMIN_PASSWORD in .env}
-      KESTRA_CLEANUP_ENABLED: ${KESTRA_CLEANUP_ENABLED:-false}
     volumes:
       - ./src/install.ts:/app/src/install.ts:ro
       - ./orchestration/work.yaml:/app/orchestration/work.yaml:ro

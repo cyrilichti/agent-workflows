@@ -5,8 +5,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { findCleanupClone } from './cleanup-clone.ts';
-import type { CleanupDelivery } from './cleanup-delivery.ts';
-import { discoverLocalRepositories } from './resolve-local-project-directory.ts';
+import type { CleanupDelivery } from './cleanup-remote.ts';
+import { discoverLocalRepositories } from './cleanup-clone.ts';
 
 const delivery: CleanupDelivery = { provider: 'gitlab', host: 'gitlab.example.com',
   repository: 'equipe/facturation', request: '', branch: 'ticket', target: 'main',

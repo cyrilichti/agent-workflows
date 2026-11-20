@@ -39,7 +39,7 @@ tasks:
       Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
     body: >-
       {{ {
-        "path": inputs.commandsDirectory ~ "/cleanup-delivered-branches.ts",
+        "path": inputs.commandsDirectory ~ "/cleanup.ts",
         "args": ["select", outputs.interval.values.from, outputs.interval.values.until, vars.activatedAt]
       } | toJson }}
     timeout: PT5M
@@ -69,7 +69,7 @@ tasks:
           Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
         body: >-
           {{ {
-            "path": inputs.commandsDirectory ~ "/cleanup-delivered-branches.ts",
+            "path": inputs.commandsDirectory ~ "/cleanup.ts",
             "args": ["remove", outputs.interval.values.from, outputs.interval.values.until, vars.activatedAt,
               fromJson(fromJson(outputs.select_tickets.body).stdout).provider, item.value]
           } | toJson }}

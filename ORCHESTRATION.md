@@ -162,13 +162,10 @@ Save it, reapply needed local customizations, and start a new execution with
 project resolution call `/scripts` and that their switches parse the response's `stdout`.
 New installations import this flow automatically.
 
-### Enable delivered branch cleanup
+### Delivered branch cleanup
 
-Install the bridge and start the updated `agent-workflows/work` flow on the
-server that owns the work clones. Set `KESTRA_CLEANUP_ENABLED=true` for Compose
-and run `docker compose up workflow-init` to import the separate
-`agent-workflows/cleanup` flow. The first import sets the activation timestamp.
-Use the Kestra trigger control to pause or resume an installed schedule.
+The Compose installer imports `agent-workflows/cleanup` as a separate flow and
+sets its starting timestamp on first import.
 
 Cleanup runs hourly in UTC. It selects completed tickets from the active item
 provider and matches their delivery repositories against the Codex project
@@ -177,10 +174,6 @@ delivered branch moves to the default branch and pulls with `--ff-only`.
 Cleanup confirms the local branch is absent before deleting the remote branch.
 Each ticket logs its clone and both outcomes. To replay a failed window, run
 the cleanup flow with the original `from` and `until` values shown in Kestra.
-
-The two flows share a lock in the clone's Git directory. If an abrupt shutdown
-leaves an orphaned lock, use the path in the error to find it and remove it
-only after confirming the owning execution has stopped.
 
 ## Execution behavior
 

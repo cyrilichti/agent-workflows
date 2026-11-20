@@ -172,79 +172,44 @@ tasks:
                     ') | first }}
                   cases:
                     project:
-                      - id: repository_scope
-                        type: io.kestra.plugin.core.flow.Sequential
-                        tasks:
-                          - id: repository_lock
-                            type: io.kestra.plugin.core.http.Request
-                            uri: '{{ envs.bridge_url }}/scripts'
-                            method: POST
-                            contentType: application/json
-                            headers:
-                              Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                            body: >-
-                              {{ {
-                                "path": inputs.commandsDirectory ~ "/cleanup-repository-lock.ts",
-                                "args": ["acquire", fromJson(fromJson(outputs.project.body).stdout).path, taskrun.id]
-                              } | toJson }}
-                            timeout: PT5M
-                          - id: work
-                            type: io.kestra.plugin.core.http.Request
-                            description: |
-                              `/work` requires an `agent-planned` item and executes its approved plan
-                              autonomously, one todo at a time. Standalone work automatically resumes when the
-                              item contains a delivery backlink, keeping the referenced local plan and its
-                              todo states. Otherwise, it copies the published plan locally and initializes
-                              delivery. It routes each todo to the right specialist and hands the completed
-                              plan directly to `/ready` without another approval.
+                      - id: work
+                        type: io.kestra.plugin.core.http.Request
+                        description: |
+                          `/work` requires an `agent-planned` item and executes its approved plan
+                          autonomously, one todo at a time. Standalone work automatically resumes when the
+                          item contains a delivery backlink, keeping the referenced local plan and its
+                          todo states. Otherwise, it copies the published plan locally and initializes
+                          delivery. It routes each todo to the right specialist and hands the completed
+                          plan directly to `/ready` without another approval.
 
-                              | Step | Execution |
-                              | --- | --- |
-                              | 1. Initialize | For new work, move the item to `in progress` and create a work branch with a linked draft request. |
-                              | 2. Route | Select or reuse the most suitable specialist for the active todo and load only the skills its activity triggers. |
-                              | 3. Execute | Persist the todo as in progress, implement and validate only its scope, then stage only its changes. |
-                              | 4. Commit | Commit the result, persist todo completion immediately, push the commit, and continue. A todo without a commit causes no push. |
-                              | 5. Ready | When every todo is complete, continue automatically to `/ready`; later findings return through the same loop as corrective todos. `/ready` verifies the completed branch against the approved plan, returns concrete gaps to `/work`, then promotes passing work for review. |
-                              | 6. Inspect | `/ready` continues automatically to `/inspect` after the required request updates are observed. `/inspect` reviews one frozen request snapshot and head SHA, publishes each unseen valid finding once, and returns blocking findings to `/work`. When none remain, it applies `agent-inspected` and stops without invoking `/done`. |
-                              | 7. Report | Kestra checks the bridge's inspection statuses before recording completion. Merge and `/done` remain human decisions. |
-                            uri: '{{ envs.bridge_url }}/'
-                            method: POST
-                            contentType: application/json
-                            headers:
-                              Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                            body: >-
-                              {{ {
-                                "requestId": execution.id ~ "-work-" ~ uuid(),
-                                "trace": {"name": "agent-workflows.work.work", "observationName": "work", "tags": ["work"], "sessionId": execution.id},
-                                "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).stdout).id ~ ".",
-                                "directory": fromJson(fromJson(outputs.project.body).stdout).path,
-                                "timeoutMs": 3585000
-                              } | toJson }}
-                            timeout: PT1H
-                            options:
-                              allowFailed: true
-                              timeout:
-                                connectTimeout: PT5S
-                                readIdleTimeout: PT59M55S
-                        finally:
-                          - id: release_if_locked
-                            type: io.kestra.plugin.core.flow.If
-                            condition: '{{ outputs.repository_lock is defined and outputs.repository_lock.code == 200 }}'
-                            then:
-                              - id: repository_unlock
-                                type: io.kestra.plugin.core.http.Request
-                                uri: '{{ envs.bridge_url }}/scripts'
-                                method: POST
-                                contentType: application/json
-                                headers:
-                                  Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-                                body: >-
-                                  {{ {
-                                    "path": inputs.commandsDirectory ~ "/cleanup-repository-lock.ts",
-                                    "args": ["release", fromJson(fromJson(outputs.project.body).stdout).path,
-                                      fromJson(fromJson(outputs.repository_lock.body).stdout).owner]
-                                  } | toJson }}
-                                timeout: PT5M
+                          | Step | Execution |
+                          | --- | --- |
+                          | 1. Initialize | For new work, move the item to `in progress` and create a work branch with a linked draft request. |
+                          | 2. Route | Select or reuse the most suitable specialist for the active todo and load only the skills its activity triggers. |
+                          | 3. Execute | Persist the todo as in progress, implement and validate only its scope, then stage only its changes. |
+                          | 4. Commit | Commit the result, persist todo completion immediately, push the commit, and continue. A todo without a commit causes no push. |
+                          | 5. Ready | When every todo is complete, continue automatically to `/ready`; later findings return through the same loop as corrective todos. `/ready` verifies the completed branch against the approved plan, returns concrete gaps to `/work`, then promotes passing work for review. |
+                          | 6. Inspect | `/ready` continues automatically to `/inspect` after the required request updates are observed. `/inspect` reviews one frozen request snapshot and head SHA, publishes each unseen valid finding once, and returns blocking findings to `/work`. When none remain, it applies `agent-inspected` and stops without invoking `/done`. |
+                          | 7. Report | Kestra checks the bridge's inspection statuses before recording completion. Merge and `/done` remain human decisions. |
+                        uri: '{{ envs.bridge_url }}/'
+                        method: POST
+                        contentType: application/json
+                        headers:
+                          Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+                        body: >-
+                          {{ {
+                            "requestId": execution.id ~ "-work-" ~ uuid(),
+                            "trace": {"name": "agent-workflows.work.work", "observationName": "work", "tags": ["work"], "sessionId": execution.id},
+                            "prompt": "Execute /work for item " ~ fromJson(fromJson(outputs.next.body).stdout).id ~ ".",
+                            "directory": fromJson(fromJson(outputs.project.body).stdout).path,
+                            "timeoutMs": 3585000
+                          } | toJson }}
+                        timeout: PT1H
+                        options:
+                          allowFailed: true
+                          timeout:
+                            connectTimeout: PT5S
+                            readIdleTimeout: PT59M55S
                       - id: is-success
                         type: io.kestra.plugin.core.flow.Switch
                         description: |

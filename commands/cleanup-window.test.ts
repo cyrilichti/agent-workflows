@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { cleanupWindow } from './cleanup-window.ts';
+import { cleanupWindow } from './cleanup-remote.ts';
 
 const from = '2026-01-15T10:00:00Z';
 const until = '2026-01-15T11:00:00Z';
@@ -40,7 +40,7 @@ test('selects completed tickets across pages with exclusive upper bounds for bot
     console.log(JSON.stringify(tasks));
   `, { mode: 0o755 });
   const output = execFileSync(process.execPath, ['--input-type=module', '-e', `
-    import { cleanupWindow, completedTickets } from './commands/cleanup-window.ts';
+    import { cleanupWindow, completedTickets } from './commands/cleanup-remote.ts';
     const window = cleanupWindow('${from}', '${until}', '${from}');
     console.log(JSON.stringify(['linear', 'clickup'].map(provider => completedTickets(provider, window))));
   `], { encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}` } });

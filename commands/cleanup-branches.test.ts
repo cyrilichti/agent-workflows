@@ -4,9 +4,8 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test, type TestContext } from 'node:test';
-import { cleanupBranches } from './cleanup-branches.ts';
-import { acquireRepository, releaseRepository } from './cleanup-repository-lock.ts';
-import type { CleanupDelivery } from './cleanup-delivery.ts';
+import { cleanupBranches } from './cleanup-clone.ts';
+import type { CleanupDelivery } from './cleanup-remote.ts';
 
 function fixture(t: TestContext) {
   const root = mkdtempSync(join(tmpdir(), 'cleanup-branches-'));
@@ -32,7 +31,7 @@ function fixture(t: TestContext) {
   local('commit', '-m', 'Squashed');
   local('push', 'origin', 'main');
   local('switch', 'ticket');
-  const clone = { path, commonDirectory: join(path, '.git'), remote: 'origin', pushUrl: remote };
+  const clone = { path, remote: 'origin', pushUrl: remote };
   const delivery: CleanupDelivery = { provider: 'github', host: 'github.com', repository: 'example/repo',
     defaultBranch: 'main', target: 'main', branch: 'ticket', sha, request: '' };
   return { root, git, local, clone, delivery, run: () => cleanupBranches(clone, delivery, () => {}) };
@@ -57,11 +56,8 @@ test('switches the clean clone to the default branch, pulls and removes the loca
   assert.deepEqual(f.run(), { local: 'absent', remote: 'absent' });
 });
 
-test('preserves both refs when the clone is busy, dirty, or the branch is used by another worktree', t => {
+test('preserves both refs when the clone is dirty or the branch is used by another worktree', t => {
   const f = fixture(t);
-  acquireRepository(f.clone.commonDirectory, 'work');
-  assert.match(f.run().reason!, /busy/);
-  releaseRepository(f.clone.commonDirectory, 'work');
   writeFileSync(join(f.clone.path, 'temp'), 'untracked');
   assert.match(f.run().reason!, /uncommitted/);
   rmSync(join(f.clone.path, 'temp'));
@@ -81,4 +77,17 @@ test('a last-minute new remote commit is rejected by the lease', t => {
   assert.equal(run.local, 'removed');
   assert.equal(run.remote, 'blocked');
   assert.match(f.local('ls-remote', 'origin', 'refs/heads/ticket'), new RegExp(f.local('rev-parse', 'main')));
+});
+
+test('preserves the delivery branch during a paused rebase with detached HEAD', t => {
+  const f = fixture(t);
+  f.local('switch', 'main');
+  writeFileSync(join(f.clone.path, 'change'), 'conflicting content');
+  f.local('commit', '-am', 'Conflicting change');
+  f.local('switch', 'ticket');
+  assert.throws(() => f.local('rebase', '--onto', 'main', 'ticket~1'));
+  assert.equal(f.local('branch', '--show-current'), '');
+  assert.match(f.run().reason!, /in-progress rebase or bisect/);
+  assert.equal(f.local('rev-parse', 'ticket'), f.delivery.sha);
+  assert.match(f.local('ls-remote', 'origin', 'refs/heads/ticket'), new RegExp(f.delivery.sha));
 });

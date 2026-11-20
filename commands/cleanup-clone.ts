@@ -1,10 +1,10 @@
-import { spawnSync } from 'node:child_process';
-import { realpathSync } from 'node:fs';
-import { resolve } from 'node:path';
-import type { CleanupRepository } from './cleanup-delivery.ts';
-import { discoverLocalRepositories } from './resolve-local-project-directory.ts';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { existsSync, realpathSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { confirmBranchEligible } from './cleanup-remote.ts';
+import type { CleanupDelivery, CleanupRepository } from './cleanup-remote.ts';
 
-export type CleanupClone = { path: string; commonDirectory: string; remote: string; pushUrl: string };
+export type CleanupClone = { path: string; remote: string; pushUrl: string };
 
 export function runGit(path: string, args: string[], missingStatus?: number): string | undefined {
   const result = spawnSync('git', args, {
@@ -30,6 +30,12 @@ function matchesRemote(value: string, delivery: CleanupRepository): boolean {
     (delivery.provider === 'github' ? repository.toLowerCase() === expected.toLowerCase() : repository === expected);
 }
 
+export function discoverLocalRepositories(paths?: string[]): string[] {
+  const args = [join(import.meta.dirname, 'resolve-local-project-directory.ts'), '--list-clones'];
+  if (paths) args.push(JSON.stringify(paths));
+  return JSON.parse(execFileSync(process.execPath, args, { encoding: 'utf8', timeout: 25_000 })) as string[];
+}
+
 export function findCleanupClone(
   delivery: CleanupRepository, paths = discoverLocalRepositories(),
 ): CleanupClone {
@@ -49,7 +55,7 @@ export function findCleanupClone(
         throw new Error(`Multiple remotes match the delivery in ${path}.`);
       }
       if (!found || resolve(path, '.git') === commonDirectory) {
-        clones.set(commonDirectory, { path, commonDirectory, remote, pushUrl: pushUrls[0]! });
+        clones.set(commonDirectory, { path, remote, pushUrl: pushUrls[0]! });
       }
     }
   }
@@ -58,4 +64,106 @@ export function findCleanupClone(
       'No local clone matches the delivery repository.');
   }
   return [...clones.values()][0]!;
+}
+
+type RefOutcome = 'absent' | 'removed' | 'blocked' | 'not attempted';
+export type CleanupOutcome = { local: RefOutcome; remote: RefOutcome; reason?: string };
+
+const detachedOperations = ['rebase-apply', 'rebase-merge', 'BISECT_START'];
+
+function hasGitOperation(path: string, markers: string[]): boolean {
+  const gitDirectory = runGit(path, ['rev-parse', '--absolute-git-dir'])!;
+  return markers.some(marker => existsSync(join(gitDirectory, marker)));
+}
+
+function checkedOut(path: string, ref: string): string[] {
+  const fields = runGit(path, ['worktree', 'list', '--porcelain', '-z'])!.split('\0');
+  const worktrees: string[] = [];
+  let current = '';
+  for (const field of fields) {
+    if (field.startsWith('worktree ')) current = field.slice(9);
+    if (field === `branch ${ref}`) worktrees.push(current);
+    if (field === 'detached' && existsSync(current) && hasGitOperation(current, detachedOperations)) {
+      throw new Error(`A detached worktree has an in-progress rebase or bisect: ${current}`);
+    }
+  }
+  return worktrees;
+}
+
+function localHead(path: string, ref: string): string | undefined {
+  const refs = runGit(path, ['for-each-ref', '--format=%(refname)%09%(objectname)', ref])!;
+  return refs.split('\n').find(line => line.startsWith(`${ref}\t`))?.split('\t')[1];
+}
+
+function checkoutDefault(clone: CleanupClone, branch: string): void {
+  const path = clone.path;
+  if (runGit(path, ['status', '--porcelain', '--untracked-files=normal'])) {
+    throw new Error('The checkout contains uncommitted changes.');
+  }
+  if (hasGitOperation(path, [...detachedOperations, 'MERGE_HEAD', 'CHERRY_PICK_HEAD', 'REVERT_HEAD'])) {
+    throw new Error('The checkout has an in-progress Git operation.');
+  }
+  const ref = `refs/heads/${branch}`;
+  if (localHead(path, ref) === undefined) {
+    runGit(path, ['fetch', '--no-tags', '--', clone.remote, ref]);
+    runGit(path, ['switch', '--no-guess', '--no-overwrite-ignore', '-c', branch, 'FETCH_HEAD']);
+  } else {
+    runGit(path, ['switch', '--no-guess', '--no-overwrite-ignore', '--', branch]);
+  }
+  runGit(path, ['pull', '--ff-only', '--', clone.remote, ref]);
+}
+
+function remoteHead(clone: CleanupClone, ref: string): string | undefined {
+  const output = runGit(clone.path, ['ls-remote', '--exit-code', '--refs', '--', clone.pushUrl, ref], 2);
+  if (output === undefined) return undefined;
+  const [sha, name] = output.split('\t');
+  if (!sha || name !== ref) throw new Error('Cannot verify the remote ref.');
+  return sha;
+}
+
+export function cleanupBranches(
+  clone: CleanupClone, delivery: CleanupDelivery, verify = confirmBranchEligible,
+): CleanupOutcome {
+  const outcome: CleanupOutcome = { local: 'not attempted', remote: 'not attempted' };
+  const { path } = clone;
+  const ref = `refs/heads/${delivery.branch}`;
+  try {
+    runGit(path, ['check-ref-format', ref]);
+    runGit(path, ['check-ref-format', '--branch', delivery.defaultBranch]);
+    const endpoint = runGit(path, ['remote', 'get-url', '--push', '--all', clone.remote]);
+    if (endpoint !== clone.pushUrl) throw new Error('The matching push destination changed.');
+    outcome.local = 'blocked';
+    const local = localHead(path, ref);
+    const remote = remoteHead(clone, ref);
+    if (local !== undefined && local !== delivery.sha) throw new Error('The local ref differs from the delivered commit.');
+    if (remote !== undefined && remote !== delivery.sha) throw new Error('The remote ref differs from the delivered commit.');
+    verify(delivery, remote !== undefined);
+    if (local === undefined) {
+      outcome.local = 'absent';
+    } else {
+      const worktrees = checkedOut(path, ref);
+      if (worktrees.length && (worktrees.length !== 1 || realpathSync(worktrees[0]!) !== realpathSync(path))) {
+        throw new Error('The branch is checked out in another worktree.');
+      }
+      if (worktrees.length) checkoutDefault(clone, delivery.defaultBranch);
+      if (checkedOut(path, ref).length) throw new Error('The branch is still checked out.');
+      runGit(path, ['update-ref', '--no-deref', '-d', ref, delivery.sha]);
+      if (localHead(path, ref) !== undefined) {
+        throw new Error('The local ref is still present.');
+      }
+      outcome.local = 'removed';
+    }
+    outcome.remote = 'blocked';
+    if (remote === undefined) {
+      outcome.remote = 'absent';
+    } else {
+      verify(delivery, true);
+      runGit(path, ['push', `--force-with-lease=${ref}:${delivery.sha}`, '--', clone.remote, `:${ref}`]);
+      if (remoteHead(clone, ref) !== undefined) throw new Error('The remote ref is still present.');
+      outcome.remote = 'removed';
+    }
+    return outcome;
+  } catch (error) {
+    return { ...outcome, reason: error instanceof Error ? error.message : String(error) };
+  }
 }
