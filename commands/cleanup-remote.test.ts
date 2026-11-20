@@ -19,7 +19,7 @@ test('clamps the first interval and rejects broad or unordered replays', () => {
   assert.throws(() => cleanupWindow('2026-01-15T09:00:00Z', until, activation));
 });
 
-test('selects completed tickets across pages with exclusive upper bounds for both providers', t => {
+test('selects completed items across pages with exclusive upper bounds for both providers', t => {
   const bin = mkdtempSync(join(tmpdir(), 'cleanup-window-'));
   t.after(() => rmSync(bin, { recursive: true, force: true }));
   writeFileSync(join(bin, 'linear'), `#!/usr/bin/env node
@@ -40,9 +40,9 @@ test('selects completed tickets across pages with exclusive upper bounds for bot
     console.log(JSON.stringify(tasks));
   `, { mode: 0o755 });
   const output = execFileSync(process.execPath, ['--input-type=module', '-e', `
-    import { cleanupWindow, completedTickets } from './commands/cleanup-remote.ts';
+    import { cleanupWindow, completedItems } from './commands/cleanup-remote.ts';
     const window = cleanupWindow('${from}', '${until}', '${from}');
-    console.log(JSON.stringify(['linear', 'clickup'].map(provider => completedTickets(provider, window))));
+    console.log(JSON.stringify(['linear', 'clickup'].map(provider => completedItems(provider, window))));
   `], { encoding: 'utf8', env: { ...process.env, PATH: `${bin}:${process.env.PATH}` } });
   assert.deepEqual(JSON.parse(output), [['first', 'second'], ['first', 'second']]);
 });

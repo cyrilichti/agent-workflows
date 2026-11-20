@@ -1,17 +1,15 @@
 id: cleanup
 namespace: agent-workflows
 description: |
-  This flow cleans up **delivered branches one ticket at a time** through the
-  bridge's `/scripts` endpoint. It runs every hour in UTC. On manual runs,
-  `intervalSeconds` looks back from the execution start and defaults to one hour.
+  This flow cleans up **delivered branches** every hour in UTC. On manual runs,
+  `intervalSeconds` sets the lookback from the execution start.
+  It defaults to one hour.
 
   | Step | Execution |
   | --- | --- |
-  | 1. Set the interval | Use the scheduled hour or the manual lookback. The first import sets the earliest eligible completion time. |
-  | 2. Select | Read tickets completed during the interval from the configured item provider. |
-  | 3. Resolve | Verify the ticket's merged PR or MR and match its source repository to a single clone on the bridge host. |
-  | 4. Clean up | If the delivered branch is checked out in a clean worktree, switch to the default branch and pull with `--ff-only`. Confirm the local branch is absent before deleting the remote branch. |
-  | 5. Report | Log the clone and both branch outcomes for each ticket. A blocked cleanup fails the execution after the remaining tickets have been processed. |
+  | 1. Select items | Call `cleanup.ts` to find items completed during the interval. An empty list ends the execution successfully. |
+  | 2. Clean | Follow each item's merged PR or MR to its clone on the bridge host. If the delivered branch is checked out in a clean worktree, switch to the default branch and pull with `--ff-only`. Remove the local branch before the remote branch. |
+  | 3. Report an error | If selection or cleanup returns an error, log its reason and fail the execution. |
 variables:
   activatedAt: "__CLEANUP_ACTIVATED_AT__"
   commandsDirectory: commands
@@ -32,12 +30,7 @@ triggers:
     timezone: Etc/UTC
     recoverMissedSchedules: ALL
 tasks:
-  - id: interval
-    type: io.kestra.plugin.core.output.OutputValues
-    values:
-      from: "{{ trigger.previous ?? (execution.startDate | dateAdd(-1 * inputs.intervalSeconds, 'SECONDS')) }}"
-      until: "{{ trigger.date ?? execution.startDate }}"
-  - id: select_tickets
+  - id: select-items
     type: io.kestra.plugin.core.http.Request
     uri: '{{ envs.bridge_url }}/scripts'
     method: POST
@@ -47,56 +40,33 @@ tasks:
     body: >-
       {{ {
         "path": vars.commandsDirectory ~ "/cleanup.ts",
-        "args": ["select", outputs.interval.values.from, outputs.interval.values.until, vars.activatedAt]
+        "args": [
+          "select",
+          "" ~ (trigger.previous ?? (execution.startDate | dateAdd(-1 * inputs.intervalSeconds, "SECONDS"))),
+          "" ~ (trigger.date ?? execution.startDate),
+          vars.activatedAt
+        ]
       } | toJson }}
     timeout: PT5M
-  - id: validate_selection
-    type: io.kestra.plugin.core.flow.If
-    condition: '{{ fromJson(fromJson(outputs.select_tickets.body).stdout).status != "selected" }}'
-    then:
-      - id: selection_failed
-        type: io.kestra.plugin.core.execution.Fail
-        errorMessage: '{{ fromJson(outputs.select_tickets.body).stdout }}'
-  - id: clean_tickets
-    type: io.kestra.plugin.core.flow.Loop
-    values: '{{ fromJson(fromJson(outputs.select_tickets.body).stdout).tickets | toJson }}'
-    concurrencyLimit: 1
-    transmitFailed: false
-    outputs:
-      - id: cleanupStatus
-        type: STRING
-        value: '{{ fromJson(fromJson(outputs.clean_ticket.body).stdout).status }}'
-    tasks:
-      - id: clean_ticket
-        type: io.kestra.plugin.core.http.Request
-        uri: '{{ envs.bridge_url }}/scripts'
-        method: POST
-        contentType: application/json
-        headers:
-          Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
-        body: >-
-          {{ {
-            "path": vars.commandsDirectory ~ "/cleanup.ts",
-            "args": ["remove", outputs.interval.values.from, outputs.interval.values.until, vars.activatedAt,
-              fromJson(fromJson(outputs.select_tickets.body).stdout).provider, item.value]
-          } | toJson }}
-        timeout: PT5M
-      - id: checkpoint
-        type: io.kestra.plugin.core.log.Log
-        message: '{{ fromJson(outputs.clean_ticket.body).stdout }}'
-    errors:
-      - id: log_failed_ticket
-        type: io.kestra.plugin.core.log.Log
-        level: WARN
-        message: "Cleanup incomplete for {{ item.value }} in [{{ outputs.interval.values.from }}, {{ outputs.interval.values.until }})."
-  - id: validate_cleanup
-    type: io.kestra.plugin.core.flow.If
-    condition: >-
-      {{ (loopOutputs(outputs.clean_tickets.outputs ?? [], 'cleanupStatus') | length)
-        != (fromJson(fromJson(outputs.select_tickets.body).stdout).tickets | length)
-        or (loopOutputs(outputs.clean_tickets.outputs ?? [], 'cleanupStatus') | toJson
-          | jq('any(.[]; . != "complete")') | first) }}
-    then:
-      - id: cleanup_blocked
-        type: io.kestra.plugin.core.execution.Fail
-        errorMessage: "Cleanup incomplete for [{{ outputs.interval.values.from }}, {{ outputs.interval.values.until }}). See ticket results."
+  - id: clean
+    type: io.kestra.plugin.core.http.Request
+    runIf: '{{ (fromJson(fromJson(outputs["select-items"].body).stdout).items ?? []) | length > 0 }}'
+    uri: '{{ envs.bridge_url }}/scripts'
+    method: POST
+    contentType: application/json
+    headers:
+      Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+    body: >-
+      {{ {
+        "path": vars.commandsDirectory ~ "/cleanup.ts",
+        "args": ["clean", fromJson(outputs["select-items"].body).stdout]
+      } | toJson }}
+    timeout: PT5M
+  - id: report-error
+    type: io.kestra.plugin.core.execution.Fail
+    runIf: >-
+      {{ fromJson(fromJson(outputs["select-items"].body).stdout).error is defined
+         or (outputs.clean.body is defined and fromJson(fromJson(outputs.clean.body).stdout).error is defined) }}
+    errorMessage: >-
+      {{ fromJson(fromJson(outputs["select-items"].body).stdout).error
+         ?? fromJson(fromJson(outputs.clean.body).stdout).error }}

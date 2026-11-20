@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { copyFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -21,23 +21,25 @@ function run(t: TestContext, ...args: string[]) {
     copyFileSync(join(import.meta.dirname, '..', file), destination);
   }
   writeFileSync(join(root, 'agent-workflows.yaml'), 'item:\n  provider: linear\n');
-  return JSON.parse(execFileSync(process.execPath, [join(root, 'commands', 'cleanup.ts'), ...args], {
+  return spawnSync(process.execPath, [join(root, 'commands', 'cleanup.ts'), ...args], {
     encoding: 'utf8',
-  }));
+  });
 }
 
-test('reports a selected interval with no tickets before activation', t => {
-  const result = run(t, 'select', from, until, '2026-01-15T11:30:00Z');
-  assert.equal(result.status, 'selected');
-  assert.equal(result.from, from);
-  assert.equal(result.until, until);
-  assert.deepEqual(result.tickets, []);
+test('succeeds with an empty result before activation', t => {
+  const runResult = run(t, 'select', from, until, '2026-01-15T11:30:00Z');
+  assert.equal(runResult.status, 0, runResult.stderr);
+  assert.deepEqual(JSON.parse(runResult.stdout), { provider: 'linear', items: [] });
 });
 
-test('reports invalid intervals through the script response', t => {
+test('returns a JSON error for an invalid interval', t => {
   const result = run(t, 'select', until, from, from);
-  assert.equal(result.status, 'failed');
-  assert.equal(result.from, until);
-  assert.equal(result.until, from);
-  assert.match(result.reason, /completed cleanup interval/);
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(JSON.parse(result.stdout).error, /completed cleanup interval/);
+});
+
+test('returns the same JSON error shape if the item provider changed before cleanup', t => {
+  const result = run(t, 'clean', JSON.stringify({ provider: 'clickup', items: ['item-1'] }));
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), { error: 'The item provider changed after selection.' });
 });

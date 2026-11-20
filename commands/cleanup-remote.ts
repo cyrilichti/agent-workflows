@@ -62,9 +62,9 @@ function gitlabDelivery(url: URL, repository: string, number: string): CleanupDe
 export function readCleanupDelivery<T>(provider: ItemProvider, id: string,
   identifyClone: (repository: CleanupRepository) => T,
 ): { delivery: CleanupDelivery; clone: T } {
-  const ticket = readItem(provider, id);
-  if (ticket.request_backlinks.length !== 1) throw new Error('Expected one delivery backlink.');
-  const url = new URL(ticket.request_backlinks[0]!);
+  const item = readItem(provider, id);
+  if (item.request_backlinks.length !== 1) throw new Error('Expected one delivery backlink.');
+  const url = new URL(item.request_backlinks[0]!);
   if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash) {
     throw new Error('Invalid delivery backlink.');
   }
@@ -116,15 +116,8 @@ function linearQuery<T>(query: string, variables: Record<string, string | null>)
     { input: query, encoding: 'utf8', timeout: 30_000 })) as T;
 }
 
-function linearCompleted(window: CleanupWindow, id?: string): string[] {
-  if (id) {
-    const result = linearQuery<{ data?: { issue?: LinearIssue }; errors?: unknown[] }>(
-      'query CleanupTicket($id: String!) { issue(id: $id) { id completedAt state { type } } }', { id });
-    const item = result.data?.issue;
-    if (result.errors?.length || !item || item.id !== id) throw new Error('Cannot read the Linear issue.');
-    return item.state.type === 'completed' && within(window, Date.parse(item.completedAt ?? '')) ? [id] : [];
-  }
-  const query = `query CleanupTickets($start: DateTimeOrDuration!, $end: DateTimeOrDuration!, $after: String) {
+function linearCompleted(window: CleanupWindow): string[] {
+  const query = `query CleanupItems($start: DateTimeOrDuration!, $end: DateTimeOrDuration!, $after: String) {
     issues(first: 100, after: $after, filter: {
       completedAt: { gte: $start, lt: $end }, labels: { name: { eq: "agent-inspected" } }
     }) {
@@ -156,13 +149,7 @@ function linearCompleted(window: CleanupWindow, id?: string): string[] {
 
 type ClickUpTask = { id: string; date_done?: string | null; status?: { type?: string } };
 
-function clickupCompleted(window: CleanupWindow, id?: string): string[] {
-  if (id) {
-    const tasks = readJson(['task', 'get', id, '--output', 'json']) as ClickUpTask[];
-    const item = Array.isArray(tasks) && tasks.length === 1 ? tasks[0] : undefined;
-    if (!item || item.id !== id) throw new Error('Cannot read the ClickUp task.');
-    return item.status?.type === 'done' && within(window, Number(item.date_done ?? NaN)) ? [id] : [];
-  }
+function clickupCompleted(window: CleanupWindow): string[] {
   const matches = new Set<string>();
   const pages = new Set<string>();
   for (let page = 0; ; page++) {
@@ -181,7 +168,7 @@ function clickupCompleted(window: CleanupWindow, id?: string): string[] {
   }
 }
 
-export function completedTickets(provider: ItemProvider, window: CleanupWindow, id?: string): string[] {
+export function completedItems(provider: ItemProvider, window: CleanupWindow): string[] {
   if (window.start === window.end) return [];
-  return provider === 'linear' ? linearCompleted(window, id) : clickupCompleted(window, id);
+  return provider === 'linear' ? linearCompleted(window) : clickupCompleted(window);
 }
