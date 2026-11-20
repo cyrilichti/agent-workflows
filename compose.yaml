@@ -168,6 +168,7 @@ services:
     volumes:
       - ./src/install.ts:/app/src/install.ts:ro
       - ./orchestration/work.yaml:/app/orchestration/work.yaml:ro
+      - ./orchestration/cleanup.yaml:/app/orchestration/cleanup.yaml:ro
     networks: [workflow]
   langfuse-web:
     image: langfuse/langfuse:4.48.0@sha256:8c1b80ed7735be587974d603af0f6e0247b33d3b56c7d5ab9d2337aec313efa0

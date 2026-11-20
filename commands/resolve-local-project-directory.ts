@@ -86,6 +86,15 @@ function inspectParents(paths: string[]): { repositories: string[]; incomplete: 
   return { repositories, incomplete };
 }
 
+function discoverLocalRepositories(paths: string[]): string[] {
+  const configured = inspectConfigured(paths);
+  const parents = inspectParents(paths);
+  if (configured.incomplete || parents.incomplete) {
+    throw new Error('Local repository discovery is incomplete.');
+  }
+  return [...new Set([...configured.repositories, ...parents.repositories])];
+}
+
 function normalize(value: string): string {
   return value.toLowerCase().replace(/[\s.-]+/g, '-').replace(/^-+|-+$/g, '');
 }
@@ -180,13 +189,15 @@ async function result(paths: string[], list: string, itemId: string): Promise<Se
   return { path: selected };
 }
 
-const list = process.argv[2];
-const itemId = process.argv[3];
-const paths = process.argv[4];
+const [list, itemId, paths] = process.argv.slice(2);
 try {
-  if (!list?.trim()) throw new Error('Missing list.');
-  if (!itemId?.trim()) throw new Error('Missing item ID.');
-  process.stdout.write(`${JSON.stringify(await result(configuredPaths(paths), list, itemId))}\n`);
+  if (list === '--list-clones') {
+    process.stdout.write(`${JSON.stringify(discoverLocalRepositories(configuredPaths(itemId)))}\n`);
+  } else {
+    if (!list?.trim()) throw new Error('Missing list.');
+    if (!itemId?.trim()) throw new Error('Missing item ID.');
+    process.stdout.write(`${JSON.stringify(await result(configuredPaths(paths), list, itemId))}\n`);
+  }
 } catch (error) {
   process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
   process.exitCode = 1;

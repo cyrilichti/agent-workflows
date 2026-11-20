@@ -39,15 +39,21 @@ export async function installWorkflow({ url, email, password, workflow, namespac
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
-    const status = await installWorkflow({
+    const connection = {
       url: process.env.KESTRA_URL,
       email: process.env.KESTRA_ADMIN_EMAIL,
       password: process.env.KESTRA_ADMIN_PASSWORD,
       namespace: 'agent-workflows',
-      id: 'work',
-      workflow: readFileSync(new URL('../orchestration/work.yaml', import.meta.url), 'utf8'),
-    });
-    console.log(`Workflow agent-workflows/work ${status}. Kestra: http://localhost:3000.`);
+    };
+    for (const id of ['work', 'cleanup']) {
+      const source = readFileSync(new URL(`../orchestration/${id}.yaml`, import.meta.url), 'utf8');
+      const status = await installWorkflow({
+        ...connection,
+        id,
+        workflow: id === 'cleanup' ? source.replace('__CLEANUP_ACTIVATED_AT__', new Date().toISOString()) : source,
+      });
+      console.log(`Workflow agent-workflows/${id} ${status}. Kestra: http://localhost:3000.`);
+    }
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;

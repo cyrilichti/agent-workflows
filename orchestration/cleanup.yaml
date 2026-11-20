@@ -1,0 +1,78 @@
+id: cleanup
+namespace: agent-workflows
+description: |
+  This flow cleans up **delivered branches** one cycle at a time. Start it in
+  Kestra and stop the execution to end the loop. A second execution is rejected.
+
+  | Step | Execution |
+  | --- | --- |
+  | 1. Select items | Call `cleanup.ts` for the next completion interval. An empty list finishes the cycle successfully. |
+  | 2. Clean | Follow each item's merged PR or MR to its clone. Move a clean checkout to the default branch and pull with `--ff-only` when needed. Remove the local branch before the remote branch. |
+  | 3. Report an error | `clean-error` logs the reason if selection or cleanup returns an error. |
+  | 4. Wait | `sleep` waits `intervalSeconds` after every cycle, then selection starts again. |
+variables:
+  activatedAt: "__CLEANUP_ACTIVATED_AT__"
+  commandsDirectory: commands
+inputs:
+  - id: intervalSeconds
+    type: INT
+    min: 1
+    max: 3600
+    defaults: 3600
+    description: Delay between cycles and width of each completion interval, in seconds.
+concurrency:
+  limit: 1
+  behavior: FAIL
+tasks:
+  - id: loop
+    type: io.kestra.plugin.core.flow.LoopUntil
+    condition: '{{ false }}'
+    checkFrequency:
+      interval: PT0.001S
+    tasks:
+      - id: start
+        type: io.kestra.plugin.core.flow.AllowFailure
+        tasks:
+          - id: select-items
+            type: io.kestra.plugin.core.http.Request
+            uri: '{{ envs.bridge_url }}/scripts'
+            method: POST
+            contentType: application/json
+            headers:
+              Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+            body: >-
+              {{ {
+                "path": vars.commandsDirectory ~ "/cleanup.ts",
+                "args": [
+                  "select",
+                  "" ~ (execution.startDate | dateAdd(((outputs.loop.iterationCount ?? 1) - 2) * inputs.intervalSeconds, "SECONDS")),
+                  "" ~ (execution.startDate | dateAdd(((outputs.loop.iterationCount ?? 1) - 1) * inputs.intervalSeconds, "SECONDS")),
+                  vars.activatedAt
+                ]
+              } | toJson }}
+            timeout: PT5M
+          - id: clean
+            type: io.kestra.plugin.core.http.Request
+            runIf: '{{ (fromJson(fromJson(outputs["select-items"].body).stdout).items ?? []) | length > 0 }}'
+            uri: '{{ envs.bridge_url }}/scripts'
+            method: POST
+            contentType: application/json
+            headers:
+              Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
+            body: >-
+              {{ {
+                "path": vars.commandsDirectory ~ "/cleanup.ts",
+                "args": ["clean", fromJson(outputs["select-items"].body).stdout]
+              } | toJson }}
+            timeout: PT5M
+          - id: clean-error
+            type: io.kestra.plugin.core.execution.Fail
+            runIf: >-
+              {{ fromJson(fromJson(outputs["select-items"].body).stdout).error is defined
+                 or (outputs.clean.body is defined and fromJson(fromJson(outputs.clean.body).stdout).error is defined) }}
+            errorMessage: >-
+              {{ fromJson(fromJson(outputs["select-items"].body).stdout).error
+                 ?? fromJson(fromJson(outputs.clean.body).stdout).error }}
+      - id: sleep
+        type: io.kestra.plugin.core.flow.Sleep
+        duration: "PT{{ inputs.intervalSeconds }}S"

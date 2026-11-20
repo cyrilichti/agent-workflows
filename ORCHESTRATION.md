@@ -162,6 +162,24 @@ Save it, reapply needed local customizations, and start a new execution with
 project resolution call `/scripts` and that their switches parse the response's `stdout`.
 New installations import this flow automatically.
 
+### Delivered branch cleanup
+
+The Compose installer imports `agent-workflows/cleanup` as a separate flow and
+sets its starting timestamp on first import. For an existing flow, apply updates
+in the Kestra editor and retain its `variables.activatedAt` value. Set
+`variables.commandsDirectory` to `.agents/commands` if the bridge uses an
+installed project.
+
+Start the cleanup flow once in Kestra. Each cycle selects completed items
+from the active provider and matches their delivery repositories to clones on
+the bridge host. A clean checkout on the delivered branch moves to the default
+branch and pulls with `--ff-only`. Cleanup removes the local branch before the
+remote branch.
+
+After every cycle, including an empty selection or a failure, the flow waits
+`intervalSeconds` (default `3600`) and proceeds to the next completion interval
+of the same length. Stop the execution in Kestra to end the loop.
+
 ## Execution behavior
 
 Each Codex task starts a fresh, ephemeral CLI session using your local settings.
