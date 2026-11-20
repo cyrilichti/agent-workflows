@@ -133,12 +133,11 @@ the process group. Errors use `{"error":"<code>"}`:
 The `work` flow calls `/scripts` for `select-next-item.ts` and, for a selected
 item, `resolve-local-project-directory.ts` with the item's `list` and `id` as
 arguments. Kestra parses `stdout` as JSON before applying the item and project
-switches. The list determines the repository candidates. If a linked request
-conflicts with the selected repository, `repository mismatch` stops the
-attempt before `/work`. A resolved path starts `/work`. The `not found` and
-`search incomplete` results, malformed output, and HTTP failures also fail
-the attempt. Empty selection ends the attempt normally. Every attempt waits
-before retrying.
+switches. The list determines the repository candidates. A resolved path
+starts `/work` in the selected repository. The `not found` and
+`search incomplete` results, malformed output, and HTTP failures fail the
+attempt. Empty selection ends the attempt normally. Every attempt waits before
+retrying.
 
 Set `CODEX_WORKING_DIRECTORY` to the absolute project directory containing
 `agent-workflows.yaml`. Set the flow input `commandsDirectory` to `commands`
