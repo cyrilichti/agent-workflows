@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
+import { resumeBranch } from './work-resume.ts';
 
 const gitCli = `#!/usr/bin/env node
 import { appendFileSync } from 'node:fs';
@@ -21,10 +22,13 @@ if (args[0] === 'branch') {
 } else if (args[0] === 'remote') {
   process.stdout.write(process.env.TEST_REMOTE + '\\n');
 } else if (args[0] === 'switch') {
-  if (process.env.TEST_SWITCH_FAILURE === '1') {
+  if (process.env.TEST_SWITCH_FAILURE === '1' ||
+      (process.env.TEST_LOCAL_BRANCH_MISSING === '1' && !args.includes('-c'))) {
     process.stderr.write('switch failed\\n');
     process.exitCode = 1;
   }
+} else if (args[0] === 'show-ref') {
+  if (process.env.TEST_LOCAL_BRANCH_MISSING === '1') process.exitCode = 1;
 } else if (args[0] === 'status') {
   if (process.env.TEST_DIRTY === '1') {
     process.stdout.write(' M file.txt\\n');
@@ -156,6 +160,18 @@ test('resumed GitLab work accepts the carried request ID', () => {
   }
 });
 
+test('resumed work recovers a branch that exists only on its request remote', () => {
+  const f = fixture('gitlab');
+  try {
+    const result = f.run(7, 'feature/work', { TEST_LOCAL_BRANCH_MISSING: '1' });
+    assert.equal(result.status, 0, result.stdout);
+    assert.equal(JSON.parse(result.stdout).branch, 'feature/work');
+    assert.deepEqual(f.transitionCalls(), [{ item_id: 'ITEM-1' }]);
+  } finally {
+    f.cleanup();
+  }
+});
+
 test('resumed work stops before item mutation when the switched worktree is dirty', () => {
   const f = fixture('github');
   try {
@@ -179,4 +195,80 @@ test('resumed work rejects a request on another source branch before switching',
   } finally {
     f.cleanup();
   }
+});
+
+function gitFixture(t: test.TestContext) {
+  const root = mkdtempSync(join(tmpdir(), 'resume-real-git-'));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  const bare = join(root, 'remote.git');
+  const local = join(root, 'local');
+  mkdirSync(local);
+  const git = (...args: string[]) => execFileSync('git', args, {
+    cwd: local, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+  }).trim();
+  git('init', '--initial-branch=main');
+  git('config', 'user.name', 'Test');
+  git('config', 'user.email', 'test@example.com');
+  writeFileSync(join(local, 'file.txt'), 'initial\n');
+  git('add', 'file.txt');
+  git('commit', '-m', 'Initial');
+  git('init', '--bare', '--initial-branch=main', bare);
+  git('remote', 'add', 'origin', bare);
+  git('push', 'origin', 'main');
+  const sha = git('rev-parse', 'HEAD');
+  return { local, git, sha };
+}
+
+test('real Git resumes a remote-only request branch with its upstream', t => {
+  const f = gitFixture(t);
+  f.git('push', 'origin', 'HEAD:refs/heads/feature/work');
+  resumeBranch('feature/work', f.sha, () => 'origin', f.git);
+  assert.equal(f.git('branch', '--show-current'), 'feature/work');
+  assert.equal(f.git('rev-parse', 'HEAD'), f.sha);
+  assert.equal(f.git('rev-parse', '--abbrev-ref', '@{upstream}'), 'origin/feature/work');
+});
+
+test('real Git preserves unpublished commits when resuming a local request branch', t => {
+  const f = gitFixture(t);
+  f.git('switch', '-c', 'feature/work');
+  writeFileSync(join(f.local, 'file.txt'), 'local work\n');
+  f.git('commit', '-am', 'Unpublished work');
+  const head = f.git('rev-parse', 'HEAD');
+  f.git('switch', 'main');
+  resumeBranch('feature/work', f.sha, () => { throw new Error('Remote not needed'); }, f.git);
+  assert.equal(f.git('rev-parse', 'HEAD'), head);
+  assert.equal(readFileSync(join(f.local, 'file.txt'), 'utf8'), 'local work\n');
+});
+
+test('real Git recovers a missing branch from its available published request SHA', t => {
+  const f = gitFixture(t);
+  resumeBranch('feature/deleted', f.sha, () => 'origin', f.git);
+  assert.equal(f.git('branch', '--show-current'), 'feature/deleted');
+  assert.equal(f.git('rev-parse', 'HEAD'), f.sha);
+  assert.equal(f.git('config', 'branch.feature/deleted.remote'), 'origin');
+  assert.equal(f.git('config', 'branch.feature/deleted.merge'), 'refs/heads/feature/deleted');
+});
+
+test('real Git reports unrecoverable history without changing local work', t => {
+  const f = gitFixture(t);
+  writeFileSync(join(f.local, 'notes.txt'), 'unrelated work\n');
+  const sha = 'b'.repeat(40);
+  assert.throws(() => resumeBranch('feature/deleted', sha, () => 'origin', f.git),
+    new RegExp(`Cannot recover request branch feature/deleted at ${sha}`));
+  assert.equal(f.git('branch', '--show-current'), 'main');
+  assert.equal(readFileSync(join(f.local, 'notes.txt'), 'utf8'), 'unrelated work\n');
+});
+
+test('resumption fetches the request push repository when fetch and push URLs differ', t => {
+  const f = gitFixture(t);
+  const published = f.git('remote', 'get-url', 'origin');
+  f.git('push', 'origin', 'HEAD:refs/heads/feature/work');
+  f.git('update-ref', '-d', 'refs/remotes/origin/feature/work');
+  const other = join(f.local, '..', 'other.git');
+  f.git('init', '--bare', other);
+  f.git('remote', 'set-url', '--push', 'origin', published);
+  f.git('remote', 'set-url', 'origin', other);
+  resumeBranch('feature/work', f.sha, () => 'origin', f.git);
+  assert.equal(f.git('rev-parse', 'origin/feature/work'), f.sha);
+  assert.equal(f.git('rev-parse', '--abbrev-ref', '@{upstream}'), 'origin/feature/work');
 });

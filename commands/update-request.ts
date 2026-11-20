@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import * as github from '../providers/github/update-request.ts';
 import * as gitlab from '../providers/gitlab/update-request.ts';
-import { resolveRequestForProject } from './resolve-request.ts';
+import { requestRemoteForProject, resolveRequestForProject } from './resolve-request.ts';
 import type { GitHubRepository, GitLabRepository } from './resolve-version-repository.ts';
 
 type Request = ReturnType<typeof resolveRequestForProject>;
@@ -12,6 +12,7 @@ type Context = {
   item: unknown;
   branch: string;
   request: { request_id: number };
+  published_head_sha?: string;
   source_findings?: unknown[];
 };
 
@@ -90,29 +91,36 @@ export function updateRequest(context: Context) {
     const branch = git('branch', '--show-current');
     if (branch !== context.branch) throw new Error(`Current branch is ${branch}, expected ${context.branch}.`);
     const head = git('rev-parse', 'HEAD');
-    const [ahead, behind] = git('rev-list', '--left-right', '--count', 'HEAD...@{upstream}')
-      .split(/\s+/).map(Number);
-    if (!Number.isInteger(ahead) || !Number.isInteger(behind) || behind !== 0) {
-      throw new Error('Branch upstream is unavailable, behind, or diverged.');
-    }
+    const readRequest = () => resolveRequestForProject(root, context.request.request_id, [], branch);
 
     stage = 'check_request';
-    request = resolveRequestForProject(root, context.request.request_id, [], context.branch);
+    request = readRequest();
     if (!request.head_sha) throw new Error('Request head SHA is unavailable.');
     if (request.source_branch === request.target_branch) {
       throw new Error('Request source and target branches are identical.');
     }
-    if (ahead === 0 && request.head_sha !== head) {
-      throw new Error('Request head does not match local HEAD.');
+    const publishedHead = context.published_head_sha;
+    if (publishedHead !== undefined && publishedHead !== request.head_sha) {
+      throw new Error(`Request head changed: expected ${publishedHead}, observed ${request.head_sha}.`);
     }
-    if (git('status', '--porcelain') || git('rev-parse', 'HEAD') !== head) {
+
+    if (git('status', '--porcelain') || git('rev-parse', 'HEAD') !== head ||
+        git('branch', '--show-current') !== branch) {
       throw new Error('Branch changed during readiness checks.');
     }
 
-    if (ahead! > 0) {
+    if (publishedHead === undefined && request.head_sha !== head) {
       stage = 'push';
-      git('push');
+      const remote = requestRemoteForProject(root);
+      git('push', '--', remote, `${head}:refs/heads/${request.source_branch}`);
+      stage = 'observe_push';
+      request = readRequest();
+      if (request.head_sha !== head) {
+        throw new Error(`Request head after push is ${request.head_sha}, expected ${head}.`);
+      }
     }
+
+    const expectedHead = request.head_sha;
     const repo = repository(request);
     if (!sameBody(request.body, body)) {
       stage = 'replace_description';
@@ -121,7 +129,6 @@ export function updateRequest(context: Context) {
       } else {
         gitlab.replaceDescription(repo as GitLabRepository, request.request_id, body);
       }
-      request = { ...request, body };
     }
 
     const title = request.title.replace(/^Draft:\s*/, '');
@@ -134,10 +141,15 @@ export function updateRequest(context: Context) {
         gitlab.markReady(repo as GitLabRepository, request.request_id,
           title === request.title ? undefined : title);
       }
-      request = { ...request, draft: false, title };
     }
+    stage = 'observe_request';
+    request = readRequest();
+    if (request.head_sha !== expectedHead || request.draft || !sameBody(request.body, body)) {
+      throw new Error('The request head, description, or ready state changed during promotion.');
+    }
+    const { published_head_sha: _publishedHead, ...deliveryContext } = context;
     return { status: 'promoted' as const,
-      delivery_context: { ...context, plan: local, request, branch } };
+      delivery_context: { ...deliveryContext, plan: local, request, branch } };
   } catch (error) {
     return { status: 'failed' as const, stage,
       reason: error instanceof Error ? error.message : String(error),

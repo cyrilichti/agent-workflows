@@ -23,7 +23,6 @@ For a title or search phrase:
 node ../commands/prepare-delivery-context.ts --query "<item>"
 ```
 
-On failure, report `stage` and `reason`, then stop.
 On success, attach the exact `sandbox_context` to `delivery_context` when it
 was supplied.
 

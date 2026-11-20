@@ -36,7 +36,7 @@ export const agentSkills = [
   { name: "to-spec", source: "mattpocock/skills", cohort: "product", cohortLabel: "Product and content" },
   { name: "to-tickets", source: "mattpocock/skills", cohort: "product", cohortLabel: "Product and content" },
   { name: "vercel-react-best-practices", source: "vercel-labs/agent-skills", cohort: "specialized", cohortLabel: "Specialized delivery" },
-  { name: "vue", source: "antfu/skills", cohort: "specialized", cohortLabel: "Specialized delivery" },
+  { name: "vue-best-practices", source: "vuejs-ai/skills", cohort: "specialized", cohortLabel: "Specialized delivery" },
   { name: "web-design-guidelines", source: "vercel-labs/agent-skills", cohort: "design", cohortLabel: "Design and accessibility" },
 ];
 
@@ -146,12 +146,12 @@ when none are needed.
     <tr>
       <td>3</td>
       <th scope="row">Execute</th>
-      <td>Persist the todo as in progress, implement and validate only its scope, then stage only its changes.</td>
+      <td>Persist the todo as in progress, implement and validate only its scope, then remove untracked temporary files generated for the todo or its validation.</td>
     </tr>
     <tr>
       <td>4</td>
       <th scope="row">Commit</th>
-      <td>Commit the result, persist todo completion immediately, push the commit, and continue. A todo without a commit causes no push.</td>
+      <td>The completion command stages all remaining changes, commits the result, persists todo completion immediately, pushes the commit, and continues. A todo without changes causes no commit or push.</td>
     </tr>
     <tr>
       <td>5</td>

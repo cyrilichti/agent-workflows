@@ -7,14 +7,25 @@ import test from 'node:test';
 
 const plan = '# Fix CTA\n\n## Steps\n\n1. ✓ Fix color\n\n## Validation\n\n- [x] Run tests\n';
 const gitCli = `#!/usr/bin/env node
+import { readFileSync, writeFileSync } from 'node:fs';
 const args = process.argv.slice(2);
+const file = process.env.TEST_REQUEST_STATE;
+const head = process.env.TEST_LOCAL_HEAD ?? 'abc';
 if (args[0] === 'status') {
 } else if (args[0] === 'branch') {
   process.stdout.write('fix/cta\\n');
 } else if (args[0] === 'rev-parse') {
-  process.stdout.write('abc\\n');
+  process.stdout.write(head + '\\n');
 } else if (args[0] === 'rev-list') {
-  process.stdout.write('0\\t0\\n');
+  process.stdout.write((process.env.TEST_DIVERGED ? '3\\t4' : head === 'abc' ? '0\\t0' : '1\\t0') + '\\n');
+} else if (args[0] === 'push') {
+  if (process.env.TEST_REJECT_PUSH) {
+    process.stderr.write('rejected (non-fast-forward)');
+    process.exit(1);
+  }
+  const state = JSON.parse(readFileSync(file, 'utf8'));
+  state.head.sha = head;
+  writeFileSync(file, JSON.stringify(state));
 } else if (args[0] === 'config') {
   if (args[2] === 'branch.fix/cta.remote') process.stdout.write('origin\\n');
   else process.exitCode = 1;
@@ -36,6 +47,7 @@ if (args[0] === 'api' && args.includes('PATCH')) {
 } else if (args[0] === 'api') {
   process.stdout.write(JSON.stringify(state));
 } else if (args[0] === 'pr' && args[1] === 'ready') {
+  if (process.env.TEST_FAIL_READY) process.exit(1);
   state.draft = false;
   writeFileSync(file, JSON.stringify(state));
 } else {
@@ -76,8 +88,11 @@ function fixture(t: test.TestContext) {
     request: { request_id: 7 } };
   return {
     root,
-    run() { return spawnSync(process.execPath, [join(root, 'commands/update-request.ts')],
-      { cwd: root, env, input: JSON.stringify(context), encoding: 'utf8' }); },
+    run(input = {}, settings: Record<string, string> = {}) {
+      return spawnSync(process.execPath, [join(root, 'commands/update-request.ts')],
+        { cwd: root, env: { ...env, ...settings }, input: JSON.stringify({ ...context, ...input }),
+          encoding: 'utf8' });
+    },
     state() { return JSON.parse(readFileSync(join(root, 'request.json'), 'utf8')); },
     planPath: join(root, 'plans/cta.plan.md'),
   };
@@ -124,4 +139,62 @@ test('request update stops before mutation when validation is unchecked', (t) =>
   assert.equal(f.state().body, '');
   assert.equal(f.state().draft, true);
   assert.equal(existsSync(f.planPath), true);
+});
+
+test('publishes pending commits and returns the head now observed on the request', (t) => {
+  const f = fixture(t);
+  const result = f.run({}, { TEST_LOCAL_HEAD: 'def' });
+
+  assert.equal(result.status, 0, result.stdout);
+  assert.equal(JSON.parse(result.stdout).delivery_context.request.head_sha, 'def');
+  assert.equal(f.state().head.sha, 'def');
+  assert.equal(f.state().body, plan);
+  assert.equal(f.state().draft, false);
+});
+
+test('promotes explicitly confirmed published work with divergent local history', (t) => {
+  const f = fixture(t);
+  const result = f.run({ published_head_sha: 'abc' },
+    { TEST_LOCAL_HEAD: 'def', TEST_DIVERGED: '1', TEST_REJECT_PUSH: '1' });
+
+  assert.equal(result.status, 0, result.stdout);
+  assert.equal(JSON.parse(result.stdout).delivery_context.request.head_sha, 'abc');
+  assert.equal(f.state().body, plan);
+  assert.equal(f.state().draft, false);
+});
+
+test('rejects a published head that no longer matches the request', (t) => {
+  const f = fixture(t);
+  const result = f.run({ published_head_sha: 'stale' });
+
+  assert.equal(result.status, 1);
+  assert.equal(JSON.parse(result.stdout).stage, 'check_request');
+  assert.equal(f.state().body, '');
+  assert.equal(f.state().draft, true);
+});
+
+test('reports a rejected push before updating the draft request', (t) => {
+  const f = fixture(t);
+  const result = f.run({}, { TEST_LOCAL_HEAD: 'def', TEST_DIVERGED: '1', TEST_REJECT_PUSH: '1' });
+
+  assert.equal(result.status, 1);
+  assert.equal(JSON.parse(result.stdout).stage, 'push');
+  assert.match(JSON.parse(result.stdout).reason, /non-fast-forward/);
+  assert.equal(f.state().body, '');
+  assert.equal(f.state().draft, true);
+});
+
+test('resumes promotion after the description update succeeded', (t) => {
+  const f = fixture(t);
+  const failed = f.run({}, { TEST_FAIL_READY: '1' });
+
+  assert.equal(failed.status, 1);
+  assert.equal(JSON.parse(failed.stdout).stage, 'mark_ready');
+  assert.equal(f.state().body, plan);
+  assert.equal(f.state().draft, true);
+
+  const resumed = f.run();
+  assert.equal(resumed.status, 0, resumed.stdout);
+  assert.equal(f.state().body, plan);
+  assert.equal(f.state().draft, false);
 });

@@ -25,6 +25,9 @@ try {
   const current = readPlan(root, planPath!);
   const completedPlan = completeTodo(current, todoNumber);
 
+  stage = 'stage_changes';
+  git('add', '--all');
+
   stage = 'inspect_index';
   const diff = spawnSync('git', ['diff', '--cached', '--quiet'], {
     cwd: root, encoding: 'utf8',

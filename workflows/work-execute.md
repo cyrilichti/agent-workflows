@@ -28,8 +28,7 @@ Run from this file's directory with the project-relative plan path:
 node ../commands/work-new.ts "<item ID>" "<plan name>" "<plan objective>" "<plan path>"
 ```
 
-On failure, report `stage`, `reason`, and completed identities; stop. On
-success, set the carried item's status to `resulting_status` and create or
+On success, set the carried item's status to `resulting_status` and create or
 update `Delivery Context` with the plan path, item, `branch`, and `request`.
 
 #### `resumed`
@@ -43,8 +42,7 @@ Run from this file's directory:
 node ../commands/work-resume.ts "<item ID>" "<request ID>" "<branch>"
 ```
 
-On failure, report `stage`, `reason`, and completed identities; stop. On
-success, set the carried item's status to `resulting_status` and record the
+On success, set the carried item's status to `resulting_status` and record the
 returned `branch` and `request` in `Delivery Context`.
 
 ### 2. Execute the Plan
@@ -60,8 +58,7 @@ node ../commands/work-next-todo.ts "<plan path>" <<'JSON'
 JSON
 ```
 
-If the command fails, report its `stage` and `reason`, then stop. On success,
-clear `source_findings`.
+On success, clear `source_findings`.
 
 #### Activate the Specialist
 
@@ -77,23 +74,25 @@ task_context: complete numbered todo list from the current plan
 
 For each returned `todo`:
 
-1. Implement and validate only that todo, then stage only its changes.
-2. Run one command from this file's directory:
+1. Implement and validate only that todo.
+2. Inspect `git status --short` and remove only untracked temporary files you
+   generated for this todo or its validation.
+3. Run one command from this file's directory to stage and commit all remaining
+   changes before continuing:
 
-   With staged changes:
+   With changes:
 
    ```sh
    node ../commands/work-complete-todo.ts "<plan path>" "<todo number>" "<Conventional Commit message>"
    ```
 
-   Without staged changes:
+   Without changes:
 
    ```sh
    node ../commands/work-complete-todo.ts "<plan path>" "<todo number>"
    ```
 
-On `todo`, repeat. On `ready` or `cancelled`, go to Step 3. On `failed`, report
-the command result and stop.
+On `todo`, repeat. On `ready` or `cancelled`, go to Step 3.
 
 ### 3. Continue to Ready
 

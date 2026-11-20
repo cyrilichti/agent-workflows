@@ -26,6 +26,13 @@ if (args[0] === 'branch' && args[1] === '--show-current') {
   output('https://github.com/acme/repo.git');
 } else if (args[0] === 'remote') {
   output('origin');
+} else if (args[0] === 'for-each-ref') {
+  for (const name of JSON.parse(process.env.TEST_LOCAL_BRANCHES || '[]')) output('refs/heads/' + name);
+} else if (args[0] === 'ls-remote' && args.includes('--heads')) {
+  const names = args.at(-1) === 'origin'
+    ? process.env.TEST_FETCH_BRANCHES ?? process.env.TEST_REMOTE_BRANCHES
+    : process.env.TEST_REMOTE_BRANCHES;
+  for (const name of JSON.parse(names || '[]')) output('a'.repeat(40) + '\\trefs/heads/' + name);
 } else if (args[0] === 'ls-remote') {
   output('ref: refs/heads/main\\tHEAD');
 } else if (args[0] === 'status' && process.env.TEST_DIRTY === '1') {
@@ -155,6 +162,43 @@ test('new work creates the same delivery branch from a detached worktree', () =>
     assert.ok(calls.some(args => args[0] === 'switch' && args.at(-1) === 'FETCH_HEAD'));
     assert.equal(calls.some(args => args[0] === 'pull' ||
       (args[0] === 'switch' && args[1] === 'main')), false);
+  } finally { f.cleanup(); }
+});
+
+test('new work chooses a free name before initialization when a local branch is occupied', () => {
+  const f = fixture();
+  try {
+    const result = f.run({ TEST_LOCAL_BRANCHES: JSON.stringify(['fix/reparer-le-plan']) });
+    assert.equal(result.status, 0, result.stdout);
+    assert.equal(JSON.parse(result.stdout).branch, 'fix/reparer-le-plan-2');
+    assert.equal(f.commandCalls().find(call => call.name === 'create-request.ts')?.input.source_branch,
+      'fix/reparer-le-plan-2');
+  } finally { f.cleanup(); }
+});
+
+test('new work skips remote names and occupied suffixes without modifying existing branches', () => {
+  const f = fixture();
+  try {
+    const result = f.run({
+      TEST_LOCAL_BRANCHES: JSON.stringify(['fix/reparer-le-plan-2']),
+      TEST_REMOTE_BRANCHES: JSON.stringify(['fix/reparer-le-plan', 'fix/reparer-le-plan-3']),
+    });
+    assert.equal(result.status, 0, result.stdout);
+    assert.equal(JSON.parse(result.stdout).branch, 'fix/reparer-le-plan-4');
+    assert.deepEqual(f.gitCalls().filter(args => args[0] === 'switch'), [
+      ['switch', '-c', 'fix/reparer-le-plan-4', 'FETCH_HEAD'],
+    ]);
+    assert.equal(f.gitCalls().some(args => args.includes('--force') || args[0] === 'reset'), false);
+  } finally { f.cleanup(); }
+});
+
+test('new work checks occupied names in the push repository rather than the fetch repository', () => {
+  const f = fixture();
+  try {
+    const result = f.run({ TEST_FETCH_BRANCHES: '[]',
+      TEST_REMOTE_BRANCHES: JSON.stringify(['fix/reparer-le-plan']) });
+    assert.equal(result.status, 0, result.stdout);
+    assert.equal(JSON.parse(result.stdout).branch, 'fix/reparer-le-plan-2');
   } finally { f.cleanup(); }
 });
 

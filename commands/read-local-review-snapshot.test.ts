@@ -173,3 +173,18 @@ test('Invalid comparison SHAs and a mismatched local head are rejected before re
     ...request, head_sha: head, comparison: { ...request.comparison, head_sha: head },
   }), /Local branch or HEAD differs/);
 });
+
+test('a pinned published head can be reviewed without switching to that commit', (t) => {
+  const { root, git, remote, request } = clonedRepo(t);
+  git('-c', 'user.name=Test', '-c', 'user.email=test@example.com',
+    'commit', '--allow-empty', '-m', 'local-only commit');
+  const localHead = git('rev-parse', 'HEAD');
+
+  const result = readLocalReviewSnapshot(root, request, git, remote.head);
+
+  assert.equal(result.head_sha, remote.head);
+  assert.deepEqual(result.changed_files, ['file.txt']);
+  assert.equal(git('rev-parse', 'HEAD'), localHead);
+  assert.throws(() => readLocalReviewSnapshot(root, request, git, localHead),
+    /request head changed/i);
+});

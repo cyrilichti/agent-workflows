@@ -9,8 +9,7 @@ inspection.
 
 ## Terminal Outcomes
 
-- Promoted: the complete local plan is sent as the request description, the
-  request is marked ready, and the same `delivery-context` is handed to
-  `/inspect` after successful provider operations.
-- Stopped: a missing or ineligible plan, inconsistent identity, unsafe Git
-  state, or failed mutation is reported without claiming promotion.
+- Promoted: the request contains the complete local plan and is marked ready.
+  The delivery context carries the observed published request to `/inspect`.
+- Stopped: a failure that could not be recovered is reported with the observed
+  state and the remaining action or decision.

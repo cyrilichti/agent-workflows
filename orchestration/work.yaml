@@ -117,15 +117,16 @@ tasks:
                   description: |
                     The bridge runs `resolve-local-project-directory.ts` directly on the host
                     with the selected destination name (`list`) and exact item ID (`id`).
-                    It reads the item only when several repositories match the destination.
-                    Configured project paths take priority when available.
+                    The list determines the candidates. Configured repositories take
+                    priority over their direct neighbors.
 
                     | Step | Execution |
                     | --- | --- |
                     | 1. Require | Reject a missing or blank `list` or exact item ID before searching. |
-                    | 2. Search | Search configured project directories first, then neighboring repositories and the home directory if needed. Complete the first matching tier, retain all exact matches when present, and otherwise retain prefix matches. |
-                    | 3. Choose | For several matches, use the complete item to identify the primary repository, then apply stable tie breaks. |
-                    | 4. Return | Return one absolute path, `not found`, or `search incomplete`. Invalid input or a failed search is an error. |
+                    | 2. Search | Complete the configured tier first. Search direct neighbors if the configured tier has no match. Prefer the longest matching basename, then family prefixes. |
+                    | 3. Choose | For several matches, use an explicit repository designation in the approved plan or item within those candidates, then apply stable tie breaks. |
+                    | 4. Verify | Check every linked request against the selected repository. A conflict returns `repository mismatch` without a path. |
+                    | 5. Return | Return one absolute path or an unresolved status of `not found`, `search incomplete`, or `repository mismatch`. Invalid input or a failed lookup is an error. |
                   uri: '{{ envs.bridge_url }}/scripts'
                   method: POST
                   contentType: application/json
@@ -153,6 +154,7 @@ tasks:
                     | --- | --- |
                     | Resolved | A nonblank `path` routes to `work` in that directory. |
                     | Unresolved | `not found` or `search incomplete` without a path routes to `project-required`. |
+                    | Mismatch | `repository mismatch` without a path routes to `project-repository-mismatch` and stops delivery. |
                     | Invalid | Any other result routes to `project-error`. |
                   value: >-
                     {{ outputs.project.body | toJson | jq('
@@ -160,6 +162,7 @@ tasks:
                       | if type == "object" and (try (
                           (keys == ["path"]) and (.path | type) == "string" and (.path | test("\\S"))
                         ) catch false) then "project"
+                        elif . == {"status":"repository mismatch"} then "repository-mismatch"
                         elif type == "object" and (try (
                           (keys == ["status"])
                           and ((.status == "not found") or (.status == "search incomplete"))
@@ -306,6 +309,10 @@ tasks:
                           | `search incomplete` | Report that local repository search must be restored. |
                           | After failure | Run `sleep`, then allow another selection. |
                         errorMessage: "{{ fromJson(fromJson(outputs.project.body).stdout).status == 'not found' ? 'No local project was found for this item. Set up or configure the project before running the flow again.' : 'The local project search did not complete. Restore search availability before running the flow again.' }}"
+                    repository-mismatch:
+                      - id: project-repository-mismatch
+                        type: io.kestra.plugin.core.execution.Fail
+                        errorMessage: "A linked request does not match the repository selected from the item's list. Correct the delivery backlink before starting /work."
                     error:
                       - id: project-error
                         type: io.kestra.plugin.core.execution.Fail

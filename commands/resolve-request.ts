@@ -93,7 +93,7 @@ function gitConfig(root: string, key: string): string | undefined {
   return result.status === 0 ? result.stdout.trim() || undefined : undefined;
 }
 
-function pushRemote(root: string): string {
+export function requestPushRemoteForProject(root: string): string {
   const current = git(root, 'branch', '--show-current');
   const configured = gitConfig(root, `branch.${current}.pushRemote`) ||
     gitConfig(root, 'remote.pushDefault') || gitConfig(root, `branch.${current}.remote`);
@@ -108,7 +108,7 @@ function pushRemote(root: string): string {
 }
 
 export function requestRemoteForProject(root: string): string {
-  return git(root, 'remote', 'get-url', '--push', pushRemote(root));
+  return git(root, 'remote', 'get-url', '--push', requestPushRemoteForProject(root));
 }
 
 export function requestRepositoryForProject(root: string):

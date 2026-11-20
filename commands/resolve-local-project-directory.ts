@@ -4,7 +4,7 @@ import { basename, dirname, isAbsolute, join } from 'node:path';
 
 type SearchResult =
   | { path: string }
-  | { status: 'not found' | 'search incomplete' };
+  | { status: 'not found' | 'search incomplete' | 'repository mismatch' };
 
 function parsePaths(input: string): string[] {
   const paths: unknown = JSON.parse(input);
@@ -121,45 +121,63 @@ function referenceName(reference: string): string {
   return normalize(basename(value.replace(/\/$/, '').replace(/\.git$/, '')));
 }
 
-async function chooseRepository(paths: string[], itemId: string): Promise<string> {
-  if (paths.length === 1) return paths[0]!;
+function preferredRepository(paths: string[], content: string): string | undefined {
+  const candidates = paths.map(path => ({ path, name: normalize(basename(path)) }));
+  const references = [...content.matchAll(/^(?:Primary repository|Repository|Repo):\s*(\S+)/gim)]
+    .map(match => referenceName(match[1]!));
+  const explicit = candidates.filter(candidate => references.includes(candidate.name));
+  if (explicit.length === 1) return explicit[0]!.path;
+  return undefined;
+}
+
+function chooseRepository(paths: string[], ...contents: string[]): string {
+  for (const content of contents) {
+    const preferred = preferredRepository(paths, content);
+    if (preferred) return preferred;
+  }
+  const frontend = paths.filter(path => !/api|back/i.test(basename(path)));
+  return (frontend.length ? frontend : paths)[0]!;
+}
+
+function linkedRepository(reference: string): string | undefined {
+  try {
+    const path = new URL(reference).pathname;
+    const match = /^(.*)\/(?:pull|-\/merge_requests)\/\d+\/?$/.exec(path);
+    return match ? referenceName(match[1]!) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function result(paths: string[], list: string, itemId: string): Promise<SearchResult> {
+  const configured = inspectConfigured(paths);
+  if (configured.incomplete) return { status: 'search incomplete' };
+  let candidates = matchingRepositories(configured.repositories, list);
+  if (!candidates.length) {
+    const parents = inspectParents(paths);
+    if (parents.incomplete) return { status: 'search incomplete' };
+    candidates = matchingRepositories(parents.repositories, list);
+  }
+  if (!candidates.length) return { status: 'not found' };
+
   const root = basename(dirname(import.meta.dirname)) === '.agents'
     ? dirname(dirname(import.meta.dirname)) : dirname(import.meta.dirname);
   const { resolveItemProvider } = await import('./resolve-item-provider.ts');
   const { readItem } = await import('./read-item.ts');
   const provider = resolveItemProvider(join(root, 'agent-workflows.yaml'));
   if (provider !== 'linear' && provider !== 'clickup') {
-    throw new Error('Configure item provider as linear or clickup to resolve repository ties.');
+    throw new Error('Configure item provider as linear or clickup to resolve repositories.');
   }
   const item = readItem(provider, itemId);
-  const candidates = paths.map(path => ({ path, name: normalize(basename(path)) }));
-  const content = [item.title, item.description, ...item.comments.map(comment => comment.body)]
-    .join('\n');
-  const references = [...content.matchAll(/^(?:Primary repository|Repository|Repo):\s*(\S+)/gim)]
-    .map(match => referenceName(match[1]!));
-  const explicit = candidates.filter(candidate => references.includes(candidate.name));
-  if (explicit.length === 1) return explicit[0]!.path;
-  const mentioned = candidates.filter(candidate => {
-    const escaped = candidate.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return new RegExp(`(^|[^a-z0-9])${escaped}($|[^a-z0-9])`, 'im').test(content);
-  });
-  if (mentioned.length === 1) return mentioned[0]!.path;
-  const frontend = paths.filter(path => !/api|back/i.test(basename(path)));
-  return (frontend.length ? frontend : paths)[0]!;
-}
-
-async function result(paths: string[], list: string, itemId: string): Promise<SearchResult> {
-  const configured = inspectConfigured(paths);
-  const first = matchingRepositories(configured.repositories, list);
-  if (first.length) {
-    if (configured.incomplete) return { status: 'search incomplete' };
-    return { path: await chooseRepository(first, itemId) };
+  const plan = item.comments.find(comment =>
+    comment.body.startsWith('Agent-Workflows-Approved-Plan:'))?.body ?? '';
+  const content = [item.title, item.description].join('\n');
+  const selected = chooseRepository(candidates, plan, content);
+  const selectedName = normalize(basename(selected));
+  if (item.request_backlinks.some(backlink => linkedRepository(backlink) !== selectedName)) {
+    return { status: 'repository mismatch' };
   }
-  const parents = inspectParents(paths);
-  if (configured.incomplete || parents.incomplete) return { status: 'search incomplete' };
-  const second = matchingRepositories(parents.repositories, list);
-  if (!second.length) return { status: 'not found' };
-  return { path: await chooseRepository(second, itemId) };
+  return { path: selected };
 }
 
 const list = process.argv[2];

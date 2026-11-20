@@ -22,9 +22,8 @@ For a title or search phrase:
 node ../commands/prepare-delivery-context.ts --require-linked-request --query "<item>"
 ```
 
-On failure, report `stage` and `reason`, then stop. This is the same context
-preparation used by `/ready`. Branch and HEAD are verified in the inspection
-snapshot step without switching branches.
+This is the same context preparation used by `/ready`. The inspection snapshot
+verifies the branch and the published request head.
 
 ### 2. Inspect the Request
 
