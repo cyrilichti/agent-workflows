@@ -170,14 +170,15 @@ in the Kestra editor and retain its `variables.activatedAt` value. Set
 `variables.commandsDirectory` to `.agents/commands` if the bridge uses an
 installed project.
 
-Cleanup runs hourly in UTC. It selects completed items from the active item
-provider and matches their delivery repositories against the Codex project
-paths and neighboring clones on the bridge host. A clean checkout on the
-delivered branch moves to the default branch and pulls with `--ff-only`.
-Cleanup confirms the local branch is absent before deleting the remote branch.
-The cleanup step returns each item’s clone and both outcomes. A manual execution uses the last
-`intervalSeconds` seconds (default `3600`). For an earlier scheduled interval,
-use the schedule trigger's backfill in Kestra.
+Start the cleanup flow once in Kestra. Each cycle selects completed items
+from the active provider and matches their delivery repositories to clones on
+the bridge host. A clean checkout on the delivered branch moves to the default
+branch and pulls with `--ff-only`. Cleanup removes the local branch before the
+remote branch.
+
+After every cycle, including an empty selection or a failure, the flow waits
+`intervalSeconds` (default `3600`) and proceeds to the next completion interval
+of the same length. Stop the execution in Kestra to end the loop.
 
 ## Execution behavior
 
