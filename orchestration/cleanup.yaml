@@ -24,7 +24,7 @@ concurrency:
   limit: 1
   behavior: QUEUE
 triggers:
-  - id: hourly
+  - id: loop
     type: io.kestra.plugin.core.trigger.Schedule
     cron: "@hourly"
     timezone: Etc/UTC
@@ -62,7 +62,7 @@ tasks:
         "args": ["clean", fromJson(outputs["select-items"].body).stdout]
       } | toJson }}
     timeout: PT5M
-  - id: report-error
+  - id: clean-error
     type: io.kestra.plugin.core.execution.Fail
     runIf: >-
       {{ fromJson(fromJson(outputs["select-items"].body).stdout).error is defined
