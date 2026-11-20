@@ -2,10 +2,13 @@ import { execFileSync } from 'node:child_process';
 import { readItem } from './read-item.ts';
 import type { ItemProvider } from './read-item.ts';
 
-export type CleanupDelivery = {
+export type CleanupRepository = {
   provider: 'github' | 'gitlab';
   host: string;
   repository: string;
+};
+
+export type CleanupDelivery = CleanupRepository & {
   request: string;
   branch: string;
   target: string;
@@ -55,7 +58,9 @@ function gitlabDelivery(url: URL, repository: string, number: string): CleanupDe
     sha: merge.sha, body: merge.description ?? '' };
 }
 
-export function readCleanupDelivery(provider: ItemProvider, id: string): CleanupDelivery {
+export function readCleanupDelivery<T>(provider: ItemProvider, id: string,
+  identifyClone: (repository: CleanupRepository) => T,
+): { delivery: CleanupDelivery; clone: T } {
   const ticket = readItem(provider, id);
   const status = ticket.status as { type?: string } | null;
   if (status?.type !== (provider === 'linear' ? 'completed' : 'done') ||
@@ -69,9 +74,12 @@ export function readCleanupDelivery(provider: ItemProvider, id: string): Cleanup
   }
   const github = /^\/([\w.-]+\/[\w.-]+)\/pull\/(\d+)\/?$/.exec(url.pathname);
   const gitlab = /^\/([\w.-]+(?:\/[\w.-]+)+)\/-\/merge_requests\/(\d+)\/?$/.exec(url.pathname);
-  const delivery = github ? githubDelivery(url, github[1]!, github[2]!) :
-    gitlab ? gitlabDelivery(url, gitlab[1]!, gitlab[2]!) : undefined;
-  if (!delivery) throw new Error('Unsupported delivery backlink.');
+  const match = github ?? gitlab;
+  if (!match) throw new Error('Unsupported delivery backlink.');
+  const clone = identifyClone({ provider: github ? 'github' : 'gitlab',
+    host: url.host, repository: match[1]! });
+  const delivery = github ? githubDelivery(url, match[1]!, match[2]!) :
+    gitlabDelivery(url, match[1]!, match[2]!);
   const { body, ...result } = delivery;
   const ticketLink = `**Ticket :** [${ticket.identifier ?? ticket.id}](${ticket.url})`;
   if (!body.split(/\r?\n/).some(line => line.trim() === ticketLink) ||
@@ -79,7 +87,7 @@ export function readCleanupDelivery(provider: ItemProvider, id: string): Cleanup
       !result.target || [result.target, result.defaultBranch].includes(result.branch)) {
     throw new Error('Cannot verify the delivered source ref and its ticket.');
   }
-  return result;
+  return { delivery: result, clone };
 }
 
 export function confirmBranchEligible(delivery: CleanupDelivery, existsRemotely: boolean): void {

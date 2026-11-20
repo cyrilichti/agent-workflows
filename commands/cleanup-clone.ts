@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { realpathSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { CleanupDelivery } from './cleanup-delivery.ts';
+import type { CleanupRepository } from './cleanup-delivery.ts';
 import { discoverLocalRepositories } from './resolve-local-project-directory.ts';
 
 export type CleanupClone = { path: string; commonDirectory: string; remote: string; pushUrl: string };
@@ -19,7 +19,7 @@ export function runGit(path: string, args: string[], missingStatus?: number): st
   return result.stdout.trimEnd();
 }
 
-function matchesRemote(value: string, delivery: CleanupDelivery): boolean {
+function matchesRemote(value: string, delivery: CleanupRepository): boolean {
   const scp = /^(?:[^@/:]+@)?([^:/]+):([^/].*)$/.exec(value);
   const url = scp ? new URL(`ssh://${scp[1]}/${scp[2]}`) : URL.canParse(value) ? new URL(value) : null;
   if (!url || !['https:', 'ssh:'].includes(url.protocol) || url.search || url.hash) return false;
@@ -31,7 +31,7 @@ function matchesRemote(value: string, delivery: CleanupDelivery): boolean {
 }
 
 export function findCleanupClone(
-  delivery: CleanupDelivery, paths = discoverLocalRepositories(),
+  delivery: CleanupRepository, paths = discoverLocalRepositories(),
 ): CleanupClone {
   const clones = new Map<string, CleanupClone>();
   for (const path of paths) {

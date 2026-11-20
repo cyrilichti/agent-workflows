@@ -20,6 +20,11 @@ function checkedOut(path: string, ref: string): string[] {
   return worktrees;
 }
 
+function localHead(path: string, ref: string): string | undefined {
+  const refs = runGit(path, ['for-each-ref', '--format=%(refname)%09%(objectname)', ref])!;
+  return refs.split('\n').find(line => line.startsWith(`${ref}\t`))?.split('\t')[1];
+}
+
 function checkoutDefault(clone: CleanupClone, branch: string): void {
   const path = clone.path;
   if (runGit(path, ['status', '--porcelain', '--untracked-files=normal'])) {
@@ -30,7 +35,7 @@ function checkoutDefault(clone: CleanupClone, branch: string): void {
     if (existsSync(resolve(path, location))) throw new Error('The checkout has an in-progress Git operation.');
   }
   const ref = `refs/heads/${branch}`;
-  if (runGit(path, ['show-ref', '--exists', ref], 2) === undefined) {
+  if (localHead(path, ref) === undefined) {
     runGit(path, ['fetch', '--no-tags', '--', clone.remote, ref]);
     runGit(path, ['switch', '--no-guess', '--no-overwrite-ignore', '-c', branch, 'FETCH_HEAD']);
   } else {
@@ -60,8 +65,7 @@ export function cleanupBranches(
       const endpoint = runGit(path, ['remote', 'get-url', '--push', '--all', clone.remote]);
       if (endpoint !== clone.pushUrl) throw new Error('The matching push destination changed.');
       outcome.local = 'blocked';
-      const local = runGit(path, ['show-ref', '--exists', ref], 2) === undefined
-        ? undefined : runGit(path, ['show-ref', '--hash', '--verify', ref]);
+      const local = localHead(path, ref);
       const remote = remoteHead(clone, ref);
       if (local !== undefined && local !== delivery.sha) throw new Error('The local ref differs from the delivered commit.');
       if (remote !== undefined && remote !== delivery.sha) throw new Error('The remote ref differs from the delivered commit.');
@@ -76,7 +80,7 @@ export function cleanupBranches(
         if (worktrees.length) checkoutDefault(clone, delivery.defaultBranch);
         if (checkedOut(path, ref).length) throw new Error('The branch is still checked out.');
         runGit(path, ['update-ref', '--no-deref', '-d', ref, delivery.sha]);
-        if (runGit(path, ['show-ref', '--exists', ref], 2) !== undefined) {
+        if (localHead(path, ref) !== undefined) {
           throw new Error('The local ref is still present.');
         }
         outcome.local = 'removed';
