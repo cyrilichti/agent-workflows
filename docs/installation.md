@@ -19,7 +19,8 @@ Then invoke it explicitly from your agent:
 
 The same command installs a new project or updates an existing installation.
 
-Run the bootstrap from the project root with no pending Git changes beyond
-the files created by the command above, select your item and version providers,
-then configure their access as described in [Providers](/agent-workflows/providers/)
-before running workflows.
+The bootstrap replaces the root `AGENTS.md` and the managed `.agents/`
+directories. Keep project plans in `.agents/plans`, which the bootstrap preserves.
+
+Select your item and version providers, then configure their access as described
+in [Providers](/agent-workflows/providers/) before running workflows.
