@@ -9,7 +9,7 @@ type RecordValue = Record<string, unknown>;
 type Candidate = {
   label: string;
   value: string | { team: string; project?: string };
-  match: 'native_url' | 'exact_id' | 'normalized_exact_name' | 'strong_unique_approximate' | 'possible';
+  match: 'native_url' | 'exact_id' | 'normalized_exact_name' | 'whole_word_name' | 'possible';
 };
 
 const runCli: Run = (program, args, input) => execFileSync(program, args, {
@@ -159,13 +159,22 @@ function linearCandidates(reference: string, run: Run): Candidate[] {
 function clickupCandidates(reference: string, run: Run): Candidate[] {
   const candidates: Candidate[] = [];
   const seen = new Set<string>();
+  const query = normalize(reference);
+  const wordBoundary = '[^\\p{L}\\p{M}\\p{N}]';
+  const wholeWordName = query
+    ? new RegExp('(?:^|' + wordBoundary + ')' + RegExp.escape(query) +
+      '(?:$|' + wordBoundary + ')', 'u')
+    : undefined;
   const add = (list: RecordValue, path: string) => {
     const id = field(list, 'id');
     if (!id || list.archived === true || seen.has(id)) return;
     seen.add(id);
     const name = field(list, 'name');
     const match = classify(reference, id, [name, path], field(list, 'url'));
-    if (match) candidates.push({ label: path, value: id, match });
+    const listMatch = match === 'possible' && wholeWordName?.test(normalize(name))
+      ? 'whole_word_name'
+      : match;
+    if (listMatch) candidates.push({ label: path, value: id, match: listMatch });
   };
   if (/^(?:https?:\/\/)?(?:app\.)?clickup\.com\/t\//.test(reference)) {
     throw new Error('Supply a ClickUp List URL or ID, not a task URL.');
@@ -222,23 +231,26 @@ export function resolveItemDestination(provider: Provider, reference: string,
   const candidates = provider === 'linear'
     ? linearCandidates(reference.trim(), run) : clickupCandidates(reference.trim(), run);
   if (!candidates.length) return { status: 'not_found' as const, provider };
-  const reliable = candidates.filter(candidate => candidate.match !== 'possible');
+  const exact = candidates.filter(candidate =>
+    candidate.match !== 'whole_word_name' && candidate.match !== 'possible');
+  const reliable = exact.length ? exact :
+    candidates.filter(candidate => candidate.match === 'whole_word_name');
   if (reliable.length === 1) {
     return { status: 'resolved' as const, provider, destination: reliable[0]!.value };
   }
   if (reliable.length) return { status: 'ambiguous' as const, provider, candidates: reliable };
-  const possible = candidates.filter(candidate => candidate.match === 'possible');
-  if (possible.length === 1) {
-    const name = normalize(possible[0]!.label.split(/\s+\/\s+|\s+—\s+/).at(-1) || '');
+  if (candidates.length === 1) {
+    const candidate = candidates[0]!;
+    const name = normalize(candidate.label.split(/\s+\/\s+|\s+—\s+/).at(-1) || '');
     const query = normalize(reference);
     const sameWords = name.split(' ').sort().join(' ') === query.split(' ').sort().join(' ');
     if (sameWords || (query.length > 5 && distance(name, query) <= 2)) {
       return { status: 'resolved' as const, provider,
-        destination: possible[0]!.value,
+        destination: candidate.value,
         match: 'strong_unique_approximate' as const };
     }
   }
-  return { status: 'ambiguous' as const, provider, candidates: possible };
+  return { status: 'ambiguous' as const, provider, candidates };
 }
 
 if (import.meta.main) {
