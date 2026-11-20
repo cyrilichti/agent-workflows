@@ -91,3 +91,14 @@ test('preserves the delivery branch during a paused rebase with detached HEAD', 
   assert.equal(f.local('rev-parse', 'ticket'), f.delivery.sha);
   assert.match(f.local('ls-remote', 'origin', 'refs/heads/ticket'), new RegExp(f.delivery.sha));
 });
+
+test('restores the delivery checkout when the default branch cannot fast-forward', t => {
+  const f = fixture(t);
+  f.local('branch', '-f', 'main', 'ticket');
+  assert.match(f.run().reason!, /fast-forward/);
+  assert.equal(f.local('branch', '--show-current'), 'ticket');
+  assert.equal(f.local('rev-parse', 'ticket'), f.delivery.sha);
+  assert.match(f.local('ls-remote', 'origin', 'refs/heads/ticket'), new RegExp(f.delivery.sha));
+  f.local('branch', '-f', 'main', 'main~1');
+  assert.deepEqual(f.run(), { local: 'removed', remote: 'removed' });
+});

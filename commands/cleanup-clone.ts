@@ -95,7 +95,7 @@ function localHead(path: string, ref: string): string | undefined {
   return refs.split('\n').find(line => line.startsWith(`${ref}\t`))?.split('\t')[1];
 }
 
-function checkoutDefault(clone: CleanupClone, branch: string): void {
+function checkoutDefault(clone: CleanupClone, branch: string, previous: string): void {
   const path = clone.path;
   if (runGit(path, ['status', '--porcelain', '--untracked-files=normal'])) {
     throw new Error('The checkout contains uncommitted changes.');
@@ -110,7 +110,16 @@ function checkoutDefault(clone: CleanupClone, branch: string): void {
   } else {
     runGit(path, ['switch', '--no-guess', '--no-overwrite-ignore', '--', branch]);
   }
-  runGit(path, ['pull', '--ff-only', '--', clone.remote, ref]);
+  try {
+    runGit(path, ['pull', '--ff-only', '--', clone.remote, ref]);
+  } catch (error) {
+    try {
+      runGit(path, ['switch', '--no-guess', '--no-overwrite-ignore', '--', previous]);
+    } catch (restore) {
+      throw new Error(`${String(error)} Could not restore the delivery checkout: ${String(restore)}`);
+    }
+    throw error;
+  }
 }
 
 function remoteHead(clone: CleanupClone, ref: string): string | undefined {
@@ -145,7 +154,7 @@ export function cleanupBranches(
       if (worktrees.length && (worktrees.length !== 1 || realpathSync(worktrees[0]!) !== realpathSync(path))) {
         throw new Error('The branch is checked out in another worktree.');
       }
-      if (worktrees.length) checkoutDefault(clone, delivery.defaultBranch);
+      if (worktrees.length) checkoutDefault(clone, delivery.defaultBranch, delivery.branch);
       if (checkedOut(path, ref).length) throw new Error('The branch is still checked out.');
       runGit(path, ['update-ref', '--no-deref', '-d', ref, delivery.sha]);
       if (localHead(path, ref) !== undefined) {
