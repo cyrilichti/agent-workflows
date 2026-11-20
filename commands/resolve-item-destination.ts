@@ -47,6 +47,10 @@ function normalize(value: string): string {
     .toLowerCase().replace(/[\s._/-]+/g, ' ').trim();
 }
 
+function normalizeClickUpName(value: string): string {
+  return normalize(value.replace(/\p{Dash_Punctuation}/gu, '-'));
+}
+
 function distance(a: string, b: string): number {
   const row = Array.from({ length: b.length + 1 }, (_value, index) => index);
   for (let i = 1; i <= a.length; i++) {
@@ -159,7 +163,7 @@ function linearCandidates(reference: string, run: Run): Candidate[] {
 function clickupCandidates(reference: string, run: Run): Candidate[] {
   const candidates: Candidate[] = [];
   const seen = new Set<string>();
-  const query = normalize(reference);
+  const query = normalizeClickUpName(reference);
   const wordBoundary = '[^\\p{L}\\p{M}\\p{N}]';
   const wholeWordName = query
     ? new RegExp('(?:^|' + wordBoundary + ')' + RegExp.escape(query) +
@@ -171,7 +175,7 @@ function clickupCandidates(reference: string, run: Run): Candidate[] {
     seen.add(id);
     const name = field(list, 'name');
     const match = classify(reference, id, [name, path], field(list, 'url'));
-    const listMatch = match === 'possible' && wholeWordName?.test(normalize(name))
+    const listMatch = (!match || match === 'possible') && wholeWordName?.test(normalizeClickUpName(name))
       ? 'whole_word_name'
       : match;
     if (listMatch) candidates.push({ label: path, value: id, match: listMatch });

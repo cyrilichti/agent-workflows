@@ -87,6 +87,12 @@ test('ClickUp recognizes a complete multi-word project name within punctuation',
   });
 });
 
+test('ClickUp treats typographic dashes as separators in multi-word names', () => {
+  const destination = { status: 'resolved', provider: 'clickup', destination: 'list-1' };
+  assert.deepEqual(resolveClickUpLists('Atlas North', 'Support Atlas–North Europe'), destination);
+  assert.deepEqual(resolveClickUpLists('Atlas–North', 'Support Atlas North Europe'), destination);
+});
+
 test('ClickUp prefers an exact list name over a whole-word match inside another list name', () => {
   assert.deepEqual(resolveClickUpLists('Atlas', 'Support Atlas', 'ATLAS'), {
     status: 'resolved', provider: 'clickup', destination: 'list-2',
