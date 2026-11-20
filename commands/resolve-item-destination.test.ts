@@ -81,6 +81,23 @@ test('ClickUp asks for clarification when only a partial substring matches', () 
   assert.equal(result.candidates?.[0]?.match, 'possible');
 });
 
+test('ClickUp does not treat a partial word as a small spelling difference', () => {
+  for (const name of ['ApolloX', 'Demandes — ApolloX']) {
+    const result = resolveClickUpLists('Apollo', name);
+    assert.deepEqual(result, {
+      status: 'ambiguous', provider: 'clickup',
+      candidates: [{ label: `Product / ${name}`, value: 'list-1', match: 'possible' }],
+    });
+  }
+});
+
+test('ClickUp still resolves a uniquely close spelling without a partial substring', () => {
+  assert.deepEqual(resolveClickUpLists('Apollo', 'Apoloo'), {
+    status: 'resolved', provider: 'clickup', destination: 'list-1',
+    match: 'strong_unique_approximate',
+  });
+});
+
 test('ClickUp recognizes a complete multi-word project name within punctuation', () => {
   assert.deepEqual(resolveClickUpLists('Café Atlas', 'Demandes (CAFE-ATLAS) Europe'), {
     status: 'resolved', provider: 'clickup', destination: 'list-1',

@@ -10,6 +10,7 @@ type Candidate = {
   label: string;
   value: string | { team: string; project?: string };
   match: 'native_url' | 'exact_id' | 'normalized_exact_name' | 'whole_word_name' | 'possible';
+  listName?: string;
 };
 
 const runCli: Run = (program, args, input) => execFileSync(program, args, {
@@ -49,6 +50,11 @@ function normalize(value: string): string {
 
 function normalizeClickUpName(value: string): string {
   return normalize(value.replace(/\p{Dash_Punctuation}/gu, '-'));
+}
+
+function ambiguousDestination(provider: Provider, candidates: Candidate[]) {
+  return { status: 'ambiguous' as const, provider,
+    candidates: candidates.map(({ label, value, match }) => ({ label, value, match })) };
 }
 
 function distance(a: string, b: string): number {
@@ -175,10 +181,11 @@ function clickupCandidates(reference: string, run: Run): Candidate[] {
     seen.add(id);
     const name = field(list, 'name');
     const match = classify(reference, id, [name, path], field(list, 'url'));
-    const listMatch = (!match || match === 'possible') && wholeWordName?.test(normalizeClickUpName(name))
+    const listName = normalizeClickUpName(name);
+    const listMatch = (!match || match === 'possible') && wholeWordName?.test(listName)
       ? 'whole_word_name'
       : match;
-    if (listMatch) candidates.push({ label: path, value: id, match: listMatch });
+    if (listMatch) candidates.push({ label: path, value: id, match: listMatch, listName });
   };
   if (/^(?:https?:\/\/)?(?:app\.)?clickup\.com\/t\//.test(reference)) {
     throw new Error('Supply a ClickUp List URL or ID, not a task URL.');
@@ -242,19 +249,23 @@ export function resolveItemDestination(provider: Provider, reference: string,
   if (reliable.length === 1) {
     return { status: 'resolved' as const, provider, destination: reliable[0]!.value };
   }
-  if (reliable.length) return { status: 'ambiguous' as const, provider, candidates: reliable };
+  if (reliable.length) return ambiguousDestination(provider, reliable);
   if (candidates.length === 1) {
     const candidate = candidates[0]!;
-    const name = normalize(candidate.label.split(/\s+\/\s+|\s+—\s+/).at(-1) || '');
-    const query = normalize(reference);
+    const name = candidate.listName ??
+      normalize(candidate.label.split(/\s+\/\s+|\s+—\s+/).at(-1) || '');
+    const query = candidate.listName === undefined
+      ? normalize(reference) : normalizeClickUpName(reference);
+    const partialListName = candidate.listName !== undefined &&
+      (name.includes(query) || query.includes(name));
     const sameWords = name.split(' ').sort().join(' ') === query.split(' ').sort().join(' ');
-    if (sameWords || (query.length > 5 && distance(name, query) <= 2)) {
+    if (sameWords || (!partialListName && query.length > 5 && distance(name, query) <= 2)) {
       return { status: 'resolved' as const, provider,
         destination: candidate.value,
         match: 'strong_unique_approximate' as const };
     }
   }
-  return { status: 'ambiguous' as const, provider, candidates };
+  return ambiguousDestination(provider, candidates);
 }
 
 if (import.meta.main) {
