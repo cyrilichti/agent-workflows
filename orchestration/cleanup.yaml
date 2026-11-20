@@ -18,7 +18,7 @@ inputs:
     type: INT
     min: 1
     max: 3600
-    defaults: 3600
+    defaults: 300
     description: Delay between cycles and width of each completion interval, in seconds.
 concurrency:
   limit: 1

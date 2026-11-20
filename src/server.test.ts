@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 // Exercise the flow's jq program with the toJson encoding applied to the
 // HTTP response body. This checks routing without starting a Kestra instance.
 const flow = readFileSync(new URL('../orchestration/work.yaml', import.meta.url), 'utf8');
+const cleanupFlow = readFileSync(new URL('../orchestration/cleanup.yaml', import.meta.url), 'utf8');
 const selection = flow.slice(flow.indexOf('          - id: has-item'), flow.indexOf('                - id: has-project'));
 const filter = selection.match(/jq\('([\s\S]*?)'\)/)?.[1];
 assert.ok(filter, 'Selection switch must contain its jq filter');
@@ -28,6 +29,15 @@ function projectRoute(body: string): string {
     input: JSON.stringify(body), encoding: 'utf8',
   }).trim();
 }
+
+test('Kestra flows launch with a single integer interval input defaulting to five minutes', () => {
+  for (const source of [flow, cleanupFlow]) {
+    const inputs = source.slice(source.indexOf('inputs:\n'), source.indexOf('\nconcurrency:'));
+    assert.deepEqual([...inputs.matchAll(/^  - id: (\S+)$/gm)].map((match) => match[1]), ['intervalSeconds']);
+    assert.match(inputs, /^    type: INT$/m);
+    assert.match(inputs, /^    defaults: 300$/m);
+  }
+});
 
 test('Kestra routes invalid selection responses and waits after failed attempts', () => {
   for (const body of ['invalid', 'null', '{}', '{"name":" "}',
@@ -87,7 +97,7 @@ test('Kestra parses project stdout and calls the generic endpoint', () => {
   }
   const projectTask = flow.slice(flow.indexOf('                - id: project\n'), flow.indexOf('                - id: has-project'));
   assert.match(projectTask, /uri: '\{\{ envs\.bridge_url \}\}\/scripts'/);
-  assert.match(projectTask, /"path": inputs.commandsDirectory ~ "\/resolve-local-project-directory.ts"/);
+  assert.match(projectTask, /"path": vars\.commandsDirectory ~ "\/resolve-local-project-directory.ts"/);
   assert.match(projectTask, /"args": \[fromJson\(fromJson\(outputs\.next\.body\).stdout\).list,/);
   assert.match(projectTask, /fromJson\(fromJson\(outputs\.next\.body\).stdout\).id/);
   assert.doesNotMatch(projectTask, /"prompt"|"requestId"/);
@@ -101,8 +111,8 @@ test('Kestra rejects malformed script envelopes', () => {
     assert.equal(selectionRoute(body), 'error', body);
     assert.equal(projectRoute(body), 'error', body);
   }
-  assert.match(flow, /id: commandsDirectory[\s\S]*defaults: commands/);
-  assert.match(flow, /"path": inputs.commandsDirectory ~ "\/select-next-item.ts"/);
+  assert.match(flow, /variables:\n  commandsDirectory: commands/);
+  assert.match(flow, /"path": vars\.commandsDirectory ~ "\/select-next-item.ts"/);
 });
 for (const commandsDirectory of ['commands', '.agents/commands']) {
   test(`bridge and Kestra execute project scripts from ${commandsDirectory}`, { timeout: 15_000 }, async (t) => {
