@@ -165,7 +165,7 @@ function linearCompleted(window: CleanupWindow, id?: string): string[] {
   const matches = new Set<string>();
   let cursor: string | null = null;
   do {
-    const variables = { start: new Date(window.start).toISOString(),
+    const variables: Record<string, string | null> = { start: new Date(window.start).toISOString(),
       end: new Date(window.end).toISOString(), after: cursor };
     const result = linearQuery<LinearPage>(query, variables);
     const issues = result.data?.issues;
