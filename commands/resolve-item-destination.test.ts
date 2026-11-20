@@ -110,6 +110,17 @@ test('ClickUp treats typographic dashes as separators in multi-word names', () =
   assert.deepEqual(resolveClickUpLists('Atlas–North', 'Support Atlas North Europe'), destination);
 });
 
+test('ClickUp recognizes consecutive project words separated by punctuation in the list name', () => {
+  assert.deepEqual(resolveClickUpLists('Atlas North', 'Support Atlas: North Europe'), {
+    status: 'resolved', provider: 'clickup', destination: 'list-1',
+  });
+});
+
+test('ClickUp preserves symbols written as part of the project name', () => {
+  const result = resolveClickUpLists('C++ Runtime', 'Notes C# Runtime Europe');
+  assert.equal(result.status, 'not_found');
+});
+
 test('ClickUp prefers an exact list name over a whole-word match inside another list name', () => {
   assert.deepEqual(resolveClickUpLists('Atlas', 'Support Atlas', 'ATLAS'), {
     status: 'resolved', provider: 'clickup', destination: 'list-2',

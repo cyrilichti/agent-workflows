@@ -171,9 +171,12 @@ function clickupCandidates(reference: string, run: Run): Candidate[] {
   const seen = new Set<string>();
   const query = normalizeClickUpName(reference);
   const wordBoundary = '[^\\p{L}\\p{M}\\p{N}]';
+  const words = query.split(' ');
+  const phrase = words.every(word => /^[\p{L}\p{M}\p{N}]+$/u.test(word))
+    ? words.map(word => RegExp.escape(word)).join(wordBoundary + '+')
+    : RegExp.escape(query);
   const wholeWordName = query
-    ? new RegExp('(?:^|' + wordBoundary + ')' + RegExp.escape(query) +
-      '(?:$|' + wordBoundary + ')', 'u')
+    ? new RegExp('(?:^|' + wordBoundary + ')' + phrase + '(?:$|' + wordBoundary + ')', 'u')
     : undefined;
   const add = (list: RecordValue, path: string) => {
     const id = field(list, 'id');
