@@ -15,19 +15,17 @@ description: |
   | 4. Check | Accept completion only when the inspection statuses confirm inspection plus `agent-inspected`. Log incomplete results as warnings and invalid results as failures. |
   | 5. Wait | `sleep` waits `intervalSeconds` (default `300`), then another selection starts. |
   | 6. Stop | Kill this execution in Kestra to stop the loop. Merge and `/done` remain human decisions. |
+variables:
+  commandsDirectory: commands
 inputs:
-  - id: commandsDirectory
-    type: STRING
-    description: Project-relative command directory; use commands for a source checkout or .agents/commands for an installed project.
-    defaults: commands
   - id: intervalSeconds
-    type: STRING
+    type: INT
+    min: 1
+    defaults: 300
     description: |
       **Delay between cycles**, in whole seconds. Defaults to `300` (five
       minutes). The next selector call starts only after the current cycle and
       this delay have finished.
-    validator: '^[1-9][0-9]*$'
-    defaults: "300"
 concurrency:
   limit: 1
   behavior: FAIL
@@ -78,7 +76,7 @@ tasks:
             method: POST
             contentType: application/json
             body: >-
-              {{ {"path": inputs.commandsDirectory ~ "/select-next-item.ts"} | toJson }}
+              {{ {"path": vars.commandsDirectory ~ "/select-next-item.ts"} | toJson }}
             headers:
               Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
             timeout: PT5M
@@ -133,7 +131,7 @@ tasks:
                     Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
                   body: >-
                     {{ {
-                      "path": inputs.commandsDirectory ~ "/resolve-local-project-directory.ts",
+                      "path": vars.commandsDirectory ~ "/resolve-local-project-directory.ts",
                       "args": [fromJson(fromJson(outputs.next.body).stdout).list,
                         fromJson(fromJson(outputs.next.body).stdout).id]
                     } | toJson }}
@@ -348,7 +346,7 @@ tasks:
           Authorization: "Bearer {{ secret('BRIDGE_TOKEN') }}"
         body: >-
           {{ {
-            "path": inputs.commandsDirectory ~ "/publish-item-comment.ts",
+            "path": vars.commandsDirectory ~ "/publish-item-comment.ts",
             "args": [
               (outputs.next.body ?? "") | toJson | jq('try (fromjson | .stdout | fromjson | .id // "") catch ""') | first,
               (outputs.work.body ?? outputs.project.body ?? "Project resolution did not return a response. See the Kestra execution logs.")

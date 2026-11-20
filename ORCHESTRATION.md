@@ -140,9 +140,9 @@ attempt. Empty selection ends the attempt normally. Every attempt waits before
 retrying.
 
 Set `CODEX_WORKING_DIRECTORY` to the absolute project directory containing
-`agent-workflows.yaml`. Set the flow input `commandsDirectory` to `commands`
-(the default) for this source checkout, or `.agents/commands` for an installed
-project with `.agents/commands` and `.agents/providers` files.
+`agent-workflows.yaml`. The flow variable `variables.commandsDirectory` defaults
+to `commands` for a source checkout. Set it to `.agents/commands` for an
+installed project with `.agents/commands` and `.agents/providers` files.
 The provider configured under `item.provider` must have its CLI (`linear` or
 `clickup-cli`) on the bridge process's `PATH`, authenticated under the host user
 running the bridge. CLI credentials and environment variables must be available
@@ -156,9 +156,9 @@ The Compose installer retains existing flows, including local edits. Stop the
 running `agent-workflows/work` execution in Kestra and back up its flow YAML.
 Update this repository, restart the bridge, and replace the flow's source in
 the Kestra editor with [orchestration/work.yaml](./orchestration/work.yaml).
-Save it, reapply needed local customizations, and start a new execution with
-`commandsDirectory` set for your installation. Confirm that selection and
-project resolution call `/scripts` and that their switches parse the response's `stdout`.
+Set `variables.commandsDirectory` for your installation, save the flow, and
+start a new execution. Confirm that selection and project resolution call
+`/scripts` and that their switches parse the response's `stdout`.
 New installations import this flow automatically.
 
 ### Delivered branch cleanup
@@ -176,8 +176,8 @@ branch and pulls with `--ff-only`. Cleanup removes the local branch before the
 remote branch.
 
 After every cycle, including an empty selection or a failure, the flow waits
-`intervalSeconds` (default `3600`) and proceeds to the next completion interval
-of the same length. Stop the execution in Kestra to end the loop.
+`intervalSeconds` (default `300`, five minutes) and proceeds to the next
+completion interval of the same length. Stop the execution in Kestra to end the loop.
 
 ## Execution behavior
 
