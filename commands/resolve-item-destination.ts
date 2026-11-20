@@ -10,8 +10,10 @@ type Candidate = {
   label: string;
   value: string | { team: string; project?: string };
   match: 'native_url' | 'exact_id' | 'normalized_exact_name' | 'whole_word_name' | 'possible';
-  listName?: string;
+  name: string;
 };
+type MatchDestination = (id: string, name: string, alias: string, url?: string,
+  kind?: 'team' | 'project') => Pick<Candidate, 'name' | 'match'> | undefined;
 
 const runCli: Run = (program, args, input) => execFileSync(program, args, {
   encoding: 'utf8', input, maxBuffer: 32 * 1024 * 1024,
@@ -48,7 +50,7 @@ function normalize(value: string): string {
     .toLowerCase().replace(/[\s._/-]+/g, ' ').trim();
 }
 
-function normalizeClickUpName(value: string): string {
+function normalizeDestinationName(value: string): string {
   return normalize(value.replace(/\p{Dash_Punctuation}/gu, '-'));
 }
 
@@ -72,32 +74,44 @@ function distance(a: string, b: string): number {
   return row[b.length]!;
 }
 
-function classify(reference: string, id: string, names: string[], url = '',
-  kind?: 'team' | 'project'):
-  Candidate['match'] | undefined {
-  if (reference.includes('://')) {
-    const parsed = new URL(reference);
-    if (parsed.hostname !== 'linear.app') return undefined;
-    if (url && reference.replace(/\/$/, '') === url.replace(/\/$/, '')) {
-      return 'native_url';
+function matchesLinearUrl(reference: string, id: string, names: string[], url: string,
+  kind?: 'team' | 'project'): boolean {
+  const parsed = new URL(reference);
+  if (parsed.hostname !== 'linear.app') return false;
+  if (url && reference.replace(/\/$/, '') === url.replace(/\/$/, '')) return true;
+  const parts = parsed.pathname.split('/').filter(Boolean);
+  const type = parts.findIndex(part => part === kind);
+  const token = type >= 0 ? parts[type + 1] : undefined;
+  return !!token && (token === id || names.includes(normalize(token)));
+}
+
+function destinationMatcher(reference: string, query: string): MatchDestination {
+  const exactQuery = normalize(reference);
+  const wordBoundary = '[^\\p{L}\\p{M}\\p{N}]';
+  const words = query.split(' ');
+  const phrase = words.every(word => /^[\p{L}\p{M}\p{N}]+$/u.test(word))
+    ? words.map(word => RegExp.escape(word)).join(wordBoundary + '+')
+    : RegExp.escape(query);
+  const wholeWordName = query
+    ? new RegExp('(?:^|' + wordBoundary + ')' + phrase + '(?:$|' + wordBoundary + ')', 'u')
+    : undefined;
+
+  return (id, displayName, alias, url = '', kind) => {
+    const name = normalizeDestinationName(displayName);
+    const exactNames = [normalize(displayName), normalize(alias)].filter(Boolean);
+    if (reference.includes('://')) {
+      return matchesLinearUrl(reference, id, exactNames, url, kind)
+        ? { name, match: 'native_url' } : undefined;
     }
-    const parts = parsed.pathname.split('/').filter(Boolean);
-    const type = parts.findIndex(part => part === kind);
-    const token = type >= 0 ? parts[type + 1] : undefined;
-    if (token && (token === id || names.some(name => normalize(name) === normalize(token)))) {
-      return 'native_url';
-    }
+    if (reference === id) return { name, match: 'exact_id' };
+    if (exactNames.includes(exactQuery)) return { name, match: 'normalized_exact_name' };
+    if (wholeWordName?.test(name)) return { name, match: 'whole_word_name' };
+    if (query && [name, normalizeDestinationName(alias)].some(candidate => candidate && (
+      candidate.includes(query) || query.includes(candidate) ||
+      (query.length > 5 && distance(query, candidate) <= 2)
+    ))) return { name, match: 'possible' };
     return undefined;
-  }
-  if (reference === id) return 'exact_id';
-  const query = normalize(reference);
-  if (names.some(name => normalize(name) === query)) return 'normalized_exact_name';
-  if (names.some(name => {
-    const normalized = normalize(name);
-    return normalized.includes(query) || query.includes(normalized) ||
-      (query.length > 5 && distance(query, normalized) <= 2);
-  })) return 'possible';
-  return undefined;
+  };
 }
 
 function linearProjectTeams(run: Run, id: string): RecordValue[] {
@@ -127,7 +141,7 @@ function linearProjectTeams(run: Run, id: string): RecordValue[] {
   }
 }
 
-function linearCandidates(reference: string, run: Run): Candidate[] {
+function linearCandidates(matchDestination: MatchDestination, run: Run): Candidate[] {
   const teams = records(json(run, 'linear', ['team', 'list', '--limit', 'all', '--json', '--no-input']));
   const projects = records(json(run, 'linear', ['project', 'list', '--all-teams',
     '--limit', 'all', '--json', '--no-input']));
@@ -137,9 +151,9 @@ function linearCandidates(reference: string, run: Run): Candidate[] {
     const id = field(team, 'id');
     const name = field(team, 'name');
     const key = field(team, 'key');
-    const match = classify(reference, id, [name, key], field(team, 'url'), 'team');
+    const match = matchDestination(id, name, key, field(team, 'url'), 'team');
     if (id && match) candidates.push({ label: `${key || name} — ${name}`,
-      value: { team: id }, match });
+      value: { team: id }, ...match });
   }
   for (const project of projects) {
     const status = project.status as RecordValue | string | undefined;
@@ -153,42 +167,28 @@ function linearCandidates(reference: string, run: Run): Candidate[] {
     const projectPath = url ? new URL(url).pathname.split('/').filter(Boolean) : [];
     const projectIndex = projectPath.indexOf('project');
     const slug = projectIndex >= 0 ? projectPath[projectIndex + 1] || '' : '';
-    const match = classify(reference, id, [name, slug], url, 'project');
+    const match = matchDestination(id, name, slug, url, 'project');
     if (!id || !match) continue;
     const projectTeams = linearProjectTeams(run, id);
     for (const team of projectTeams) {
       const teamId = field(team, 'id');
       if (!teamId) continue;
       candidates.push({ label: `${field(team, 'key') || field(team, 'name')} / ${name}`,
-        value: { team: teamId, project: id }, match });
+        value: { team: teamId, project: id }, ...match });
     }
   }
   return candidates;
 }
 
-function clickupCandidates(reference: string, run: Run): Candidate[] {
+function clickupCandidates(reference: string, matchDestination: MatchDestination, run: Run): Candidate[] {
   const candidates: Candidate[] = [];
   const seen = new Set<string>();
-  const query = normalizeClickUpName(reference);
-  const wordBoundary = '[^\\p{L}\\p{M}\\p{N}]';
-  const words = query.split(' ');
-  const phrase = words.every(word => /^[\p{L}\p{M}\p{N}]+$/u.test(word))
-    ? words.map(word => RegExp.escape(word)).join(wordBoundary + '+')
-    : RegExp.escape(query);
-  const wholeWordName = query
-    ? new RegExp('(?:^|' + wordBoundary + ')' + phrase + '(?:$|' + wordBoundary + ')', 'u')
-    : undefined;
   const add = (list: RecordValue, path: string) => {
     const id = field(list, 'id');
     if (!id || list.archived === true || seen.has(id)) return;
     seen.add(id);
-    const name = field(list, 'name');
-    const match = classify(reference, id, [name, path], field(list, 'url'));
-    const listName = normalizeClickUpName(name);
-    const listMatch = (!match || match === 'possible') && wholeWordName?.test(listName)
-      ? 'whole_word_name'
-      : match;
-    if (listMatch) candidates.push({ label: path, value: id, match: listMatch, listName });
+    const match = matchDestination(id, field(list, 'name'), path, field(list, 'url'));
+    if (match) candidates.push({ label: path, value: id, ...match });
   };
   if (/^(?:https?:\/\/)?(?:app\.)?clickup\.com\/t\//.test(reference)) {
     throw new Error('Supply a ClickUp List URL or ID, not a task URL.');
@@ -205,7 +205,8 @@ function clickupCandidates(reference: string, run: Run): Candidate[] {
     if (!list || field(list, 'id') !== id || list.archived === true) {
       throw new Error('ClickUp List URL did not resolve to an active List.');
     }
-    return [{ label: field(list, 'name') || id, value: id, match: 'native_url' }];
+    const label = field(list, 'name') || id;
+    return [{ label, value: id, match: 'native_url', name: normalizeDestinationName(label) }];
   }
   const spaces = records(json(run, 'clickup-cli', ['space', 'list', '--output', 'json']));
   for (const space of spaces) {
@@ -241,9 +242,12 @@ function clickupCandidates(reference: string, run: Run): Candidate[] {
 
 export function resolveItemDestination(provider: Provider, reference: string,
   run: Run = runCli) {
-  if (!reference?.trim()) return { status: 'needs_reference' as const, provider };
+  const trimmed = reference?.trim();
+  if (!trimmed) return { status: 'needs_reference' as const, provider };
+  const query = normalizeDestinationName(trimmed);
+  const matchDestination = destinationMatcher(trimmed, query);
   const candidates = provider === 'linear'
-    ? linearCandidates(reference.trim(), run) : clickupCandidates(reference.trim(), run);
+    ? linearCandidates(matchDestination, run) : clickupCandidates(trimmed, matchDestination, run);
   if (!candidates.length) return { status: 'not_found' as const, provider };
   const exact = candidates.filter(candidate =>
     candidate.match !== 'whole_word_name' && candidate.match !== 'possible');
@@ -254,17 +258,12 @@ export function resolveItemDestination(provider: Provider, reference: string,
   }
   if (reliable.length) return ambiguousDestination(provider, reliable);
   if (candidates.length === 1) {
-    const candidate = candidates[0]!;
-    const name = candidate.listName ??
-      normalize(candidate.label.split(/\s+\/\s+|\s+—\s+/).at(-1) || '');
-    const query = candidate.listName === undefined
-      ? normalize(reference) : normalizeClickUpName(reference);
-    const partialListName = candidate.listName !== undefined &&
-      (name.includes(query) || query.includes(name));
+    const { name, value } = candidates[0]!;
+    const partialName = name.includes(query) || query.includes(name);
     const sameWords = name.split(' ').sort().join(' ') === query.split(' ').sort().join(' ');
-    if (sameWords || (!partialListName && query.length > 5 && distance(name, query) <= 2)) {
+    if (sameWords || (!partialName && query.length > 5 && distance(name, query) <= 2)) {
       return { status: 'resolved' as const, provider,
-        destination: candidate.value,
+        destination: value,
         match: 'strong_unique_approximate' as const };
     }
   }
