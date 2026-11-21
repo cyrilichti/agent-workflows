@@ -46,7 +46,8 @@ export function matchDestinationNames<Destination extends DestinationName>(
   if (!reference) return [];
   const query = normalizeDestinationName(reference);
   const exactQuery = normalizeExactName(reference);
-  const wordBoundary = '[^\\p{L}\\p{M}\\p{N}]';
+  // Keep language suffixes such as C++ and C# attached to the name.
+  const wordBoundary = '[^\\p{L}\\p{M}\\p{N}+#]';
   const words = query.split(' ');
   const phrase = words.every(word => /^[\p{L}\p{M}\p{N}]+$/u.test(word))
     ? words.map(word => RegExp.escape(word)).join(wordBoundary + '+')

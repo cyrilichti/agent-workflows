@@ -207,6 +207,17 @@ test('ClickUp preserves symbols written as part of the project name', () => {
   assert.equal(result.status, 'not_found');
 });
 
+test('Linear and ClickUp treat language suffixes as part of the name', () => {
+  for (const resolve of [resolveLinearProjects, resolveClickUpLists]) {
+    for (const name of ['C++', 'C#']) {
+      const result = resolve('C', name);
+      assert.equal(result.status, 'ambiguous');
+      assert.equal(result.candidates?.[0]?.match, 'possible');
+      assert.equal(resolve(name, `Support ${name}`).status, 'resolved');
+    }
+  }
+});
+
 test('ClickUp prefers an exact list name over a whole-word match inside another list name', () => {
   assert.deepEqual(resolveClickUpLists('Atlas', 'Support Atlas', 'ATLAS'), {
     status: 'resolved', provider: 'clickup', destination: 'list-2',
