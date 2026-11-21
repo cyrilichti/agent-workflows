@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { resolveProviderDestination as resolveItemDestination } from './resolve-item-destination-cli.ts';
+import { resolveItemDestination } from './resolve-item-destination.ts';
 
 function resolveClickUpLists(reference: string, ...listNames: string[]) {
   return resolveItemDestination('clickup', reference, (_program, args) => {
