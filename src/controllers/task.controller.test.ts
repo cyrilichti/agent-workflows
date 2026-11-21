@@ -8,7 +8,7 @@ import { ScriptController } from './script.controller.ts';
 import { TaskService } from '../services/task.service.ts';
 import { ScriptExecutionService } from '../services/script-execution.service.ts';
 import { AiProviderService } from '../services/ai-provider.service.ts';
-import { bridgeConfig } from '../fixtures/bridge-config.ts';
+import type { AppConfig } from '../types/app-config.types.ts';
 
 function request() {
   const message = new IncomingMessage(new Socket());
@@ -19,6 +19,15 @@ function request() {
 }
 
 test('controllers own dependencies, reuse them per server, and cancel only initialized tasks', async (t) => {
+  const bridgeConfig: AppConfig = {
+    providerName: 'codex', model: 'test', providerOptions: {},
+    http: { host: '127.0.0.1', port: 8787, token: 'test-only-token-'.repeat(4) },
+    execution: { enabled: true, timeoutMs: 30_000 },
+    langfuse: {
+      url: 'http://localhost:3001', publicUrl: 'http://localhost:3001',
+      projectId: 'agent-workflows', environment: undefined, publicKey: '', secretKey: '',
+    },
+  };
   const shutdown = new AbortController();
   const other = new AbortController();
   const provider = t.mock.method(AiProviderService.prototype, 'create');
