@@ -45,17 +45,53 @@ merge decision to you.
   </div>
 </div>
 
-## Start the architecture locally
+## Configure the local stack
 
-Prerequisites:
+You need the following tools on the host.
 
 - [Node.js 24+](https://nodejs.org/en/download) and npm
 - [Docker with Compose 2.24+](https://docs.docker.com/compose/install/)
 - [Codex CLI](https://github.com/openai/codex), authenticated with `codex login`
+- OpenSSL for generating secrets
 
-From the repository root, create `.env` from `.env.example` if needed. Follow
-the [configuration guide](https://github.com/cyrilichti/agent-workflows/blob/main/ORCHESTRATION.md#configure)
-to add the required secrets and enable Codex before starting the services.
+From the repository root, copy the example if you do not already have a
+`.env` file. Edit your existing `.env` directly if you have one.
+
+```bash
+cp .env.example .env
+```
+
+Generate a fresh value for each `*_PASSWORD` except `KESTRA_ADMIN_PASSWORD` and
+for each of `NEXTAUTH_SECRET`, `LANGFUSE_SALT`, `LANGFUSE_ENCRYPTION_KEY`,
+`LANGFUSE_PUBLIC_KEY`, and `LANGFUSE_SECRET_KEY`.
+
+```bash
+openssl rand -hex 32
+```
+
+`KESTRA_ADMIN_PASSWORD` requires at least eight characters, including an
+uppercase letter, a lowercase letter, and a digit. Generate it separately.
+
+```bash
+printf 'Aa1-%s\n' "$(openssl rand -hex 30)"
+```
+
+Generate `SECRET_BRIDGE_TOKEN` as a base64-encoded value and paste the output
+directly into `.env`.
+
+```bash
+openssl rand -hex 32 | tr -d '\n' | openssl base64 -A
+```
+
+Set `AI_PROVIDER=codex` and `INFERENCE_ENABLED=true`. Leave `AI_MODEL` empty
+to use the model configured in your Codex CLI.
+
+Set `CODEX_WORKING_DIRECTORY` to the absolute path of the project that contains
+your `agent-workflows.yaml`. An empty value uses the source checkout that is
+running the bridge. Make sure the CLI for the configured item provider is on
+the bridge user's `PATH` and authenticated. See [Providers](../providers/).
+
+## Start the services
 
 ```bash
 docker compose up -d
@@ -68,9 +104,12 @@ Then start the bridge **on the host machine**, under your usual user account
 npm start
 ```
 
-Keep this process running. Kestra reaches the host bridge through
-`BRIDGE_URL`. The local service addresses are:
+Keep the bridge running and restart it after editing `.env`. Kestra reaches
+the host bridge through `BRIDGE_URL`, which defaults to
+`http://host.docker.internal:8787`.
 
-- Kestra: [http://localhost:3000](http://localhost:3000)
-- Langfuse: [http://localhost:3001](http://localhost:3001)
-- Bridge health: [http://localhost:8787/health](http://localhost:8787/health)
+| Service | Local address | Sign-in variables |
+| --- | --- | --- |
+| Kestra | [http://localhost:3000](http://localhost:3000) | `KESTRA_ADMIN_EMAIL`, `KESTRA_ADMIN_PASSWORD` |
+| Langfuse | [http://localhost:3001](http://localhost:3001) | `LANGFUSE_ADMIN_EMAIL`, `LANGFUSE_ADMIN_PASSWORD` |
+| Bridge health | [http://localhost:8787/health](http://localhost:8787/health) | Public endpoint |
