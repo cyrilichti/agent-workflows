@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { resolveItemDestination } from './resolve-item-destination.ts';
+import { resolveProviderDestination as resolveItemDestination } from './resolve-item-destination-cli.ts';
 
 function resolveClickUpLists(reference: string, ...listNames: string[]) {
   return resolveItemDestination('clickup', reference, (_program, args) => {
@@ -162,6 +162,25 @@ test('ClickUp still resolves a uniquely close spelling without a partial substri
   assert.deepEqual(resolveClickUpLists('Apollo', 'Apoloo'), {
     status: 'resolved', provider: 'clickup', destination: 'list-1',
     match: 'strong_unique_approximate',
+  });
+});
+
+test('ClickUp folder names cannot compete with an actual list name', () => {
+  const result = resolveItemDestination('clickup', 'Atlas North', (_program, args) => {
+    if (args[0] === 'space') return JSON.stringify([{ id: 'space-1', name: 'Product' }]);
+    if (args[0] === 'folder' && args[1] === 'list') {
+      return JSON.stringify([{ id: 'folder-1', name: 'Atlas—North' }]);
+    }
+    if (args[0] === 'folder' && args[1] === 'get') {
+      return JSON.stringify({ id: 'folder-1', name: 'Atlas—North', lists: [
+        { id: 'backlog', name: 'Backlog' },
+      ] });
+    }
+    if (args[0] === 'list') return JSON.stringify([{ id: 'close', name: 'Atlas Norta' }]);
+    throw new Error(`Unexpected command: ${args.join(' ')}`);
+  });
+  assert.deepEqual(result, {
+    status: 'resolved', provider: 'clickup', destination: 'close', match: 'strong_unique_approximate',
   });
 });
 

@@ -27,7 +27,7 @@ Run from this file's directory with the explicit destination reference or
 current project name, if available. Omit `reference` when neither exists:
 
 ```sh
-node ../commands/resolve-item-destination.ts <<'JSON'
+node ../commands/resolve-item-destination-cli.ts <<'JSON'
 {"reference":"<destination reference or current project name>"}
 JSON
 ```
