@@ -36,4 +36,3 @@ export function records(value: unknown): RecordValue[] {
 export function field(value: RecordValue, key: string): string {
   return typeof value[key] === 'string' ? value[key] as string : '';
 }
-

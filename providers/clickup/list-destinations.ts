@@ -60,4 +60,3 @@ export function listDestinations(reference: string, run: Run): Destination<strin
   }
   return destinations;
 }
-
