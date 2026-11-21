@@ -13,6 +13,73 @@ function resolveClickUpLists(reference: string, ...listNames: string[]) {
   });
 }
 
+function resolveLinearProjects(reference: string, ...projectNames: string[]) {
+  return resolveItemDestination('linear', reference, (_program, args) => {
+    if (args[0] === 'team') return JSON.stringify([]);
+    if (args[0] === 'project') return JSON.stringify(projectNames.map((name, index) => ({
+      id: `project-${index + 1}`, name,
+    })));
+    if (args[0] === 'api') return JSON.stringify({ data: { project: { teams: {
+      nodes: [{ id: 'team-1', key: 'A' }],
+      pageInfo: { hasNextPage: false, endCursor: null },
+    } } } });
+    throw new Error(`Unexpected command: ${args.join(' ')}`);
+  });
+}
+
+test('Linear prefers the complete project name over a weak substring', () => {
+  assert.deepEqual(resolveLinearProjects('Atlas', 'Demandes ATLAS', 'AtlasPro'), {
+    status: 'resolved', provider: 'linear', destination: { team: 'team-1', project: 'project-1' },
+  });
+});
+
+test('Linear prefers an exact project name over a whole-word match', () => {
+  assert.deepEqual(resolveLinearProjects('Atlas', 'Support Atlas', 'ATLAS'), {
+    status: 'resolved', provider: 'linear', destination: { team: 'team-1', project: 'project-2' },
+  });
+});
+
+test('Linear asks the user to choose between equally strong whole-word matches', () => {
+  const result = resolveLinearProjects('Atlas', 'Demandes ATLAS', 'Support Atlas', 'AtlasPro');
+  assert.deepEqual(result, { status: 'ambiguous', provider: 'linear', candidates: [
+    { label: 'A / Demandes ATLAS', value: { team: 'team-1', project: 'project-1' }, match: 'whole_word_name' },
+    { label: 'A / Support Atlas', value: { team: 'team-1', project: 'project-2' }, match: 'whole_word_name' },
+  ] });
+});
+
+test('Linear recognizes consecutive project words separated by punctuation', () => {
+  for (const name of ['Support Atlas–North Europe', 'Support Atlas: North Europe']) {
+    assert.deepEqual(resolveLinearProjects('Atlas North', name), {
+      status: 'resolved', provider: 'linear', destination: { team: 'team-1', project: 'project-1' },
+    });
+  }
+});
+
+test('Linear asks for clarification when a project name only matches part of a word', () => {
+  assert.deepEqual(resolveLinearProjects('Apollo', 'ApolloX', 'Unrelated'), {
+    status: 'ambiguous', provider: 'linear', candidates: [
+      { label: 'A / ApolloX', value: { team: 'team-1', project: 'project-1' }, match: 'possible' },
+    ],
+  });
+});
+
+test('Linear still resolves a unique close spelling among unrelated projects', () => {
+  assert.deepEqual(resolveLinearProjects('Apollo', 'Apoloo', 'Unrelated'), {
+    status: 'resolved', provider: 'linear', destination: { team: 'team-1', project: 'project-1' },
+    match: 'strong_unique_approximate',
+  });
+});
+
+test('Linear applies whole-word matching to team names', () => {
+  const result = resolveItemDestination('linear', 'Atlas', (_program, args) => {
+    if (args[0] === 'team') return JSON.stringify([
+      { id: 'team-1', key: 'SA', name: 'Support Atlas' },
+    ]);
+    return JSON.stringify([]);
+  });
+  assert.deepEqual(result, { status: 'resolved', provider: 'linear', destination: { team: 'team-1' } });
+});
+
 test('Linear project shared by two teams remains a user choice', () => {
   const result = resolveItemDestination('linear', 'Roadmap', (_program, args) => {
     if (args[0] === 'team') return JSON.stringify([]);
@@ -98,6 +165,25 @@ test('ClickUp still resolves a uniquely close spelling without a partial substri
   });
 });
 
+test('ClickUp folder names cannot compete with an actual list name', () => {
+  const result = resolveItemDestination('clickup', 'Atlas North', (_program, args) => {
+    if (args[0] === 'space') return JSON.stringify([{ id: 'space-1', name: 'Product' }]);
+    if (args[0] === 'folder' && args[1] === 'list') {
+      return JSON.stringify([{ id: 'folder-1', name: 'Atlas—North' }]);
+    }
+    if (args[0] === 'folder' && args[1] === 'get') {
+      return JSON.stringify({ id: 'folder-1', name: 'Atlas—North', lists: [
+        { id: 'backlog', name: 'Backlog' },
+      ] });
+    }
+    if (args[0] === 'list') return JSON.stringify([{ id: 'close', name: 'Atlas Norta' }]);
+    throw new Error(`Unexpected command: ${args.join(' ')}`);
+  });
+  assert.deepEqual(result, {
+    status: 'resolved', provider: 'clickup', destination: 'close', match: 'strong_unique_approximate',
+  });
+});
+
 test('ClickUp recognizes a complete multi-word project name within punctuation', () => {
   assert.deepEqual(resolveClickUpLists('Café Atlas', 'Demandes (CAFE-ATLAS) Europe'), {
     status: 'resolved', provider: 'clickup', destination: 'list-1',
@@ -119,6 +205,17 @@ test('ClickUp recognizes consecutive project words separated by punctuation in t
 test('ClickUp preserves symbols written as part of the project name', () => {
   const result = resolveClickUpLists('C++ Runtime', 'Notes C# Runtime Europe');
   assert.equal(result.status, 'not_found');
+});
+
+test('Linear and ClickUp treat language suffixes as part of the name', () => {
+  for (const resolve of [resolveLinearProjects, resolveClickUpLists]) {
+    for (const name of ['C++', 'C#']) {
+      const result = resolve('C', name);
+      assert.equal(result.status, 'ambiguous');
+      assert.equal(result.candidates?.[0]?.match, 'possible');
+      assert.equal(resolve(name, `Support ${name}`).status, 'resolved');
+    }
+  }
 });
 
 test('ClickUp prefers an exact list name over a whole-word match inside another list name', () => {
