@@ -86,11 +86,6 @@ openssl rand -hex 32 | tr -d '\n' | openssl base64 -A
 Set `AI_PROVIDER=codex` and `INFERENCE_ENABLED=true`. Leave `AI_MODEL` empty
 to use the model configured in your Codex CLI.
 
-Set `CODEX_WORKING_DIRECTORY` to the absolute path of the project that contains
-your `agent-workflows.yaml`. An empty value uses the source checkout that is
-running the bridge. Make sure the CLI for the configured item provider is on
-the bridge user's `PATH` and authenticated. See [Providers](../providers/).
-
 ## Start the services
 
 ```bash
