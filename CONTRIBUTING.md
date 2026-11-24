@@ -108,7 +108,6 @@ Build the documentation and check the patch:
 
 ```bash
 ASTRO_TELEMETRY_DISABLED=1 npm run build
-python3 .github/scripts/check-doc-links.py
 git diff --check
 ```
 

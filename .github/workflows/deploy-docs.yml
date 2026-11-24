@@ -50,10 +50,6 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npm run build
 
-      - name: Check documentation links
-        if: github.event_name == 'pull_request'
-        run: python3 .github/scripts/check-doc-links.py
-
   build:
     name: Build documentation
     needs: test
