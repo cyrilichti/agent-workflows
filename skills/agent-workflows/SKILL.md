@@ -161,7 +161,7 @@ Refer users to the setup documentation for the selected provider:
 ```text
 https://github.com/cli/cli#installation
 https://cli.github.com/manual/gh_auth_login
-https://docs.gitlab.com/cli/installation/
+https://docs.gitlab.com/cli/#install-the-cli
 https://docs.gitlab.com/cli/authentication/
 ```
 
