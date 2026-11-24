@@ -16,9 +16,9 @@ Use the same delivery workflows with your agent or through orchestration. This n
   <tr>
     <td width="48%" valign="middle">
       <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="./public/readme-orchestration-dark.png">
-        <source media="(prefers-color-scheme: light)" srcset="./public/readme-orchestration-light.png">
-        <img width="100%" src="./public/readme-orchestration-light.png" alt="The documentation home page illustration: plans move along an isometric conveyor through Build, Test, and Review, becoming reviewed changes.">
+        <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/readme/readme-orchestration-dark.png">
+        <source media="(prefers-color-scheme: light)" srcset="./docs/assets/readme/readme-orchestration-light.png">
+        <img width="100%" src="./docs/assets/readme/readme-orchestration-light.png" alt="The documentation home page illustration: plans move along an isometric conveyor through Build, Test, and Review, becoming reviewed changes.">
       </picture>
     </td>
     <td valign="middle">
@@ -33,9 +33,9 @@ Use the same delivery workflows with your agent or through orchestration. This n
   <tr>
     <td width="48%" valign="middle">
       <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="./public/readme-agent-demo-dark.png">
-        <source media="(prefers-color-scheme: light)" srcset="./public/readme-agent-demo-light.png">
-        <img width="100%" src="./public/readme-agent-demo-light.png" alt="The documentation demo shows an AI search ticket conversation and, behind the scenes, the /write workflow selecting a focused skill.">
+        <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/readme/readme-agent-demo-dark.png">
+        <source media="(prefers-color-scheme: light)" srcset="./docs/assets/readme/readme-agent-demo-light.png">
+        <img width="100%" src="./docs/assets/readme/readme-agent-demo-light.png" alt="The documentation demo shows an AI search ticket conversation and, behind the scenes, the /write workflow selecting a focused skill.">
       </picture>
     </td>
     <td valign="middle">
@@ -80,28 +80,28 @@ Choose a work tracker and a code host. Orchestration also needs an AI provider.
   </thead>
   <tbody>
     <tr>
-      <td width="10%" align="center"><img src="./public/provider-logos/linear.svg" width="28" height="28" alt="Linear logo"></td>
+      <td width="10%" align="center"><img src="./docs/assets/readme/provider-logos/linear.svg" width="28" height="28" alt="Linear logo"></td>
       <td><strong>Linear</strong> — Manage tickets and approved plans; workflows update comments, labels, and status.</td>
     </tr>
     <tr>
-      <td width="10%" align="center"><img src="./public/provider-logos/clickup.svg" width="28" height="28" alt="ClickUp logo"></td>
+      <td width="10%" align="center"><img src="./docs/assets/readme/provider-logos/clickup.svg" width="28" height="28" alt="ClickUp logo"></td>
       <td><strong>ClickUp</strong> — Manage tasks and approved plans; workflows update comments, tags, and status.</td>
     </tr>
     <tr>
       <td width="10%" align="center">
         <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="./public/provider-logos/github-dark.svg">
-          <img src="./public/provider-logos/github.svg" width="28" height="28" alt="GitHub logo">
+          <source media="(prefers-color-scheme: dark)" srcset="./docs/assets/readme/provider-logos/github-dark.svg">
+          <img src="./docs/assets/readme/provider-logos/github.svg" width="28" height="28" alt="GitHub logo">
         </picture>
       </td>
       <td><strong>GitHub</strong> — Create branches and pull requests, and review changes where your code lives.</td>
     </tr>
     <tr>
-      <td width="10%" align="center"><img src="./public/provider-logos/gitlab.svg" width="28" height="28" alt="GitLab logo"></td>
+      <td width="10%" align="center"><img src="./docs/assets/readme/provider-logos/gitlab.svg" width="28" height="28" alt="GitLab logo"></td>
       <td><strong>GitLab</strong> — Create branches and merge requests, and review changes where your code lives.</td>
     </tr>
     <tr>
-      <td width="10%" align="center"><img src="./public/provider-logos/codex.svg" width="28" height="28" alt="Codex logo"></td>
+      <td width="10%" align="center"><img src="./docs/assets/readme/provider-logos/codex.svg" width="28" height="28" alt="Codex logo"></td>
       <td><strong>Codex CLI</strong> — Run orchestration's AI tasks locally with your authenticated CLI.</td>
     </tr>
   </tbody>
