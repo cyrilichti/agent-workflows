@@ -16,8 +16,6 @@ state, and predictable performance.
 
 Work directly when no trigger applies. Load only:
 
-- `../skills/vue-best-practices/SKILL.md` when changing Vue component APIs,
-  reactivity, state, rendering behavior, or composable design;
 - `../skills/source-driven-development/SKILL.md` when a decision depends on an
   unverified external or versioned fact;
 - `../skills/test-driven-development/SKILL.md` when implementing behavior
