@@ -17,6 +17,7 @@ skills/*
 !skills/ready/
 !skills/inspect/
 !skills/done/
+!skills/guidelines/
 
 # Local Docker configuration and credentials
 .env

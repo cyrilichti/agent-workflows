@@ -121,6 +121,7 @@ producing the current equivalent of:
 !.agents/skills/ready/
 !.agents/skills/inspect/
 !.agents/skills/done/
+!.agents/skills/guidelines/
 ```
 
 Treat only these consuming-project patterns as installer-owned:
