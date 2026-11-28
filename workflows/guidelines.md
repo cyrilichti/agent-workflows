@@ -2,6 +2,7 @@
 
 From this file's directory, read `../skills/guidelines/SKILL.md` if it is not
 already active. Follow `../rules/skill-activation.md` for the announcement.
+Read only the reference linked from the skill for the selected mode.
 
 - For a durable convention, apply `record` using the user's wording and the
   context that establishes its scope. Report the topic file that changed or
