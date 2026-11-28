@@ -31,13 +31,17 @@ The specialist is the sole author. From this file's directory, load applicable
 Skills in one `cat` command. Include `planning-and-task-breakdown` for every
 plan. Include `source-driven-development` only when a decision depends on an
 unverified external versioned fact; use it only to verify and cite that fact.
+Include `guidelines` when a project convention could affect the deliverables.
 Omit paths for Skills already active, and skip the command when none remain:
 
 ```sh
-cat ../skills/planning-and-task-breakdown/SKILL.md ../skills/source-driven-development/SKILL.md
+cat ../skills/planning-and-task-breakdown/SKILL.md ../skills/source-driven-development/SKILL.md ../skills/guidelines/SKILL.md
 ```
 
 Announce each newly loaded Skill.
+
+When a project convention could affect the deliverables, apply `find` to that
+planning decision before defining the deliverables.
 
 Write the plan under `../plans/{YYYY-MM-DD}-{objective-slug}.plan.md` with a
 lowercase kebab-case slug of at most 40 characters; append `-2`, `-3`, etc.

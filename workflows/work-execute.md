@@ -74,10 +74,12 @@ task_context: complete numbered todo list from the current plan
 
 For each returned `todo`:
 
-1. Implement and validate only that todo.
-2. Inspect `git status --short` and remove only untracked temporary files you
+1. Load `../skills/guidelines/SKILL.md` if it is not already active and apply
+   `find` to the current todo and its affected component before implementation.
+2. Implement and validate only that todo.
+3. Inspect `git status --short` and remove only untracked temporary files you
    generated for this todo or its validation.
-3. Run one command from this file's directory to stage and commit all remaining
+4. Run one command from this file's directory to stage and commit all remaining
    changes before continuing:
 
    With changes:
