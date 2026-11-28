@@ -1,6 +1,6 @@
 ---
 name: guidelines
-description: Record durable project conventions from user feedback or find applicable conventions before planning or executing work.
+description: Record durable project conventions from user feedback, find applicable conventions before work, or reorganize the catalog on request.
 ---
 
 # Guidelines
@@ -43,3 +43,16 @@ Update the owning topic and its condition when possible. Otherwise create the
 index if needed and add one topic file and its entry. Surface a contradiction
 unless the user explicitly supersedes the earlier convention. Verify that the
 entry resolves and describes when the updated rule applies.
+
+## Curate
+
+On request, read the index and the topics in scope. Merge equivalent entries,
+split topics that cover distinct decisions, and group files under a thematic
+subdirectory when that improves navigation. Update the index and affected
+relative links together and preserve each rule's scope and source through
+moves. Check that index links resolve and their conditions still find the
+appropriate topics.
+
+When two conventions conflict, preserve both positions and present their
+scope and sources for a user decision. Continue with independent catalog
+changes when possible.

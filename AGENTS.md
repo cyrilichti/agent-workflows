@@ -16,7 +16,7 @@
    | Prepare work for review (`/ready` or `$ready`) | `workflows/ready.md` |
    | Review a pull or merge request (`/inspect` or `$inspect`) | `workflows/inspect.md` |
    | Complete a pull or merge request (`/done` or `$done`) | `workflows/done.md` |
-   | Record a convention the user expresses or confirms as durable for the project | `workflows/guidelines.md` |
+   | Record a convention the user expresses or confirms as durable for the project, or reorganize project guidelines on request | `workflows/guidelines.md` |
 
 2. When several routes match, reduce them to one by asking with
    `templates/select-option.md`:
